@@ -1,0 +1,11 @@
+[server:main]
+use = egg:Paste#http
+# Change to 0.0.0.0 to make public
+host = 127.0.0.1
+port = 8001
+
+[app:main]
+use = egg:pydap#server
+root = %(here)s/data
+templates = %(here)s/templates
+x-wsgiorg.throw_errors = 0

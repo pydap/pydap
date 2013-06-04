@@ -1,0 +1,190 @@
+<!-- !This file uses the Genshi template language: http://genshi.edgewall.org/wiki/Documentation/xml-templates.html -->
+<?python
+    from pydap.model import *
+?>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:py="http://genshi.edgewall.org/">
+    <py:def function="attributes(attrs)">
+        <dl py:if="attrs" class="attributes ui-widget-content">
+            <py:for each="k, v in attrs.items()">
+                <dt>${k}</dt>
+                <dd py:choose="">
+                    <py:when test="isinstance(v, dict)">${attributes(v)}</py:when>
+                    <py:otherwise>${v}</py:otherwise>
+                </dd>
+            </py:for>
+        </dl>
+    </py:def>
+
+    <div id="variables" py:def="children(var)" class="children">
+        <py:for each="child in var.walk()">
+            <h3><a href="#">${child.name}</a></h3>
+            <div>
+                <py:choose test="">
+                    <p py:when="isinstance(child, SequenceType)" class="filter">
+                        <select class="var1" name="var1_${child.id}[0]" id="var1_${child.id}[0]">
+                            <option value="--" selected="selected">--</option>
+                            <option py:for="grandchild in child.walk()" value="${grandchild.id}">${grandchild.id}</option>
+                        </select>
+                        <select class="op" name="op_${child.id}[0]" id="op_${child.id}[0]">
+                            <option value="%3D" selected="selected">=</option>
+                            <option value="%21%3D">&ne;</option>
+                            <option value="%3C">&lt;</option>
+                            <option value="%3C%3D">&le;</option>
+                            <option value="%3E">&gt;</option>
+                            <option value="%3E%3D">&ge;</option>
+                            <option value="%3D%7E">&asymp;</option>
+                        </select>
+                        <input type="text" name="var2_${child.id}[0]" id="var2_${child.id}[0]" value="" class="var2" />
+                    </p>
+                    <div py:when="isinstance(child, (BaseType, GridType))">
+                        <p><input type="checkbox" name="${child.id}" id="${child.id}" />
+                            <label for="${child.id}">Retrieve this variable<py:if test="child.shape"> at indices (start, step, stop)</py:if>:</label>
+                        </p>
+                        <?python 
+                            dimensions = child.dimensions or ['dim_%id' % j for j in range(len(child.shape))]
+                        ?>
+                        <div py:for="i in range(len(child.shape))">
+                            <label for="${child.id}[${i}]">${dimensions[i]}</label>:<br />
+                            <input type="text" name="${child.id}[${i}]" id="${child.id}[${i}]" value="0:1:${child.shape[i]-1}" /><br />
+                        </div>
+                    </div>
+                </py:choose>
+
+                ${attributes(child.attributes)}
+                <py:if test="not isinstance(child, GridType)">
+                    ${children(child)}
+                </py:if>
+            </div>
+        </py:for>
+    </div>
+
+    <head>
+        <title>Pydap server: ${dataset.name}</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+
+        <link type="text/css" href="${root}/.static/css/blitzer/jquery-ui-1.8.2.custom.css" rel="stylesheet" /> 
+        <link rel="stylesheet" type="text/css" media="screen" href="${root}/.static/css/default.css" />
+        <link rel="alternate" type="application/thredds+xml" title="THREDDS Catalog" href="${root}/catalog.xml" />
+        <script type="text/javascript" src="${root}/.static/js/jquery-1.4.2.min.js"></script>
+        <script type="text/javascript" src="${root}/.static/js/jquery-ui-1.8.2.custom.min.js"></script>
+        <script type="text/javascript" src="${root}/.static/js/jquery.hotkeys-0.7.9.min.js"></script>
+        <script type="text/javascript" src="${root}/.static/js/OpenLayers/OpenLayers.js"></script>
+        <script type="text/javascript">
+            var root = "${root}";
+        </script>
+        <script type="text/javascript" src="${root}/.static/js/html_form.js"></script>
+        <script py:if="environ.get('pydap.search')"
+            type="text/javascript" src="${root}/.static/js/search.js"></script>
+
+    </head>
+
+    <body class="ui-helper-reset ui-widget">
+        <div id="main" class="ui-corner-all ui-widget-content">
+            <h1 id="title">Download data from <code>${dataset.name}</code></h1>
+
+            <hr class="ui-widget-header" />
+            <p>
+                <span class="ui-icon ui-icon-folder-collapsed" style="display: inline-block"></span>
+                <a href="${base}/">Parent directory</a>
+            </p>
+
+            <!-- Global attributes -->
+            <h2>Global attributes</h2>
+            ${attributes(dataset.attributes)}
+
+            <hr />
+
+            <div id="tabs">
+                <ul>
+                    <li><a href="#html" title="Download data using an HTML form"><span>HTML form</span></a></li>
+                    <li py:if="'wms' in responses.keys()"><a href="#wms" title="Visualize data on a map"><span>Map</span></a></li>
+                    <li><a href="#ferret" title="Download data using Ferret"><span>Ferret</span></a></li>
+                    <li><a href="#grads" title="Download data using GrADS"><span>GrADS</span></a></li>
+                    <li><a href="#idl" title="Download data using IDL"><span>IDL</span></a></li>
+                    <li><a href="#pydap" title="Download data using Pydap"><span>Pydap</span></a></li>
+                    <li><a href="#other" title="Download data with a different Opendap client"><span>Other clients</span></a></li>
+                </ul>
+
+                <div id="html">
+                    <h2>Downloading data</h2>
+                    <p>In the form below you can specify desired variables and their dimensions, and have the data downloaded in different formats depending on the server configuration.</p>
+
+                    <form id="dods_form" method="post" action="${location}">
+                        <!-- Dataset variables -->
+                        ${children(dataset)}
+
+                        <p><input type="submit" id="submit" value="Download data" /> as 
+                        <select id="response" name="response">
+                            <option value="ascii" selected="selected">ASCII</option>
+                            <option py:for="response, desc in responses.items()" value="$response">$desc</option>
+                        </select>
+                        <br /><input type="reset" value="Reset" /></p>
+                    </form>
+                </div>
+
+                <div id="ferret">
+                    <h2>Downloading data with Ferret</h2>
+                    <p>To access this dataset with the <a href="http://ferret.pmel.noaa.gov/Ferret/">Ferret</a> visualization and analysis environment from <a href="http://www.pmel.noaa.gov/">PMEL</a>:</p>
+
+                    <pre><code>$ ferret
+yes? use "${location[:-5]}"
+yes? show data</code></pre>
+                </div>
+
+                <div id="grads">
+                    <h2>Downloading data with GrADS</h2>
+                    <p>To access this dataset with the <a href="http://www.iges.org/grads/">GrADS</a> data analysis and visualization software developed by <a href="http://www.iges.org/cola.html">COLA</a>:</p>
+
+                    <pre><code>$ gradsdap
+ga-&gt; sdfopen ${location[:-5]}
+ga-&gt; query file</code></pre>
+                </div>
+
+                <div id="idl">
+                    <h2>Downloading data with IDL</h2>
+                    <p>To access this dataset with the <a href="http://opendap.org/download/idl-client.html">OPeNDAP IDL Client</a>, a tool for the <a href="http://www.ittvis.com/ProductServices/IDL.aspx">IDL</a> data analysis and visualization package:</p>
+
+                    <pre><code>IDL&gt; url = '${location[:-5]}'
+IDL&gt; stat = opendap_get(url, def, mode='dds')
+IDL&gt; help, def, /structures</code></pre>
+                </div>
+
+                <div id="pydap">
+                    <h2>Downloading data with Pydap</h2>
+                    <p>To access this dataset using the <a href="http://pydap.org/">Pydap</a> Python module:</p>
+
+<?python
+    from pprint import pformat
+?>
+                    <pre><code>$ python
+&gt;&gt;&gt; from pydap.client import open_url
+&gt;&gt;&gt; dataset = open_url("${location[:-5]}")
+&gt;&gt;&gt; import pprint
+&gt;&gt;&gt; pprint.pprint( dataset.keys() )
+${pformat(dataset.keys())}</code></pre>
+                </div>
+
+                <div id="other">
+                    <h2>Downloading data with other Opendap clients</h2>
+                    <p>There are other <a href="http://www.opendap.org/faq/whatClients.html">Opendap clients</a> that can access this dataset, including Matlab and several command line utilities. You should know that the URL for this dataset is <code>${location[:-5]}</code> (i.e., the <code>.html</code> extension should be omitted when opening this dataset on an Opendap client).</p>
+                </div>
+
+                <div id="wms" py:if="'wms' in responses.keys()">
+                    <div id="map" style="width: 600px; height: 300px;"></div>
+                    <div id="layers"></div>
+                    <p py:if="'kml' in responses.keys()">Open in <a href="${location[:-5]}.kml">Google Earth</a>.</p>
+                </div>
+            </div>
+
+            <hr />
+            <p class="footnote"><em><a href="http://pydap.org/">pydap/$version</a></em></p>
+        </div>
+    </body>
+</html>
+
+<!--! vim:ft=genshi
+-->

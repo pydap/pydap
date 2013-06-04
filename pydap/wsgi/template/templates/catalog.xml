@@ -1,0 +1,22 @@
+<!-- !This file uses the Genshi template language: http://genshi.edgewall.org/wiki/Documentation/xml-templates.html -->
+<catalog version="1.0.1" 
+    xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:py="http://genshi.edgewall.org/">
+
+    <service name="Pydap server" base="${root}/" serviceType="OpenDAP"/>
+
+    <dataset name="Opendap datasets">
+        <metadata inherited="true">
+            <serviceName>Pydap server</serviceName>
+        </metadata>
+        <py:for each="file in files">
+            <dataset py:if="file.supported" name="${file.name}" urlPath="${(location+'/')[len(root)+1:]}${file.name}"/>
+        </py:for>
+    </dataset>
+
+    <catalogRef py:for="dir in dirs" xlink:href="${location}/${dir}/${catalog}" xlink:title="${dir}" name="${dir}"/>
+</catalog>
+
+<!--! vim:ft=genshi
+-->

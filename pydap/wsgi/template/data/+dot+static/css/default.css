@@ -1,0 +1,69 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.ui-widget {
+    font-size: 9pt;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+}
+
+div {
+    margin: 0;
+    padding: 0;
+}
+
+div#main {
+    margin: 20px;
+    padding: 10px 20px;
+}
+
+div.message {
+    padding: 2px 20px;
+}
+
+h1 {
+    font-size: 1.4em;
+}
+
+h2 {
+    font-size: 1.2em;
+}
+
+table { 
+    font-size: 1.1em;
+    width: 100%;
+}
+
+th, td {
+    text-align: left;
+    padding: 1px 3px;
+}
+
+th[colspan] {
+    text-align: center;
+}
+
+dl {
+    padding: 10px 20px;
+}
+
+dt {
+    font-weight: bold;
+}
+
+dd {
+    margin-left: 1.0em;
+}
+
+p.footnote {
+    text-align: right;
+}
+
+pre {
+    margin: 10px 20px;
+}

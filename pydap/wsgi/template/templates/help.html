@@ -1,0 +1,28 @@
+<!-- !This file uses the Genshi template language: http://genshi.edgewall.org/wiki/Documentation/xml-templates.html -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>pyDAP help page for file ${location[:-5]}</title>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+        <link type="text/css" href="${root}/.static/css/blitzer/jquery-ui-1.8.2.custom.css" rel="stylesheet" /> 
+        <link rel="stylesheet" type="text/css" media="screen" href="${root}/.static/css/default.css" />
+        <link rel="alternate" type="application/thredds+xml" title="THREDDS Catalog" href="${root}/catalog.xml" />
+    </head>
+
+    <body class="ui-helper-reset ui-widget">
+        <div id="main" class="ui-corner-all ui-widget-content">
+            <h1>How to access this file</h1>
+
+            <p>The resource <code>${location[:-5]}</code> is a dataset available through the <a href="http://opendap.org/">OPeNDAP</a> protocol. The best way to access this dataset is using an <a href="http://www.opendap.org/faq/whatClients.html">OPeNDAP client</a> like Ferret, GrADS or Matlab.</p>
+
+            <p>In case you <strong>don't have</strong> a client installed, you can also download data by accessing the <a href="${location[:-5]}.html">web interface</a> for this dataset.</p>
+
+            <hr />
+            <p class="footnote"><em><a href="http://pydap.org/">pydap/$version</a></em></p>
+        </div>
+    </body>
+</html>
+
+<!--! vim:ft=genshi
+-->
