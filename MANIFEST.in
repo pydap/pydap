@@ -1,6 +1,3 @@
 recursive-include docs *
-include paver-minilib.zip 
-include setup.cfg
-include setup.py
-include pavement.py
-recursive-include pydap/wsgi/template *
+include README.md
+include NEWS.txt
