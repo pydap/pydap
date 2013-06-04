@@ -124,7 +124,7 @@ class FileServer(object):
         last_modified = formatdate(time.mktime(time.localtime(mtime)))
         headers = [('Content-type', content_type), ('Last-modified', last_modified)]
         start_response("200 OK", headers)
-        return [output]
+        return [output.encode('utf-8')]
 
 
 def supported(filepath, handlers):

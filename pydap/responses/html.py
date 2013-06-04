@@ -188,5 +188,5 @@ class HTMLResponse(BaseResponse):
             template = renderer.loader('html.html')
             output = renderer.render(template, context, output_format='text/html')
             if hasattr(dataset, 'close'): dataset.close()
-            return [output]
+            return [output.encode('utf-8')]
         return serialize

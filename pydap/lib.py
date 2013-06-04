@@ -9,8 +9,8 @@ from pydap.exceptions import ConstraintExpressionError
 
 
 __author__  = 'Roberto De Almeida <rob@pydap.org>'
-__version__ = (3,1,'RC1')       # pydap version
-__dap__     = (2,0)       # protocol version
+__version__ = (3,1,'RC2')       # pydap version
+__dap__     = (2,15)       # protocol version
 
 
 # Global variables -- I know we should try to avoid them, but we need
