@@ -129,8 +129,9 @@ def wrap_arrayterator(dataset, size):
 
     """
     for var in walk(dataset, BaseType):
-        elements = size // var.data.dtype.itemsize
-        var.data = Arrayterator(var.data, elements)
+        if var.data.dtype.itemsize:
+            elements = size // var.data.dtype.itemsize
+            var.data = Arrayterator(var.data, elements)
 
     return dataset
 
