@@ -1,11 +1,15 @@
 from collections import Iterable
+try:
+    from functools import singledispatch
+except ImportError:
+    from singledispatch import singledispatch
 
 import numpy as np
 
 from pydap.model import *
 from pydap.lib import walk, START_OF_SEQUENCE, END_OF_SEQUENCE
 from pydap.responses.lib import BaseResponse
-from pydap.responses.dds import dispatch as dds_dispatch
+from pydap.responses.dds import dds
 
 
 typemap = {
@@ -37,35 +41,30 @@ class DODSResponse(BaseResponse):
 
     def __iter__(self):
         # generate DDS
-        for line in dds_dispatch(self.dataset):
+        for line in dds(self.dataset):
             yield line
 
         yield 'Data:\n'
-        for block in dispatch(self.dataset):
+        for block in dods(self.dataset):
             yield block 
 
         if hasattr(self.dataset, 'close'):
             self.dataset.close()
 
 
-def dispatch(var):
-    types = [
-            (SequenceType, sequence),
-            (StructureType, structure),
-            (BaseType, base),
-    ]
-
-    for class_, func in types:
-        if isinstance(var, class_):
-            return func(var)
+@singledispatch
+def dods(var):
+    raise StopIteration
 
 
-def structure(var):
+@dods.register(StructureType)
+def _(var):
     for child in var.children():
-        for block in dispatch(child):
+        for block in dods(child):
             yield block
 
 
+@dods.register(SequenceType)
 def sequence(var):
     # a flat array can be processed one record (or more?) at a time
     if all(isinstance(child, BaseType) for child in var.children()):
@@ -122,6 +121,7 @@ def sequence(var):
         yield END_OF_SEQUENCE
 
 
+@dods.register(BaseType)
 def base(var):
     data = var.data
 
@@ -191,6 +191,6 @@ def calculate_size(dataset):
                 length += size * opendap_size
 
     # account for DDS
-    length += len(''.join(dds_dispatch(dataset))) + len('Data:\n')
+    length += len(''.join(dds(dataset))) + len('Data:\n')
 
     return str(length)

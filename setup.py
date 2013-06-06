@@ -13,6 +13,7 @@ install_requires = [
     'Numpy',
     'requests',
     'Webob',
+    'singledispatch',
 ]
 
 docs_extras = [

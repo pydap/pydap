@@ -1,3 +1,8 @@
+try:
+    from functools import singledispatch
+except ImportError:
+    from singledispatch import singledispatch
+
 from pydap.model import *
 from pydap.responses.lib import BaseResponse
 
@@ -32,58 +37,63 @@ class DDSResponse(BaseResponse):
         ])
 
     def __iter__(self):
-        for line in dispatch(self.dataset):
+        for line in dds(self.dataset):
             yield line
 
         if hasattr(self.dataset, 'close'):
             self.dataset.close()
 
 
-def dispatch(var, level=0, sequence=0):
-    types = [
-            (DatasetType, structure('Dataset')),
-            (SequenceType, structure('Sequence')),
-            (GridType, grid),
-            (StructureType, structure('Structure')),
-            (BaseType, base),
-    ]
-
-    for class_, func in types:
-        if isinstance(var, class_):
-            return func(var, level, sequence)
+@singledispatch
+def dds(var, level=0, sequence=0):
+    raise StopIteration
 
 
-def structure(type):
-    def func(var, level=0, sequence=0):
-        if type == 'Sequence':
-            sequence += 1
-
-        yield '{indent}{type} {{\n'.format(indent=level*INDENT, type=type)
-
-        # Get the DDS from stored variables.
-        for child in var.children():
-            for line in dispatch(child, level+1, sequence):
-                yield line
-        yield '{indent}}} {name};\n'.format(indent=level*INDENT, name=var.name)
-    return func
+@dds.register(DatasetType)
+def _(var, level=0, sequence=0):
+    yield "{indent}Dataset {{\n".format(indent=level*INDENT)
+    for child in var.children():
+        for line in dds(child, level+1, sequence):
+            yield line
+    yield "{indent}}} {name};\n".format(indent=level*INDENT, name=var.name)
 
 
-def grid(var, level=0, sequence=0):
+@dds.register(SequenceType)
+def _(var, level=0, sequence=0):
+    yield "{indent}Sequence {{\n".format(indent=level*INDENT)
+    for child in var.children():
+        for line in dds(child, level+1, sequence+1):
+            yield line
+    yield "{indent}}} {name};\n".format(indent=level*INDENT, name=var.name)
+
+
+@dds.register(StructureType)
+def _(var, level=0, sequence=0):
+    yield "{indent}Structure {{\n".format(indent=level*INDENT)
+    for child in var.children():
+        for line in dds(child, level+1, sequence):
+            yield line
+    yield "{indent}}} {name};\n".format(indent=level*INDENT, name=var.name)
+
+
+@dds.register(GridType)
+def _(var, level=0, sequence=0):
     yield '{indent}Grid {{\n'.format(indent=level*INDENT)
 
     yield '{indent}Array:\n'.format(indent=(level+1)*INDENT)
-    for line in base(var.array, level+2, sequence):
+    for line in dds(var.array, level+2, sequence):
         yield line
 
     yield '{indent}Maps:\n'.format(indent=(level+1)*INDENT)
     for map_ in var.maps.values():
-        for line in base(map_, level+2, sequence):
+        for line in dds(map_, level+2, sequence):
             yield line
 
     yield '{indent}}} {name};\n'.format(indent=level*INDENT, name=var.name)
 
 
-def base(var, level=0, sequence=0):
+@dds.register(BaseType)
+def _(var, level=0, sequence=0):
     shape = var.shape[sequence:]
 
     if var.dimensions:

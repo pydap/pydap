@@ -1,3 +1,8 @@
+try:
+    from functools import singledispatch
+except ImportError:
+    from singledispatch import singledispatch
+
 from collections import Iterable
 
 from pydap.model import *
@@ -23,31 +28,61 @@ class DASResponse(BaseResponse):
         ])
 
     def __iter__(self):
-        for line in dispatch(self.dataset):
+        for line in das(self.dataset):
             yield line
 
         if hasattr(self.dataset, 'close'):
             self.dataset.close()
 
 
-def dispatch(var, level=0):
-    types = [
-            (DatasetType, dataset),
-            (GridType, base),
-            #(SequenceType, sequence),
-            (StructureType, structure),
-            (BaseType, base),
-    ]
+@singledispatch
+def das(var, level=0):
+    raise StopIteration
 
-    for class_, func in types:
-        if isinstance(var, class_):
-            return func(var, level)
+
+@das.register(DatasetType)
+def _(var, level=0):
+    yield '{indent}Attributes {{\n'.format(indent=level*INDENT)
+
+    for attr, values in var.attributes.items():
+        for line in build_attributes(attr, values, level+1):
+            yield line
+
+    for child in var.children():
+        for line in das(child, level=level+1):
+            yield line
+    yield '{indent}}}\n'.format(indent=level*INDENT)
+
+
+@das.register(StructureType)
+def structure(var, level=0):
+    yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
+
+    for attr, values in var.attributes.items():
+        for line in build_attributes(attr, values, level+1):
+            yield line
+
+    for child in var.children():
+        for line in das(child, level=level+1):
+            yield line
+    yield '{indent}}}\n'.format(indent=level*INDENT)
+
+
+@das.register(BaseType)
+@das.register(GridType)
+def base(var, level=0):
+    yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
+
+    for attr, values in var.attributes.items():
+        for line in build_attributes(attr, values, level+1):
+            yield line
+    yield '{indent}}}\n'.format(indent=level*INDENT)
 
 
 def build_attributes(attr, values, level=0):
     """
     Recursive function to build the DAS.
-    
+
     """
     # check for metadata
     if isinstance(values, dict):
@@ -98,44 +133,3 @@ def type_convert(obj):
         return 'Int32'
     else:
         return 'String'
-
-
-def dataset(var, level=0):
-    yield '{indent}Attributes {{\n'.format(indent=level*INDENT)
-
-    for attr, values in var.attributes.items():
-        for line in build_attributes(attr, values, level+1):
-            yield line
-
-    for child in var.children():
-        for line in dispatch(child, level=level+1):
-            yield line
-    yield '{indent}}}\n'.format(indent=level*INDENT)
-
-
-def sequence(var, level=0):
-    for child in var.children():
-        for line in dispatch(child, level=level):
-            yield line
-
-
-def structure(var, level=0):
-    yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
-
-    for attr, values in var.attributes.items():
-        for line in build_attributes(attr, values, level+1):
-            yield line
-
-    for child in var.children():
-        for line in dispatch(child, level=level+1):
-            yield line
-    yield '{indent}}}\n'.format(indent=level*INDENT)
-
-
-def base(var, level=0):
-    yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
-
-    for attr, values in var.attributes.items():
-        for line in build_attributes(attr, values, level+1):
-            yield line
-    yield '{indent}}}\n'.format(indent=level*INDENT)
