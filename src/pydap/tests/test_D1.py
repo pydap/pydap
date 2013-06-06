@@ -58,6 +58,26 @@ class Test_D1(unittest.TestCase):
 } EOSDB%2EDBO;
 ''')
 
+    def test_ascii(self):
+        self.assertEqual(self.app.get('/.asc').body,
+            '''Dataset {
+    Sequence {
+        String instrument_id;
+        String location;
+        Float64 latitude;
+        Float64 longitude;
+    } Drifters;
+} EOSDB%2EDBO;
+---------------------------------------------
+Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
+"This is a data test string (pass 1).", "This is a data test string (pass 0).", 1000, 999.95
+"This is a data test string (pass 3).", "This is a data test string (pass 2).", 999.95, 999.55
+"This is a data test string (pass 5).", "This is a data test string (pass 4).", 999.8, 998.75
+"This is a data test string (pass 7).", "This is a data test string (pass 6).", 999.55, 997.55
+"This is a data test string (pass 9).", "This is a data test string (pass 8).", 999.2, 995.95
+
+''')
+
     def test_data(self):
         dataset = open_url('http://localhost:8001/')
         data = list(dataset.Drifters)
