@@ -124,7 +124,10 @@ class SequenceProxy(object):
         self.baseurl = baseurl
         self.id = id
         self.descr = descr
-        self.dtype = np.dtype(descr[1])
+        dtype = descr[1]
+        if not isinstance(dtype, list):
+            dtype = [dtype]
+        self.dtype = np.dtype(dtype)
         self.selection = selection or []
         self.slice = slice_ or (slice(None),)
 
