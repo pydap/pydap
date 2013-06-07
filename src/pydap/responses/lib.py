@@ -29,4 +29,4 @@ class BaseResponse(object):
 
     def close(self):
         if hasattr(self.dataset, 'close'):
-            self.dataset.close()
+            return self.dataset.close()

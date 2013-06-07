@@ -134,7 +134,3 @@ class Test_Functions(unittest.TestCase):
         self.assertEqual(dataset['rain']['rain'].shape, ())
         np.testing.assert_array_equal(dataset.rain.rain.data,
             np.array(2.5))
-
-    def test_Projection(self):
-        dataset = open_url('http://localhost:8001/?rain[0]')
-        self.assertEqual(dataset.rain.array.shape, (1,3))
