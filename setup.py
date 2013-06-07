@@ -62,7 +62,7 @@ setup(name='Pydap',
         dods = pydap.responses.dods:DODSResponse
         asc = pydap.responses.ascii:ASCIIResponse
         ascii = pydap.responses.ascii:ASCIIResponse
-        info = pydap.responses.info:InfoResponse
+        ver = pydap.responses.version:VersionResponse
 
         [pydap.function]
         bounds = pydap.wsgi.functions:bounds
