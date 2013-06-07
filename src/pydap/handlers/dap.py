@@ -4,7 +4,8 @@ import numpy as np
 import requests
 
 from pydap.model import *
-from pydap.lib import encode, combine_slices, fix_slice, hyperslab, START_OF_SEQUENCE, END_OF_SEQUENCE, walk
+from pydap.lib import (encode, combine_slices, fix_slice, hyperslab,
+        START_OF_SEQUENCE, END_OF_SEQUENCE, walk)
 from pydap.handlers.lib import ConstraintExpression, BaseHandler
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
@@ -47,6 +48,7 @@ class DAPHandler(BaseHandler):
             while var:
                 token, index = var.pop(0)
                 target = target[token]
+                # XXX this needs to be tested in Grids and Sequences
                 if index and isinstance(target.data, BaseProxy):
                     target.data.slice = fix_slice(index, target.shape)
 

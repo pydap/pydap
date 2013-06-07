@@ -23,4 +23,5 @@ class Test_Dapper(unittest.TestCase):
             "http://www.ifremer.fr/oceanotron/OPENDAP/ArgoNetCDFToTrajectory")
 
     def test_parse(self):
-        self.assertEqual(self.dataset.keys(), ['foo'])
+        self.assertEqual(self.dataset.keys(), 
+                ['location', 'constrained_ranges', 'response_metadata'])
