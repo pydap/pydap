@@ -14,30 +14,13 @@ from pydap.model import *
 from pydap.handlers.lib import BaseHandler
 from pydap.client import open_url
 from pydap.tests import requests_intercept
+from pydap.tests.datasets import D1
 
 
-DATA = zip(
-    [("This is a data test string (pass %d)." % (1+i*2)) for i in range(5)],
-    [("This is a data test string (pass %d)." % (i*2)) for i in range(5)],
-    [1000.0, 999.95, 999.80, 999.55, 999.20],
-    [999.95, 999.55, 998.75, 997.55, 995.95])
-                                 
-                                                                                
 class Test_D1(unittest.TestCase):                                            
     def setUp(self):
-        # create dataset
-        dataset = DatasetType('EOSDB.DBO')                                 
-        dataset['Drifters'] = SequenceType('Drifters')                     
-        dataset['Drifters']['instrument_id'] = BaseType('instrument_id')
-        dataset['Drifters']['location'] = BaseType('location')
-        dataset['Drifters']['latitude'] = BaseType('latitude')
-        dataset['Drifters']['longitude'] = BaseType('longitude')
-
-        dataset.Drifters.data = np.rec.fromrecords(
-            DATA, names=dataset.Drifters.keys())
-
         # create WSGI app
-        self.app = TestApp(BaseHandler(dataset))
+        self.app = TestApp(BaseHandler(D1))
 
         # intercept HTTP requests
         self.requests_get = requests.get
@@ -81,7 +64,7 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
     def test_data(self):
         dataset = open_url('http://localhost:8001/')
         data = list(dataset.Drifters)
-        self.assertEqual(data, DATA)
+        self.assertEqual(data, D1.Drifters.data.tolist())
 
     def test_filtering(self):
         dataset = open_url('http://localhost:8001/')
@@ -89,7 +72,8 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
         selection = np.rec.fromrecords(
             list(drifters[ drifters.longitude < 999 ]), names=drifters.keys())
 
-        data = np.rec.fromrecords(DATA, names=drifters.keys())
+        data = np.rec.fromrecords(
+                D1.Drifters.data.tolist(), names=drifters.keys())
         filtered = data[ data['longitude'] < 999 ]
 
         np.testing.assert_array_equal(filtered, selection)
@@ -100,7 +84,8 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
         selection = np.array(
             list(drifters[ drifters.longitude < 999 ]['location']))
 
-        data = np.rec.fromrecords(DATA, names=drifters.keys())
+        data = np.rec.fromrecords(
+                D1.Drifters.data.tolist(), names=drifters.keys())
         filtered = data[ data['longitude'] < 999 ]['location']
 
         np.testing.assert_array_equal(filtered, selection)
