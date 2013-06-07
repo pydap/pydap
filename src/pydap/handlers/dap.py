@@ -306,6 +306,7 @@ def unpack_children(buf, descr):
         if d.char == 'V':
             if buf.peek(4) in [START_OF_SEQUENCE, END_OF_SEQUENCE]:
                 rows = unpack_sequence(buf, descr)
+                print list(rows)[0]
                 out.append(np.array(np.rec.fromrecords(list(rows), names=d.names)))
             else:
                 out.append(tuple(unpack_children(buf, descr)))
