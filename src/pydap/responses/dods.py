@@ -48,9 +48,6 @@ class DODSResponse(BaseResponse):
         for block in dods(self.dataset):
             yield block 
 
-        if hasattr(self.dataset, 'close'):
-            self.dataset.close()
-
 
 @singledispatch
 def dods(var):

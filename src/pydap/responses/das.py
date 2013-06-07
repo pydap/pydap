@@ -31,9 +31,6 @@ class DASResponse(BaseResponse):
         for line in das(self.dataset):
             yield line
 
-        if hasattr(self.dataset, 'close'):
-            self.dataset.close()
-
 
 @singledispatch
 def das(var, level=0):

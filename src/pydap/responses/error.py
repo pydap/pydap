@@ -13,33 +13,6 @@ class ErrorResponse(object):
     This is a special response used when an exception is captured and passed to
     the user as an Opendap error message:
 
-        >>> import sys
-        >>> try:
-        ...     1/0
-        ... except:
-        ...     error = ErrorResponse(sys.exc_info())
-
-        >>> from webob import Request
-        >>> req = Request.blank('/')
-        >>> res = req.get_response(error)
-        >>> print res.status
-        500 Internal Error
-        >>> print res.content_type
-        text/plain
-        >>> print res.charset
-        utf-8
-        >>> print res.headers
-        ResponseHeaders([('Content-Length', '207'), ('Content-Type', 'text/plain; charset=utf-8'), ('Content-description', 'dods_error'), ('XDODS-Server', 'dods/2.0')])
-        >>> print res.body
-        Error {
-            code = -1;
-            message = "Traceback (most recent call last):
-          File \"<doctest __main__.ErrorResponse[1]>\", line 2, in <module>
-            1/0
-        ZeroDivisionError: integer division or modulo by zero
-        ";
-        }
-
     """
     def __init__(self, info):
         # get exception message
@@ -64,12 +37,3 @@ class ErrorResponse(object):
         res.headers.add('XDODS-Server', 'pydap/%s' % __version__)
 
         return res(environ, start_response)
-
-
-def _test():
-    import doctest
-    doctest.testmod()
-
-
-if __name__ == "__main__":
-    _test()

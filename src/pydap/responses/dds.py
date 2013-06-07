@@ -40,9 +40,6 @@ class DDSResponse(BaseResponse):
         for line in dds(self.dataset):
             yield line
 
-        if hasattr(self.dataset, 'close'):
-            self.dataset.close()
-
 
 @singledispatch
 def dds(var, level=0, sequence=0):

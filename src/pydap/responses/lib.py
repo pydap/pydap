@@ -28,5 +28,4 @@ class BaseResponse(object):
             'Subclasses must implement __iter__')
 
     def close(self):
-        if hasattr(self.dataset, 'close'):
-            return self.dataset.close()
+        pass

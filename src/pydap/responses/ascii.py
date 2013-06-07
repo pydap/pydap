@@ -29,9 +29,6 @@ class ASCIIResponse(BaseResponse):
         for line in ascii(self.dataset):
             yield line
 
-        if hasattr(self.dataset, 'close'):
-            self.dataset.close()
-
 
 @singledispatch
 def ascii(var, printname=True):
