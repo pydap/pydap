@@ -109,12 +109,3 @@ def add_attributes(dataset, attributes):
             pass
 
     return dataset
-
-
-
-if __name__ == '__main__':
-    import sys
-    import pprint
-    import requests
-
-    pprint.pprint(parse_das(requests.get(sys.argv[1]).text))
