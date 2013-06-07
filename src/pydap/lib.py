@@ -48,7 +48,7 @@ def encode(obj):
     except:
         if isinstance(obj, unicode):
             obj = obj.encode('utf-8')
-        return '"%s"' % obj.replace('"', r'\"')
+        return '"%s"' % str(obj).replace('"', r'\"')
 
 
 def fix_slice(slice_, shape):
