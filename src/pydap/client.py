@@ -39,7 +39,8 @@ def open_dods(url, metadata=False):
 
     if metadata:
         scheme, netloc, path, query, fragment = urlsplit(url)
-        dasurl = urlunsplit((scheme, netloc, path[:-4] + 'das', query, fragment))
+        dasurl = urlunsplit(
+                (scheme, netloc, path[:-4] + 'das', query, fragment))
         das = requests.get(dasurl).text.encode('utf-8')
         add_attributes(dataset, parse_das(das))
 
