@@ -146,7 +146,7 @@ DAS = """Attributes {
 }"""
 
                                                                                 
-class Test_Dapper(unittest.TestCase):                                            
+class TestDapper(unittest.TestCase):                                            
     def setUp(self):
         dataset = build_dataset(DDS)
         attributes = parse_das(DAS)

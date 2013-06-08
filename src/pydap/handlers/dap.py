@@ -6,7 +6,7 @@ import requests
 from pydap.model import *
 from pydap.lib import (encode, combine_slices, fix_slice, hyperslab,
         START_OF_SEQUENCE, END_OF_SEQUENCE, walk)
-from pydap.handlers.lib import ConstraintExpression, BaseHandler
+from pydap.handlers.lib import ConstraintExpression, BaseHandler, IterData
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 from pydap.parsers import parse_ce
@@ -199,12 +199,18 @@ class SequenceProxy(object):
         return self.__class__(self.baseurl, self.id, self.descr,
                 self.selection[:], self.slice[:])
 
-    def __eq__(self, other): return ConstraintExpression('%s=%s' % (self.id, encode(other)))
-    def __ne__(self, other): return ConstraintExpression('%s!=%s' % (self.id, encode(other)))
-    def __ge__(self, other): return ConstraintExpression('%s>=%s' % (self.id, encode(other)))
-    def __le__(self, other): return ConstraintExpression('%s<=%s' % (self.id, encode(other)))
-    def __gt__(self, other): return ConstraintExpression('%s>%s' % (self.id, encode(other)))
-    def __lt__(self, other): return ConstraintExpression('%s<%s' % (self.id, encode(other)))
+    def __eq__(self, other):
+        return ConstraintExpression('%s=%s' % (self.id, encode(other)))
+    def __ne__(self, other):
+        return ConstraintExpression('%s!=%s' % (self.id, encode(other)))
+    def __ge__(self, other): 
+        return ConstraintExpression('%s>=%s' % (self.id, encode(other)))
+    def __le__(self, other): 
+        return ConstraintExpression('%s<=%s' % (self.id, encode(other)))
+    def __gt__(self, other): 
+        return ConstraintExpression('%s>%s' % (self.id, encode(other)))
+    def __lt__(self, other): 
+        return ConstraintExpression('%s<%s' % (self.id, encode(other)))
 
 
 class StreamReader(object):
@@ -306,7 +312,9 @@ def unpack_children(buf, descr):
         if d.char == 'V':
             if buf.peek(4) in [START_OF_SEQUENCE, END_OF_SEQUENCE]:
                 rows = unpack_sequence(buf, descr)
-                out.append(np.array(np.rec.fromrecords(list(rows), names=d.names)))
+                #out.append(ListData(name, d.names, rows))
+                out.append(np.array(
+                    np.rec.fromrecords(list(rows), names=d.names)))
             else:
                 out.append(tuple(unpack_children(buf, descr)))
 
@@ -367,36 +375,14 @@ def dump():
     pprint.pprint(data)
 
 
-if __name__ == '__main__':
-    seq = SequenceProxy('http://sfbeams.sfsu.edu:8080/opendap/sfbeams/data_met/real-time/sfb_MET_PUF.dat', 'MET-REALTIME_CSV',
-            ('MET-REALTIME_CSV', [('Month', '>i', ()), ('Day', '>i', ()), ('Year', '>i', ()), ('Hour', '>i', ()), ('Min', '>i', ()), ('Sec', '>i', ()), ('Air_Temp', '>f', ()), ('RH', '>f', ()), ('Pres', '>f', ()), ('Sol', '>f', ()), ('PAR', '>f', ()), ('Rain', '>f', ()), ('Wspd_S', '>f', ()), ('Wspd_U', '>f', ()), ('Wdir_DU', '>f', ()), ('Wdir_SDU', '>f', ()), ('Wspd_MAX', '>f', ()), ('InstSN', '>i', ())], ()))
-    for i, rec in enumerate(seq[['Day', 'Month', 'Year']]):
-        print rec
-        if i>5: break
-    for i, rec in enumerate(seq['Day']):
-        print rec
-        if i>5: break
+class ListData(IterData):
+    def __init__(self, id, vars, data, cols=None, selection=None, slice_=None):
+        IterData.__init__(self, id, vars, cols, selection, slice_)
+        self.data = data
 
-    seq = SequenceProxy('http://test.opendap.org:8080/dods/dts/test.07', 'types', 
-            ('types', [('b', 'B', ()), ('i32', '>i', ()), ('ui32', '>I', ()), ('i16', '>i', ()), ('ui16', '>I', ()), ('f32', '>f', ()), ('f64', '>d', ()), ('s', 'S', ()), ('u', 'S', ())], ()))
-    for rec in seq:
-        print rec
-    for rec in seq['s']:
-        print rec
+    def gen(self):
+        return iter(self.data)
 
-    seq = SequenceProxy('http://test.opendap.org:8080/dods/dts/NestedSeq', 'person1',
-            ('person1', [('age', '>i', ()), ('stuff', [('foo', '>i', ())], ())], ()))
-    for rec in seq:
-        print rec
-    for rec in seq['age']:
-        print rec
-    for rec in seq['stuff']:
-        print rec
-    for rec in seq['stuff']['foo']:
-        print rec
-
-    seq = SequenceProxy('http://www.ocdb.csdb.cn:9091/dods/Chemistry/200509KFHC_nutrient.cdp', 'location',
-            ('location', [('lon', '>f', ()), ('time', '>d', ()), ('lat', '>f', ()), ('_id', '>i', ()), ('profile', [('NH3-N', '>f', ()), ('SiO3-', '>f', ()), ('PO4-P', '>f', ()), ('NO2-N', '>f', ()), ('NO3-N', '>f', ()), ('depth', '>f', ())], ()), ('attributes', [('CAST', '|S1', ()), ('COORD_SYSTEM', '|S1', ()), ('NODC-COUNTRYCODE', '|S1', ()), ('Conventions', '|S1', ()), ('INST_TYPE', '|S1', ()), ('DATA_CMNT', '|S1', ()), ('DATA_ORIGIN', '|S1', ()), ('CREATION_DATE', '|S1', ()), ('DATA_SUBTYPE', '|S1', ()), ('DATA_TYPE', '|S1', ()), ('OCL-STATION-NUM', '|S1', ()), ('BOTTLE', '|S1', ())], ()), ('variable_attributes', [('depth', [('valid_range', '>f', (2,))], ())], ())], ()))
-    for rec in seq:
-        print rec
-
+    def clone(self):
+        return self.__class__(self.id, self.vars[:], self.data[:], self.cols[:],
+                self.selection[:], self.slice[:])

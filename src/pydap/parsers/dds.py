@@ -4,7 +4,7 @@ import numpy as np
 
 from pydap.parsers import SimpleParser
 from pydap.model import *
-from pydap.lib import quote
+from pydap.lib import quote, STRING
 
 
 typemap = {
@@ -17,8 +17,8 @@ typemap = {
     'uint32'  : '>I',
     'float32' : '>f',
     'float64' : '>d',
-    'string'  : '|S1',
-    'url'     : '|S1',
+    'string'  : STRING,  # default is "|S128"
+    'url'     : STRING,
     }
 constructors = ('grid', 'sequence', 'structure')
 name_regexp = '[\w%!~"\'\*-]+'

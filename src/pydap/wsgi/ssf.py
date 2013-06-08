@@ -76,7 +76,6 @@ class ServerSideFunctions(object):
                 # get the data from the resulting variable, and use it to 
                 # constrain the original dataset
                 data = np.fromiter(sequence)
-                print data.shape
                 valid = op(data, other)
 
                 for sequence in walk(dataset, SequenceType):
@@ -143,15 +142,3 @@ def eval_function(dataset, function, functions):
     func = functions[name]
 
     return func(dataset, *args)
-
-
-if __name__ == '__main__':
-    import sys
-    from paste.httpserver import serve
-    #from pydap.handlers.sql import SQLHandler
-    from pydap.handlers.netcdf import NetCDFHandler
-
-    #application = SQLHandler(sys.argv[1])
-    application = NetCDFHandler(sys.argv[1])
-    application = ServerSideFunctions(application)
-    serve(application, port=8001)

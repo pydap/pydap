@@ -9,7 +9,7 @@ from pydap.client import open_url
 from pydap.tests import requests_intercept
                                  
                                                                                 
-class Test_quote(unittest.TestCase):                                            
+class TestQuote(unittest.TestCase):                                            
     def setUp(self):
         # create dataset
         dataset = DatasetType('test')

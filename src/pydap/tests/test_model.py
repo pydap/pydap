@@ -4,7 +4,7 @@ from pydap.model import *
 from pydap.model import DapType
 
 
-class Test_quote(unittest.TestCase):
+class TestQuote(unittest.TestCase):
     def test_unquoted(self):
         var = DapType('foo')
         self.assertEqual(var.name, 'foo')
@@ -22,7 +22,7 @@ class Test_quote(unittest.TestCase):
         self.assertEqual(var.name, 'foo%5B')
 
 
-class Test_attributes(unittest.TestCase):
+class TestAttributes(unittest.TestCase):
     def setUp(self):
         self.var = DapType('foo', {'bar': 1}, baz=2)
 
@@ -35,7 +35,7 @@ class Test_attributes(unittest.TestCase):
         self.assertEqual(self.var.attributes['baz'], self.var.baz)
 
 
-class Test_id(unittest.TestCase):
+class TestId(unittest.TestCase):
     def setUp(self):
         self.dataset = DatasetType(name='zero')
         self.dataset['one'] = StructureType(name='one')
@@ -49,5 +49,5 @@ class Test_id(unittest.TestCase):
         self.assertEqual(self.dataset['one']['two'].id, 'one.two')
 
 
-class Test_dataset(unittest.TestCase):
+class TestDataset(unittest.TestCase):
     pass

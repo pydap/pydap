@@ -17,7 +17,7 @@ from pydap.tests import requests_intercept
 from pydap.tests.datasets import D1
 
 
-class Test_D1(unittest.TestCase):                                            
+class TestD1(unittest.TestCase):                                            
     def setUp(self):
         # create WSGI app
         self.app = TestApp(BaseHandler(D1))

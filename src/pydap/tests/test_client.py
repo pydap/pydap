@@ -17,7 +17,7 @@ DODS = os.path.join(os.path.dirname(__file__), 'test.01.dods')
 DAS = os.path.join(os.path.dirname(__file__), 'test.01.das')
 
 
-class Test_open_file(unittest.TestCase):
+class TestOpenFile(unittest.TestCase):
     def test_open_file(self):
         dataset = open_file(DODS, DAS)
         self.assertEqual(dataset.data, [
@@ -38,14 +38,14 @@ class Test_open_file(unittest.TestCase):
             "MetOcean WOCE/OCM")
 
 
-class Test_open_dods(unittest.TestCase):
+class TestOpenDods(unittest.TestCase):
     def setUp(self):
         # create WSGI app
-        self.app = TestApp(BaseHandler(D1))
+        app = TestApp(BaseHandler(D1))
 
         # intercept HTTP requests
         self.requests_get = requests.get
-        requests.get = requests_intercept(self.app, 'http://localhost:8001/')
+        requests.get = requests_intercept(app, 'http://localhost:8001/')
 
     def tearDown(self):
         requests.get = self.requests_get
@@ -72,14 +72,14 @@ class Test_open_dods(unittest.TestCase):
         self.assertEqual(dataset.attributes['type'], "Drifters")
 
 
-class Test_Functions(unittest.TestCase):
+class TestFunctions(unittest.TestCase):
     def setUp(self):
         # create WSGI app
-        self.app = TestApp(ServerSideFunctions(BaseHandler(rain)))
+        app = TestApp(ServerSideFunctions(BaseHandler(rain)))
 
         # intercept HTTP requests
         self.requests_get = requests.get
-        requests.get = requests_intercept(self.app, 'http://localhost:8001/')
+        requests.get = requests_intercept(app, 'http://localhost:8001/')
 
     def tearDown(self):
         requests.get = self.requests_get
@@ -95,7 +95,7 @@ class Test_Functions(unittest.TestCase):
         np.testing.assert_array_equal(dataset.rain.rain.data,
             np.array([1.5, 2.5, 3.5]))
         dataset = functions.mean(original.rain, 0)
-        self.assertEqual(dataset['rain']['rain'].shape, (3,))
+        self.assertEqual(dataset.rain.rain.shape, (3,))
         np.testing.assert_array_equal(dataset.rain.rain.data,
             np.array([1.5, 2.5, 3.5]))
 
@@ -104,7 +104,7 @@ class Test_Functions(unittest.TestCase):
         np.testing.assert_array_equal(dataset.rain.rain.data,
             np.array([1.0, 4.0]))
         dataset = functions.mean(original.rain, 1)
-        self.assertEqual(dataset['rain']['rain'].shape, (2,))
+        self.assertEqual(dataset.rain.rain.shape, (2,))
         np.testing.assert_array_equal(dataset.rain.rain.data,
             np.array([1.0, 4.0]))
 
@@ -112,3 +112,8 @@ class Test_Functions(unittest.TestCase):
         self.assertEqual(dataset['rain']['rain'].shape, ())
         np.testing.assert_array_equal(dataset.rain.rain.data,
             np.array(2.5))
+
+        dataset = functions.mean(original.rain.x)
+        self.assertEqual(dataset.x.shape, ())
+        np.testing.assert_array_equal(dataset.x.data,
+            np.array(1.0))

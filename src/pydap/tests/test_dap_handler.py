@@ -11,7 +11,7 @@ from pydap.tests import requests_intercept
 from pydap.tests.datasets import rain
 
 
-class Test_Dap_Handler(unittest.TestCase):
+class TestDapHandler(unittest.TestCase):
     def setUp(self):                                                            
         # create WSGI app                                                       
         self.app = TestApp(BaseHandler(rain))

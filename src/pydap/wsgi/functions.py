@@ -88,6 +88,10 @@ def mean(dataset, var, axis=0):
     Calculates the mean of an array along a given axis.
 
     """
+    if not isinstance(var, (GridType, BaseType)):
+        raise ConstraintExpressionError(
+                'Function "mean" should be used on an array or grid.')
+
     axis = int(axis)
     dims = tuple(dim for i, dim in enumerate(var.dimensions) if i != axis)
 
@@ -104,5 +108,3 @@ def mean(dataset, var, axis=0):
             out[dim] = BaseType(name=dim, data=var[dim].data[:],
                     dimensions=(dim,), attributes=var[dim].attributes)
         return out
-    else:
-        raise ConstraintExpressionError('Function "mean" should be used on an array or grid.')

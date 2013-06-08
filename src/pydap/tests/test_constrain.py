@@ -8,7 +8,7 @@ from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import D1
 
 
-class Test_constrain(unittest.TestCase):                                            
+class TestConstrain(unittest.TestCase):                                            
     def test_no_ce(self):
         data = np.rec.fromrecords(
                 D1.Drifters.data.tolist(), names=D1.Drifters.keys())

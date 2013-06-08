@@ -14,6 +14,7 @@ __version__ = pkg_resources.get_distribution("Pydap").version
 
 START_OF_SEQUENCE = '\x5a\x00\x00\x00'
 END_OF_SEQUENCE = '\xa5\x00\x00\x00'
+STRING = '|S128'
 
 
 def quote(name):
