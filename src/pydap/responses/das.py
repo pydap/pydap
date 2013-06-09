@@ -52,7 +52,7 @@ def _(var, level=0):
 
 
 @das.register(StructureType)
-def structure(var, level=0):
+def _(var, level=0):
     yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
 
     for attr, values in var.attributes.items():
@@ -67,7 +67,7 @@ def structure(var, level=0):
 
 @das.register(BaseType)
 @das.register(GridType)
-def base(var, level=0):
+def _(var, level=0):
     yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
 
     for attr, values in var.attributes.items():
@@ -93,7 +93,8 @@ def build_attributes(attr, values, level=0):
         type = get_type(values)
 
         # encode values
-        if isinstance(values, basestring) or not isinstance(values, Iterable):
+        if (isinstance(values, basestring) or not isinstance(values, Iterable)
+                or getattr(values, 'shape', None) == ()):
             values = [encode(values)]
         else:
             values = map(encode, values)
