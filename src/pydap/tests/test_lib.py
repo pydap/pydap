@@ -74,22 +74,28 @@ class TestFixSlice(unittest.TestCase):
 
     def test_negative_int(self):
         x = np.arange(10)
+
         slice1 = -5
         slice2 = fix_slice(slice1, x.shape)
+
         self.assertEqual(slice2, (5,))
         np.testing.assert_array_equal(x[slice1], x[slice2])
 
     def test_negative_start(self):
         x = np.arange(10)
+
         slice1 = slice(-8, 8)
         slice2 = fix_slice(slice1, x.shape)
+
         self.assertEqual(slice2, (slice(2, 8, 1),))
         np.testing.assert_array_equal(x[slice1], x[slice2])
 
     def test_negative_stop(self):
         x = np.arange(10)
+
         slice1 = slice(2, -2)
         slice2 = fix_slice(slice1, x.shape)
+
         self.assertEqual(slice2, (slice(2, 8, 1),))
         np.testing.assert_array_equal(x[slice1], x[slice2])
 
