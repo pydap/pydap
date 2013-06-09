@@ -19,16 +19,14 @@ STRING = '|S128'
 
 def quote(name):
     """
-    According to the DAP specification a variable name MUST contain only upper
-    or lower case letters, numbers, or characters from the set 
-
-        _ ! ~ * ' - "
-
-    All other characters must be escaped. This includes the period, which is
-    normally not quoted by `urllib.quote`.
+    Quote names according to the DAP specification:
 
         >>> quote("White space")
         'White%20space'
+
+    This function is similar to `urllib.quote`, with the difference that 
+    periods are also quoted:
+
         >>> urllib.quote("Period.")
         'Period.'
         >>> quote("Period.")
@@ -59,50 +57,6 @@ def fix_slice(slice_, shape):
 
     This is based on this document: http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
 
-        >>> import numpy as np
-        >>> x = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
-
-        >>> slice_ = slice(-2, 10)
-        >>> print x[slice_]
-        [8 9]
-        >>> print fix_slice(slice_, x.shape)
-        (slice(8, 10, 1),)
-        >>> assert (x[fix_slice(slice_, x.shape)] == x[slice_]).all()
-
-        >>> slice_ = slice(-3, 3, -1)
-        >>> print x[slice_]
-        [7 6 5 4]
-        >>> print fix_slice(slice_, x.shape)
-        (slice(7, 3, -1),)
-        >>> assert (x[fix_slice(slice_, x.shape)] == x[slice_]).all()
-
-        >>> slice_ = slice(5, None)
-        >>> print x[slice_]
-        [5 6 7 8 9]
-        >>> print fix_slice(slice_, x.shape)
-        (slice(5, 10, 1),)
-        >>> assert (x[fix_slice(slice_, x.shape)] == x[slice_]).all()
-
-        >>> x = np.array([[[1],[2],[3]], [[4],[5],[6]]])
-        >>> print x.shape
-        (2, 3, 1)
-        >>> slice_ = slice(1, 2)
-        >>> print x[slice_]
-        [[[4]
-          [5]
-          [6]]]
-        >>> print fix_slice(slice_, x.shape)
-        (slice(1, 2, 1), slice(0, 3, 1), slice(0, 1, 1))
-        >>> assert (x[fix_slice(slice_, x.shape)] == x[slice_]).all()
-
-        >>> slice_ = (Ellipsis, 0)
-        >>> print x[slice_]
-        [[1 2 3]
-         [4 5 6]]
-        >>> print fix_slice(slice_, x.shape)
-        (slice(0, 2, 1), slice(0, 3, 1), 0)
-        >>> assert (x[fix_slice(slice_, x.shape)] == x[slice_]).all()
-
     """
     # convert `slice_` to a tuple
     if not isinstance(slice_, tuple):
@@ -115,8 +69,6 @@ def fix_slice(slice_, shape):
         if s is Ellipsis:
             out.extend( (slice(None),) * (expand+1) )
             expand = 0
-        elif isinstance(s, int):
-            out.append(slice(s, s+1, 1))
         else:
             out.append(s)
     slice_ = tuple(out) + (slice(None),) * expand
@@ -125,37 +77,18 @@ def fix_slice(slice_, shape):
     for s, n in zip(slice_, shape):
         if isinstance(s, int):
             if s < 0:
-                try:
-                    s += n
-                except TypeError:
-                    raise Exception('Negative indexes can not be applied when size is unknown!')
+                s += n
             out.append(s)
         else:
             k = s.step or 1
 
             i = s.start
-            if i is None:
-                if k > 0:
-                    i = 0
-                else:
-                    i = n
-            elif i < 0:
-                try:
-                    i += n
-                except TypeError:
-                    raise Exception('Negative indexes can not be applied when size is unknown!')
+            if i is not None and i < 0:
+                i += n
 
             j = s.stop
-            if j is None:
-                if k > 0:
-                    j = n
-                else:
-                    j = -1
-            elif j < 0:
-                try:
-                    j += n
-                except TypeError:
-                    raise Exception('Negative indexes can not be applied when size is unknown!')
+            if j is not None and j < 0:
+                j += n
 
             out.append(slice(i, j, k))
 
@@ -187,8 +120,6 @@ def combine_slices(slice1, slice2):
             stop = exp1.stop
         elif exp2.stop is not None:
             stop = (exp1.start or 0) + exp2.stop
-        else:
-            stop = min(exp1.stop, (exp1.start or 0) + exp2.stop)
 
         out.append(slice(start, stop, step))
     return tuple(out)
@@ -205,7 +136,7 @@ def hyperslab(slice_):
         slice_ = list(slice_)
 
     while slice_ and slice_[-1] == slice(None):
-        slice_.pop(0)
+        slice_.pop(-1)
 
     return ''.join('[%s:%s:%s]' % (
         s.start or 0, s.step or 1, (s.stop or sys.maxint)-1) for s in slice_)
@@ -254,12 +185,3 @@ def get_var(dataset, id_):
     """
     tokens = id_.split('.')
     return reduce(operator.getitem, [dataset] + tokens)
-
-
-def _test():
-    import doctest
-    doctest.testmod()
-
-
-if __name__ == "__main__":
-    _test()

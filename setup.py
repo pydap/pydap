@@ -16,6 +16,7 @@ install_requires = [
     'singledispatch',
     'coards',
     'gsw',
+    'simplejson',
 ]
 
 docs_extras = [

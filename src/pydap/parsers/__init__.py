@@ -122,15 +122,3 @@ class SimpleParser(object):
         else:
             raise Exception("Unable to parse token: %s" % self.buffer[:10])
         return token
-
-    def __nonzero__(self):
-        return len(self.buffer)
-
-
-def _test():
-    import doctest
-    doctest.testmod()
-
-
-if __name__ == "__main__":
-    _test()

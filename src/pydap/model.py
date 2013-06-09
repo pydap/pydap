@@ -112,10 +112,7 @@ It is possible to select only a few variables::
 
 import operator
 import itertools
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
 
 import numpy as np
 
@@ -559,12 +556,3 @@ def unpack_rows(data, level):
         return data
     else:
         return zip(*[ unpack_rows(value, level-1) for value in data ])
-        
-
-def _test():
-    import doctest
-    doctest.testmod()
-
-
-if __name__ == "__main__":
-    _test()
