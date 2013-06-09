@@ -28,11 +28,6 @@ class DODSResponse(BaseResponse):
         self.headers.extend([
             ('Content-description', 'dods_data'),
             ('Content-type', 'application/octet-stream'),
-
-            # CORS
-            ('Access-Control-Allow-Origin', '*'),
-            ('Access-Control-Allow-Headers',
-                'Origin, X-Requested-With, Content-Type'),
         ])
 
         length = calculate_size(dataset)

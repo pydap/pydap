@@ -23,6 +23,8 @@ from pydap.model import *
 # buffer size in bytes, for streaming data
 BUFFER_SIZE = 2**27
 
+CORS_RESPONSES = ['dds', 'das', 'dods', 'ver']
+
 
 def load_handlers():
     return [ep.load() for ep in iter_entry_points("pydap.handler")]
@@ -69,12 +71,19 @@ class BaseHandler(object):
             # WSGI app
             dataset = self.parse(projection, selection, buffer_size)
             app = self.responses[response](dataset)
-            self.close = app.close
+            if hasattr(app, 'close'):
+                self.close = app.close
 
             # now build a Response and set additional headers
             res = req.get_response(app)
             for key, value in self.additional_headers:
                 res.headers.add(key, value)
+
+            # CORS for Javascript requests
+            if response in CORS_RESPONSES:
+                res.headers.add('Access-Control-Allow-Origin', '*')
+                res.headers.add('Access-Control-Allow-Headers',
+                        'Origin, X-Requested-With, Content-Type')
 
             return res(environ, start_response)
         except HTTPException, exc:

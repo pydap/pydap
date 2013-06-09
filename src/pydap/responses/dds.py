@@ -29,11 +29,6 @@ class DDSResponse(BaseResponse):
         self.headers.extend([
             ('Content-description', 'dods_dds'),
             ('Content-type', 'text/plain; charset=utf-8'),
-
-            # CORS
-            ('Access-Control-Allow-Origin', '*'),
-            ('Access-Control-Allow-Headers',
-                'Origin, X-Requested-With, Content-Type'),
         ])
 
     def __iter__(self):
