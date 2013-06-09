@@ -14,6 +14,7 @@ install_requires = [
     'requests',
     'Webob',
     'singledispatch',
+    'coards',
     'gsw',
 ]
 
