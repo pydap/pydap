@@ -4,3 +4,6 @@ python:
 install:
   - "pip install . --use-mirrors"
 script: nosetests
+branches:
+  only:
+      - develop
