@@ -10,6 +10,10 @@ from pydap.parsers.das import parse_das, add_attributes
 
 
 def open_url(url):
+    """
+    Open a remote OPeNDAP dataset.
+
+    """
     dataset = DAPHandler(url).dataset
 
     # attach server-side functions
@@ -19,6 +23,12 @@ def open_url(url):
 
 
 def open_file(dods, das=None):
+    """
+    Open a file downloaded from a `.dods` response. 
+
+    Optionally, read also the `.das` response.
+
+    """
     with open(dods) as f:
         dds, data = f.read().split('\nData:\n', 1)
         dataset = build_dataset(dds)
@@ -32,6 +42,13 @@ def open_file(dods, das=None):
 
 
 def open_dods(url, metadata=False):
+    """
+    Open a `.dods` response directly.
+
+    Usually Pydap will build the `.dods` URL for the user when the data is
+    accessed, but sometimes it's necessary to build the URL directly.
+
+    """
     r = requests.get(url)
     dds, data = r.content.split('\nData:\n', 1)
     dataset = build_dataset(dds)
