@@ -3,10 +3,36 @@ import re
 
 import numpy as np
 import coards
+import gsw
 
 from pydap.model import *
 from pydap.lib import walk
 from pydap.exceptions import ConstraintExpressionError
+
+
+def density(dataset, salinity, temperature, pressure):
+    """
+    Calculates in-situ density from absolute salinity and conservative
+    temperature, using the `gsw.rho` function.
+
+    """
+    # find sequence
+    for sequence in walk(dataset, SequenceType):
+        break
+    else:
+        raise ConstraintExpressionError(
+                'Function "bounds" should be used on a Sequence.')
+
+    selection = sequence[[salinity.name, temperature.name, pressure.name]]
+    rows = [tuple(row) for row in selection]
+    data = np.rec.fromrecords(rows,
+            names=['salinity', 'temperature', 'pressure'])
+    rho = gsw.rho(data['salinity'], data['temperature'], data['pressure'])
+
+    out = SequenceType("result")
+    out['rho'] = BaseType("rho", units="kg/m**3")
+    out.data = np.rec.fromrecords(rho.reshape(-1, 1), names=['rho'])
+    return out
 
 
 def bounds(dataset, xmin, xmax, ymin, ymax, zmin, zmax, tmin, tmax):

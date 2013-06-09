@@ -75,13 +75,14 @@ class ServerSideFunctions(object):
             else:
                 # get the data from the resulting variable, and use it to 
                 # constrain the original dataset
-                data = np.fromiter(sequence)
+                child = list(sequence.children())[0]
+                data = np.fromiter(child.data, child.dtype)
                 valid = op(data, other)
 
                 for sequence in walk(dataset, SequenceType):
-                    data = np.asarray(list(sequence), 'O')[valid]
-                    sequence.data = np.asarray(list(sequence), 'O')[valid]
-                dataset = out
+                    sequence.data = np.rec.fromrecords(
+                            [tuple(row) for row in sequence],
+                            names=sequence.keys())[valid]
 
         # now apply projection
         if projection:
@@ -130,8 +131,8 @@ def eval_function(dataset, function, functions):
             return eval_function(dataset, token, functions)
         else:
             try:
-                names = [dataset] + re.sub('\[.*?\]', '', str(token)).split('.')
-                return reduce(operator.getitem, names)
+                names = re.sub('\[.*?\]', '', str(token)).split('.')
+                return reduce(operator.getitem, [dataset] + names)
             except:
                 try:
                     return ast.literal_eval(token)
