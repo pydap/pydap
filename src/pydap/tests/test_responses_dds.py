@@ -6,7 +6,7 @@ from webob.headers import ResponseHeaders
 
 from pydap.model import *
 from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import D1, rain
+from pydap.tests.datasets import D1, rain, SimpleStructure
 from pydap.responses.dds import dds
 
 
@@ -88,4 +88,24 @@ class TestDDSResponseGrid(unittest.TestCase):
             Int32 y[y = 2];
     } rain;
 } test;
+""")
+
+
+class TestDDSResponseStructure(unittest.TestCase):
+    def test_body(self):
+        app = TestApp(BaseHandler(SimpleStructure))
+        res = app.get('/.dds')
+        self.assertEqual(res.body, """Dataset {
+    Structure {
+        Byte b;
+        Int32 i32;
+        UInt32 ui32;
+        Int16 i16;
+        UInt16 ui16;
+        Float32 f32;
+        Float64 f64;
+        String s;
+        String u;
+    } types;
+} SimpleStructure;
 """)

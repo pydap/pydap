@@ -25,6 +25,27 @@ D1.Drifters.data = np.rec.fromrecords(zip(
     [999.95, 999.55, 998.75, 997.55, 995.95]), names=D1.Drifters.keys())
 
 
+# testing structures
+SimpleStructure = DatasetType('SimpleStructure')
+SimpleStructure['types'] = StructureType('types', key="value",
+        nested={ 
+            "string": "bar", 
+            "list": [42, 43], 
+            "array": np.array(1),
+            "float": 1000.0,
+        })
+SimpleStructure['types']['b'] = BaseType('b', np.array(0, np.byte))
+SimpleStructure['types']['i32'] = BaseType('i32', np.array(1, np.int32))
+SimpleStructure['types']['ui32'] = BaseType('ui32', np.array(0, np.uint32))
+SimpleStructure['types']['i16'] = BaseType('i16', np.array(0, np.int16))
+SimpleStructure['types']['ui16'] = BaseType('ui16', np.array(0, np.uint16))
+SimpleStructure['types']['f32'] = BaseType('f32', np.array(0.0, np.float32))
+SimpleStructure['types']['f64'] = BaseType('f64', np.array(1000., np.float64))
+SimpleStructure['types']['s'] = BaseType('s',
+        np.array("This is a data test string (pass 0)."))
+SimpleStructure['types']['u'] = BaseType('u', np.array("http://www.dods.org"))
+
+
 # test grid
 rain = DatasetType('test')                                           
 rain['rain'] = GridType('rain')                               
@@ -47,3 +68,15 @@ bounds.sequence.data = np.rec.fromrecords([
     (100, -10, 0, -1, 42),
     (200, 10, 500, 1, 43),
     ], names=bounds.sequence.keys())
+
+
+# test for density
+ctd = DatasetType('ctd')
+ctd['cast'] = SequenceType('cast')
+ctd['cast']['temperature'] = BaseType('temperature')
+ctd['cast']['salinity'] = BaseType('salinity')
+ctd['cast']['pressure'] = BaseType('pressure')
+ctd.cast.data = np.rec.fromrecords([
+    (21, 35, 0),
+    (15, 35, 100),
+    ], names=ctd.cast.keys())

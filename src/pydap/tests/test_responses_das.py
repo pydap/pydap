@@ -6,19 +6,19 @@ from webob.headers import ResponseHeaders
 
 from pydap.model import *
 from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import D1, rain
-from pydap.responses.ascii import ascii
+from pydap.tests.datasets import bounds, rain, SimpleStructure
+from pydap.responses.das import das
 
 
 class TestDASResponseSequence(unittest.TestCase):
     def setUp(self):
         # create WSGI app                                                       
-        app = TestApp(BaseHandler(D1))
-        self.res = app.get('/.dds')
+        app = TestApp(BaseHandler(bounds))
+        self.res = app.get('/.das')
 
     def test_dispatcher(self):
         with self.assertRaises(StopIteration):
-            ascii(None)
+            das(None)
 
     def test_status(self):                                                      
         self.assertEqual(self.res.status, "200 OK")                 
@@ -32,23 +32,34 @@ class TestDASResponseSequence(unittest.TestCase):
     def test_headers(self):                                                     
         self.assertEqual(self.res.headers,                                      
             ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'),
-                ('Content-description', 'dods_dds'), 
+                ('XDODS-Server', 'pydap/3.2'), 
+                ('Content-description', 'dods_das'), 
                 ('Content-type', 'text/plain; charset=utf-8'), 
                 ('Access-Control-Allow-Origin', '*'), 
-                ('Access-Control-Allow-Headers',
+                ('Access-Control-Allow-Headers', 
                     'Origin, X-Requested-With, Content-Type'), 
-                ('Content-Length', '164')]))
+                ('Content-Length', '333')]))
                                                                                 
     def test_body(self):                                                        
-        self.assertEqual(self.res.body, """Dataset {
-    Sequence {
-        String instrument_id;
-        String location;
-        Float64 latitude;
-        Float64 longitude;
-    } Drifters;
-} EOSDB%2EDBO;
+        self.assertEqual(self.res.body, """Attributes {
+    sequence {
+        lon {
+            String axis "X";
+        }
+        lat {
+            String axis "Y";
+        }
+        depth {
+            String axis "Z";
+        }
+        time {
+            String units "days since 1970-01-01";
+            String axis "T";
+        }
+        measurement {
+        }
+    }
+}
 """)
 
 
@@ -56,7 +67,7 @@ class TestDASResponseGrid(unittest.TestCase):
     def setUp(self):
         # create WSGI app                                                       
         app = TestApp(BaseHandler(rain))
-        self.res = app.get('/.dds')
+        self.res = app.get('/.das')
 
     def test_status(self):
         self.assertEqual(self.res.status, "200 OK")                 
@@ -70,22 +81,53 @@ class TestDASResponseGrid(unittest.TestCase):
     def test_headers(self):                                                     
         self.assertEqual(self.res.headers,                                      
             ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'), 
-                ('Content-description', 'dods_dds'), 
-                ('Content-type', 'text/plain; charset=utf-8'), 
-                ('Access-Control-Allow-Origin', '*'), 
+                ('XDODS-Server', 'pydap/3.2'),
+                ('Content-description', 'dods_das'),
+                ('Content-type', 'text/plain; charset=utf-8'),
+                ('Access-Control-Allow-Origin', '*'),
                 ('Access-Control-Allow-Headers', 
-                    'Origin, X-Requested-With, Content-Type'), 
-                ('Content-Length', '164')]))
+                    'Origin, X-Requested-With, Content-Type'),
+                ('Content-Length', '32')]))
 
     def test_body(self):
-        self.assertEqual(self.res.body, """Dataset {
-    Grid {
-        Array:
-            Int32 rain[y = 2][x = 3];
-        Maps:
-            Int32 x[x = 3];
-            Int32 y[y = 2];
-    } rain;
-} test;
+        self.assertEqual(self.res.body, """Attributes {
+    rain {
+    }
+}
+""")
+
+
+class TestDASResponseStructure(unittest.TestCase):
+    def test_body(self):
+        app = TestApp(BaseHandler(SimpleStructure))
+        res = app.get('/.das')
+        self.assertEqual(res.body, """Attributes {
+    types {
+        String key "value";
+        nested {
+            Int32 array 1;
+            Float64 float 1000;
+            Int32 list 42, 43;
+            String string "bar";
+        }
+        b {
+        }
+        i32 {
+        }
+        ui32 {
+        }
+        i16 {
+        }
+        ui16 {
+        }
+        f32 {
+        }
+        f64 {
+        }
+        s {
+        }
+        u {
+        }
+    }
+}
 """)

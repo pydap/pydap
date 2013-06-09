@@ -3,7 +3,7 @@ import unittest
 from webtest import TestApp
 
 from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import bounds, rain
+from pydap.tests.datasets import bounds, rain, ctd
 from pydap.wsgi.ssf import ServerSideFunctions
 from pydap.exceptions import ConstraintExpressionError
 
@@ -13,6 +13,11 @@ class TestWrongType(unittest.TestCase):
         app = TestApp(ServerSideFunctions(BaseHandler(rain)))
         with self.assertRaises(ConstraintExpressionError):
             res = app.get('/.dds?rain&bounds(0,360,-90,90,500,500,00Z01JAN1970,00Z01JAN1970)')
+
+    def test_grid_to_density(self):
+        app = TestApp(ServerSideFunctions(BaseHandler(rain)))
+        with self.assertRaises(ConstraintExpressionError):
+            res = app.get('/.dds?rain&density(rain,rain,rain)')
 
     def test_sequence_to_mean(self):
         app = TestApp(ServerSideFunctions(BaseHandler(bounds)))
@@ -29,7 +34,56 @@ class TestNoParsedResponse(unittest.TestCase):
         self.assertEqual(app.get('/.dds').body, "Hi!")
 
 
-class TestSequence(unittest.TestCase):
+class TestDensity(unittest.TestCase):
+    def setUp(self):
+        # create WSGI app
+        self.app = TestApp(ServerSideFunctions(BaseHandler(ctd)))
+
+    def test_plain(self):
+        res = self.app.get('/.asc')
+        self.assertEqual(res.body, """Dataset {
+    Sequence {
+        Int32 temperature;
+        Int32 salinity;
+        Int32 pressure;
+    } cast;
+} ctd;
+---------------------------------------------
+cast.temperature, cast.salinity, cast.pressure
+21, 35, 0
+15, 35, 100
+
+""")
+
+    def test_projection(self):
+        res = self.app.get('/.asc?density(cast.salinity,cast.temperature,cast.pressure)')
+        self.assertEqual(res.body, """Dataset {
+    Sequence {
+        Float64 rho;
+    } result;
+} ctd;
+---------------------------------------------
+result.rho
+1024.37
+1026.29
+
+""")
+
+    def test_selection(self):
+        res = self.app.get('/.asc?cast.temperature&density(cast.salinity,cast.temperature,cast.pressure)>1025')
+        self.assertEqual(res.body, """Dataset {
+    Sequence {
+        Int32 temperature;
+    } cast;
+} ctd;
+---------------------------------------------
+cast.temperature
+15
+
+""")
+
+
+class TestBounds(unittest.TestCase):
     def setUp(self):
         # create WSGI app
         self.app = TestApp(ServerSideFunctions(BaseHandler(bounds)))
