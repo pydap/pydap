@@ -51,16 +51,25 @@ class TestEncode(unittest.TestCase):
 class TestFixSlice(unittest.TestCase):
     def test_not_tuple(self):
         x = np.arange(10)
+
         slice1 = 0
         slice2 = fix_slice(slice1, x.shape)
+
+        # `fix_slice` will convert to a tuple
         self.assertEqual(slice2, (0,))
+
+        # assert that the slice is equivalent to the original
         np.testing.assert_array_equal(x[slice1], x[slice2])
 
     def test_ellipsis(self):
-        x = np.arange(6).reshape(2, 3)
+        x = np.arange(6).reshape(2, 3, 1)
+
         slice1 = Ellipsis, 0
         slice2 = fix_slice(slice1, x.shape)
-        self.assertEqual(slice2, ((slice(None, None, 1), 0)))
+
+        # an Ellipsis is expanded to slice(None)
+        self.assertEqual(slice2, 
+                ((slice(None, None, 1), slice(None, None, 1), 0)))
         np.testing.assert_array_equal(x[slice1], x[slice2])
 
     def test_negative_int(self):
