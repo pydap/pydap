@@ -28,12 +28,10 @@ class TestErrorResponse(unittest.TestCase):
         self.assertEqual(self.res.charset, "utf-8")
 
     def test_headers(self):
-        self.assertEqual(self.res.headers,
-            ResponseHeaders([
-                ('Content-Length', '244'),
-                ('Content-Type', 'text/plain; charset=utf-8'),
-                ('Content-description', 'dods_error'),
-                ('XDODS-Server', 'pydap/3.2')]))
+        self.assertEqual(self.res.headers['Content-Type'],
+                'text/plain; charset=utf-8')
+        self.assertEqual(self.res.headers['Content-description'], 'dods_error')
+        self.assertEqual(self.res.headers['XDODS-Server'], 'pydap/3.2')
 
     def test_body(self):
         self.assertRegexpMatches(self.res.body, """Error {
