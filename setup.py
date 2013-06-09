@@ -14,6 +14,7 @@ install_requires = [
     'requests',
     'Webob',
     'singledispatch',
+    'gsw',
 ]
 
 docs_extras = [
@@ -67,6 +68,7 @@ setup(name='Pydap',
         [pydap.function]
         bounds = pydap.wsgi.functions:bounds
         mean = pydap.wsgi.functions:mean
+        density = pydap.wsgi.functions:density
 
         [console_scripts]
         pydap = pydap.wsgi.app:main
