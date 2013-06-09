@@ -62,7 +62,7 @@ def _(var):
 
 
 @dods.register(SequenceType)
-def sequence(var):
+def _(var):
     # a flat array can be processed one record (or more?) at a time
     if all(isinstance(child, BaseType) for child in var.children()):
         types = []
@@ -119,7 +119,7 @@ def sequence(var):
 
 
 @dods.register(BaseType)
-def base(var):
+def _(var):
     data = var.data
 
     if data.shape:
