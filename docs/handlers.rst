@@ -186,7 +186,7 @@ The file specifies that requests for the DDS, DAS and DODS responses should be p
 CSV
 ~~~
 
-This is a handler for files with comma separated values. The first column should contain the variable names, and subsequent lines the data. Metadata is not supported. The handler is used mostly as a reference for building handlers for sequential data. You can install it with::
+This is a handler for files with comma separated values. The first column should contain the variable names, and subsequent lines the data. Metadata is not supported. The handler is used mostly as a reference for building handlers for sequential data. You can install it with:
 
 .. code-block:: bash
 
@@ -195,7 +195,7 @@ This is a handler for files with comma separated values. The first column should
 HDF5
 ~~~~
 
-A handler for HDF5 files, based on `h5py <http://code.google.com/p/h5py/>`_. In order to install it::
+A handler for HDF5 files, based on `h5py <http://code.google.com/p/h5py/>`_. In order to install it:
 
 .. code-block:: bash
 
