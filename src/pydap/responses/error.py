@@ -23,8 +23,8 @@ class ErrorResponse(object):
         # build error message
         code = getattr(info[0], 'code', -1)
         self.body = r'''Error {{
-    code = {};
-    message = {};
+    code = {0};
+    message = {1};
 }}'''.format(code, message)
 
     def __call__(self, environ, start_response):
