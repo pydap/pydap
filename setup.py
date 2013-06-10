@@ -16,7 +16,6 @@ install_requires = [
     'simplejson',
 ]
 
-# 
 if sys.version_info < (2, 7):
     install_requires.append('ordereddict')
 
@@ -34,6 +33,9 @@ testing_extras = tests_require + [
     'coverage',
     'virtualenv', # for scaffolding tests
 ]
+
+if sys.version_info < (2, 7):
+    testing_extras.append('unittest2')
 
 
 setup(name='Pydap',
