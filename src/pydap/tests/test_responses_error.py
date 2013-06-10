@@ -1,5 +1,8 @@
 import sys
-import unittest
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 from webob import Request
 from webob.headers import ResponseHeaders
