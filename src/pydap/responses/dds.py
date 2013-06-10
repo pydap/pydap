@@ -91,9 +91,9 @@ def _(var, level=0, sequence=0):
     if var.dimensions:
         shape = ''.join(map('[{0[0]} = {0[1]}]'.format, zip(var.dimensions, shape)))
     elif len(shape) == 1:
-        shape = '[{} = {}]'.format(var.name, shape[0])
+        shape = '[{0} = {1}]'.format(var.name, shape[0])
     else:
-        shape = ''.join('[{}]'.format(len) for len in shape)
+        shape = ''.join('[{0}]'.format(len) for len in shape)
 
     yield '{indent}{type} {name}{shape};\n'.format(
             indent=level*INDENT,

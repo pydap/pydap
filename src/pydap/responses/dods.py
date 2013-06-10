@@ -61,14 +61,16 @@ def _(var):
     # a flat array can be processed one record (or more?) at a time
     if all(isinstance(child, BaseType) for child in var.children()):
         types = []
+        position = 0
         for child in var.children():
             if child.dtype.char in 'SU':
-                types.append('>I')    # string length as int
-                types.append('|S{}')  # string padded to 4n
+                types.append('>I')                  # string length as int
+                types.append('|S{%s}' % position)   # string padded to 4n
+                position += 1
             else:
                 types.append(typemap[child.dtype.char])
         dtype = ','.join(types)
-        strings = '|S{}' in types
+        strings = position > 0
 
         # array initializations is costy, so we keep a cache here; this will
         # be inneficient if there are many strings of different length only
