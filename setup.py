@@ -7,9 +7,6 @@ here = os.path.abspath(os.path.dirname(__file__))
 __version__ = '3.2'
 
 install_requires = [
-    # List your project dependencies here.
-    # For more details, see:
-    # http://packages.python.org/distribute/setuptools.html#declaring-dependencies
     'Numpy',
     'requests',
     'Webob',
@@ -18,6 +15,10 @@ install_requires = [
     'gsw',
     'simplejson',
 ]
+
+# 
+if sys.version_info < (2, 7):
+    install_requires.append('ordereddict')
 
 docs_extras = [
     'Sphinx',

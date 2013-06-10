@@ -112,7 +112,10 @@ It is possible to select only a few variables::
 
 import operator
 import itertools
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 
 import numpy as np
 
