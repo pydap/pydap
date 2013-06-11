@@ -1,6 +1,6 @@
 """Datasets for testing.
 
-This module defines a few datasets for testing, covering the whole DAP data 
+This module defines a few datasets for testing, covering the whole DAP data
 model.
 
 """
