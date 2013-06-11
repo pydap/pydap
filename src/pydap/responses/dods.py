@@ -32,7 +32,7 @@ class DODSResponse(BaseResponse):
 
         length = calculate_size(dataset)
         if length is not None:
-            self.headers.append(('Content-length', length))
+            self.headers.append(('Content-length', str(length)))
 
     def __iter__(self):
         # generate DDS
@@ -187,4 +187,4 @@ def calculate_size(dataset):
     # account for DDS
     length += len(''.join(dds(dataset))) + len('Data:\n')
 
-    return str(length)
+    return length
