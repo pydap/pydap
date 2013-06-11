@@ -1,3 +1,4 @@
+"""Basic functions related to the DAP spec."""
 import sys
 import urllib
 import itertools
@@ -18,13 +19,12 @@ STRING = '|S128'
 
 
 def quote(name):
-    """
-    Quote names according to the DAP specification:
+    """Return quoted name according to the DAP specification.
 
         >>> quote("White space")
         'White%20space'
 
-    This function is similar to `urllib.quote`, with the difference that 
+    This function is similar to `urllib.quote`, with the difference that
     periods are also quoted:
 
         >>> urllib.quote("Period.")
@@ -38,10 +38,7 @@ def quote(name):
 
 
 def encode(obj):
-    """
-    Encode an object to its DAP representation.
-
-    """
+    """Return an object encoded to its DAP representation."""
     try:
         return '%.6g' % obj
     except:
@@ -51,11 +48,14 @@ def encode(obj):
 
 
 def fix_slice(slice_, shape):
-    """
-    Normalize a slice so that it has the same length of `shape`, and no negative
-    indexes, if possible.
+    """Return a normalized slice.
 
-    This is based on this document: http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
+    This function returns a slice so that it has the same length of `shape`,
+    and no negative indexes, if possible.
+
+    This is based on this document:
+
+        http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
 
     """
     # convert `slice_` to a tuple
@@ -67,7 +67,7 @@ def fix_slice(slice_, shape):
     out = []
     for s in slice_:
         if s is Ellipsis:
-            out.extend( (slice(None),) * (expand+1) )
+            out.extend((slice(None),) * (expand+1))
             expand = 0
         else:
             out.append(s)
@@ -96,8 +96,7 @@ def fix_slice(slice_, shape):
 
 
 def combine_slices(slice1, slice2):
-    """
-    Combine two tuples of slices sequentially.
+    """Return two tuples of slices combined sequentially.
 
     These two should be equal:
 
@@ -105,7 +104,8 @@ def combine_slices(slice1, slice2):
 
     """
     out = []
-    for exp1, exp2 in itertools.izip_longest(slice1, slice2, fillvalue=slice(None)):
+    for exp1, exp2 in itertools.izip_longest(
+            slice1, slice2, fillvalue=slice(None)):
         if isinstance(exp1, int):
             exp1 = slice(exp1, exp1+1)
         if isinstance(exp2, int):
@@ -126,10 +126,7 @@ def combine_slices(slice1, slice2):
 
 
 def hyperslab(slice_):
-    """
-    Build an Opendap representation of a multidimensional slice.
-
-    """
+    """Return a DAP representation of a multidimensional slice."""
     if not isinstance(slice_, tuple):
         slice_ = [slice_]
     else:
@@ -143,8 +140,7 @@ def hyperslab(slice_):
 
 
 def walk(var, type=object):
-    """
-    Yield all variables of a given type from a dataset.
+    """Yield all variables of a given type from a dataset.
 
     The iterator returns also the parent variable.
 
@@ -157,11 +153,11 @@ def walk(var, type=object):
 
 
 def fix_shorthand(projection, dataset):
-    """
-    Fix shorthand notation in the projection.
+    """Fix shorthand notation in the projection.
 
     Some clients request variables by their name, not by the id. This is called
-    the "shorthand notation", and it has to be fixed.
+    the "shorthand notation", and it has to be fixed. This function will return
+    a new projection with no shorthand calls.
 
     """
     out = []
@@ -170,18 +166,17 @@ def fix_shorthand(projection, dataset):
             token, slice_ = var.pop(0)
             for child in walk(dataset):
                 if token == child.name:
-                    if var: raise ConstraintExpressionError(
+                    if var:
+                        raise ConstraintExpressionError(
                             'Ambiguous shorthand notation request: %s' % token)
-                    var = [(parent, ()) for parent in
-                            child.id.split('.')[:-1]] + [(token, slice_)]
+                    var = [
+                        (parent, ()) for parent in child.id.split('.')[:-1]
+                    ] + [(token, slice_)]
         out.append(var)
     return out
 
 
 def get_var(dataset, id_):
-    """
-    Given an id, return the corresponding variable from the dataset.
-
-    """
+    """Given an id, return the corresponding variable from the dataset."""
     tokens = id_.split('.')
     return reduce(operator.getitem, [dataset] + tokens)
