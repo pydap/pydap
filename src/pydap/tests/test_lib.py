@@ -184,9 +184,9 @@ class TestCombineSlices(unittest.TestCase):
         """Test when start and stop are all integers."""
         x = np.arange(20)
         slice1 = (slice(0, 8),)
-        slice2 = (slice(5, 10),)
+        slice2 = (slice(5, 6),)
         combined = combine_slices(slice1, slice2)
-        self.assertEqual(combined, (slice(5, 8, 1),))
+        self.assertEqual(combined, (slice(5, 6, 1),))
         np.testing.assert_array_equal(x[combined], x[slice1][slice2])
 
 

@@ -116,10 +116,12 @@ def combine_slices(slice1, slice2):
 
         if exp1.stop is None and exp2.stop is None:
             stop = None
-        elif exp1.stop is not None:
-            stop = exp1.stop
-        elif exp2.stop is not None:
+        elif exp1.stop is None:
             stop = (exp1.start or 0) + exp2.stop
+        elif exp2.stop is None:
+            stop = exp1.stop
+        else:
+            stop = min(exp1.stop, (exp1.start or 0) + exp2.stop)
 
         out.append(slice(start, stop, step))
     return tuple(out)
