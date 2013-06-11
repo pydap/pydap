@@ -45,10 +45,26 @@ class TestOpenUrl(unittest.TestCase):
 
 class TestOpenFile(unittest.TestCase):
 
-    """Test the `open_file` function, to read download files."""
+    """Test the `open_file` function, to read downloaded files."""
 
-    def test_open_file(self):
-        """Open a file downloaded from the test server."""
+    def test_open_dods(self):
+        """Open a file downloaded from the test server with the DAS."""
+        dataset = open_file(DODS)
+
+        # test data
+        self.assertEqual(dataset.data, [
+            0, 1, 0, 0, 0, 0.0, 1000.0,
+            'This is a data test string (pass 0).',
+            'http://www.dods.org',
+        ])
+
+        # test attributes
+        self.assertEqual(dataset.attributes, {})
+        self.assertEqual(dataset.i32.attributes, {})
+        self.assertEqual(dataset.b.attributes, {})
+
+    def test_open_dods_das(self):
+        """Open a file downloaded from the test server with the DAS."""
         dataset = open_file(DODS, DAS)
 
         # test data
@@ -173,6 +189,14 @@ class TestFunctions(unittest.TestCase):
         np.testing.assert_array_equal(
             dataset.SimpleGrid.SimpleGrid.data,
             np.array([1.0, 4.0]))
+
+    def test_lazy_evaluation(self):
+        """Test that the dataset is only loaded when accessed."""
+        original = open_url('http://localhost:8001/')
+        dataset = original.functions.mean(original.SimpleGrid, 0)
+        self.assertIsNone(dataset.dataset)
+        dataset.SimpleGrid
+        self.assertIsNotNone(dataset.dataset)
 
     def test_nested_call(self):
         """Test nested calls."""

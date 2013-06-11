@@ -150,6 +150,4 @@ class ServerFunctionResult(object):
         return getattr(self.dataset, name)
 
     def __getitem__(self, key):
-        if self.dataset is None:
-            self.dataset = open_dods(self.url, True)
         return self.dataset[key]
