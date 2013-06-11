@@ -196,12 +196,12 @@ class TestHyperslab(unittest.TestCase):
     def test_no_tuple(self):
         """Test that slices that are not tuples work."""
         slice_ = slice(0)
-        self.assertEqual(hyperslab(slice_), "[0:1:%d]" % sys.maxint)
+        self.assertEqual(hyperslab(slice_), "[0:1:%d]" % (sys.maxint-1))
 
     def test_remove(self):
         """Test that excess slices are removed."""
         slice_ = (slice(0), slice(None))
-        self.assertEqual(hyperslab(slice_), "[0:1:%d]" % sys.maxint)
+        self.assertEqual(hyperslab(slice_), "[0:1:%d]" % (sys.maxint-1))
 
     def test_ndimensional(self):
         """Test n-dimensions slices."""
