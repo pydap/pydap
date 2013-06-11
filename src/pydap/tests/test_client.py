@@ -190,7 +190,15 @@ class TestFunctions(unittest.TestCase):
             dataset.SimpleGrid.SimpleGrid.data,
             np.array([1.0, 4.0]))
 
-    def test_lazy_evaluation(self):
+    def test_lazy_evaluation_getitem(self):
+        """Test that the dataset is only loaded when accessed."""
+        original = open_url('http://localhost:8001/')
+        dataset = original.functions.mean(original.SimpleGrid, 0)
+        self.assertIsNone(dataset.dataset)
+        dataset['SimpleGrid']
+        self.assertIsNotNone(dataset.dataset)
+
+    def test_lazy_evaluation_getattr(self):
         """Test that the dataset is only loaded when accessed."""
         original = open_url('http://localhost:8001/')
         dataset = original.functions.mean(original.SimpleGrid, 0)

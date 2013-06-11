@@ -144,10 +144,10 @@ class ServerFunctionResult(object):
         scheme, netloc, path, query, fragment = urlsplit(baseurl)
         self.url = urlunsplit((scheme, netloc, path + '.dods', id_, None))
 
-    def __getattr__(self, name):
+    def __getitem__(self, key):
         if self.dataset is None:
             self.dataset = open_dods(self.url, True)
-        return getattr(self.dataset, name)
-
-    def __getitem__(self, key):
         return self.dataset[key]
+
+    def __getattr__(self, name):
+        return self[name]
