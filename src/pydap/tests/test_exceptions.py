@@ -1,34 +1,25 @@
-import unittest
+"""Test Pydap base exception."""
+import sys
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
-from pydap.exceptions import *
+from pydap.exceptions import DapError
 
 
 class TestExceptions(unittest.TestCase):
+
+    """Test Pydap base exception.
+
+    Other exceptions behave exactly like the superclass, differing only by
+    name, so no testing is required.
+
+    """
+
     def test_dap_error(self):
+        """Test the base exception."""
         exc = DapError("This is a test.")
+
         self.assertEqual(exc.value, "This is a test.")
         self.assertEqual(str(exc), repr("This is a test."))
-
-    def test_client_error(self):
-        exc = ClientError("")
-        self.assertEqual(exc.code, 100)
-
-    def test_server_error(self):
-        exc = ServerError("")
-        self.assertEqual(exc.code, 200)
-
-    def test_ce_error(self):
-        exc = ConstraintExpressionError("")
-        self.assertEqual(exc.code, 201)
-
-    def test_handler_error(self):
-        exc = HandlerError("")
-        self.assertEqual(exc.code, 300)
-
-    def test_extension_error(self):
-        exc = ExtensionNotSupportedError("")
-        self.assertEqual(exc.code, 301)
-
-    def test_open_file_error(self):
-        exc = OpenFileError("")
-        self.assertEqual(exc.code, 302)

@@ -1,18 +1,16 @@
-"""
-DAP exceptions.
+"""DAP exceptions.
 
-These exceptions are mostly used by the server. When an exception is captured, a
-proper error message is displayed (according to the DAP 2.0 spec), with 
-information about the exception and the error code associated with it.
+These exceptions are mostly used by the server. When an exception is captured,
+proper error message is displayed (according to the DAP 2.0 spec), with
+information about the exception.
 
 """
 
 
 class DapError(Exception):
-    """
-    Base DAP exception.
-    
-    """
+
+    """Base DAP exception."""
+
     def __init__(self, value):
         self.value = value
 
@@ -21,50 +19,42 @@ class DapError(Exception):
 
 
 class ClientError(DapError):
-    """
-    Generic error with the client.
-    
-    """
-    code = 100
+
+    """Generic error with the client."""
+
+    pass
 
 
 class ServerError(DapError):
-    """
-    Generic error with the server.
-    
-    """
-    code = 200
+
+    """Generic error with the server."""
+
+    pass
 
 
 class ConstraintExpressionError(ServerError):
-    """
-    Exception raised when an invalid constraint expression is given.
-    
-    """
-    code = 201
+
+    """Exception raised when an invalid constraint expression is given."""
+
+    pass
 
 
 class HandlerError(DapError):
-    """
-    Generic error with a handler.
-    
-    """
-    code = 300
+
+    """Generic error with a handler."""
+
+    pass
 
 
 class ExtensionNotSupportedError(HandlerError):
-    """
-    Exception raised when trying to open a file not supported by any
-    handlers.
-    
-    """
-    code = 301
+
+    """Exception raised when opening a file not supported by any handlers."""
+
+    pass
 
 
 class OpenFileError(HandlerError):
-    """
-    Exception raised when unable to open a file.
-    
-    """
-    code = 302
 
+    """Exception raised when unable to open a file."""
+
+    pass
