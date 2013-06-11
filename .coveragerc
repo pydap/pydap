@@ -1,0 +1,8 @@
+[report]
+exclude_lines = 
+    prama: no cover
+    import unittest2 as unittest
+    from ordereddict import OrderedDict
+
+[run]
+branch = True

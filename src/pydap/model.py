@@ -115,10 +115,11 @@ It is possible to select only a few variables::
 
 import operator
 import itertools
-try:
-    from collections import OrderedDict
-except ImportError:
+import sys
+if sys.version_info < (2, 7):
     from ordereddict import OrderedDict
+else:
+    from collections import OrderedDict
 
 import numpy as np
 
