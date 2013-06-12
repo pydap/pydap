@@ -1,11 +1,21 @@
+"""Parsing related functions.
+
+This module defines functions to parse DAP strings, including a base parser for
+DDS and DAS.
+
+"""
+
 import re
 from urllib import quote, unquote
 
 
 def parse_projection(input):
-    """
-    Split a projection into items, taking into account server-side functions,
-    and parse slices.
+    """Split a projection into items.
+    
+    The function takes into account server-side functions, and parse slices
+    into Python slice objects.
+
+    Returns a list of names and slices.
 
     """
     def tokenize(input):
@@ -24,38 +34,47 @@ def parse_projection(input):
     def parse(token):
         if '(' not in token:
             token = token.split('.')
-            token = [ re.match('(.*?)(\[.*\])?$', part).groups() 
-                for part in token ]
-            token = [ (quote(name), parse_hyperslab(slice_ or '')) 
-                for (name, slice_) in token ]
+            token = [
+                re.match('(.*?)(\[.*\])?$', part).groups()
+                for part in token]
+            token = [
+                (quote(name), parse_hyperslab(slice_ or ''))
+                for (name, slice_) in token]
         return token
 
     return map(parse, tokenize(input))
 
 
 def parse_ce(query_string):
-    """
-    Extract the projection and selection from the QUERY_STRING.
+    """Extract the projection and selection from the QUERY_STRING.
 
-        >>> parse_ce('a,b[0:2:9],c&a>1&b<2')
-        ([[('a', ())], [('b', (slice(0, 10, 2),))], [('c', ())]], ['a>1', 'b<2'])
+        >>> parse_ce('a,b[0:2:9],c&a>1&b<2')  # doctest: +NORMALIZE_WHITESPACE
+        ([[('a', ())], [('b', (slice(0, 10, 2),))], [('c', ())]],
+                ['a>1', 'b<2'])
         >>> parse_ce('a>1&b<2')
         ([], ['a>1', 'b<2'])
 
     This function can also handle function calls in the URL, according to the
     DAP specification:
 
-        >>> parse_ce('time&bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)')
-        ([[('time', ())]], ['bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'])
-        >>> parse_ce('time,bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)')
-        ([[('time', ())], 'bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'], [])
+        >>> ce = 'time&bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'
+        >>> print parse_ce(ce)  # doctest: +NORMALIZE_WHITESPACE
+        ([[('time', ())]],
+                ['bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'])
+
+        >>> ce = 'time,bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'
+        >>> print parse_ce(ce)  # doctest: +NORMALIZE_WHITESPACE
+        ([[('time', ())],
+            'bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'], [])
         >>> parse_ce('mean(g,0)')
         (['mean(g,0)'], [])
         >>> parse_ce('mean(mean(g.a,1),0)')
         (['mean(mean(g.a,1),0)'], [])
 
+    Returns a tuple with the projection and the selection.
+
     """
-    tokens = [ token for token in unquote(query_string).split('&') if token ]
+    tokens = [token for token in unquote(query_string).split('&') if token]
     if not tokens:
         projection = []
         selection = []
@@ -70,10 +89,7 @@ def parse_ce(query_string):
 
 
 def parse_hyperslab(hyperslab):
-    """
-    Parse a hyperslab into a Python tuple of slices.
-
-    """
+    """Parse a hyperslab, returning a Python tuple of slices."""
     exprs = [expr for expr in hyperslab[1:-1].split('][') if expr]
 
     out = []
@@ -96,27 +112,28 @@ def parse_hyperslab(hyperslab):
 
 
 class SimpleParser(object):
-    """
-    A very simple parser.
 
-    """
+    """A very simple parser."""
+
     def __init__(self, input, flags=0):
         self.buffer = input
         self.flags = flags
 
     def peek(self, regexp):
+        """Check if a token is present and return it."""
         p = re.compile(regexp, self.flags)
         m = p.match(self.buffer)
-        if m: 
+        if m:
             token = m.group()
         else:
             token = ''
         return token
 
     def consume(self, regexp):
+        """Consume a token from the buffer and return it."""
         p = re.compile(regexp, self.flags)
         m = p.match(self.buffer)
-        if m: 
+        if m:
             token = m.group()
             self.buffer = self.buffer[len(token):]
         else:
