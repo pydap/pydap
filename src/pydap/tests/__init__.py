@@ -1,23 +1,23 @@
 """Intercept HTTP requests and pass them directly to a WSGI app.
 
-This module implements a function that will monkeypatch `requests`, allowing
+This module implements a function that will monkeypatch ``requests``, allowing
 Pydap requests directly to the server without a network stack. Used for unit
 testing.
 
 """
 
 def requests_intercept(app, location):
-    """Intercept WSGI requests and pass them to `webtest.TestApp`.
+    """Intercept WSGI requests and pass them to ``webtest.TestApp``.
     
-    Return a replacement for `requests.get`:
+    Return a replacement for ``requests.get``:
 
         >>> import requests
         >>> old_get = requests.get
         >>> requests.get = requests_intercept(wsgi_app,
         ...     "http://localhost:8001/")
     
-    Requests for `http://localhost:8001/` will now be routed to the WSGI 
-    application `app`:
+    Requests for ``http://localhost:8001/`` will now be routed to the WSGI 
+    application ``app``:
 
         >>> from pydap.client import open_url
         >>> dataset = open_url("http://localhost:8001/")
@@ -50,9 +50,9 @@ class MockResponse(object):
         self.content = response.body
 
     def raise_for_status(self):
-        """Mock requests `raise_for_status` method."""
+        """Mock requests ``raise_for_status`` method."""
         pass
 
     def iter_content(self, blocksize):
-        """Return the content as an iterator, emulating `iter_content`."""
+        """Return the content as an iterator, emulating ``iter_content``."""
         return iter(self.content)

@@ -64,7 +64,7 @@ rain['rain']['x'] = BaseType('x', np.arange(3), units='degrees_east')
 rain['rain']['y'] = BaseType('y', np.arange(2), units='degrees_north')
 
 
-# test for `bounds` function
+# test for ``bounds`` function
 bounds = DatasetType('test')
 bounds['sequence'] = SequenceType('sequence')
 bounds['sequence']['lon'] = BaseType('lon', axis='X')

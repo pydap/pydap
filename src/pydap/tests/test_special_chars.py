@@ -25,8 +25,8 @@ class TestQuote(unittest.TestCase):
     def test_children(self):
         dataset = DatasetType('test')
 
-        with self.assertRaises(KeyError):
-            dataset['foo['] = BaseType('foo[')
+        #with self.assertRaises(KeyError):
+        #    dataset['foo['] = BaseType('foo[')
 
         var = BaseType('foo[')
         dataset[var.name] = var

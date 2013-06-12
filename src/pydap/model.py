@@ -351,10 +351,6 @@ class DatasetType(StructureType):
     """
 
     def __setitem__(self, key, item):
-        if key != item.name:
-            raise KeyError(
-                'Key "%s" is different from variable name "%s"!' %
-                (key, item.name))
         StructureType.__setitem__(self, key, item)
 
         # The dataset name does not goes into the children ids.
@@ -389,7 +385,7 @@ class SequenceType(StructureType):
         >>> seq['index'] = BaseType('index')
         >>> seq['temperature'] = BaseType('temperature')
         >>> seq['site'] = BaseType('site')
-        >>> seq.data = data  # XXX UGLY TODO
+        >>> seq.data = data
 
         >>> for line in seq:
         ...     print line
@@ -535,7 +531,6 @@ class GridType(StructureType):
 
         # Return a new `GridType` with part of the data.
         else:
-
             if not isinstance(key, tuple):
                 key = (key,)
 

@@ -25,10 +25,10 @@ DAS = os.path.join(os.path.dirname(__file__), 'test.01.das')
 
 class TestOpenUrl(unittest.TestCase):
 
-    """Test the `open_url` function, to access remote datasets."""
+    """Test the ``open_url`` function, to access remote datasets."""
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch `requests` for direct access."""
+        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
         app = TestApp(BaseHandler(SimpleSequence))
         self.requests_get = requests.get
         requests.get = requests_intercept(app, 'http://localhost:8001/')
@@ -45,7 +45,7 @@ class TestOpenUrl(unittest.TestCase):
 
 class TestOpenFile(unittest.TestCase):
 
-    """Test the `open_file` function, to read downloaded files."""
+    """Test the ``open_file`` function, to read downloaded files."""
 
     def test_open_dods(self):
         """Open a file downloaded from the test server with the DAS."""
@@ -92,10 +92,10 @@ class TestOpenFile(unittest.TestCase):
 
 class TestOpenDods(unittest.TestCase):
 
-    """Test the `open_dods` function, to access binary data directly."""
+    """Test the ``open_dods`` function, to access binary data directly."""
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch `requests` for direct access."""
+        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
         app = TestApp(BaseHandler(SimpleSequence))
         self.requests_get = requests.get
         requests.get = requests_intercept(app, 'http://localhost:8001/')
@@ -107,9 +107,9 @@ class TestOpenDods(unittest.TestCase):
     def test_open_dods(self):
         """Open the dods response from a server.
 
-        Note that here we cannot simply compare `dataset.data` with the
-        original data `SimpleSequence.data`, because the original data contains
-        int16 values which are transmitted as int32 in the DAP spec.
+        Note that here we cannot simply compare ``dataset.data`` with the
+        original data ``SimpleSequence.data``, because the original data
+        contains int16 values which are transmitted as int32 in the DAP spec.
 
         """
         dataset = open_dods('http://localhost:8001/.dods')
@@ -147,18 +147,18 @@ class TestFunctions(unittest.TestCase):
 
     Calling server-side functions is implemented using a lazy mechanism where
     arbitrary names are mapped to remove calls. The resulting dataset is only
-    evaluated when `__getitem__` or `__getattr__` are called, allowing nested
-    calls to be evaluated only once:
+    evaluated when ``__getitem__`` or ``__getattr__`` are called, allowing
+    nested calls to be evaluated only once:
 
         >>> dataset = functions.mean(functions.mean(remote.SimpleGrid, 0), 0)
 
-    In this example the nested calls to `mean` will return a single proxy
+    In this example the nested calls to ``mean`` will return a single proxy
     object.
 
     """
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch `requests` for direct access."""
+        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         self.requests_get = requests.get
         requests.get = requests_intercept(app, 'http://localhost:8001/')

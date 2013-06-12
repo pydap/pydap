@@ -24,7 +24,7 @@ class TestQuote(unittest.TestCase):
         _ ! ~ * ' - "
 
     All other characters must be escaped. This includes the period, which is
-    normally not quoted by `urllib.quote`.
+    normally not quoted by ``urllib.quote``.
 
     """
 
@@ -67,13 +67,13 @@ class TestEncode(unittest.TestCase):
         self.assertEqual(encode(u"test"), '"test"')
 
     def test_obj(self):
-        """Other objects are encoded according to their `repr`."""
+        """Other objects are encoded according to their ``repr``."""
         self.assertEqual(encode({}), '"{}"')
 
 
 class TestFixSlice(unittest.TestCase):
 
-    """Test the `fix_slice` function."""
+    """Test the ``fix_slice`` function."""
 
     def test_not_tuple(self):
         """Non tuples should be converted and handled correctly."""
@@ -82,7 +82,7 @@ class TestFixSlice(unittest.TestCase):
         slice1 = 0
         slice2 = fix_slice(slice1, x.shape)
 
-        # `fix_slice` will convert to a tuple
+        # ``fix_slice`` will convert to a tuple
         self.assertEqual(slice2, (0,))
 
         # assert that the slice is equivalent to the original
@@ -134,7 +134,7 @@ class TestFixSlice(unittest.TestCase):
 
 class TestCombineSlices(unittest.TestCase):
 
-    """Test the `combine_slices` function."""
+    """Test the ``combine_slices`` function."""
 
     def test_not_tuple(self):
         """The function fails when one of the slices is not a tuple."""
@@ -154,7 +154,7 @@ class TestCombineSlices(unittest.TestCase):
         self.assertEqual(combined, (slice(1, 1, 1),))
 
     def test_stops_none(self):
-        """Test when both of the slices have `None` for stop."""
+        """Test when both of the slices have ``None`` for stop."""
         x = np.arange(10)
         slice1 = (slice(0, None),)
         slice2 = (slice(5, None),)
@@ -163,7 +163,7 @@ class TestCombineSlices(unittest.TestCase):
         np.testing.assert_array_equal(x[combined], x[slice1][slice2])
 
     def test_first_stop_none(self):
-        """Test when the first slice has `None` for stop."""
+        """Test when the first slice has ``None`` for stop."""
         x = np.arange(10)
         slice1 = (slice(5, None),)
         slice2 = (slice(0, 8),)
@@ -172,7 +172,7 @@ class TestCombineSlices(unittest.TestCase):
         np.testing.assert_array_equal(x[combined], x[slice1][slice2])
 
     def test_second_stop_none(self):
-        """Test when the second slice has `None` for stop."""
+        """Test when the second slice has ``None`` for stop."""
         x = np.arange(10)
         slice1 = (slice(0, 8),)
         slice2 = (slice(5, None),)
@@ -212,7 +212,7 @@ class TestHyperslab(unittest.TestCase):
 
 class TestWalk(unittest.TestCase):
 
-    """Test the `walk` function to iterate over a dataset."""
+    """Test the ``walk`` function to iterate over a dataset."""
 
     def setUp(self):
         """Create a basic dataset."""
@@ -233,7 +233,7 @@ class TestWalk(unittest.TestCase):
 
 class TestFixShorthand(unittest.TestCase):
 
-    """Test the `fix_shorthand` function."""
+    """Test the ``fix_shorthand`` function."""
 
     def test_fix_projection(self):
         """Test a dataset that can use the shorthand notation."""
@@ -261,7 +261,7 @@ class TestFixShorthand(unittest.TestCase):
 
 class TestGetVar(unittest.TestCase):
 
-    """Test the `get_var` function."""
+    """Test the ``get_var`` function."""
 
     def test_get_var(self):
         """Test that the id is returned properly."""
