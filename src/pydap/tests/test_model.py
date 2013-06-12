@@ -8,8 +8,8 @@ else:
 
 import numpy as np
 
-from pydap.model import DapType
 from pydap.model import *
+from pydap.model import DapType, pack_rows, unpack_rows
 
 
 class TestDapType(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestDapType(unittest.TestCase):
 
     def test_attributes(self):
         """Test attribute assignment.
-        
+
         Note that ``**kwargs`` have precedence.
 
         """
@@ -40,8 +40,9 @@ class TestDapType(unittest.TestCase):
     def test_repr(self):
         """Test the ``__repr__`` method."""
         var = DapType("var", foo="bar", value=42)
-        self.assertEqual(repr(var),
-                "DapType('var', {'foo': 'bar', 'value': 42})")
+        self.assertEqual(
+            repr(var),
+            "DapType('var', {'foo': 'bar', 'value': 42})")
 
     def test_id_property(self):
         """Test id set/get property."""
@@ -71,7 +72,7 @@ class TestDapType(unittest.TestCase):
 
 class TestBaseType(unittest.TestCase):
 
-    """Test the base Pydap type, which is analogous to a Numpy array."""
+    """Test the base Pydap type."""
 
     def test_no_data(self):
         """Test empty data and dimensions attributes."""
@@ -80,7 +81,7 @@ class TestBaseType(unittest.TestCase):
         self.assertEqual(var.dimensions, ())
 
     def test_data_and_dimensions(self):
-        """Test data and dimsensions assignment."""
+        """Test data and dimensions assignment."""
         var = BaseType("var", [42], ('x',))
         self.assertEqual(var.data, [42])
         self.assertEqual(var.dimensions, ('x',))
@@ -140,7 +141,7 @@ class TestBaseType(unittest.TestCase):
 
 class TestStructureType(unittest.TestCase):
 
-    """Test Pydap structures, which are dict-like objcets."""
+    """Test Pydap structures."""
 
     def test_init(self):
         """Test attributes used for dict-like behavior."""
@@ -156,7 +157,7 @@ class TestStructureType(unittest.TestCase):
         var["one"] = BaseType("one")
         var["two"] = BaseType("two")
         self.assertEqual(
-                repr(var), "<StructureType with children 'one', 'two'>")
+            repr(var), "<StructureType with children 'one', 'two'>")
 
     def test_contains(self):
         """Test container behavior."""
@@ -273,4 +274,173 @@ class TestDatasetType(unittest.TestCase):
 
 
 class TestSequenceType(unittest.TestCase):
-    pass
+
+    """Test Pydap sequences."""
+
+    def setUp(self):
+        """Create a standard sequence from the DAP spec."""
+        example = SequenceType("example")
+        example["index"] = BaseType("index")
+        example["temperature"] = BaseType("temperature")
+        example["site"] = BaseType("site")
+        example.data = np.rec.fromrecords([
+            (10, 15.2, "Diamond_St"),
+            (11, 13.1, 'Blacktail_Loop'),
+            (12, 13.3, 'Platinum_St'),
+            (13, 12.1, 'Kodiak_Trail')], names=example.keys())
+
+        self.example = example
+
+    def test_data(self):
+        """Test data assignment in sequences."""
+        np.testing.assert_array_equal(
+            self.example["index"].data, np.array([10, 11, 12, 13]))
+
+    def test_len(self):
+        """Test that length is read from the data attribute."""
+        self.assertEqual(len(self.example.data), 4)
+
+    def test_iter_(self):
+        """Test that iteration happens over the data attribute."""
+        self.assertEqual(
+            list(iter(self.example)),
+            list(iter(self.example.data)))
+
+    def test_getitem(self):
+        """Test item retrieval.
+
+        The ``__getitem__`` method is overloaded for sequences, and behavior
+        will depend on the type of the key. It can either return a child or a
+        new sequence.
+
+        """
+        # a string should return the corresponding child
+        self.assertIsInstance(self.example["index"], BaseType)
+
+        # a tuple should reorder the children
+        self.assertEqual(
+            self.example.keys(), ["index", "temperature", "site"])
+        modified = self.example["site", "temperature"]
+        self.assertEqual(modified.keys(), ["site", "temperature"])
+
+        # the return sequence is a new one
+        self.assertIsNot(self.example, modified)
+        self.assertIsNot(self.example["site"], modified["site"])
+
+        # and the data is not shared
+        self.assertIsNot(self.example["site"].data, modified["site"].data)
+
+        # it is also possible to slice the data, returning a new sequence
+        subset = self.example[self.example["index"] > 11]
+        self.assertIsNot(self.example, subset)
+        np.testing.assert_array_equal(
+            subset.data,
+            self.example.data[self.example.data["index"] > 11])
+
+    def test_clone(self):
+        """Test the lightweight clone method."""
+        copy = self.example.clone()
+        self.assertIsNot(self.example, copy)
+        self.assertIs(self.example.data, copy.data)
+
+
+class TestGridType(unittest.TestCase):
+
+    """Test Pydap grids."""
+
+    def setUp(self):
+        """Create a simple grid."""
+        example = GridType("example")
+        example["a"] = BaseType("a", data=np.arange(30*50).reshape(30, 50))
+        example["x"] = BaseType("x", data=np.arange(30))
+        example["y"] = BaseType("y", data=np.arange(50))
+
+        self.example = example
+
+    def test_repr(self):
+        """Test ``__repr__`` of grids."""
+        self.assertEqual(
+            repr(self.example), "<GridType with array 'a' and maps 'x', 'y'>")
+
+    def test_getitem(self):
+        """Test item retrieval.
+
+        As with sequences, this might return a child or a new grid, depending
+        on the key type.
+
+        """
+        # a string should return the corresponding child
+        self.assertIsInstance(self.example["a"], BaseType)
+
+        # otherwise it should return a new grid with a subset of the data
+        subset = self.example[20:22, 40:43]
+        self.assertEqual(subset["a"].shape, (2, 3))
+        self.assertEqual(subset["x"].shape, (2,))
+        self.assertEqual(subset["y"].shape, (3,))
+
+        self.assertIsNot(self.example, subset)
+
+    def test_geitem_not_tuple(self):
+        """Test that method works with non-tuple slices."""
+        subset = self.example[20:22]
+        self.assertEqual(subset["a"].shape, (2, 50))
+        self.assertEqual(subset["x"].shape, (2,))
+        self.assertEqual(subset["y"].shape, (50,))
+
+    def test_array(self):
+        """Test ``array`` property."""
+        self.assertIs(self.example.array, self.example["a"])
+
+    def test_maps(self):
+        """Test ``maps`` property."""
+        self.assertEqual(
+            self.example.maps.items(),
+            [("x", self.example["x"]), ("y", self.example["y"])])
+
+    def test_dimensions(self):
+        """Test ``dimensions`` property."""
+        self.assertEqual(self.example.dimensions, ("x", "y"))
+
+
+class TestPackRows(unittest.TestCase):
+
+    """Test the ``pack_rows`` function used for sequences."""
+
+    def test_pack_simple(self):
+        """Test function with flat data."""
+        a = [1, 2, 3]
+        b = [10, 20, 30]
+        c = [1, 1, 1]
+        self.assertEqual(
+            pack_rows([a, b, c], 1),
+            [(1, 10, 1), (2, 20, 1), (3, 30, 1)])
+
+    def test_pack_nested(self):
+        """Test function with nested data."""
+        d = [['a', 'b', 'c'], ['d'], ['e', 'f']]
+        e = [[1, 2, 3], [4], [5, 6]]
+        self.assertEqual(
+            pack_rows([d, e], 2), [
+                [('a', 1), ('b', 2), ('c', 3)],
+                [('d', 4)],
+                [('e', 5), ('f', 6)]])
+
+
+class TestUnpackRows(unittest.TestCase):
+
+    """Test the ``unpack_rows`` function."""
+
+    def test_unpack_simple(self):
+        """Test unpacking a flat sequence data."""
+        data = [(1, 10, 1), (2, 20, 1)]
+        self.assertEqual(unpack_rows(data, 1), [(1, 2), (10, 20), (1, 1)])
+
+    def test_unpack_nested(self):
+        """Test unpacking a nested sequence data."""
+        data = [
+            [('a', 1), ('b', 2), ('c', 3)],
+            [('d', 4)],
+            [('e', 5), ('f', 6)]]
+        self.assertEqual(
+            unpack_rows(data, 2),
+            [(('a', 'b', 'c'), ('d',), ('e', 'f')), ((1, 2, 3), (4,), (5, 6))])
