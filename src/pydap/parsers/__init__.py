@@ -11,7 +11,7 @@ from urllib import quote, unquote
 
 def parse_projection(input):
     """Split a projection into items.
-    
+
     The function takes into account server-side functions, and parse slices
     into Python slice objects.
 
