@@ -54,6 +54,12 @@ class TestParseCe(unittest.TestCase):
 
     """Test the constraint expression parser."""
 
+    def test_empty(self):
+        """Test no constraint expression."""
+        projection, selection = parse_ce('')
+        self.assertEqual(projection, [])
+        self.assertEqual(selection, [])
+
     def test_basic(self):
         """Test a basic constraint expression."""
         projection, selection = parse_ce("a,b&c>1")
@@ -116,6 +122,12 @@ class TestParseHyperslab(unittest.TestCase):
         """Test start, step and stop."""
         self.assertEqual(parse_hyperslab('[0:2:9]'), (slice(0, 10, 2),))
 
+    def test_ndimensionsal(self):
+        """Test n-dimensional slices."""
+        self.assertEqual(
+            parse_hyperslab('[0:2:9][0][0:99]'),
+            (slice(0, 10, 2), slice(0, 1, 1), slice(0, 100, 1)))
+
 
 class TestSimpleParser(unittest.TestCase):
 
@@ -139,7 +151,7 @@ class TestSimpleParser(unittest.TestCase):
         self.assertEqual(parser.consume("\w+"), "World")
         self.assertEqual(parser.consume("!"), "!")
 
-    def test_consume_existing(self):
+    def test_consume_missing(self):
         """Test the consume method when the token does not exist."""
         parser = SimpleParser("Hello, World!")
         with self.assertRaises(Exception):

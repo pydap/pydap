@@ -1,7 +1,7 @@
 """Parsing related functions.
 
-This module defines functions to parse DAP strings, including a base parser for
-DDS and DAS.
+This module defines functions to parse DAP objects, including a base parser for
+DDS and DAS responses.
 
 """
 

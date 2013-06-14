@@ -33,6 +33,6 @@ class TestVersionResponse(unittest.TestCase):
 
     def test_body(self):
         self.assertEqual(self.res.body, """{
-    "pydap": "3.2",
+    "pydap": "3.2", 
     "dap": "2.15"
 }""")
