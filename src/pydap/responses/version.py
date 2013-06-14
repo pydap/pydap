@@ -1,5 +1,5 @@
 from webob import Response
-from simplejson import dumps
+from json import dumps
 
 from pydap.lib import __version__, __dap__
 
