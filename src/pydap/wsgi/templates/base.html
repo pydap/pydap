@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{% endblock %}</title>
+
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/pure-min.css">
+        <link rel="stylesheet" href="/static/style.css">
+    </head>
+    <body>
+        <div class="content pure-g-r">
+            <div class="header pure-u-1">
+                <div class="pure-menu pure-menu-open pure-menu-fixed pure-menu-horizontal">
+                    <a class="pure-menu-heading" href="">http://localhost:8001/</a>
+                    <ul>
+                        <li><a href="#">data</a></li>
+                        <li><a href="#">public</a></li>
+                        <li><a href="#">ocean</a></li>
+                        <li><a href="#">PIRATA</a></li>
+                        <li class="pure-menu-selected"><a href="#">BR-1</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="splash pure-u-1">
+                {% block content %}{% endblock %}
+            </div>
+            <div class="footer pure-u-1">
+                {% block footer %}{% endblock %}
+            </div>
+        </div>
+        <script src="http://yui.yahooapis.com/3.10.1/build/yui/yui-min.js"></script>
+        <script>
+            YUI().use('node-base', 'node-event-delegate', function (Y) {
+                // This just makes sure that the href="#" attached to the anchor elements
+                // don't scroll you back up the page.
+                Y.one('.content').delegate('click', function (e) {
+                    e.preventDefault();
+                }, 'a[href="#"]');
+            });
+        </script>
+    </body>
+</html>
