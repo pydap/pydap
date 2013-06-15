@@ -103,6 +103,7 @@ class DapServer(object):
 
         context = {
             "root": request.url_root,
+            "location": request.base_url,
             "breadcrumbs": breadcrumbs,
             "directories": directories,
             "files": files,

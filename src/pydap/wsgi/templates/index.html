@@ -1,16 +1,16 @@
 {% extends "base.html" %}
-{% block title %}Index{% endblock %}
+{% block title %}Index of {{ location }}{% endblock %}
 {% block breadcrumbs %}
 <ul>
     {% for crumb in breadcrumbs[:-1] %}
     <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-    <a itemprop="url" href="{{ crumb.url }}"><span itemprop="title">{{ crumb.title }}</span></a>
+    <a itemprop="url" href="{{ crumb.url }}/"><span itemprop="title">{{ crumb.title }}</span></a>
     </li>
     <li>›</li>                                              
     {% endfor %}
     {% if breadcrumbs %}
     <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="pure-menu-selected">
-    <a itemprop="url" href="{{ breadcrumbs[-1].url }}"><span itemprop="title">{{ breadcrumbs[-1].title }}</span></a>
+    <a itemprop="url" href="{{ breadcrumbs[-1].url }}/"><span itemprop="title">{{ breadcrumbs[-1].title }}</span></a>
     </li>
     {% endif %}
 </ul>
@@ -37,7 +37,7 @@
         <tr>
             {% if file.supported %}
             <td><i class="icon-globe icon-fixed-width"></i>
-            <a title="Inspect and filter data" href="{{ file.name }}.dds">{{ file.name }}</a>
+            <a title="Inspect and filter data" href="{{ file.name }}.html">{{ file.name }}</a>
             <span class="opendap">
             <a title="View the DDS response" href="{{ file.name }}.dds">dds</a> |
             <a title="View the DAS response" href="{{ file.name }}.das">das</a>
