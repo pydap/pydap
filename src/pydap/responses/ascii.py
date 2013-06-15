@@ -2,7 +2,7 @@ try:
     from functools import singledispatch                                        
 except ImportError:                                                             
     from singledispatch import singledispatch
-import itertools
+from itertools import izip
 
 import numpy as np
 
@@ -68,7 +68,7 @@ def _(var, printname=True):
     if not var.shape:
         yield encode(var.data)
     else:
-        for indexes, value in itertools.izip(np.ndindex(var.shape), var.data):
+        for indexes, value in izip(np.ndindex(var.shape), var.data.flat):
             yield "{indexes} {value}\n".format(
                 indexes="[" + "][".join(str(idx) for idx in indexes) + "]",
                 value=encode(value))
