@@ -8,13 +8,12 @@ __version__ = '3.2'
 
 install_requires = [
     'Numpy',
+    'Werkzeug',
     'requests',
-    'Webob',
     'singledispatch',
     'coards',
     'gsw',
     'gunicorn',
-    'selector',
 ]
 
 if sys.version_info < (2, 7):
