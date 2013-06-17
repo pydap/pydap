@@ -82,7 +82,7 @@ class TestASCIIResponseGrid(unittest.TestCase):
                 ('XDODS-Server', 'pydap/3.2'), 
                 ('Content-description', 'dods_ascii'), 
                 ('Content-type', 'text/plain; charset=utf-8'), 
-                ('Content-Length', '292')]))
+                ('Content-Length', '322')]))
 
     def test_body(self):
         self.assertEqual(self.res.body, """Dataset {
@@ -96,14 +96,21 @@ class TestASCIIResponseGrid(unittest.TestCase):
 } test;
 ---------------------------------------------
 rain.rain
-[0][0] "[[0 1 2]
- [3 4 5]]"
+[0][0] 0
+[0][1] 1
+[0][2] 2
+[1][0] 3
+[1][1] 4
+[1][2] 5
 
 rain.x
-[0] "[0 1 2]"
+[0] 0
+[1] 1
+[2] 2
 
 rain.y
-[0] "[0 1]"
+[0] 0
+[1] 1
 
 
 """)
