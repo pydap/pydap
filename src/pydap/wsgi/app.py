@@ -1,6 +1,6 @@
 """A file-based Pydap server running on Gunicorn.
 
-Usage: 
+Usage:
   pydap [options]
 
 Options:
@@ -11,7 +11,7 @@ Options:
   -d DIR --data DIR             The directory with files [default: .]
   -t dIR --templates DIR        The directory with templates
   --worker-class=CLASS          Gunicorn worker class [default: sync]
-  
+
 """
 
 import os
@@ -20,9 +20,10 @@ import mimetypes
 from datetime import datetime
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader, ChoiceLoader
-from werkzeug.wrappers import Request, Response
-from werkzeug.wsgi import responder
-from werkzeug.exceptions import Unauthorized, NotFound
+from webob import Request, Response
+from webob.dec import wsgify
+from webob.exc import HTTPNotFound, HTTPForbidden
+from webob.static import FileApp
 
 from pydap.lib import __version__
 from pydap.handlers.lib import get_handler, load_handlers
@@ -39,7 +40,7 @@ class DapServer(object):
         # the default loader reads templates from the package
         loaders = [PackageLoader("pydap", "wsgi/templates")]
 
-        # optionally, the user can specify a template directory that will 
+        # optionally, the user can specify a template directory that will
         # override the default templates
         if templates is not None:
             loaders.insert(0, FileSystemLoader(templates))
@@ -53,31 +54,34 @@ class DapServer(object):
         # cache available handlers
         self.handlers = load_handlers()
 
-    @responder
-    def __call__(self, environ, start_response):
-        """WSGI application callable."""
-        request = Request(environ)
+    @wsgify
+    def __call__(self, req):
+        """WSGI application callable.
+        
+        Returns either a file download, directory listing or DAP response.
+        
+        """
         path = os.path.abspath(
-            os.path.join(self.path, *request.path.split('/')))
+            os.path.join(self.path, *req.path_info.split('/')))
 
         if not path.startswith(self.path):
-            return Unauthorized()
+            return HTTPForbidden()
         elif os.path.exists(path):
             if os.path.isdir(path):
-                return self.index(path, request)
+                return self.index(path, req)
             else:
-                return Response(open(path), direct_passthrough=True)
+                return FileApp(path)
 
         # strip DAP extension (``.das``, eg) and see if the file exists
-        path, ext = os.path.splitext(path)
-        if os.path.isfile(path):
-            request.environ['pydap.jinja2.environment'] = self.env
-            return get_handler(path, self.handlers)
+        base, ext = os.path.splitext(path)
+        if os.path.isfile(base):
+            req.environ['pydap.jinja2.environment'] = self.env
+            return req.get_response(get_handler(base, self.handlers))
         else:
-            return NotFound()
+            return HTTPNotFound(comment=path)
 
-    def index(self, directory, request):
-        """Build a directory listing."""
+    def index(self, directory, req):
+        """Return a directory listing."""
         content = [
             os.path.join(directory, name) for name in os.listdir(directory)]
 
@@ -97,13 +101,13 @@ class DapServer(object):
 
         tokens = directory[len(self.path):].split('/')[1:]
         breadcrumbs = [{
-            "url": request.url_root + '/'.join(tokens[:i+1]),
+            "url": '/'.join([req.application_url] + tokens[:i+1]),
             "title": token,
         } for i, token in enumerate(tokens)]
 
         context = {
-            "root": request.url_root,
-            "location": request.base_url,
+            "root": req.application_url,
+            "location": req.path_url,
             "breadcrumbs": breadcrumbs,
             "directories": directories,
             "files": files,
@@ -111,8 +115,9 @@ class DapServer(object):
         }
         template = self.env.get_template("index.html")
         return Response(
-            response=template.render(context),
-            content_type="text/html; charset=utf-8")
+            body=template.render(context),
+            content_type="text/html",
+            charset="utf-8")
 
 
 def supported(filepath, handlers=None):
@@ -124,7 +129,7 @@ def supported(filepath, handlers=None):
     try:
         get_handler(filepath, handlers)
         return True
-    except ExtensionNotSupportedError:
+    except:
         return False
 
 
@@ -147,15 +152,15 @@ def alphanum_key(s):
     return [tryint(c) for c in re.split('([0-9]+)', s)]
 
 
-def formatsize(size):                                                          
-    """Return file size as a human readable string."""                          
+def formatsize(size):
+    """Return file size as a human readable string."""
     if not size:
-        return "Empty"                                                          
-                                                                                
-    for units in ["bytes", "KB", "MB", "GB", "TB"]:                             
-        if size < 1024:                                                         
-            return "%d %s" % (size, units)                                      
-        size /= 1024                                                            
+        return "Empty"
+
+    for units in ["bytes", "KB", "MB", "GB", "TB"]:
+        if size < 1024:
+            return "%d %s" % (size, units)
+        size /= 1024
     return "%d PB" % size
 
 
@@ -165,6 +170,7 @@ def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
 
 
 def main():
+    """Run server from the command line."""
     import multiprocessing
 
     from docopt import docopt
@@ -176,7 +182,7 @@ def main():
     # create pydap app
     data, templates = arguments["--data"], arguments["--templates"]
     app = DapServer(data, templates)
-    
+
     # configure app so that is reads static assets from the template directory
     # or from the package
     if templates and os.path.exists(os.path.join(templates, "static")):
@@ -190,7 +196,7 @@ def main():
     # configure WSGI server
     workers = multiprocessing.cpu_count() * 2 + 1
     paste_server(
-        app, 
+        app,
         host=arguments["--bind"],
         port=int(arguments["--port"]),
         workers=workers,
