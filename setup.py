@@ -11,6 +11,7 @@ install_requires = [
     'requests',
     'singledispatch',
     'Webob',
+    'Jinja2',
     'Werkzeug',
     'gunicorn',
     'coards',
