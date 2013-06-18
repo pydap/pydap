@@ -83,11 +83,15 @@ def fix_slice(slice_, shape):
             k = s.step or 1
 
             i = s.start
-            if i is not None and i < 0:
+            if i is None:
+                i = 0
+            elif i < 0:
                 i += n
 
             j = s.stop
-            if j is not None and j < 0:
+            if j is None:
+                j = n
+            elif j < 0:
                 j += n
 
             out.append(slice(i, j, k))

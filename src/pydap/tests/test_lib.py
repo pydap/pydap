@@ -98,7 +98,7 @@ class TestFixSlice(unittest.TestCase):
         # an Ellipsis is expanded to slice(None)
         self.assertEqual(
             slice2,
-            ((slice(None, None, 1), slice(None, None, 1), 0)))
+            ((slice(0, 2, 1), slice(0, 3, 1), 0)))
         np.testing.assert_array_equal(x[slice1], x[slice2])
 
     def test_negative_int(self):
