@@ -32,7 +32,20 @@ class TestVersionResponse(unittest.TestCase):
         self.assertEqual(self.res.headers['XDODS-Server'], 'pydap/3.2')
 
     def test_body(self):
-        self.assertEqual(self.res.body, """{
+        self.assertEqual(self.res.body, r"""{
+    "python": "2.7.4 (default, Apr 19 2013, 18:28:01) \n[GCC 4.7.3]", 
     "pydap": "3.2", 
-    "dap": "2.15"
+    "dap": "2.15", 
+    "responses": {
+        "dods": "3.2", 
+        "ver": "3.2", 
+        "dds": "3.2", 
+        "asc": "3.2", 
+        "html": "3.2", 
+        "das": "3.2", 
+        "ascii": "3.2"
+    }, 
+    "handlers": {
+        "netcdf": "0.7"
+    }
 }""")
