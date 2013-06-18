@@ -21,14 +21,14 @@ class VersionResponse(object):
         output = {
             "pydap": __version__,
             "dap": __dap__,
-            "handlers": { 
-                ep.name: getattr(ep.load(), "__version__", "Unknown")
+            "handlers": dict(
+                (ep.name, getattr(ep.load(), "__version__", "Unknown"))
                 for ep in iter_entry_points("pydap.handler")
-            },
-            "responses": {
-                ep.name: getattr(ep.load(), "__version__", "Unknown")
+            ),
+            "responses": dict(
+                (ep.name, getattr(ep.load(), "__version__", "Unknown"))
                 for ep in iter_entry_points("pydap.response")
-            },
+            ),
             "python": sys.version,
         }
         self.body = dumps(output, indent=4)
