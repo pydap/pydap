@@ -31,7 +31,6 @@ class HTMLResponse(BaseResponse):
             PackageLoader("pydap", "wsgi/templates"),
         ]
         self.env = Environment(loader=ChoiceLoader(loaders))
-        print self.env.list_templates()
 
     def __call__(self, environ, start_response):
         # check if the server has specified a render environment
