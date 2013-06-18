@@ -55,6 +55,7 @@ setup(name='Pydap',
     package_dir = {'': 'src'},
     include_package_data=True,
     zip_safe=False,
+    namespace_packages=["pydap", "pydap.responses", "pydap.handlers"],
     install_requires=install_requires,
     extras_require = {
         'testing': testing_extras,
@@ -67,6 +68,7 @@ setup(name='Pydap',
         das = pydap.responses.das:DASResponse
         dds = pydap.responses.dds:DDSResponse
         dods = pydap.responses.dods:DODSResponse
+        html = pydap.responses.html:HTMLResponse
         asc = pydap.responses.ascii:ASCIIResponse
         ascii = pydap.responses.ascii:ASCIIResponse
         ver = pydap.responses.version:VersionResponse
