@@ -75,7 +75,7 @@ class DapServer(object):
         # strip DAP extension (``.das``, eg) and see if the file exists
         base, ext = os.path.splitext(path)
         if os.path.isfile(base):
-            req.environ['pydap.jinja2.environment'] = self.env
+            req.environ["pydap.jinja2.environment"] = self.env
             return req.get_response(get_handler(base, self.handlers))
         else:
             return HTTPNotFound(comment=path)

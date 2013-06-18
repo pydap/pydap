@@ -7,7 +7,7 @@ except ImportError:
 import numpy as np
 
 from pydap.model import *
-from pydap.lib import walk, START_OF_SEQUENCE, END_OF_SEQUENCE
+from pydap.lib import walk, START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
 from pydap.responses.lib import BaseResponse
 from pydap.responses.dds import dds
 
@@ -23,6 +23,9 @@ typemap = {
 
 
 class DODSResponse(BaseResponse):
+
+    __version__ = __version__
+
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([

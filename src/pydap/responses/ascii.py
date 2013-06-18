@@ -7,12 +7,15 @@ from itertools import izip
 import numpy as np
 
 from pydap.model import *
-from pydap.lib import walk, encode
+from pydap.lib import walk, encode, __version__
 from pydap.responses.lib import BaseResponse
 from pydap.responses.dds import dds
 
 
 class ASCIIResponse(BaseResponse):
+
+    __version__ = __version__
+
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([

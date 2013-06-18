@@ -4,13 +4,13 @@ import urllib
 import itertools
 import operator
 
-import pkg_resources
+from pkg_resources import get_distribution
 
 from pydap.exceptions import ConstraintExpressionError
 
 
 __dap__ = '2.15'
-__version__ = pkg_resources.get_distribution("Pydap").version
+__version__ = get_distribution("Pydap").version
 
 
 START_OF_SEQUENCE = '\x5a\x00\x00\x00'

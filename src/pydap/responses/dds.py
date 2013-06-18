@@ -5,6 +5,7 @@ except ImportError:
 
 from pydap.model import *
 from pydap.responses.lib import BaseResponse
+from pydap.lib import __version__
 
 
 INDENT = ' ' * 4
@@ -24,6 +25,9 @@ typemap = {
 
 
 class DDSResponse(BaseResponse):
+
+    __version__ = __version__
+
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([

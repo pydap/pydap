@@ -23,7 +23,7 @@ from pydap.model import *
 # buffer size in bytes, for streaming data
 BUFFER_SIZE = 2**27
 
-CORS_RESPONSES = ['dds', 'das', 'dods', 'ver']
+CORS_RESPONSES = ['dds', 'das', 'dods', 'ver', 'json']
 
 
 def load_handlers():

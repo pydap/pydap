@@ -6,7 +6,7 @@ except ImportError:
 from collections import Iterable
 
 from pydap.model import *
-from pydap.lib import encode, quote
+from pydap.lib import encode, quote, __version__
 from pydap.responses.lib import BaseResponse
 from pydap.responses.dds import typemap
 
@@ -15,6 +15,9 @@ INDENT = ' ' * 4
 
 
 class DASResponse(BaseResponse):
+
+    __version__ = __version__
+
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
