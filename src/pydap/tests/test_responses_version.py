@@ -1,5 +1,6 @@
 import sys
 import unittest
+from json import dumps
 
 from webob import Request
 from webob.headers import ResponseHeaders
@@ -33,7 +34,7 @@ class TestVersionResponse(unittest.TestCase):
 
     def test_body(self):
         self.assertEqual(self.res.body, r"""{
-    "python": "2.7.4 (default, Apr 19 2013, 18:28:01) \n[GCC 4.7.3]", 
+    "python": %s, 
     "pydap": "3.2", 
     "dap": "2.15", 
     "responses": {
@@ -48,4 +49,4 @@ class TestVersionResponse(unittest.TestCase):
     "handlers": {
         "netcdf": "0.7"
     }
-}""")
+}""" % dumps(sys.version))
