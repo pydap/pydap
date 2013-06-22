@@ -22,31 +22,15 @@ a, .pure-menu a {
             border: none;
         }
 
-body .primary-button {
-    background: #02a6eb;
-    color: #fff;
-}
-
-.pydap-listing {
-    margin: 0;
+.content {
     margin-top: 3.5em;
-    width: 100%;
-}
-
-.content .content-subhead {
-    color: #999;
-    padding-bottom: 0.3em;
-    text-transform: uppercase;
-    margin: 0;
-    border-bottom: 2px solid #eee;
-    display: inline-block;
 }
 
 .footer {
     background: #111;
     color: #666;
     text-align: center;
-    padding: 1em;
+    padding: 0.5em;
     font-size: 80%;
 }
 
@@ -60,13 +44,43 @@ body .primary-button {
     text-align: center;
 }
 
-.opendap, .opendap a {
-    color: #ccc;
+.pydap-listing {
+    margin: 0;
+    width: 100%;
+}
+
+.dap, .dap a {
+    color: #aaa;
     font-size: 90%;
     visibility: hidden;
 }
 
-tr:hover td .opendap,
-tr:hover td .opendap a {
+tbody tr {
+    border-left: 4px solid #fff;
+}
+tbody tr:hover {
+    border-left: 4px solid #15c;
+}
+tbody tr:hover td {
+    background-color: #fafafa;
+}
+tbody tr:hover td .dap,
+tbody tr:hover td .dap a {
     visibility: visible;
+}
+
+dl {
+}
+dt {
+    float: left;
+    clear: left;
+    width: 100px;
+    text-align: right;
+    font-weight: bold;
+}
+dt:after {
+    content: ":";
+}
+dd {
+    margin: 0 0 0 110px;
 }

@@ -1,5 +1,7 @@
 {% extends "base.html" %}
+
 {% block title %}Index of {{ location }}{% endblock %}
+
 {% block breadcrumbs %}
 <ul>
     {% for crumb in breadcrumbs[:-1] %}
@@ -15,6 +17,7 @@
     {% endif %}
 </ul>
 {% endblock %}
+
 {% block content %}
 <table class="pure-table pydap-listing">
     <thead>
@@ -38,7 +41,7 @@
             {% if file.supported %}
             <td><i class="icon-globe icon-fixed-width"></i>
             <a title="Inspect and filter data" href="{{ file.name }}.html">{{ file.name }}</a>
-            <span class="opendap">
+            <span class="dap">
             <a title="View the DDS response" href="{{ file.name }}.dds">dds</a> |
             <a title="View the DAS response" href="{{ file.name }}.das">das</a>
             </span>
@@ -55,6 +58,7 @@
     </tbody>
 </table>
 {% endblock %}
+
 {% block footer %}
 <p itemscope itemtype="http://schema.org/WebApplication">
 <a itemprop="url" href="http://pydap.org/"><span itemprop="name">Pydap</span> <span itemprop="softwareVersion">{{ version }}</span></a>, released under the <a href="http://opensource.org/licenses/MIT">MIT license</a> (c) Roberto De Almeida.

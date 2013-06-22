@@ -14,6 +14,8 @@ Options:
 
 """
 
+# XXX TODO remove werkzeug and add init()
+
 import os
 import re
 import mimetypes
@@ -40,18 +42,19 @@ class DapServer(object):
         # the default loader reads templates from the package
         loaders = [PackageLoader("pydap", "wsgi/templates")]
 
-        # optionally, the user can specify a template directory that will
-        # override the default templates
+        # optionally, the user can also specify a template directory that will
+        # override the default templates; this should have precedence over the
+        # default templates
         if templates is not None:
             loaders.insert(0, FileSystemLoader(templates))
 
-        # set the environment; this is also used by pydap responses that need
-        # to render templates (like HTML, WMS, KML, etc.)
+        # set the rendering environment; this is also used by pydap responses
+        # that need to render templates (like HTML, WMS, KML, etc.)
         self.env = Environment(loader=ChoiceLoader(loaders))
         self.env.filters["formatsize"] = formatsize
         self.env.filters["datetimeformat"] = datetimeformat
 
-        # cache available handlers
+        # cache available handlers, so we don't need to load them every request
         self.handlers = load_handlers()
 
     @wsgify
@@ -103,7 +106,7 @@ class DapServer(object):
         breadcrumbs = [{
             "url": "/".join([req.application_url] + tokens[:i+1]),
             "title": token,
-        } for i, token in enumerate(tokens)]
+        } for i, token in enumerate(tokens) if token]
 
         context = {
             "root": req.application_url,

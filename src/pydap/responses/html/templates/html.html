@@ -1,5 +1,8 @@
 {% extends "base.html" %}
+{% from "macros.html" import dispatch %}
+
 {% block title %}Dataset {{ location }}{% endblock %}
+
 {% block breadcrumbs %}
 <ul>
     {% for crumb in breadcrumbs[:-1] %}
@@ -10,14 +13,19 @@
     {% endfor %}
     {% if breadcrumbs %}
     <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="pure-menu-selected">
-    <a itemprop="url" href="{{ breadcrumbs[-1].url }}/"><span itemprop="title">{{ breadcrumbs[-1].title }}</span></a>
+    <a itemprop="url" href="{{ breadcrumbs[-1].url }}"><span itemprop="title">{{ breadcrumbs[-1].title[:-5] }}</span></a>
     </li>
     {% endif %}
 </ul>
 {% endblock %}
+
 {% block content %}
-<p>Hi there!</p>
+<form class="pure-form pure-form-aligned">
+<button class="pure-button">Download data</button> as 
+{{ dispatch(dataset) }}
+</form>
 {% endblock %}
+
 {% block footer %}
 <p itemscope itemtype="http://schema.org/WebApplication">
 <a itemprop="url" href="http://pydap.org/"><span itemprop="name">Pydap</span> <span itemprop="softwareVersion">{{ version }}</span></a>, released under the <a href="http://opensource.org/licenses/MIT">MIT license</a> (c) Roberto De Almeida.

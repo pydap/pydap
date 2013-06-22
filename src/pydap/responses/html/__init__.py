@@ -43,11 +43,11 @@ class HTMLResponse(BaseResponse):
         except (KeyError, TemplateNotFound):
             template = self.env.get_template("html.html")
 
-        tokens = req.path_info.split("/")[1:-1]
+        tokens = req.path_info.split("/")[1:]
         breadcrumbs = [{
             "url": "/".join([req.application_url] + tokens[:i+1]),
             "title": token,
-        } for i, token in enumerate(tokens)]
+        } for i, token in enumerate(tokens) if token]
 
         context = {
             "root": req.application_url,
