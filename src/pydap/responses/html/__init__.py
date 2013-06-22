@@ -6,6 +6,8 @@ The user can select a subset of the data and download in different formats.
 """
 
 from jinja2 import Environment, PackageLoader, ChoiceLoader, TemplateNotFound
+from webob import Request, Response
+from webob.dec import wsgify
 
 from pydap.responses.lib import BaseResponse
 from pydap.lib import __version__
@@ -32,14 +34,28 @@ class HTMLResponse(BaseResponse):
         ]
         self.env = Environment(loader=ChoiceLoader(loaders))
 
-    def __call__(self, environ, start_response):
+    @wsgify
+    def __call__(self, req):
         # check if the server has specified a render environment
         try:
-            env = environ["pydap.jinja2.environment"]
+            env = req.environ["pydap.jinja2.environment"]
             template = env.get_template("html.html")
         except (KeyError, TemplateNotFound):
             template = self.env.get_template("html.html")
 
+        tokens = req.path_info.split("/")[1:-1]
+        breadcrumbs = [{
+            "url": "/".join([req.application_url] + tokens[:i+1]),
+            "title": token,
+        } for i, token in enumerate(tokens)]
+
+        context = {
+            "root": req.application_url,
+            "location": req.path_url,
+            "breadcrumbs": breadcrumbs,
+            "dataset": self.dataset,
+            "version": __version__,
+        }
         return Response(
             body=template.render(context),
             content_type="text/html",
