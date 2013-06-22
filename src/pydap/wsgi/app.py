@@ -62,7 +62,7 @@ class DapServer(object):
         
         """
         path = os.path.abspath(
-            os.path.join(self.path, *req.path_info.split('/')))
+            os.path.join(self.path, *req.path_info.split("/")))
 
         if not path.startswith(self.path):
             return HTTPForbidden()
@@ -99,9 +99,9 @@ class DapServer(object):
         } for path in content if os.path.isdir(path)]
         directories.sort(key=lambda d: alphanum_key(d["name"]))
 
-        tokens = directory[len(self.path):].split('/')[1:]
+        tokens = req.path_info.split("/")[1:]
         breadcrumbs = [{
-            "url": '/'.join([req.application_url] + tokens[:i+1]),
+            "url": "/".join([req.application_url] + tokens[:i+1]),
             "title": token,
         } for i, token in enumerate(tokens)]
 
