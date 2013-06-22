@@ -68,7 +68,7 @@ def _(var, printname=True):
         yield var.id
         yield '\n'
 
-    if not var.shape:
+    if not getattr(var, "shape", ()):
         yield encode(var.data)
     else:
         for indexes, value in izip(np.ndindex(var.shape), var.data.flat):
