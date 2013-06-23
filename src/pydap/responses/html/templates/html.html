@@ -21,13 +21,13 @@
 
 {% block content %}
 <div class="form">
-    <form class="pure-form pure-form-aligned" action="{{ location }}" method="post">
-        <button class="pure-button pure-button-submit">
+    <form class="pure-form pure-form-aligned" action="{{ location }}" method="POST">
+        <button type="submit" class="pure-button pure-button-submit">
             <i class="icon-download-alt"></i>
             Download data
         </button>
         {{ dispatch(dataset) }}
-        <button class="pure-button pure-button-submit">
+        <button type="submit" class="pure-button pure-button-submit">
             <i class="icon-download-alt"></i>
             Download data
         </button>
@@ -37,6 +37,6 @@
 
 {% block footer %}
 <p itemscope itemtype="http://schema.org/WebApplication">
-<a itemprop="url" href="http://pydap.org/"><span itemprop="name">Pydap</span> <span itemprop="softwareVersion">{{ version }}</span></a>, released under the <a href="http://opensource.org/licenses/MIT">MIT license</a> (c) Roberto De Almeida.
+<a itemprop="url" href="http://pydap.org/"><span itemprop="name">Pydap</span> <span itemprop="softwareVersion">{{ version }}</span></a>, released under the <a href="http://opensource.org/licenses/MIT">MIT license</a> (c) 2003&ndash;2013 Roberto De Almeida.
 </p>
 {% endblock %}

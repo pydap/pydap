@@ -113,20 +113,23 @@ def add_attributes(dataset, attributes):
     dataset.attributes['NC_GLOBAL'] = attributes.get('NC_GLOBAL', {})
     dataset.attributes['DODS_EXTRA'] = attributes.get('DODS_EXTRA', {})
 
+    for var in list(walk(dataset))[::-1]:
+        # attributes can be flat, eg, "foo.bar" : {...}
+        if var.id in attributes:
+            var.attributes.update(attributes.pop(var.id))
+
+        # or nested, eg, "foo" : { "bar" : {...} }
+        try:
+            nested = reduce(
+                operator.getitem, [attributes] + var.id.split('.')[:-1])
+            k = var.id.split('.')[-1]
+            var.attributes.update(nested.pop(k))
+        except KeyError:
+            pass
+
     # add attributes that don't belong to any child
     for k, v in attributes.items():
         if k not in dataset:
             dataset.attributes[k] = v
-
-    for var in walk(dataset):
-        # attributes can be flat, eg, "foo.bar" : {...}
-        if var.id in attributes:
-            var.attributes.update(attributes[var.id])
-        # or nested, eg, "foo" : { "bar" : {...} }
-        try:
-            var.attributes.update(
-                reduce(operator.getitem, [attributes] + var.id.split('.')))
-        except KeyError:
-            pass
 
     return dataset
