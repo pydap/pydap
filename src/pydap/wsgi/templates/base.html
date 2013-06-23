@@ -22,7 +22,11 @@
                 {% block content %}{% endblock %}
             </div>
             <div class="footer pure-u-1">
-                {% block footer %}{% endblock %}
+                {% block footer %}                                                              
+                <p itemscope itemtype="http://schema.org/WebApplication">                       
+                <a itemprop="url" href="http://pydap.org/"><span itemprop="name">Pydap</span> <span itemprop="softwareVersion">{{ version }}</span></a>, released under the <a href="http://opensource.org/licenses/MIT">MIT license</a> (c) 2003&ndash;2013 Roberto De Almeida.
+                </p>                                                                            
+                {% endblock %}
             </div>
         </div>
         <script src="http://yui.yahooapis.com/3.10.1/build/yui/yui-min.js"></script>
