@@ -28,20 +28,21 @@ class HTMLResponse(BaseResponse):
 
         # our default environment; we need to include the base template from
         # pydap as well since our template extends it
-        loaders = [
+        self.loaders = [
             PackageLoader("pydap", "responses/html/templates"),
             PackageLoader("pydap", "wsgi/templates"),
         ]
-        self.env = Environment(loader=ChoiceLoader(loaders))
 
     @wsgify
     def __call__(self, req):
-        # check if the server has specified a render environment
-        try:
-            env = req.environ["pydap.jinja2.environment"]
-            template = env.get_template("html.html")
-        except (KeyError, TemplateNotFound):
-            template = self.env.get_template("html.html")
+        # check if the server has specified a render environment; if it has, 
+        # make a copy and add our loaders to it
+        if "pydap.jinja2.environment" in req.environ:
+            env = req.environ["pydap.jinja2.environment"].overlay()
+            env.loader = ChoiceLoader([env.loader] + self.loaders)
+        else:
+            env = Environment(loader=self.loaders)
+        template = env.get_template("html.html")
 
         tokens = req.path_info.split("/")[1:]
         breadcrumbs = [{
@@ -56,6 +57,7 @@ class HTMLResponse(BaseResponse):
             "dataset": self.dataset,
             "version": __version__,
         }
+
         return Response(
             body=template.render(context),
             content_type="text/html",
