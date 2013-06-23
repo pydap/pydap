@@ -69,18 +69,42 @@ tbody tr:hover td .dap a {
     visibility: visible;
 }
 
+div.attributes {
+    font-size: 90%;
+} 
+
 dl {
 }
 dt {
     float: left;
     clear: left;
-    width: 100px;
+    width: 9em;
     text-align: right;
-    font-weight: bold;
-}
-dt:after {
-    content: ":";
+    color: #999;
 }
 dd {
-    margin: 0 0 0 110px;
+    margin: 0 0 0 10em;
+}
+
+div.form {
+    padding: 1.0em;
+}
+
+.pure-button-submit {
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.pure-button-submit {
+    background: rgb(28, 184, 65); /* this is a green */
+}
+
+div.nested {
+    margin-left: -8em;
+    clear: left;
+}
+
+fieldset {
+    clear: left;
 }
