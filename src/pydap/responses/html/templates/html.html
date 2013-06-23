@@ -9,7 +9,7 @@
     <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
     <a itemprop="url" href="{{ crumb.url }}/"><span itemprop="title">{{ crumb.title }}</span></a>
     </li>
-    <li>›</li>                                              
+    <li><i class="icon-angle-right"></i></li>                                              
     {% endfor %}
     {% if breadcrumbs %}
     <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="pure-menu-selected">
@@ -20,10 +20,19 @@
 {% endblock %}
 
 {% block content %}
-<form class="pure-form pure-form-aligned">
-<button class="pure-button">Download data</button> as 
-{{ dispatch(dataset) }}
-</form>
+<div class="form">
+    <form class="pure-form pure-form-aligned" action="{{ location }}" method="post">
+        <button class="pure-button pure-button-submit">
+            <i class="icon-download-alt"></i>
+            Download data
+        </button>
+        {{ dispatch(dataset) }}
+        <button class="pure-button pure-button-submit">
+            <i class="icon-download-alt"></i>
+            Download data
+        </button>
+    </form>
+</div>
 {% endblock %}
 
 {% block footer %}

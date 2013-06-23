@@ -1,0 +1,65 @@
+{% macro dispatch(var) %}
+<h2>{{ var.id|unquote }}</h2>
+
+{% if var.maps %}
+<label for="{{ var.id }}" class="pure-checkbox">
+    <input id="{{ var.id }}" type="checkbox" value="">
+    Download this variable
+</label>
+
+{{ attributes(var.attributes) }}
+
+<fieldset>
+    {% for name in var.maps %}
+    <div class="pure-control-group">
+        <label for="{{ var[name].id }}">{{ name }}</label>
+        <input 
+            id="{{ var[name].id }}" 
+            type="text" 
+            placeholder="0:1:{{ var[name].shape[0]-1 }}">
+    </div>
+    {% endfor %}
+</fieldset>
+{% elif var.shape %}
+<label for="{{ var.id }}" class="pure-checkbox">
+    <input id="{{ var.id }}" type="checkbox" value="">
+    Download this variable
+</label>
+
+{{ attributes(var.attributes) }}
+
+<fieldset>
+    <div class="pure-control-group">
+        <label for="{{ var.id }}">{{ var.name }}</label>
+        <input 
+            id="{{ var.id }}" 
+            type="text" 
+            placeholder="0:1:{{ var.shape[0]-1 }}">
+    </div>
+</fieldset>
+{% else %}
+{{ attributes(var.attributes) }}
+
+{% for child in var.children() %}
+{{ dispatch(child) }}
+{% endfor %}
+{% endif %}
+
+{% endmacro %}
+
+{% macro attributes(d) %}
+<dl>
+    {% for k, v in d.items() %}
+    <dt>{{ k }}</dt>
+    <dd>
+    {% if v.items %}
+    <div class="nested">
+    {{ attributes(v) }}
+    <div>
+    {% else %}
+    {{ v }}
+    {% endif %}
+    </dd>
+    {% endfor %}
+</dl>
+{% endmacro %}

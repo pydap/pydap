@@ -14,12 +14,11 @@ Options:
 
 """
 
-# XXX TODO remove werkzeug and add init()
-
 import os
 import re
 import mimetypes
 from datetime import datetime
+import urllib
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader, ChoiceLoader
 from webob import Request, Response
@@ -54,6 +53,7 @@ class DapServer(object):
         self.env = Environment(loader=ChoiceLoader(loaders))
         self.env.filters["formatsize"] = formatsize
         self.env.filters["datetimeformat"] = datetimeformat
+        self.env.filters["unquote"] = urllib.unquote
 
         # cache available handlers, so we don't need to load them every request
         self.handlers = load_handlers()
