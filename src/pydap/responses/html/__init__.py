@@ -29,7 +29,7 @@ class HTMLResponse(BaseResponse):
         # our default environment; we need to include the base template from
         # pydap as well since our template extends it
         self.loaders = [
-            PackageLoader("pydap", "responses/html/templates"),
+            PackageLoader("pydap.responses.html", "templates"),
             PackageLoader("pydap", "wsgi/templates"),
         ]
 
