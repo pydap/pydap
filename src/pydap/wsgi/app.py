@@ -25,7 +25,8 @@ from jinja2 import Environment, PackageLoader, FileSystemLoader, ChoiceLoader
 from webob import Request, Response
 from webob.dec import wsgify
 from webob.exc import HTTPNotFound, HTTPForbidden
-from webob.static import FileApp
+from webob.static import FileApp, DirectoryApp
+import pkg_resources
 
 from pydap.lib import __version__
 from pydap.handlers.lib import get_handler, load_handlers
@@ -172,13 +173,50 @@ def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
     return value.strftime(format)
 
 
+class StaticMiddleware(object):
+
+    """WSGI middleware for static assets.
+
+    The assets can be either specified as a directory, or retrieved from a 
+    Python package. Inspired by ``werkezeug.wsgi.SharedDataMiddleware``.
+
+    """
+
+    def __init__(self, app, static):
+        self.app = app
+        self.static = static
+
+    @wsgify
+    def __call__(self, req):
+        if req.path_info_peek() != "static":
+            return req.get_response(self.app)
+
+        # strip "/static"
+        req.path_info_pop()
+
+        # statically serve the directory
+        if isinstance(self.static, basestring):
+            return req.get_response(DirectoryApp(self.static))
+
+        # otherwise, load resource from package
+        package, resource_path = self.static
+        resource = os.path.join(resource_path, *req.path_info.split('/'))
+        if not pkg_resources.resource_exists(package, resource):
+            return exc.HTTPNotFound(req.path_info)
+
+        content_type, content_encoding = mimetypes.guess_type(resource)
+        return Response(
+            body=pkg_resources.resource_string(package, resource),
+            content_type=content_type,
+            content_encoding=content_encoding)
+
+
 def main():
     """Run server from the command line."""
     import multiprocessing
 
     from docopt import docopt
     from gunicorn.app.pasterapp import paste_server
-    from werkzeug.wsgi import SharedDataMiddleware
 
     arguments = docopt(__doc__, version="Pydap %s" % __version__)
 
@@ -192,9 +230,7 @@ def main():
         static = os.path.join(templates, "static")
     else:
         static = ("pydap", "wsgi/templates/static")
-    app = SharedDataMiddleware(app, {
-        '/static': static,
-    })
+    app = StaticMiddleware(app, static) 
 
     # configure WSGI server
     workers = multiprocessing.cpu_count() * 2 + 1
