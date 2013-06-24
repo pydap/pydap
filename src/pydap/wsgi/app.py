@@ -6,6 +6,7 @@ Usage:
 Options:
   -h --help                     Show this help message and exit
   --version                     Show version
+  -i --init DIR                 Create directory with templates
   -b ADDRESS --bind ADDRESS     The ip to listen to [default: 127.0.0.1]
   -p PORT --port PORT           The port to connect [default: 8001]
   -d DIR --data DIR             The directory with files [default: .]
@@ -19,6 +20,7 @@ import re
 import mimetypes
 from datetime import datetime
 import urllib
+import shutil
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader, ChoiceLoader
 from webob import Request, Response
@@ -40,7 +42,7 @@ class DapServer(object):
         self.path = os.path.abspath(path)
 
         # the default loader reads templates from the package
-        loaders = [PackageLoader("pydap", "wsgi/templates")]
+        loaders = [PackageLoader("pydap.wsgi", "templates")]
 
         # optionally, the user can also specify a template directory that will
         # override the default templates; this should have precedence over the
@@ -202,13 +204,27 @@ class StaticMiddleware(object):
         package, resource_path = self.static
         resource = os.path.join(resource_path, *req.path_info.split('/'))
         if not pkg_resources.resource_exists(package, resource):
-            return exc.HTTPNotFound(req.path_info)
+            return HTTPNotFound(req.path_info)
 
         content_type, content_encoding = mimetypes.guess_type(resource)
         return Response(
             body=pkg_resources.resource_string(package, resource),
             content_type=content_type,
             content_encoding=content_encoding)
+
+
+def init(directory):
+    """Create directory with default templates."""
+    # copy main templates
+    templates = pkg_resources.resource_filename("pydap.wsgi", "templates")
+    shutil.copytree(templates, directory)
+
+    # copy templates from HTML response
+    for resource in pkg_resources.resource_listdir(
+        "pydap.responses.html", "templates"):
+        path = pkg_resources.resource_filename(
+            "pydap.responses.html", "templates/{0}".format(resource))
+        shutil.copy(path, directory)
 
 
 def main():
@@ -220,6 +236,10 @@ def main():
 
     arguments = docopt(__doc__, version="Pydap %s" % __version__)
 
+    # init templates?
+    if arguments["--init"]:
+        return init(arguments["--init"])
+
     # create pydap app
     data, templates = arguments["--data"], arguments["--templates"]
     app = DapServer(data, templates)
@@ -229,7 +249,7 @@ def main():
     if templates and os.path.exists(os.path.join(templates, "static")):
         static = os.path.join(templates, "static")
     else:
-        static = ("pydap", "wsgi/templates/static")
+        static = ("pydap.wsgi", "templates/static")
     app = StaticMiddleware(app, static) 
 
     # configure WSGI server
