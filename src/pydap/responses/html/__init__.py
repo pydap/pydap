@@ -5,6 +5,8 @@ The user can select a subset of the data and download in different formats.
 
 """
 
+import urllib 
+
 from jinja2 import Environment, PackageLoader, ChoiceLoader, TemplateNotFound
 from webob import Request, Response
 from webob.dec import wsgify
@@ -31,7 +33,7 @@ class HTMLResponse(BaseResponse):
         # pydap as well since our template extends it
         self.loaders = [
             PackageLoader("pydap.responses.html", "templates"),
-            PackageLoader("pydap", "wsgi/templates"),
+            PackageLoader("pydap.wsgi", "templates"),
         ]
 
     @wsgify
@@ -46,7 +48,8 @@ class HTMLResponse(BaseResponse):
             env = req.environ["pydap.jinja2.environment"].overlay()
             env.loader = ChoiceLoader([env.loader] + self.loaders)
         else:
-            env = Environment(loader=self.loaders)
+            env = Environment(loader=ChoiceLoader(self.loaders))
+            env.filters["unquote"] = urllib.unquote
         template = env.get_template("html.html")
 
         tokens = req.path_info.split("/")[1:]
