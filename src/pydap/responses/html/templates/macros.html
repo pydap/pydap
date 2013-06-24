@@ -86,6 +86,8 @@ Filter where
     <div class="nested">
     {{ attributes(v) }}
     <div>
+    {% elif v.__iter__ %}
+    {{ v|join(", ") }}
     {% else %}
     {{ v }}
     {% endif %}
