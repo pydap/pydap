@@ -79,6 +79,7 @@ Filter where
 {% macro attributes(d) %}
 <dl>
     {% for k, v in d.items() %}
+    {% if v %}
     <dt>{{ k }}</dt>
     <dd>
     {% if v.items %}
@@ -89,6 +90,7 @@ Filter where
     {{ v }}
     {% endif %}
     </dd>
+    {% endif %}
     {% endfor %}
 </dl>
 {% endmacro %}
