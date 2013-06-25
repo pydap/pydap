@@ -466,9 +466,6 @@ class SequenceType(StructureType):
 
     data = property(_get_data, _set_data)
 
-    def __setitem__(self, key, item):
-        StructureType.__setitem__(self, key, item)
-
     def __len__(self):
         return len(self.data)
 
