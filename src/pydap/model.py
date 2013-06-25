@@ -302,6 +302,7 @@ class StructureType(DapType):
         item.id = '%s.%s' % (self.id, item.name)
 
     def __getitem__(self, key):
+        key = quote(key)
         return self._dict[key]
 
     def __delitem__(self, key):
