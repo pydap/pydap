@@ -1,8 +1,6 @@
 from setuptools import setup, find_packages
 import sys, os
 
-here = os.path.abspath(os.path.dirname(__file__))
-
 
 __version__ = '3.2'
 
@@ -12,7 +10,9 @@ install_requires = [
     'singledispatch',
     'Webob',
     'Jinja2',
+    'docopt',
     'gunicorn',
+    'PasteDeploy',
     'coards',
     'gsw',
 ]
