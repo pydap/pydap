@@ -29,6 +29,10 @@ class VersionResponse(object):
                 (ep.name, getattr(ep.load(), "__version__", "Unknown"))
                 for ep in iter_entry_points("pydap.response")
             ),
+            "functions": dict(
+                (ep.name, getattr(ep.load(), "__version__", "Unknown"))
+                for ep in iter_entry_points("pydap.function")
+            ),
             "python": sys.version,
         }
         self.body = dumps(output, indent=4)
