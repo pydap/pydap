@@ -1,4 +1,5 @@
 from urlparse import urlsplit, urlunsplit
+from urllib import quote
 
 import numpy as np
 import requests
@@ -71,7 +72,7 @@ class BaseProxy(object):
         scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
         url = urlunsplit((
                 scheme, netloc, path + '.dods',
-                self.id + hyperslab(index) + '&' + query,
+                quote(self.id) + hyperslab(index) + '&' + query,
                 fragment)).rstrip('&')
 
         # download and unpack data
@@ -145,8 +146,8 @@ class SequenceProxy(object):
             id = self.id
         url = urlunsplit((
                 scheme, netloc, path + '.dods',
-                id + hyperslab(self.slice) + '&' + '&'.join(self.selection),
-                fragment)).rstrip('&')
+                quote(id) + hyperslab(self.slice) + '&' + 
+                '&'.join(self.selection), fragment)).rstrip('&')
 
         # download and unpack data
         r = requests.get(url, stream=True)

@@ -6,6 +6,7 @@ DDS and DAS responses.
 """
 
 import re
+from urllib import quote, unquote
 
 
 def parse_projection(input):
@@ -73,7 +74,7 @@ def parse_ce(query_string):
     Returns a tuple with the projection and the selection.
 
     """
-    tokens = [token for token in query_string.split('&') if token]
+    tokens = [token for token in unquote(query_string).split('&') if token]
     if not tokens:
         projection = []
         selection = []
