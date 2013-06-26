@@ -34,11 +34,11 @@ def density(dataset, salinity, temperature, pressure):
     out.data = np.rec.fromrecords(rho.reshape(-1, 1), names=['rho'])
     return out
 
+density.__version__ = "0.1"
+
 
 def bounds(dataset, xmin, xmax, ymin, ymax, zmin, zmax, tmin, tmax):
     """
-    Version 1.0
-
     This function is used by GrADS to access Sequences, eg:
 
         http://server.example.com/dataset.dods?sequence&bounds(0,360,-90,90,500,500,00Z01JAN1970,00Z01JAN1970)
@@ -87,6 +87,8 @@ def bounds(dataset, xmin, xmax, ymin, ymax, zmin, zmax, tmin, tmax):
 
     return sequence
 
+bounds.__version__ = "1.0"
+
 
 def parse_step(step):
     """
@@ -109,8 +111,6 @@ def parse_step(step):
 
 def mean(dataset, var, axis=0):
     """
-    Version 1.0
-
     Calculates the mean of an array along a given axis.
 
     """
@@ -134,3 +134,5 @@ def mean(dataset, var, axis=0):
             out[dim] = BaseType(name=dim, data=var[dim].data[:],
                     dimensions=(dim,), attributes=var[dim].attributes)
         return out
+
+mean.__version__ = "1.0"
