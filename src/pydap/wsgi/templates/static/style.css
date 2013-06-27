@@ -74,17 +74,19 @@ div.attributes {
 } 
 
 dl {
+    padding-top: 1.65em;
 }
-dt {
-    float: left;
-    clear: left;
-    width: 9em;
-    text-align: right;
-    color: #999;
-}
-dd {
-    margin: 0 0 0 10em;
-}
+
+dt {                                                                            
+    width: 9em;                                                                 
+    text-align: right;                                                          
+    color: #999;                                                                
+    overflow: hidden;
+}                                                                               
+dd {                   
+    position: relative;
+    margin: -1.65em 0 0 10em;                                                         
+}          
 
 div.form {
     padding: 1.0em;

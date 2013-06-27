@@ -83,10 +83,9 @@
 {% macro attributes(d) %}
 <dl>
     {% for k, v in d.items() %}
-    {% if v %}
     <dt>{{ k }}</dt>
     <dd>
-    {% if v.items %}
+    {% if v.__class__.__name__ == 'dict' %}
     <div class="nested">
     {{ attributes(v) }}
     </div>
@@ -96,7 +95,6 @@
     {{ v }}
     {% endif %}
     </dd>
-    {% endif %}
     {% endfor %}
 </dl>
 {% endmacro %}
