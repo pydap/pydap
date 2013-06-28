@@ -46,6 +46,10 @@
             <a title="View the DAS response" href="{{ file.name }}.das">das</a>
             </span>
             </td>
+            {% elif file.name.endswith(".html") %}
+            <td><i class="icon-file icon-fixed-width"></i>
+            <a href="{{ file.name }}">{{ file.name }}</a>
+            </td>
             {% else %}
             <td><i class="icon-file icon-fixed-width"></i>
             {{ file.name }}
