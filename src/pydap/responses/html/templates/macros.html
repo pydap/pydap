@@ -84,17 +84,17 @@
 <dl>
     {% for k, v in d.items() %}
     <dt>{{ k }}</dt>
+    {% if v is mapping %}
     <dd>
-    {% if v.__class__.__name__ == 'dict' %}
     <div class="nested">
     {{ attributes(v) }}
     </div>
-    {% elif v.__iter__ %}
-    {{ v|join(", ") }}
-    {% else %}
-    {{ v }}
-    {% endif %}
     </dd>
+    {% elif v is sequence and not v is string %}
+    <dd class="value">{{ v|join(", ") }}</dd>
+    {% else %}
+    <dd class="value">{{ v }}</dd>
+    {% endif %}
     {% endfor %}
 </dl>
 {% endmacro %}
