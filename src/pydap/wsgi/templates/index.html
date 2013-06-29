@@ -55,7 +55,7 @@
             {{ file.name }}
             </td>
             {% endif %}
-            <td><a title="Download file" href="{{ file.name }}">{{ file.size|formatsize }}</a></td>
+            <td><a title="Download file" href="{{ file.name }}">{{ file.size|filesizeformat}}</a></td>
             <td>{{ file.last_modified|datetimeformat }}</td>
         </tr>
         {% endfor %}

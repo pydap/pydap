@@ -23,7 +23,7 @@ import urllib
 import shutil
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader, ChoiceLoader
-from webob import Request, Response
+from webob import Response
 from webob.dec import wsgify
 from webob.exc import HTTPNotFound, HTTPForbidden
 from webob.static import FileApp, DirectoryApp
@@ -53,7 +53,6 @@ class DapServer(object):
         # set the rendering environment; this is also used by pydap responses
         # that need to render templates (like HTML, WMS, KML, etc.)
         self.env = Environment(loader=ChoiceLoader(loaders))
-        self.env.filters["formatsize"] = formatsize
         self.env.filters["datetimeformat"] = datetimeformat
         self.env.filters["unquote"] = urllib.unquote
 
@@ -135,7 +134,7 @@ def supported(filepath, handlers=None):
     try:
         get_handler(filepath, handlers)
         return True
-    except:
+    except ExtensionNotSupportedError:
         return False
 
 
@@ -156,18 +155,6 @@ def alphanum_key(s):
         except:
             return s
     return [tryint(c) for c in re.split('([0-9]+)', s)]
-
-
-def formatsize(size):
-    """Return file size as a human readable string."""
-    if not size:
-        return "Empty"
-
-    for units in ["bytes", "KB", "MB", "GB", "TB"]:
-        if size < 1024:
-            return "%d %s" % (size, units)
-        size /= 1024
-    return "%d PB" % size
 
 
 def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):

@@ -71,22 +71,22 @@ tbody tr:hover td .dap a {
 
 div.attributes {
     font-size: 90%;
-} 
+}
 
 dl {
     padding-top: 1.65em;
 }
 
-dt {                                                                            
-    width: 9em;                                                                 
-    text-align: right;                                                          
-    color: #999;                                                                
+dt {
+    width: 9em;
+    text-align: right;
+    color: #999;
     overflow: hidden;
-}                                                                               
-dd {                   
+}
+dd {
     position: relative;
-    margin: -1.65em 0 0 10em;                                                         
-}          
+    margin: -1.65em 0 0 10em;
+}
 
 div.form {
     padding: 1.0em;
