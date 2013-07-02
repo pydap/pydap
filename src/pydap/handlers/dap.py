@@ -1,3 +1,13 @@
+"""A handler for remote datasets.
+
+DAP handlers convert from different data formats (NetCDF, eg) to the internal
+Pydap model. The Pydap client is just a handler that converts from a remote
+dataset to the internal model.
+
+"""
+
+import sys
+import pprint
 from urlparse import urlsplit, urlunsplit
 from urllib import quote
 
@@ -5,9 +15,10 @@ import numpy as np
 import requests
 
 from pydap.model import *
-from pydap.lib import (encode, combine_slices, fix_slice, hyperslab,
-        START_OF_SEQUENCE, END_OF_SEQUENCE, walk)
-from pydap.handlers.lib import ConstraintExpression, BaseHandler, IterData
+from pydap.lib import (
+    encode, combine_slices, fix_slice, hyperslab,
+    START_OF_SEQUENCE, END_OF_SEQUENCE, walk)
+from pydap.handlers.lib import ConstraintExpression, BaseHandler
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 from pydap.parsers import parse_ce
@@ -17,13 +28,18 @@ BLOCKSIZE = 512
 
 
 class DAPHandler(BaseHandler):
+
+    """Build a dataset from a DAP base URL."""
+
     def __init__(self, url):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
+
         ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
         r = requests.get(ddsurl)
         r.raise_for_status()
         dds = r.text.encode('utf-8')
+
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
         r = requests.get(dasurl)
         r.raise_for_status()
@@ -49,37 +65,52 @@ class DAPHandler(BaseHandler):
             while var:
                 token, index = var.pop(0)
                 target = target[token]
-                # XXX this needs to be tested in Grids and Sequences
-                if index and isinstance(target.data, BaseProxy):
-                    target.data.slice = fix_slice(index, target.shape)
+                if isinstance(target, BaseType):
+                    target.data.slice = fix_slice(index, target.shape) 
+                elif isinstance(target, GridType):
+                    index = fix_slice(index, target.array.shape)
+                    target.array.data.slice = index
+                    for s, child in zip(index, target.maps):
+                        target[child].data.slice = (s,)
+                elif isinstance(target, SequenceType):
+                    target.data.slice = index
 
 
 class BaseProxy(object):
+
+    """A proxy for remote base types.
+
+    This class behaves like a Numpy array, proxying the data from a base type
+    on a remote dataset.
+
+    """
+
     def __init__(self, baseurl, id, descr, slice_=None):
         self.baseurl = baseurl
         self.id = id
         self.dtype = np.dtype(descr[1])
         self.shape = descr[2]
-        self.slice = slice_ or tuple(slice(None) for s in self.shape) 
+        self.slice = slice_ or tuple(slice(None) for s in self.shape)
 
     def __repr__(self):
-        return 'BaseProxy(%s)' % ', '.join(map(repr,
-            [self.baseurl, self.id, self.dtype, self.shape, self.slice]))
+        return 'BaseProxy(%s)' % ', '.join(
+            map(repr, [
+                self.baseurl, self.id, self.dtype, self.shape, self.slice]))
 
     def __getitem__(self, index):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
         scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
         url = urlunsplit((
-                scheme, netloc, path + '.dods',
-                quote(self.id) + hyperslab(index) + '&' + query,
-                fragment)).rstrip('&')
+            scheme, netloc, path + '.dods',
+            quote(self.id) + hyperslab(index) + '&' + query,
+            fragment)).rstrip('&')
 
         # download and unpack data
         r = requests.get(url)
         r.raise_for_status()
         dds, data = r.content.split('\nData:\n', 1)
-        
+
         if self.shape:
             # skip size packing
             if self.dtype.char == 'S':
@@ -111,15 +142,33 @@ class BaseProxy(object):
         return iter(self[:])
 
     # Comparisons return a boolean array
-    def __eq__(self, other): return self[:] == other
-    def __ne__(self, other): return self[:] != other
-    def __ge__(self, other): return self[:] >= other
-    def __le__(self, other): return self[:] <= other
-    def __gt__(self, other): return self[:] > other
-    def __lt__(self, other): return self[:] < other
+    def __eq__(self, other):
+        return self[:] == other
+
+    def __ne__(self, other):
+        return self[:] != other
+
+    def __ge__(self, other):
+        return self[:] >= other
+
+    def __le__(self, other):
+        return self[:] <= other
+
+    def __gt__(self, other):
+        return self[:] > other
+
+    def __lt__(self, other):
+        return self[:] < other
 
 
 class SequenceProxy(object):
+
+    """A proxy for remote sequences.
+
+    This class behaves like a Numpy structured array, proxying the data from a
+    sequence on a remote dataset.
+
+    """
 
     shape = ()
 
@@ -135,8 +184,10 @@ class SequenceProxy(object):
         self.slice = slice_ or (slice(None),)
 
     def __repr__(self):
-        return 'SequenceProxy(%s)' % ', '.join(map(repr,
-            [self.baseurl, self.id, self.descr, self.selection, self.slice]))
+        return 'SequenceProxy(%s)' % ', '.join(
+            map(repr, [
+                self.baseurl, self.id, self.descr, self.selection, self.slice
+                ]))
 
     def __iter__(self):
         scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
@@ -145,9 +196,9 @@ class SequenceProxy(object):
         else:
             id = self.id
         url = urlunsplit((
-                scheme, netloc, path + '.dods',
-                quote(id) + hyperslab(self.slice) + '&' + 
-                '&'.join(self.selection), fragment)).rstrip('&')
+            scheme, netloc, path + '.dods',
+            quote(id) + hyperslab(self.slice) + '&' +
+            '&'.join(self.selection), fragment)).rstrip('&')
 
         # download and unpack data
         r = requests.get(url, stream=True)
@@ -172,10 +223,14 @@ class SequenceProxy(object):
         # return the data for a children
         if isinstance(key, basestring):
             out.id = '{id}.{child}'.format(id=self.id, child=key)
+
             def get_child(descr):
                 mapping = dict((d[0], d) for d in descr)
                 return mapping[key]
+
             out.descr = apply_to_list(get_child, out.descr)
+            dtype = out.descr[1][1]
+            out.dtype = np.dtype(dtype)
 
         # return a new object with requested columns
         elif isinstance(key, list):
@@ -183,10 +238,14 @@ class SequenceProxy(object):
                 mapping = dict((d[0], d) for d in descr)
                 return [mapping[k] for k in key]
             out.descr = apply_to_list(get_children, out.descr)
+            dtype = out.descr[1]
+            if not isinstance(dtype, list):
+                dtype = [dtype]
+            out.dtype = np.dtype(dtype)
 
         # return a copy with the added constraints
         elif isinstance(key, ConstraintExpression):
-            out.selection.extend( str(key).split('&') )
+            out.selection.extend(str(key).split('&'))
 
         # slice data
         else:
@@ -197,47 +256,47 @@ class SequenceProxy(object):
         return out
 
     def clone(self):
-        return self.__class__(self.baseurl, self.id, self.descr,
-                self.selection[:], self.slice[:])
+        """Return a lightweight copy of the object."""
+        return self.__class__(
+            self.baseurl, self.id, self.descr, self.selection[:],
+            self.slice[:])
 
     def __eq__(self, other):
         return ConstraintExpression('%s=%s' % (self.id, encode(other)))
+
     def __ne__(self, other):
         return ConstraintExpression('%s!=%s' % (self.id, encode(other)))
-    def __ge__(self, other): 
+
+    def __ge__(self, other):
         return ConstraintExpression('%s>=%s' % (self.id, encode(other)))
-    def __le__(self, other): 
+
+    def __le__(self, other):
         return ConstraintExpression('%s<=%s' % (self.id, encode(other)))
-    def __gt__(self, other): 
+
+    def __gt__(self, other):
         return ConstraintExpression('%s>%s' % (self.id, encode(other)))
-    def __lt__(self, other): 
+
+    def __lt__(self, other):
         return ConstraintExpression('%s<%s' % (self.id, encode(other)))
 
 
 class StreamReader(object):
-    """
-    Class to allow reading and peeking a `urllib3.HTTPResponse`.
 
-    """
+    """Class to allow reading and peeking a `urllib3.HTTPResponse`."""
+
     def __init__(self, stream):
         self.stream = stream
         self.buf = ''
 
     def read(self, n):
-        """
-        Read n bytes from the stream.
-
-        """
+        """Read and return `n` bytes from the stream."""
         # read n bytes and update buffer
         out = self.peek(n)
         self.buf = self.buf[n:]
         return out
 
     def peek(self, n):
-        """
-        Read n bytes without consuming them.
-
-        """
+        """Read and return `n` bytes without consuming them."""
         if n > len(self.buf):
             for chunk in self.stream:
                 self.buf += chunk
@@ -247,9 +306,10 @@ class StreamReader(object):
 
 
 def apply_to_list(func, descr):
-    """
-    Apply a function to a list inside a dtype descriptor.
+    """Apply a function to a list inside a dtype descriptor.
 
+    Return tuple with name, modified dtype, and shape.
+    
     """
     name, dtype, shape = descr
     if isinstance(dtype, list):
@@ -260,10 +320,7 @@ def apply_to_list(func, descr):
 
 
 def unpack_sequence(buf, descr):
-    """
-    Unpack data from a sequence.
-
-    """
+    """Unpack data from a sequence, yielding records."""
     name, dtype, shape = descr
 
     # is this a sequence or a sequence child?
@@ -295,10 +352,7 @@ def unpack_sequence(buf, descr):
 
 
 def unpack_children(buf, descr):
-    """
-    Unpack sequence children.
-
-    """
+    """Unpack children from a structure, returning their data."""
     name, dtype, shape = descr
 
     out = []
@@ -308,7 +362,7 @@ def unpack_children(buf, descr):
     for descr in dtype:
         name, d, shape = descr
         d = np.dtype(fix(d))
-        
+
         # sequences and other structures
         if d.char == 'V':
             if buf.peek(4) in [START_OF_SEQUENCE, END_OF_SEQUENCE]:
@@ -342,48 +396,37 @@ def unpack_children(buf, descr):
 
 
 def unpack_data(xdrdata, dataset):
-    """
-    Unpack a string of encoded data.
-
-    """
+    """Unpack a string of encoded data, returning data as lists."""
     return unpack_children(StreamReader(iter(xdrdata)), dataset.descr)
 
 
 def fix(descr):
-    """
-    Numpy dtypes must be list of tuples, but we use single tuples to 
+    """Fix descriptor for Numpy.
+
+    Numpy dtypes must be list of tuples, but we use single tuples to
     differentiate children from sequences with only one child, ie,
-    sequence['foo'] from sequence[['foo']]. Here we convert descr to
-    a proper dtype.
+    ``sequence['foo']`` is the children ``foo`` from ``sequence``, while 
+    ``sequence[['foo']]`` is a sequence with only one child.
+    
+    Return the descriptor as a list so Numpy can understand it.
 
     """
     if isinstance(descr, tuple):
         name, dtype, shape = descr
-        return [ (name, fix(dtype), shape) ]
+        return [(name, fix(dtype), shape)]
     else:
         return descr
 
 
 def dump():
-    import sys
-    import pprint
+    """Unpack dods response into lists.
 
+    Return pretty-printed data.
+
+    """
     dods = sys.stdin.read()
     dds, xdrdata = dods.split('\nData:\n', 1)
     dataset = build_dataset(dds)
     data = unpack_data(xdrdata, dataset)
 
     pprint.pprint(data)
-
-
-class ListData(IterData):
-    def __init__(self, id, vars, data, cols=None, selection=None, slice_=None):
-        IterData.__init__(self, id, vars, cols, selection, slice_)
-        self.data = data
-
-    def gen(self):
-        return iter(self.data)
-
-    def clone(self):
-        return self.__class__(self.id, self.vars[:], self.data[:], self.cols[:],
-                self.selection[:], self.slice[:])

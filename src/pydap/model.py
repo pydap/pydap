@@ -120,8 +120,6 @@ if sys.version_info < (2, 7):
 else:
     from collections import OrderedDict
 
-import numpy as np
-
 from pydap.lib import quote
 
 

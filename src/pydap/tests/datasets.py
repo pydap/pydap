@@ -25,11 +25,11 @@ D1['Drifters']['instrument_id'] = BaseType('instrument_id')
 D1['Drifters']['location'] = BaseType('location')
 D1['Drifters']['latitude'] = BaseType('latitude')
 D1['Drifters']['longitude'] = BaseType('longitude')
-D1.Drifters.data = np.rec.fromrecords(zip(
+D1.Drifters.data = np.array(np.rec.fromrecords(zip(
     [("This is a data test string (pass %d)." % (1+i*2)) for i in range(5)],
     [("This is a data test string (pass %d)." % (i*2)) for i in range(5)],
     [1000.0, 999.95, 999.80, 999.55, 999.20],
-    [999.95, 999.55, 998.75, 997.55, 995.95]), names=D1.Drifters.keys())
+    [999.95, 999.55, 998.75, 997.55, 995.95]), names=D1.Drifters.keys()))
 
 
 # testing structures
@@ -73,10 +73,10 @@ bounds['sequence']['depth'] = BaseType('depth', axis='Z')
 bounds['sequence']['time'] = BaseType(
     'time', axis='T', units="days since 1970-01-01")
 bounds['sequence']['measurement'] = BaseType('measurement')
-bounds.sequence.data = np.rec.fromrecords([
+bounds.sequence.data = np.array(np.rec.fromrecords([
     (100, -10, 0, -1, 42),
     (200, 10, 500, 1, 43),
-], names=bounds.sequence.keys())
+], names=bounds.sequence.keys()))
 
 
 # test for density
@@ -85,10 +85,10 @@ ctd['cast'] = SequenceType('cast')
 ctd['cast']['temperature'] = BaseType('temperature')
 ctd['cast']['salinity'] = BaseType('salinity')
 ctd['cast']['pressure'] = BaseType('pressure')
-ctd.cast.data = np.rec.fromrecords([
+ctd.cast.data = np.array(np.rec.fromrecords([
     (21, 35, 0),
     (15, 35, 100),
-], names=ctd.cast.keys())
+], names=ctd.cast.keys()))
 
 
 # a simple sequence, simulating a CTD profile
@@ -104,10 +104,10 @@ SimpleSequence["cast"]["time"] = BaseType(
 SimpleSequence["cast"]["temperature"] = BaseType("temperature")
 SimpleSequence["cast"]["salinity"] = BaseType("salinity")
 SimpleSequence["cast"]["pressure"] = BaseType("pressure")
-SimpleSequence["cast"].data = np.rec.fromrecords([
+SimpleSequence["cast"].data = np.array(np.rec.fromrecords([
     ("1", 100, -10,   0, -1, 21, 35,   0),
     ("2", 200,  10, 500,  1, 15, 35, 100),
-], names=SimpleSequence['cast'].keys())
+], names=SimpleSequence['cast'].keys()))
 
 # a simple grid
 SimpleGrid = DatasetType(
@@ -115,7 +115,7 @@ SimpleGrid = DatasetType(
 SimpleGrid["SimpleGrid"] = GridType("SimpleGrid")
 SimpleGrid["SimpleGrid"]["SimpleGrid"] = BaseType(
     "SimpleGrid", np.arange(6).reshape(2, 3), dimensions=("y", "x"))
-SimpleGrid["SimpleGrid"]["x"] = BaseType(
+SimpleGrid["x"] = SimpleGrid["SimpleGrid"]["x"] = BaseType(
     "x", np.arange(3), axis="X", units="degrees_east")
-SimpleGrid["SimpleGrid"]["y"] = BaseType(
+SimpleGrid["y"] = SimpleGrid["SimpleGrid"]["y"] = BaseType(
     "y", np.arange(2), axis="Y", units="degrees_north")
