@@ -141,6 +141,17 @@ class TestDapHandler(unittest.TestCase):
                     ('salinity', '>i', ()), 
                     ('pressure', '>i', ())],
                 ()))
+        self.assertEqual(
+            dataset.cast.data.dtype,
+            np.dtype([
+                ('id', 'S128'),
+                ('lon', '>i4'),
+                ('lat', '>i4'),
+                ('depth', '>i4'),
+                ('time', '>i4'),
+                ('temperature', '>i4'),
+                ('salinity', '>i4'),
+                ('pressure', '>i4')]))
         self.assertEqual(dataset.cast.data.shape, ())
         self.assertEqual(dataset.cast.data.selection, [])
         self.assertEqual(dataset.cast.data.slice, (slice(None),))
@@ -152,8 +163,20 @@ class TestDapHandler(unittest.TestCase):
         self.assertEqual(dataset.cast.lon.data.id, "cast.lon")
         self.assertEqual(
             dataset.cast.lon.data.descr, ('cast', ('lon', '>i', ()), ()))
+        self.assertEqual(dataset.cast.lon.data.dtype, np.dtype(">i4"))
         self.assertEqual(dataset.cast.lon.data.selection, [])
         self.assertEqual(dataset.cast.lon.data.slice, (slice(None),))
+
+    def test_sequence_with_projection(self):
+        """Test projections applied to sequences."""
+        requests.get = requests_intercept(self.app2, "http://localhost:8001/")
+        dataset = DAPHandler(
+            "http://localhost:8001/?cast[1]").dataset
+
+        self.assertEqual(dataset.cast.data.slice, (slice(1, 2, 1),))
+        self.assertEqual(
+            [tuple(row) for row in dataset.cast], [
+                ('2', 200, 10, 500, 1, 15, 35, 100)])
 
 
 class TestSequenceProxy(unittest.TestCase):

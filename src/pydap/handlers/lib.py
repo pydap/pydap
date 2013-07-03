@@ -268,41 +268,37 @@ class ConstraintExpression(object):
 
 
 class IterData(object):
-    """
-    Class that emulates structured arrays from iterators.
 
-    """
+    """Class that emulates structured arrays from iterators."""
     
     shape = ()
 
-    def __init__(self, id, vars, cols=None, selection=None, slice_=None):
+    def __init__(self, id, stream, vars, selection=None, slice_=None):
         self.id = id
-        self.vars = vars
-        self.cols = vars if cols is None else cols
+        self.stream = stream
+        self.vars = vars  # all variables
+        self.cols = vars  # variables in this object
         self.selection = [] if selection is None else selection
         self.slice = (slice(None),) if slice_ is None else slice_
 
     @property
     def dtype(self):
+        """Return Numpy dtype."""
         peek = iter(self).next()
-        return np.array(peek).dtype
 
-    def gen(self):
-        """
-        Iterator that yields data.
-
-        """
-        raise NotImplementedError(
-            "Subclasses must define a gen() method.")
+        if isinstance(self.cols, tuple):
+            return np.dtype([
+                (name, np.array(col).dtype.str)
+                for name, col in zip(self.cols, peek)])
+        else:
+            return np.array(peek).dtype.str
 
     def __iter__(self):
-        stream = self.gen()
-
         cols = self.cols if isinstance(self.cols, tuple) else (self.cols,)
         indexes = [self.vars.index(col) for col in cols]
 
         # prepare data
-        data = itertools.ifilter(len, stream)
+        data = itertools.ifilter(len, iter(self.stream))
         data = itertools.ifilter(build_filter(self.selection, self.vars), data)
         data = itertools.imap(lambda line: [line[i] for i in indexes], data)  
         data = itertools.islice(data, 
@@ -329,17 +325,19 @@ class IterData(object):
         # return a copy with the added constraints                              
         elif isinstance(key, ConstraintExpression):                             
             out.selection.extend( str(key).split('&') )                         
+            out.cols = self.cols
                                                                                 
         # slice data                                                            
         else:                                                                   
             if isinstance(key, int):                                            
                 key = slice(key, key+1)                                         
             out.slice = combine_slices(self.slice, (key,))                      
+            out.cols = self.cols
                                                                                 
         return out
 
     def clone(self):
-        return self.__class__(self.id, self.vars[:], self.cols[:],
+        return self.__class__(self.id, self.stream, self.vars[:],
             self.selection[:], self.slice[:])
 
     def __eq__(self, other): return ConstraintExpression('%s=%s' % (self.id, encode(other)))

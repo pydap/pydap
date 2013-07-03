@@ -8,8 +8,58 @@ import os
 
 import numpy as np
 
-from pydap.model import *
-from pydap.client import open_file
+from pydap.model import (
+    DatasetType, BaseType, SequenceType, GridType, StructureType)
+#from pydap.client import open_file
+
+
+# A very simple sequence: flat and with no strings. This sequence can be mapped
+# directly to a Numpy structured array, and can be easily encoded and decoded
+# in the DAP spec.
+VerySimpleSequence = DatasetType("VerySimpleSequence")
+VerySimpleSequence["sequence"] = SequenceType("sequence")
+VerySimpleSequence["sequence"]["byte"] = BaseType("byte")
+VerySimpleSequence["sequence"]["int"] = BaseType("int")
+VerySimpleSequence["sequence"]["float"] = BaseType("float")
+VerySimpleSequence["sequence"].data = np.array([
+    (0, 1, 10.),
+    (1, 2, 20.),
+    (2, 3, 30.),
+    (3, 4, 40.),
+    (4, 5, 50.),
+    (5, 6, 60.),
+    (6, 7, 70.),
+    (7, 8, 80.),
+    ], dtype=[('byte', 'b'), ('int', 'i4'), ('float', 'f4')])
+
+
+# A nested sequence, similar to a Dapper dataset.
+NestedSequence = DatasetType("NestedSequence")
+NestedSequence["location"] = SequenceType("location")
+NestedSequence["location"]["lat"] = BaseType("lat")
+NestedSequence["location"]["lon"] = BaseType("lon")
+NestedSequence["location"]["elev"] = BaseType("elev")
+NestedSequence["location"]["time_series"] = SequenceType("time_series")
+NestedSequence["location"]["time_series"]["time"] = BaseType("time")
+NestedSequence["location"]["time_series"]["slp"] = BaseType("slp")
+NestedSequence["location"].data = np.array([
+    (0, 0, 2000, (1970, 1000)),
+    (10, -5, 10, (1980, 980)),
+    ], dtype=[
+        ("lat", "f4"), 
+        ("lon", "f4"), 
+        ("elev", "f4"),
+        ("time_series", [(), ()])])
+
+"""
+Sequence {
+    Float32 lat;
+    Float32 lon;
+    Float32 elev;
+    Int32 _id;
+    Sequence {
+        Float32 visibility;
+"""
 
 
 DODS = os.path.join(
