@@ -15,7 +15,8 @@ from numpy.lib.arrayterator import Arrayterator
 from pydap.responses.lib import load_responses
 from pydap.responses.error import ErrorResponse
 from pydap.parsers import parse_ce
-from pydap.exceptions import ConstraintExpressionError, ExtensionNotSupportedError
+from pydap.exceptions import (
+    ConstraintExpressionError, ExtensionNotSupportedError)
 from pydap.lib import walk, fix_shorthand, get_var, encode, combine_slices
 from pydap.model import *
 
@@ -38,7 +39,7 @@ def get_handler(filepath, handlers=None):
             return handler(filepath)
 
     raise ExtensionNotSupportedError(
-            'No handler available for file {filepath}.'.format(filepath=filepath))
+        'No handler available for file {filepath}.'.format(filepath=filepath))
 
 
 class BaseHandler(object):
