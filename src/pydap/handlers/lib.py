@@ -274,11 +274,10 @@ class IterData(object):
     
     shape = ()
 
-    def __init__(self, id, stream, vars, selection=None, slice_=None):
-        self.id = id
+    def __init__(self, names, stream, selection=None, slice_=None):
+        self.id, self.vars = names
         self.stream = stream
-        self.vars = vars  # all variables
-        self.cols = vars  # variables in this object
+        self.cols = self.vars
         self.selection = [] if selection is None else selection
         self.slice = (slice(None),) if slice_ is None else slice_
 
@@ -296,7 +295,13 @@ class IterData(object):
 
     def __iter__(self):
         cols = self.cols if isinstance(self.cols, tuple) else (self.cols,)
-        indexes = [self.vars.index(col) for col in cols]
+        indexes = []
+        for col in cols:
+            name = col[0] if isinstance(col, tuple) else col
+            for i, var in enumerate(self.vars):
+                if name == var or (isinstance(var, tuple) and name == var[0]):
+                    indexes.append(i)
+                    break
 
         # prepare data
         data = itertools.ifilter(len, iter(self.stream))
@@ -338,7 +343,7 @@ class IterData(object):
         return out
 
     def clone(self):
-        return self.__class__(self.id, self.stream, self.vars[:],
+        return self.__class__((self.id, self.vars[:]), self.stream,
             self.selection[:], self.slice[:])
 
     def __eq__(self, other): return ConstraintExpression('%s=%s' % (self.id, encode(other)))

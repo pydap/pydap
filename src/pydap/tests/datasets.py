@@ -42,14 +42,14 @@ NestedSequence["location"]["elev"] = BaseType("elev")
 NestedSequence["location"]["time_series"] = SequenceType("time_series")
 NestedSequence["location"]["time_series"]["time"] = BaseType("time")
 NestedSequence["location"]["time_series"]["slp"] = BaseType("slp")
-NestedSequence["location"].data = np.array([
-    (0, 0, 2000, (1970, 1000)),
-    (10, -5, 10, (1980, 980)),
-    ], dtype=[
-        ("lat", "f4"), 
-        ("lon", "f4"), 
-        ("elev", "f4"),
-        ("time_series", [(), ()])])
+#NestedSequence["location"].data = np.array([
+#    (0, 0, 2000, (1970, 1000)),
+#    (10, -5, 10, (1980, 980)),
+#    ], dtype=[
+#        ("lat", "f4"), 
+#        ("lon", "f4"), 
+#        ("elev", "f4"),
+#        ("time_series", [(), ()])])
 
 """
 Sequence {
