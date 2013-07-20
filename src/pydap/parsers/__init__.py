@@ -8,6 +8,8 @@ DDS and DAS responses.
 import re
 from urllib import quote, unquote
 
+from pydap.exceptions import ConstraintExpressionError
+
 
 def parse_projection(input):
     """Split a projection into items.
@@ -105,6 +107,8 @@ def parse_hyperslab(hyperslab):
         elif len(tokens) == 3:
             step = tokens[1]
             stop = tokens[2] + 1
+        else:
+            raise ConstraintExpressionError("Invalid hyperslab %s" % hyperslab)
 
         out.append(slice(start, stop, step))
 
