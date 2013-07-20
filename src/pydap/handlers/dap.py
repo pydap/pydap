@@ -66,7 +66,7 @@ class DAPHandler(BaseHandler):
                 token, index = var.pop(0)
                 target = target[token]
                 if isinstance(target, BaseType):
-                    target.data.slice = fix_slice(index, target.shape) 
+                    target.data.slice = fix_slice(index, target.shape)
                 elif isinstance(target, GridType):
                     index = fix_slice(index, target.array.shape)
                     target.array.data.slice = index
@@ -309,7 +309,7 @@ def apply_to_list(func, descr):
     """Apply a function to a list inside a dtype descriptor.
 
     Return tuple with name, modified dtype, and shape.
-    
+
     """
     name, dtype, shape = descr
     if isinstance(dtype, list):
@@ -405,9 +405,9 @@ def fix(descr):
 
     Numpy dtypes must be list of tuples, but we use single tuples to
     differentiate children from sequences with only one child, ie,
-    ``sequence['foo']`` is the children ``foo`` from ``sequence``, while 
+    ``sequence['foo']`` is the children ``foo`` from ``sequence``, while
     ``sequence[['foo']]`` is a sequence with only one child.
-    
+
     Return the descriptor as a list so Numpy can understand it.
 
     """
