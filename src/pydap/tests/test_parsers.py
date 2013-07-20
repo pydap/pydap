@@ -8,6 +8,7 @@ else:
 
 from pydap.parsers import (
     parse_projection, parse_ce, parse_hyperslab, SimpleParser)
+from pydap.exceptions import ConstraintExpressionError
 
 
 class TestParseProjection(unittest.TestCase):
@@ -121,6 +122,11 @@ class TestParseHyperslab(unittest.TestCase):
     def test_start_step_stop(self):
         """Test start, step and stop."""
         self.assertEqual(parse_hyperslab('[0:2:9]'), (slice(0, 10, 2),))
+
+    def test_invalid(self):
+        """Test invalid hyperslab."""
+        with self.assertRaises(ConstraintExpressionError):
+            parse_hyperslab('[0:2:9:1]')
 
     def test_ndimensionsal(self):
         """Test n-dimensional slices."""
