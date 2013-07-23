@@ -279,6 +279,8 @@ class IterData(object):
 
     """
 
+    shape = ()
+
     def __init__(self, stream, descr, names=None, ifilter=None, imap=None,
                  islice=None):
         self.stream = stream
@@ -292,6 +294,11 @@ class IterData(object):
 
         self.id = self.names[0]
         self.level = 1
+
+    @property
+    def dtype(self):
+        peek = iter(self).next()
+        return np.array(peek).dtype
 
     def __iter__(self):
         data = iter(self.stream)
@@ -362,7 +369,7 @@ class IterData(object):
         elif isinstance(key, ConstraintExpression):
             f, level = build_filter(key, self.descr)
             if level > 1:
-                out.imap.append(deepmap(lambda data: filter(f, data), level))
+                out.imap.append(deepmap(lambda data: filter(f, data), level-1))
             else:
                 out.ifilter.append(f)
 
@@ -399,10 +406,12 @@ def deepmap(function, level):
 def build_filter(expression, descr):
     id1, op, id2 = re.split('(<=|>=|!=|=~|>|<|=)', str(expression), 1)
 
-    tokens = id1.split(".")
-    name1 = tokens.pop(-1)
+    # get the list of variables in the sequence
     descr = descr,
-    for token in tokens:
+    base1, name1 = id1.rsplit(".", 1)
+    level = 0
+    for token in base1.split("."):
+        level += 1
         for obj in descr:
             if isinstance(obj, tuple) and token == obj[0]:
                 descr = obj[1]
@@ -416,10 +425,11 @@ def build_filter(expression, descr):
             '("{id}" is not a valid variable)'.format(
             expression=expression, id=id1))
 
-    name2 = id2.split(".")[-1]
-    try:
-        b = operator.itemgetter(descr.index(name2))
-    except:
+    # if we're comparing two variables they must be on the same sequence, so
+    # ``base1`` must be equal to ``base2``
+    if id2.rsplit(".", 1)[0] == base1:  # base2 == base1
+        b = operator.itemgetter(descr.index(id2.rsplit(".")[-1]))
+    else:
         try:
             b = lambda row, id2=id2: ast.literal_eval(id2)
         except:
@@ -439,7 +449,6 @@ def build_filter(expression, descr):
     }[op]
 
     f = lambda row, op=op, a=a, b=b: op(a(row), b(row))
-    level = len(tokens)
 
     return f, level
 
