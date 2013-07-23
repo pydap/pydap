@@ -5,6 +5,7 @@ import re
 import operator
 import itertools
 import ast
+import copy
 
 import numpy as np
 from webob import Request
@@ -68,7 +69,7 @@ class BaseHandler(object):
         buffer_size = environ.get('pydap.buffer_size', BUFFER_SIZE)
 
         try:
-            # build the dataset and pass it to the proper response, returning a 
+            # build the dataset and pass it to the proper response, returning a
             # WSGI app
             dataset = self.parse(projection, selection, buffer_size)
             app = self.responses[response](dataset)
@@ -134,7 +135,7 @@ def wrap_arrayterator(dataset, size):
     """
     Wrap `BaseType` objects in an Arrayterator.
 
-    Since the buffer size of the Arrayterator is in elements, not bytes, we 
+    Since the buffer size of the Arrayterator is in elements, not bytes, we
     convert according to the data item size.
 
     """
@@ -177,7 +178,7 @@ def apply_projection(projection, dataset):
         while var:
             name, slice_ = var.pop(0)
             candidate = template[name]
-            
+
             # apply slice
             if slice_:
                 if isinstance(candidate, BaseType):
@@ -193,7 +194,7 @@ def apply_projection(projection, dataset):
                 if name not in target.keys():
                     if var:
                         # if there are more children to add we need to clear the
-                        # candidate so it has only explicitly added children; 
+                        # candidate so it has only explicitly added children;
                         # also, Grids are degenerated into Structures
                         if isinstance(candidate, GridType):
                             candidate = StructureType(candidate.name, candidate.attributes)
@@ -215,7 +216,7 @@ def parse_selection(expression, dataset):
     Parse a selection expression into its elements.
 
     This function will parse a selection expression into three tokens: two
-    variables or values and a comparison operator. Variables are returned as 
+    variables or values and a comparison operator. Variables are returned as
     Pydap objects from a given dataset, while values are parsed using
     `ast.literal_eval`.
 
@@ -227,7 +228,7 @@ def parse_selection(expression, dataset):
         '>=': operator.ge,
         '!=': operator.ne,
         '=': operator.eq,
-        '>': operator.gt, 
+        '>': operator.gt,
         '<': operator.lt,
     }[op]
 
@@ -247,16 +248,16 @@ def parse_selection(expression, dataset):
 class ConstraintExpression(object):
     """
     An object representing a selection on a constraint expression.
-    
+
     These can be accumulated and evaluated only once.
-    
+
     """
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return str(self.value)
-        
+
     def __unicode__(self):
         return unicode(self.value)
 
@@ -265,131 +266,182 @@ class ConstraintExpression(object):
         return self.__class__(self.value + '&' + str(other))
 
     def __or__(self, other):
-        raise ConstraintExpressionError('OR constraints not allowed in the Opendap specification.')
+        raise ConstraintExpressionError(
+            "OR constraints not allowed in the Opendap specification.")
 
 
 class IterData(object):
 
-    """Class that emulates structured arrays from iterators."""
-    
-    shape = ()
+    """Class for manipulating complex data streams as structured arrays.
 
-    def __init__(self, names, stream, selection=None, slice_=None):
-        self.id, self.vars = names
+    A structured array is a Numpy construct that has some very interesting
+    properties for working with tabular data:
+
+    """
+
+    def __init__(self, stream, descr, names=None, ifilter=None, imap=None,
+                 islice=None):
         self.stream = stream
-        self.cols = self.vars
-        self.selection = [] if selection is None else selection
-        self.slice = (slice(None),) if slice_ is None else slice_
+        self.descr = descr
+        self.names = names or descr
 
-    @property
-    def dtype(self):
-        """Return Numpy dtype."""
-        peek = iter(self).next()
+        # these are used to lazily evaluate the data stream
+        self.ifilter = ifilter or []
+        self.imap = imap or []
+        self.islice = islice or []
 
-        if isinstance(self.cols, tuple):
-            return np.dtype([
-                (name, np.array(col).dtype.str)
-                for name, col in zip(self.cols, peek)])
-        else:
-            return np.array(peek).dtype.str
+        self.id = self.names[0]
+        self.level = 1
 
     def __iter__(self):
-        cols = self.cols if isinstance(self.cols, tuple) else (self.cols,)
-        indexes = []
-        for col in cols:
-            name = col[0] if isinstance(col, tuple) else col
-            for i, var in enumerate(self.vars):
-                if name == var or (isinstance(var, tuple) and name == var[0]):
-                    indexes.append(i)
-                    break
+        data = iter(self.stream)
 
-        # prepare data
-        data = itertools.ifilter(len, iter(self.stream))
-        data = itertools.ifilter(build_filter(self.selection, self.vars), data)
-        data = itertools.imap(lambda line: [line[i] for i in indexes], data)  
-        data = itertools.islice(data, 
-                self.slice[0].start, self.slice[0].stop, self.slice[0].step)
-
-        # return data from a children BaseType, not a Sequence
-        if not isinstance(self.cols, tuple):
-            data = itertools.imap(operator.itemgetter(0), data)
+        for f in self.ifilter:
+            data = itertools.ifilter(f, data)
+        for m in self.imap:
+            data = itertools.imap(m, data)
+        for s in self.islice:
+            data = itertools.islice(data, s.start, s.stop, s.step)
 
         return data
 
-    def __getitem__(self, key):                                                 
-        out = self.clone()                                                      
-                                                                                
-        # return the data for a children                                        
-        if isinstance(key, basestring):                                         
-            out.id = '{id}.{child}'.format(id=self.id, child=key)               
-            out.cols = key                                                      
-                                                                                
-        # return a new object with requested columns                            
-        elif isinstance(key, list):                                             
-            out.cols = tuple(key)                                               
-                                                                                
-        # return a copy with the added constraints                              
-        elif isinstance(key, ConstraintExpression):                             
-            out.selection.extend( str(key).split('&') )                         
-            out.cols = self.cols
-                                                                                
-        # slice data                                                            
-        else:                                                                   
-            if isinstance(key, int):                                            
-                key = slice(key, key+1)                                         
-            out.slice = combine_slices(self.slice, (key,))                      
-            out.cols = self.cols
-                                                                                
+    def __copy__(self):
+        """A lightweight copy of the object."""
+        return IterData(self.stream, self.descr, self.names, self.ifilter[:],
+                        self.imap[:], self.islice[:])
+
+    def __getitem__(self, key):
+        out = copy.copy(self)
+        out.level = self.level
+
+        # return a child, and adjust the data so that only the corresponding
+        # column is returned
+        if isinstance(key, basestring):
+            out.id = "%s.%s" % (self.id, key)
+            out.level += 1
+            for col, obj in enumerate(self.names[1]):
+                if key == obj:
+                    out.names = out.id
+                    break
+                elif isinstance(obj, tuple) and key == obj[0]:
+                    out.names = out.id, obj[1]
+                    break
+            else:
+                raise KeyError(key)
+            out.imap.append(deepmap(operator.itemgetter(col), out.level-1))
+
+        # return a new sequence with the selected children; data is adjusted
+        # accordingly, and order is changed following the request using a DSU
+        elif isinstance(key, list):
+            children = []
+            for col, obj in enumerate(self.names[1]):
+                if obj in key:
+                    children.append((key.index(obj), col, obj))
+                elif isinstance(obj, tuple) and obj[0] in key:
+                    children.append((key.index(obj[0]), col, obj))
+            children.sort()
+            out.names = self.id, tuple(child for pos, col, child in children)
+            indexes = [col for pos, col, child in children]
+            out.imap.append(deepmap(
+                lambda row: [row[i] for i in indexes], out.level))
+
+        # slice the data; if ``self`` is the main sequence the data can be
+        # sliced using ``itertools.islice``, but if it's a child variable the
+        # slicing must be applied deeper in the data
+        elif isinstance(key, (int, slice)):
+            if out.level > 1:
+                out.imap.append(deepmap(lambda data: data[key], out.level-1))
+            elif isinstance(key, int):
+                out.islice.append(slice(key, key+1))
+            else:
+                out.islice.append(key)
+
+        # filter the data; like slicing it, we can use ``itertools.ifilter``
+        # only if the selection is applied to the outermost sequence, otherwise
+        # we need to do a deep map
+        elif isinstance(key, ConstraintExpression):
+            f, level = build_filter(key, self.descr)
+            if level > 1:
+                out.imap.append(deepmap(lambda data: filter(f, data), level))
+            else:
+                out.ifilter.append(f)
+
         return out
 
-    def clone(self):
-        return self.__class__((self.id, self.vars[:]), self.stream,
-            self.selection[:], self.slice[:])
+    def __eq__(self, other):
+        return ConstraintExpression('%s=%s' % (self.id, encode(other)))
 
-    def __eq__(self, other): return ConstraintExpression('%s=%s' % (self.id, encode(other)))
-    def __ne__(self, other): return ConstraintExpression('%s!=%s' % (self.id, encode(other)))
-    def __ge__(self, other): return ConstraintExpression('%s>=%s' % (self.id, encode(other)))
-    def __le__(self, other): return ConstraintExpression('%s<=%s' % (self.id, encode(other)))
-    def __gt__(self, other): return ConstraintExpression('%s>%s' % (self.id, encode(other)))
-    def __lt__(self, other): return ConstraintExpression('%s<%s' % (self.id, encode(other)))
+    def __ne__(self, other):
+        return ConstraintExpression('%s!=%s' % (self.id, encode(other)))
+
+    def __ge__(self, other):
+        return ConstraintExpression('%s>=%s' % (self.id, encode(other)))
+
+    def __le__(self, other):
+        return ConstraintExpression('%s<=%s' % (self.id, encode(other)))
+
+    def __gt__(self, other):
+        return ConstraintExpression('%s>%s' % (self.id, encode(other)))
+
+    def __lt__(self, other):
+        return ConstraintExpression('%s<%s' % (self.id, encode(other)))
 
 
-def build_filter(selection, cols):                                              
-    filters = [bool]                                                          
-                                                                                
-    for expression in selection:                                                
-        id1, op, id2 = re.split('(<=|>=|!=|=~|>|<|=)', expression, 1)           
-                                                                                
-        # a should be a variable in the children                                
-        name1 = id1.split('.')[-1]                                              
-        if name1 in cols:                                                       
-            a = operator.itemgetter(cols.index(name1))                          
-        else:                                                                   
-            raise ConstraintExpressionError(                                    
-                    'Invalid constraint expression: "{expression}" ("{id}" is not a valid variable)'.format(
-                    expression=expression, id=id1))                             
-                                                                                
-        # b could be a variable or constant                                     
-        name2 = id2.split('.')[-1]                                              
-        if name2 in cols:                                                       
-            b = operator.itemgetter(cols.index(name2))                          
-        else:                                                                   
-            b = lambda line, id2=id2: ast.literal_eval(id2)                     
-                                                                                
-        op = {                                                                  
-                '<' : operator.lt,                                              
-                '>' : operator.gt,                                              
-                '!=': operator.ne,                                              
-                '=' : operator.eq,                                              
-                '>=': operator.ge,                                              
-                '<=': operator.le,                                              
-                '=~': lambda a, b: re.match(b, a),                              
-        }[op]                                                                   
-                                                                                
-        filter_ = lambda line, op=op, a=a, b=b: op(a(line), b(line))            
-        filters.append(filter_)                                                 
-                                                                                
-    return lambda line: reduce(lambda x, y: x and y, [f(line) for f in filters])
+def deepmap(function, level):
+    def out(row, level=level):
+        if level == 1:
+            return function(row)
+        else:
+            return [out(value, level-1) for value in row]
+    return out
+
+
+def build_filter(expression, descr):
+    id1, op, id2 = re.split('(<=|>=|!=|=~|>|<|=)', str(expression), 1)
+
+    tokens = id1.split(".")
+    name1 = tokens.pop(-1)
+    descr = descr,
+    for token in tokens:
+        for obj in descr:
+            if isinstance(obj, tuple) and token == obj[0]:
+                descr = obj[1]
+                break
+
+    try:
+        a = operator.itemgetter(descr.index(name1))
+    except:
+        raise ConstraintExpressionError(
+            'Invalid constraint expression: "{expression}"'
+            '("{id}" is not a valid variable)'.format(
+            expression=expression, id=id1))
+
+    name2 = id2.split(".")[-1]
+    try:
+        b = operator.itemgetter(descr.index(name2))
+    except:
+        try:
+            b = lambda row, id2=id2: ast.literal_eval(id2)
+        except:
+            raise ConstraintExpressionError(
+                'Invalid constraint expression: "{expression}"'
+                '("{id}" is not a valid variable)'.format(
+                expression=expression, id=id2))
+
+    op = {
+        '<' : operator.lt,
+        '>' : operator.gt,
+        '!=': operator.ne,
+        '=' : operator.eq,
+        '>=': operator.ge,
+        '<=': operator.le,
+        '=~': lambda a, b: re.match(b, a),
+    }[op]
+
+    f = lambda row, op=op, a=a, b=b: op(a(row), b(row))
+    level = len(tokens)
+
+    return f, level
 
 
 NYAN = [
