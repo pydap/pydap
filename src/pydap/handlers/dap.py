@@ -179,7 +179,6 @@ class SequenceProxy(object):
         dtype = descr[1]
         if not isinstance(dtype, list):
             dtype = [dtype]
-        print dtype
         self.dtype = np.dtype(dtype)
         self.selection = selection or []
         self.slice = slice_ or (slice(None),)
