@@ -179,6 +179,7 @@ class SequenceProxy(object):
         dtype = descr[1]
         if not isinstance(dtype, list):
             dtype = [dtype]
+        print dtype
         self.dtype = np.dtype(dtype)
         self.selection = selection or []
         self.slice = slice_ or (slice(None),)
@@ -430,3 +431,24 @@ def dump():
     data = unpack_data(xdrdata, dataset)
 
     pprint.pprint(data)
+
+
+if __name__ == "__main__":
+    from pydap.lib import STRING
+    seq = SequenceProxy('http://test.opendap.org:8080/dods/dts/test.07', 'types',
+            ('types', [('b', 'B', ()), ('i32', '>i', ()), ('ui32', '>I', ()), ('i16', '>i', ()), ('ui16', '>I', ()), ('f32', '>f', ()), ('f64', '>d', ()), ('s', STRING, ()), ('u', STRING, ())], ()))
+    for rec in seq:
+        print rec
+    for rec in seq['s']:
+        print rec
+
+    seq = SequenceProxy('http://test.opendap.org:8080/dods/dts/NestedSeq', 'person1',
+            ('person1', [('age', '>i', ()), ('stuff', [('foo', '>i', ())], ())], ()))
+    for rec in seq:
+        print rec
+    for rec in seq['age']:
+        print rec
+    for rec in seq['stuff']:
+        print rec
+    for rec in seq['stuff']['foo']:
+        print rec
