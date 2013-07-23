@@ -11,6 +11,7 @@ import numpy as np
 from pydap.handlers.lib import IterData
 
 
+'''
 class TestSimpleIterData(unittest.TestCase):
 
     """Compare IterData object with corresponding Numpy array."""
@@ -187,7 +188,6 @@ class TestNestedIterData(unittest.TestCase):
             [], 
             [(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)], 
             ])
-'''
         self.assertEqual(
             [tuple(row) for row in self.simple_object], [
             (0, 1, 10.),
