@@ -19,24 +19,11 @@ class TestWrongType(unittest.TestCase):
         with self.assertRaises(ConstraintExpressionError):
             res = app.get('/.dds?rain&bounds(0,360,-90,90,500,500,00Z01JAN1970,00Z01JAN1970)')
 
-    def test_grid_to_density(self):
-        app = TestApp(ServerSideFunctions(BaseHandler(rain)))
-        with self.assertRaises(ConstraintExpressionError):
-            res = app.get('/.dds?rain&density(rain,rain,rain)')
 
     def test_sequence_to_mean(self):
         app = TestApp(ServerSideFunctions(BaseHandler(bounds)))
         with self.assertRaises(ConstraintExpressionError):
             res = app.get('/.dds?mean(sequence)')
-
-
-class TestNoParsedResponse(unittest.TestCase):
-    def test_method(self):
-        def wsgi_app(environ, start_response):
-            start_response('200 OK', [('Content-type', 'text/plain')])
-            return ['Hi!']
-        app = TestApp(ServerSideFunctions(wsgi_app))
-        self.assertEqual(app.get('/.dds').body, "Hi!")
 
 
 class TestDensity(unittest.TestCase):
@@ -86,6 +73,11 @@ cast.temperature
 15
 
 """)
+
+    def test_grid_to_density(self):
+        app = TestApp(ServerSideFunctions(BaseHandler(rain)))
+        with self.assertRaises(ConstraintExpressionError):
+            res = app.get('/.dds?rain&density(rain,rain,rain)')
 
 
 class TestBounds(unittest.TestCase):
