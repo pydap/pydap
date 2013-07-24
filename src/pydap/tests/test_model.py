@@ -1,6 +1,7 @@
 """Test the data model."""
 
 import sys
+import copy
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
@@ -101,20 +102,20 @@ class TestBaseType(unittest.TestCase):
         var = BaseType("var", np.arange(16).reshape(2, 2, 2, 2))
         self.assertEqual(var.shape, (2, 2, 2, 2))
 
-    def test_clone(self):
-        """Test lightweight ``clone`` method."""
+    def test_copy(self):
+        """Test lightweight ``__copy__`` method."""
         original = BaseType("var", np.array(1))
-        copy = original.clone()
+        clone = copy.copy(original)
 
         # note that clones share the same data:
-        self.assertIsNot(original, copy)
-        self.assertIs(original.data, copy.data)
+        self.assertIsNot(original, clone)
+        self.assertIs(original.data, clone.data)
 
         # test attributes
-        self.assertEqual(original.id, copy.id)
-        self.assertEqual(original.name, copy.name)
-        self.assertEqual(original.dimensions, copy.dimensions)
-        self.assertEqual(original.attributes, copy.attributes)
+        self.assertEqual(original.id, clone.id)
+        self.assertEqual(original.name, clone.name)
+        self.assertEqual(original.dimensions, clone.dimensions)
+        self.assertEqual(original.attributes, clone.attributes)
 
     def test_comparisons(self):
         """Test that comparisons are applied to data."""
@@ -233,25 +234,25 @@ class TestStructureType(unittest.TestCase):
         self.assertEqual(var["one"].data, 10)
         self.assertEqual(var["two"].data, 20)
 
-    def test_clone(self):
+    def test_copy(self):
         """Test lightweight clone of a structure."""
         original = StructureType("var", value=42, one="1")
         original["one"] = BaseType("one")
         original["two"] = BaseType("two")
         original.data = [10, 20]
 
-        copy = original.clone()
+        clone = copy.copy(original)
 
         # note that clones share the same data:
-        self.assertIsNot(original, copy)
-        self.assertIsNot(original["one"], copy["one"])
-        self.assertIs(original["one"].data, copy["one"].data)
-        self.assertIsNot(original["two"], copy["two"])
-        self.assertIs(original["two"].data, copy["two"].data)
+        self.assertIsNot(original, clone)
+        self.assertIsNot(original["one"], clone["one"])
+        self.assertIs(original["one"].data, clone["one"].data)
+        self.assertIsNot(original["two"], clone["two"])
+        self.assertIs(original["two"].data, clone["two"].data)
 
         # test attributes
-        self.assertEqual(original.id, copy.id)
-        self.assertEqual(original.name, copy.name)
+        self.assertEqual(original.id, clone.id)
+        self.assertEqual(original.name, clone.name)
 
 
 class TestDatasetType(unittest.TestCase):
@@ -337,11 +338,11 @@ class TestSequenceType(unittest.TestCase):
             subset.data,
             self.example.data[self.example.data["index"] > 11])
 
-    def test_clone(self):
-        """Test the lightweight clone method."""
-        copy = self.example.clone()
-        self.assertIsNot(self.example, copy)
-        self.assertIs(self.example.data, copy.data)
+    def test_copy(self):
+        """Test the lightweight ``__copy__`` method."""
+        clone = copy.copy(self.example)
+        self.assertIsNot(self.example, clone)
+        self.assertIs(self.example.data, clone.data)
 
 
 class TestGridType(unittest.TestCase):
