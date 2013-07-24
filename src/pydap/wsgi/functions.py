@@ -16,7 +16,7 @@ first argument, followed by the variables from the sequence "cast".
 
 New functions can be defined in third-party modules. Simply create a package
 and declare the entry point in its ``setup.py`` file. The server will
-automatically discover the new functions from the system. 
+automatically discover the new functions from the system.
 
 """
 
@@ -29,12 +29,12 @@ import gsw
 
 from pydap.model import SequenceType, GridType, BaseType
 from pydap.lib import walk
-from pydap.exceptions import ConstraintExpressionError
+from pydap.exceptions import ConstraintExpressionError, ServerError
 
 
 def density(dataset, salinity, temperature, pressure):
     """Calculate in-situ density.
-    
+
     This function calculated in-situ density from absolute salinity and
     conservative temperature, using the `gsw.rho` function. Returns a new
     sequence with the data.
@@ -63,7 +63,7 @@ density.__version__ = "0.1"
 
 def bounds(dataset, xmin, xmax, ymin, ymax, zmin, zmax, tmin, tmax):
     r"""Bound a sequence in space and time.
-    
+
     This function is used by GrADS to access Sequences, eg:
 
         http://server.example.com/dataset.dods?sequence& \
@@ -137,11 +137,12 @@ def parse_step(step):
         raise NotImplementedError('Need to implement month time step')
     if units.lower() == 'yr':
         raise NotImplementedError('Need to implement year time step')
+    raise ServerError('Unknown units: "%s".' % units)
 
 
 def mean(dataset, var, axis=0):
     """Calculate the mean of an array along a given axis.
-    
+
     The input variable should be either a ``GridType`` or ``BaseType``. The
     function will return an object of the same type with the mean applied.
 
@@ -153,20 +154,21 @@ def mean(dataset, var, axis=0):
     axis = int(axis)
     dims = tuple(dim for i, dim in enumerate(var.dimensions) if i != axis)
 
+    # process basetype
     if isinstance(var, BaseType):
         return BaseType(
             name=var.name, data=np.mean(var.data[:], axis=axis),
             dimensions=dims, attributes=var.attributes)
 
-    elif isinstance(var, GridType):
-        out = GridType(name=var.name, attributes=var.attributes)
-        out[var.array.name] = BaseType(
-            name=var.array.name, data=np.mean(var.array.data[:], axis=axis),
-            dimensions=dims, attributes=var.array.attributes)
-        for dim in dims:
-            out[dim] = BaseType(
-                name=dim, data=var[dim].data[:], dimensions=(dim,),
-                attributes=var[dim].attributes)
-        return out
+    # process grid
+    out = GridType(name=var.name, attributes=var.attributes)
+    out[var.array.name] = BaseType(
+        name=var.array.name, data=np.mean(var.array.data[:], axis=axis),
+        dimensions=dims, attributes=var.array.attributes)
+    for dim in dims:
+        out[dim] = BaseType(
+            name=dim, data=var[dim].data[:], dimensions=(dim,),
+            attributes=var[dim].attributes)
+    return out
 
 mean.__version__ = "1.0"

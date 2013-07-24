@@ -56,9 +56,7 @@ class TestMiddleware(unittest.TestCase):
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
         res = app.get(
             "/.asc?density(cast.salinity,cast.temperature,cast.pressure)>1025")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -81,9 +79,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
         app = TestApp(
             ServerSideFunctions(BaseHandler(SimpleSequence), double=double))
         res = app.get("/.asc?cast.lat&double(cast.lat)>10")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -95,9 +91,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)>=20")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -109,9 +103,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)<10")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -123,9 +115,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)<=-20")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -137,9 +127,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)=20")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -151,9 +139,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)!=20")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -165,9 +151,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.id&double(cast.id)=~11")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Sequence {
         String id;
     } cast;
@@ -189,9 +173,7 @@ cast.id
         res = app.get(
             "/.asc?cast.lat,cast.lon&"
             "bounds(0,360,-90,0,0,500,00Z01JAN1900,00Z01JAN2000)")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 lat;
         Int32 lon;
@@ -207,9 +189,7 @@ cast.lat, cast.lon
         """Test a simple function call on a projection."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x)")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Float64 x;
 } SimpleGrid;
 ---------------------------------------------
@@ -221,9 +201,7 @@ x
         """Test a function call creating a variable with a conflicting name."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x),x")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Int32 x[x = 3];
 } SimpleGrid;
 ---------------------------------------------
@@ -238,9 +216,7 @@ x
         """Test a nested function call."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(mean(SimpleGrid.SimpleGrid,0),0)")
-        self.assertEqual(
-            res.body,
-            """Dataset {
+        self.assertEqual(res.body, """Dataset {
     Float64 SimpleGrid;
 } SimpleGrid;
 ---------------------------------------------
@@ -261,14 +237,22 @@ class Accumulator(object):
 
 
 def double(dataset, var):
-    """A dummy function that doubles a value."""
-    for sequence in walk(dataset, SequenceType):
-        break
+    """A dummy function that doubles a value.
 
+    The value must be in a sequence. Return a new sequence with the value
+    doubled.
+
+    """
+    # sequence is the first variable
+    sequence = dataset.children().next()
+
+    # get a single variable and double its value
     selection = sequence[var.name]
     rows = [(value*2,) for value in selection]
+
+    # create output sequence
     out = SequenceType("result")
     out["double"] = BaseType("double")
     out.data = np.rec.fromrecords(rows, names=["double"])
-    return out
 
+    return out
