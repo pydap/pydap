@@ -20,15 +20,17 @@ class TestDensity(unittest.TestCase):
     """Test the density function."""
 
     def setUp(self):
-        # create WSGI app
+        """Create simple WSGI app."""
         self.app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
 
     def test_wrong_type(self):
+        """Test passing the wrong type."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         with self.assertRaises(ConstraintExpressionError):
-            res = app.get('/.dds?density(SimpleGrid,SimpleGrid,SimpleGrid)')
+            app.get('/.dds?density(SimpleGrid,SimpleGrid,SimpleGrid)')
 
     def test_plain(self):
+        """Test a direct request."""
         res = self.app.get('/.asc')
         self.assertEqual(res.body, """Dataset {
     Sequence {
@@ -50,6 +52,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
 """)
 
     def test_projection(self):
+        """Test using density as a projection."""
         res = self.app.get(
             '/.asc?density(cast.salinity,cast.temperature,cast.pressure)')
         self.assertEqual(res.body, """Dataset {
@@ -65,8 +68,10 @@ result.rho
 """)
 
     def test_selection(self):
+        """Test using density as a selection."""
         res = self.app.get(
-            '/.asc?cast.temperature&density(cast.salinity,cast.temperature,cast.pressure)>1025')
+            "/.asc?cast.temperature&"
+            "density(cast.salinity,cast.temperature,cast.pressure)>1025")
         self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 temperature;
@@ -80,18 +85,23 @@ cast.temperature
 
 
 class TestBounds(unittest.TestCase):
+
+    """Test the ``bounds`` function, used by GrADS."""
+
     def setUp(self):
-        # create WSGI app
+        """Create a simple WSGI app."""
         self.app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
 
     def test_wrong_type(self):
+        """Test passing a wrong type to the function."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         with self.assertRaises(ConstraintExpressionError):
-            res = app.get(
+            app.get(
                 '/.dds?SimpleGrid'
                 '&bounds(0,360,-90,90,500,500,00Z01JAN1970,00Z01JAN1970)')
 
     def test_default(self):
+        """Test the default bounding box."""
         res = self.app.get(
             '/.asc?cast&bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z01JAN1970)')
         self.assertEqual(res.body, """Dataset {
@@ -112,6 +122,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
 """)
 
     def test_selection_only(self):
+        """Test using the function alone in the selection."""
         res = self.app.get(
             '/.asc?bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z01JAN1970)')
         self.assertEqual(res.body, """Dataset {
@@ -132,7 +143,9 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
 """)
 
     def test_subset(self):
-        res = self.app.get('/.asc?bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z31JAN1970)')
+        """Test a requesting a subset of the data."""
+        res = self.app.get(
+            "/.asc?bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z31JAN1970)")
         self.assertEqual(res.body, """Dataset {
     Sequence {
         String id;
@@ -152,7 +165,10 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
 """)
 
     def test_subset_with_selection(self):
-        res = self.app.get('/.asc?bounds(0,360,-90,90,0,500,00Z01JAN1969,00Z31JAN1970)&cast.lat<0')
+        """Test combining selections."""
+        res = self.app.get(
+            "/.asc?"
+            "bounds(0,360,-90,90,0,500,00Z01JAN1969,00Z31JAN1970)&cast.lat<0")
         self.assertEqual(res.body, """Dataset {
     Sequence {
         String id;
@@ -172,7 +188,10 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
 """)
 
     def test_projection(self):
-        res = self.app.get('/.asc?cast.pressure&bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z31JAN1970)')
+        """Test bounds used as a projection."""
+        res = self.app.get(
+            "/.asc?cast.pressure&"
+            "bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z31JAN1970)")
         self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 pressure;
@@ -185,7 +204,9 @@ cast.pressure
 """)
 
     def test_point(self):
-        res = self.app.get('/.asc?bounds(100,100,-10,-10,0,0,00Z31DEC1969,00Z31DEC1969)')
+        """Test a request for a point."""
+        res = self.app.get(
+            "/.asc?bounds(100,100,-10,-10,0,0,00Z31DEC1969,00Z31DEC1969)")
         self.assertEqual(res.body, """Dataset {
     Sequence {
         String id;
@@ -205,10 +226,13 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
 """)
 
     def test_grads_step(self):
+        """Test different GrADS time steps."""
         modified = copy.copy(SimpleSequence)
         modified.cast.time.attributes['grads_step'] = '1mn'
         app = TestApp(ServerSideFunctions(BaseHandler(modified)))
-        res = app.get('/.asc?cast.pressure&bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)')
+        res = app.get(
+            "/.asc?cast.pressure&"
+            "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
         self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 pressure;
@@ -221,7 +245,9 @@ cast.pressure
 
         modified.cast.time.attributes['grads_step'] = '1hr'
         app = TestApp(ServerSideFunctions(BaseHandler(modified)))
-        res = app.get('/.asc?cast.pressure&bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)')
+        res = app.get(
+            "/.asc?cast.pressure&"
+            "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
         self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 pressure;
@@ -234,7 +260,9 @@ cast.pressure
 
         modified.cast.time.attributes['grads_step'] = '1dy'
         app = TestApp(ServerSideFunctions(BaseHandler(modified)))
-        res = app.get('/.asc?cast.pressure&bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)')
+        res = app.get(
+            "/.asc?cast.pressure&"
+            "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
         self.assertEqual(res.body, """Dataset {
     Sequence {
         Int32 pressure;
@@ -249,30 +277,41 @@ cast.pressure
         modified.cast.time.attributes['grads_step'] = '1mo'
         app = TestApp(ServerSideFunctions(BaseHandler(modified)))
         with self.assertRaises(NotImplementedError):
-            res = app.get('/.asc?cast.pressure&bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)')
+            res = app.get(
+                "/.asc?cast.pressure&"
+                "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
 
         modified.cast.time.attributes['grads_step'] = '1yr'
         app = TestApp(ServerSideFunctions(BaseHandler(modified)))
         with self.assertRaises(NotImplementedError):
-            res = app.get('/.asc?cast.pressure&bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)')
+            res = app.get(
+                "/.asc?cast.pressure&"
+                "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
 
         modified.cast.time.attributes['grads_step'] = '1xx'
         app = TestApp(ServerSideFunctions(BaseHandler(modified)))
         with self.assertRaises(ServerError):
-            res = app.get('/.asc?cast.pressure&bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)')
+            res = app.get(
+                "/.asc?cast.pressure&"
+                "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
 
 
 class TestMean(unittest.TestCase):
+
+    """Test the ``mean`` function."""
+
     def setUp(self):
-        # create WSGI app
+        """Create a simple WSGI app."""
         self.app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
 
     def test_wrong_type(self):
+        """Test passing a wrong type to mean function."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
         with self.assertRaises(ConstraintExpressionError):
-            res = app.get('/.dds?mean(sequence)')
-    
+            app.get('/.dds?mean(sequence)')
+
     def test_base_type(self):
+        """Test mean of base types."""
         res = self.app.get("/.asc?mean(x)")
         self.assertEqual(res.body, """Dataset {
     Float64 x;
@@ -283,6 +322,7 @@ x
 """)
 
     def test_grid_type(self):
+        """Test mean of grid objects."""
         res = self.app.get("/.asc?mean(SimpleGrid)")
         self.assertEqual(res.body, """Dataset {
     Grid {
@@ -306,6 +346,7 @@ SimpleGrid.y
 """)
 
     def test_nested(self):
+        """Test nested function calls."""
         res = self.app.get("/.asc?mean(mean(SimpleGrid))")
         self.assertEqual(res.body, """Dataset {
     Grid {
