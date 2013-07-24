@@ -1,4 +1,5 @@
 import sys
+import copy
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
@@ -207,7 +208,7 @@ sequence.lon, sequence.lat, sequence.depth, sequence.time, sequence.measurement
 """)
 
     def test_grads_step(self):
-        modified = bounds.clone()
+        modified = copy.copy(bounds)
         modified.sequence.time.attributes['grads_step'] = '1mn'
         app = TestApp(ServerSideFunctions(BaseHandler(modified)))
         res = app.get('/.asc?sequence.measurement&bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)')
