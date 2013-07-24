@@ -62,9 +62,9 @@ class DapServer(object):
     @wsgify
     def __call__(self, req):
         """WSGI application callable.
-        
+
         Returns either a file download, directory listing or DAP response.
-        
+
         """
         path = os.path.abspath(
             os.path.join(self.path, *req.path_info.split("/")))
@@ -166,7 +166,7 @@ class StaticMiddleware(object):
 
     """WSGI middleware for static assets.
 
-    The assets can be either specified as a directory, or retrieved from a 
+    The assets can be either specified as a directory, or retrieved from a
     Python package. Inspired by ``werkezeug.wsgi.SharedDataMiddleware``.
 
     """
@@ -208,7 +208,7 @@ def init(directory):
 
     # copy templates from HTML response
     for resource in pkg_resources.resource_listdir(
-        "pydap.responses.html", "templates"):
+            "pydap.responses.html", "templates"):
         path = pkg_resources.resource_filename(
             "pydap.responses.html", "templates/{0}".format(resource))
         shutil.copy(path, directory)
@@ -237,7 +237,7 @@ def main():
         static = os.path.join(templates, "static")
     else:
         static = ("pydap.wsgi", "templates/static")
-    app = StaticMiddleware(app, static) 
+    app = StaticMiddleware(app, static)
 
     # configure WSGI server
     workers = multiprocessing.cpu_count() * 2 + 1
