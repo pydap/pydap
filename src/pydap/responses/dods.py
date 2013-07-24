@@ -1,4 +1,5 @@
 from collections import Iterable
+import copy
 try:
     from functools import singledispatch
 except ImportError:
@@ -106,7 +107,7 @@ def _(var):
         # create a template structure
         struct = StructureType(var.name)
         for name in var.keys():
-            struct[name] = var[name].clone()
+            struct[name] = copy.copy(var[name])
             if isinstance(struct[name], SequenceType):
                 struct[name].sequence_level -= 1
 

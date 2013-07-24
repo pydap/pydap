@@ -110,7 +110,7 @@ class BaseHandler(object):
                 "Subclasses must define a dataset attribute pointing to a DatasetType.")
 
         # make a copy of the dataset, so we can filter sequences inplace
-        dataset = self.dataset.clone()
+        dataset = copy.copy(self.dataset)
 
         # apply the selection to the dataset, inplace
         apply_selection(selection, dataset)

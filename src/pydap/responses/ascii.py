@@ -3,6 +3,7 @@ try:
 except ImportError:                                                             
     from singledispatch import singledispatch
 from itertools import izip
+import copy
 
 import numpy as np
 
@@ -43,7 +44,7 @@ def _(var, printname=True):
     yield ', '.join(child.id for child in var.children())
     yield '\n'
     for rec in var:
-        out = var.clone()
+        out = copy.copy(var)
         out.__class__ = StructureType
         out.data = rec
         for i, line in enumerate(ascii(out, printname=False)):

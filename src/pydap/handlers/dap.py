@@ -10,6 +10,7 @@ import sys
 import pprint
 from urlparse import urlsplit, urlunsplit
 from urllib import quote
+import copy
 
 import numpy as np
 import requests
@@ -218,7 +219,7 @@ class SequenceProxy(object):
         return unpack_sequence(stream, self.descr)
 
     def __getitem__(self, key):
-        out = self.clone()
+        out = copy.copy(self)
 
         # return the data for a children
         if isinstance(key, basestring):
@@ -255,7 +256,7 @@ class SequenceProxy(object):
 
         return out
 
-    def clone(self):
+    def __copy__(self):
         """Return a lightweight copy of the object."""
         return self.__class__(
             self.baseurl, self.id, self.descr, self.selection[:],

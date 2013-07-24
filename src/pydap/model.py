@@ -115,6 +115,7 @@ It is possible to select only a few variables::
 
 import operator
 import sys
+import copy
 if sys.version_info < (2, 7):
     from ordereddict import OrderedDict
 else:
@@ -211,7 +212,7 @@ class BaseType(DapType):
         """Property that returns the data shape."""
         return self.data.shape
 
-    def clone(self):
+    def __copy__(self):
         """A lightweight copy of the variable.
 
         This will return a new object, with a copy of the attributes,
@@ -318,7 +319,7 @@ class StructureType(DapType):
             var.data = col
     data = property(_get_data, _set_data)
 
-    def clone(self):
+    def __copy__(self):
         """Return a lightweight copy of the Structure.
 
         The method will return a new Structure with cloned children, but any
@@ -330,7 +331,7 @@ class StructureType(DapType):
 
         # Clone children too.
         for child in self.children():
-            out[child.name] = child.clone()
+            out[child.name] = copy.copy(child)
 
         return out
 
@@ -479,17 +480,17 @@ class SequenceType(StructureType):
         elif isinstance(key, tuple):
             out = SequenceType(self.name, self.data, self.attributes.copy())
             for name in key:
-                out[name] = StructureType.__getitem__(self, name).clone()
+                out[name] = copy.copy(StructureType.__getitem__(self, name))
             out.data = self.data[list(key)]
             return out
 
         # Else return a new `SequenceType` with the data sliced.
         else:
-            out = self.clone()
+            out = copy.copy(self)
             out.data = self.data[key]
             return out
 
-    def clone(self):
+    def __copy__(self):
         """Return a lightweight copy of the Sequence.
 
         The method will return a new Sequence with cloned children, but any
@@ -501,7 +502,7 @@ class SequenceType(StructureType):
 
         # Clone children too.
         for child in self.children():
-            out[child.name] = child.clone()
+            out[child.name] = copy.copy(child)
 
         return out
 
@@ -529,7 +530,7 @@ class GridType(StructureType):
             if not isinstance(key, tuple):
                 key = (key,)
 
-            out = self.clone()
+            out = copy.copy(self)
             for var, slice_ in zip(out.children(), [key] + list(key)):
                 var.data = self[var.name].data[slice_]
             return out
