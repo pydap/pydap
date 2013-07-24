@@ -23,7 +23,7 @@ def density(dataset, salinity, temperature, pressure):
         raise ConstraintExpressionError(
                 'Function "bounds" should be used on a Sequence.')
 
-    selection = sequence[[salinity.name, temperature.name, pressure.name]]
+    selection = sequence[salinity.name, temperature.name, pressure.name]
     rows = [tuple(row) for row in selection]
     data = np.rec.fromrecords(rows,
             names=['salinity', 'temperature', 'pressure'])
