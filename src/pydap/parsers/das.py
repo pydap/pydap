@@ -129,7 +129,6 @@ def add_attributes(dataset, attributes):
 
     # add attributes that don't belong to any child
     for k, v in attributes.items():
-        if k not in dataset:
-            dataset.attributes[k] = v
+        dataset.attributes[k] = v
 
     return dataset

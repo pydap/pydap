@@ -6,7 +6,7 @@ DDS and DAS responses.
 """
 
 import re
-from urllib import quote, unquote
+from urllib import unquote
 
 from pydap.exceptions import ConstraintExpressionError
 
