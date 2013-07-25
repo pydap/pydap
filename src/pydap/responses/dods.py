@@ -1,4 +1,14 @@
-from collections import Iterable
+"""The DODS response.
+
+This is the DAP response that carries data. The response comes with a DDS
+header describing the structure of the data, followed by the data encoded as
+XDR.
+
+Even though Python has a library for XDR encoding/decoding, the DODS response
+uses Numpy directly since it's faster.
+
+"""
+
 import copy
 try:
     from functools import singledispatch
@@ -14,16 +24,18 @@ from pydap.responses.dds import dds
 
 
 typemap = {
-        'd': '>d',
-        'f': '>f',
-        'i': '>i', 'l': '>i', 'q': '>i', 'h': '>i',
-        'b': 'B',
-        'I': '>I', 'L': '>I', 'Q': '>I', 'H': '>I',
-        'B': 'B',
+    'd': '>d',
+    'f': '>f',
+    'i': '>i', 'l': '>i', 'q': '>i', 'h': '>i',
+    'b': 'B',
+    'I': '>I', 'L': '>I', 'Q': '>I', 'H': '>I',
+    'B': 'B',
 }
 
 
 class DODSResponse(BaseResponse):
+
+    """The DODS response."""
 
     __version__ = __version__
 
@@ -45,11 +57,12 @@ class DODSResponse(BaseResponse):
 
         yield 'Data:\n'
         for block in dods(self.dataset):
-            yield block 
+            yield block
 
 
 @singledispatch
 def dods(var):
+    """Single dispatcher for generating the DODS response."""
     raise StopIteration
 
 
@@ -108,13 +121,11 @@ def _(var):
         struct = StructureType(var.name)
         for name in var.keys():
             struct[name] = copy.copy(var[name])
-            if isinstance(struct[name], SequenceType):
-                struct[name].sequence_level -= 1
 
         for record in var:
             yield START_OF_SEQUENCE
             struct.data = record
-            for block in structure(struct):
+            for block in dods(struct):
                 yield block
         yield END_OF_SEQUENCE
 
@@ -122,6 +133,9 @@ def _(var):
 @dods.register(BaseType)
 def _(var):
     data = var.data
+
+    if not hasattr(data, "shape"):
+        data = np.asarray(data)
 
     if data.shape:
         # pack length for arrays
@@ -149,29 +163,25 @@ def _(var):
 
     # regular data
     else:
-        # make data iterable; 1D arrays must be converted to 2D, since iteration
-        # over 1D yields scalars which are not properly cast to big endian
+        # make data iterable; 1D arrays must be converted to 2D, since
+        # iteration over 1D yields scalars which are not properly cast to big
+        # endian
         if len(data.shape) < 2:
-            try:
-                data = data.reshape(1, -1)
-            except:
-                data = [data]
+            data = data.reshape(1, -1)
 
         for block in data:
             yield block.astype(typemap[block.dtype.char]).tostring()
 
 
 def calculate_size(dataset):
-    """
-    Calculate the size of the response.
-
-    """
+    """Calculate the size of the response. Returns the size in bytes."""
     length = 0
 
     for var in walk(dataset):
-        # Pydap can't calculate the size of sequences since the data is streamed
-        # directly from the source. Also, strings are encoded individually, so 
-        # it's not possible to get their size unless we read everything.
+        # Pydap can't calculate the size of sequences since the data is
+        # streamed directly from the source. Also, strings are encoded
+        # individually, so it's not possible to get their size unless we read
+        # everything.
         if (isinstance(var, SequenceType) or
                 (isinstance(var, BaseType) and var.data.dtype.char == 'S')):
             return None
