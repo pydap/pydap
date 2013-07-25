@@ -1,3 +1,5 @@
+"""Test the DODS response."""
+
 import sys
 import copy
 if sys.version_info < (2, 7):
@@ -9,14 +11,11 @@ import numpy as np
 from webtest import TestApp
 from webob.headers import ResponseHeaders
 
-from pydap.model import *
 from pydap.handlers.lib import BaseHandler
-from pydap.handlers.dap import unpack_data
 from pydap.tests.datasets import (
-    VerySimpleSequence, SimpleSequence, SimpleGrid, SimpleStructure,
+    VerySimpleSequence, SimpleSequence, SimpleGrid,
     SimpleArray, NestedSequence)
 from pydap.responses.dods import dods
-from pydap.parsers.dds import build_dataset
 
 
 class TestDODSResponse(unittest.TestCase):
@@ -47,20 +46,21 @@ class TestDODSResponse(unittest.TestCase):
 
     def test_headers(self):
         """Test the headers in the response."""
-        self.assertEqual(self.res.headers,
+        self.assertEqual(
+            self.res.headers,
             ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'), 
-                ('Content-description', 'dods_data'), 
-                ('Content-type', 'application/octet-stream'), 
-                ('Access-Control-Allow-Origin', '*'), 
-                ('Access-Control-Allow-Headers', 
-                    'Origin, X-Requested-With, Content-Type'), 
+                ('XDODS-Server', 'pydap/3.2'),
+                ('Content-description', 'dods_data'),
+                ('Content-type', 'application/octet-stream'),
+                ('Access-Control-Allow-Origin', '*'),
+                ('Access-Control-Allow-Headers',
+                    'Origin, X-Requested-With, Content-Type'),
                 ('Content-Length', '238')
             ]))
 
     def test_body(self):
         """Test response body."""
-        dds, xdrdata = self.res.body.split('\nData:\n', 1)                                   
+        dds, xdrdata = self.res.body.split('\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Sequence {
         Byte byte;
@@ -71,7 +71,8 @@ class TestDODSResponse(unittest.TestCase):
 
         output = xdrdata.replace('\x5a\x00\x00\x00', '<start of sequence>')
         output = output.replace('\xa5\x00\x00\x00', '<end of sequence>')
-        self.assertEqual(output,
+        self.assertEqual(
+            output,
             "<start of sequence>"
             "\x00" "\x00\x00\x00\x01" "A \x00\x00"
             "<start of sequence>"
@@ -101,7 +102,8 @@ class TestDODSResponseGrid(unittest.TestCase):
         self.res = app.get('/.dods')
 
     def test_body(self):
-        dds, xdrdata = self.res.body.split('\nData:\n', 1)                                   
+        """Test the response body."""
+        dds, xdrdata = self.res.body.split('\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Grid {
         Array:
@@ -114,7 +116,8 @@ class TestDODSResponseGrid(unittest.TestCase):
     Int32 y[y = 2];
 } SimpleGrid;""")
 
-        self.assertEqual(xdrdata, 
+        self.assertEqual(
+            xdrdata,
             "\x00\x00\x00\x06"  # length
             "\x00\x00\x00\x06"  # length, again
             "\x00\x00\x00\x00"
@@ -123,7 +126,7 @@ class TestDODSResponseGrid(unittest.TestCase):
             "\x00\x00\x00\x03"
             "\x00\x00\x00\x04"
             "\x00\x00\x00\x05"
-            
+
             "\x00\x00\x00\x03"
             "\x00\x00\x00\x03"
             "\x00\x00\x00\x00"
@@ -134,13 +137,13 @@ class TestDODSResponseGrid(unittest.TestCase):
             "\x00\x00\x00\x02"
             "\x00\x00\x00\x00"
             "\x00\x00\x00\x01"
-            
+
             "\x00\x00\x00\x03"
             "\x00\x00\x00\x03"
             "\x00\x00\x00\x00"
             "\x00\x00\x00\x01"
             "\x00\x00\x00\x02"
-            
+
             "\x00\x00\x00\x02"
             "\x00\x00\x00\x02"
             "\x00\x00\x00\x00"
@@ -158,7 +161,7 @@ class TestDODSResponseSequence(unittest.TestCase):
 
     def test_body(self):
         """Test response body."""
-        dds, xdrdata = self.res.body.split('\nData:\n', 1)                                   
+        dds, xdrdata = self.res.body.split('\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Sequence {
         String id;
@@ -168,7 +171,8 @@ class TestDODSResponseSequence(unittest.TestCase):
 
         output = xdrdata.replace('\x5a\x00\x00\x00', '<start of sequence>')
         output = output.replace('\xa5\x00\x00\x00', '<end of sequence>')
-        self.assertEqual(output,
+        self.assertEqual(
+            output,
             "<start of sequence>"
             "\x00\x00\x00\x01"   # length of the string (=1)
             "1\x00\x00\x00"      # string zero-paddded to 4 bytes
@@ -191,30 +195,31 @@ class TestDODSResponseArray(unittest.TestCase):
     def test_body(self):
         """Test response body."""
         res = self.app.get("/.dods")
-        dds, xdrdata = res.body.split('\nData:\n', 1)                                   
+        dds, xdrdata = res.body.split('\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Byte byte[byte = 5];
     String string[string = 2];
     Int16 short;
 } SimpleArray;""")
 
-        self.assertEqual(xdrdata,
-            "\x00\x00\x00\x05"  # length of the byte array
-            "\x00\x00\x00\x05"  # length, again
+        self.assertEqual(
+            xdrdata,
+            "\x00\x00\x00\x05"   # length of the byte array
+            "\x00\x00\x00\x05"   # length, again
             "\x00"
             "\x01"
             "\x02"
             "\x03"
             "\x04"
-            "\x00\x00\x00"      # zero-padding to 4 bytes
-            
-            "\x00\x00\x00\x02"  # length of the array, only once (string)
-            "\x00\x00\x00\x03"  # length of the first string
-            "one\x00"           # string padded to 4 bytes
+            "\x00\x00\x00"       # zero-padding to 4 bytes
+
+            "\x00\x00\x00\x02"   # length of the array, only once (string)
+            "\x00\x00\x00\x03"   # length of the first string
+            "one\x00"            # string padded to 4 bytes
             "\x00\x00\x00\x03"
             "two\x00"
-            
-            "\x00\x00\x00\x01") # shorts are encoded in 4 bytes
+
+            "\x00\x00\x00\x01")  # shorts are encoded in 4 bytes
 
     def test_calculate_size_short(self):
         """Test that size is calculated correctly with shorts."""
@@ -232,7 +237,8 @@ class TestDODSResponseArrayterator(unittest.TestCase):
 
     """
 
-    def test_vector(self):
+    def test_grid(self):
+        """Test a grid."""
         modified = copy.copy(SimpleGrid)
         modified.SimpleGrid.SimpleGrid.data = np.lib.arrayterator.Arrayterator(
             modified.SimpleGrid.SimpleGrid.data, 2)
@@ -246,14 +252,14 @@ class TestDODSResponseArrayterator(unittest.TestCase):
 } SimpleGrid;
 Data:
 """
-        "\x00\x00\x00\x06"
-        "\x00\x00\x00\x06"
-        "\x00\x00\x00\x00"
-        "\x00\x00\x00\x01"
-        "\x00\x00\x00\x02"
-        "\x00\x00\x00\x03"
-        "\x00\x00\x00\x04"
-        "\x00\x00\x00\x05")
+            "\x00\x00\x00\x06"
+            "\x00\x00\x00\x06"
+            "\x00\x00\x00\x00"
+            "\x00\x00\x00\x01"
+            "\x00\x00\x00\x02"
+            "\x00\x00\x00\x03"
+            "\x00\x00\x00\x04"
+            "\x00\x00\x00\x05")
 
 
 class TestDODSResponseNestedSequence(unittest.TestCase):
@@ -267,7 +273,7 @@ class TestDODSResponseNestedSequence(unittest.TestCase):
     def test_body(self):
         """Test response body."""
         res = self.app.get("/.dods")
-        dds, xdrdata = res.body.split('\nData:\n', 1)                                   
+        dds, xdrdata = res.body.split('\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Sequence {
         Int32 lat;
@@ -283,7 +289,8 @@ class TestDODSResponseNestedSequence(unittest.TestCase):
 
         output = xdrdata.replace('\x5a\x00\x00\x00', '<start of sequence>')
         output = output.replace('\xa5\x00\x00\x00', '<end of sequence>')
-        self.assertEqual(output,
+        self.assertEqual(
+            output,
             "<start of sequence>"
                 "\x00\x00\x00\x01"
                 "\x00\x00\x00\x01"
