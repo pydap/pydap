@@ -1,3 +1,5 @@
+"""Test the DDS response."""
+
 import sys
 if sys.version_info < (2, 7):
     import unittest2 as unittest
@@ -7,95 +9,95 @@ else:
 from webtest import TestApp
 from webob.headers import ResponseHeaders
 
-from pydap.model import *
 from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import D1, rain, SimpleStructure
+from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 from pydap.responses.dds import dds
 
 
 class TestDDSResponseSequence(unittest.TestCase):
+
+    """Test DDS response from sequences."""
+
     def setUp(self):
-        # create WSGI app                                                       
-        app = TestApp(BaseHandler(D1))
+        """Create a simple WSGI app."""
+        app = TestApp(BaseHandler(SimpleSequence))
         self.res = app.get('/.dds')
 
     def test_dispatcher(self):
+        """Test the single dispatcher."""
         with self.assertRaises(StopIteration):
             dds(None)
 
-    def test_status(self):                                                      
-        self.assertEqual(self.res.status, "200 OK")                 
-                                                                                
-    def test_content_type(self):                                                
-        self.assertEqual(self.res.content_type, "text/plain")                   
-                                                                                
-    def test_charset(self):                                                     
-        self.assertEqual(self.res.charset, "utf-8")                             
-                                                                                
-    def test_headers(self):                                                     
-        self.assertEqual(self.res.headers,                                      
+    def test_status(self):
+        """Test the status code."""
+        self.assertEqual(self.res.status, "200 OK")
+
+    def test_content_type(self):
+        """Test the content type."""
+        self.assertEqual(self.res.content_type, "text/plain")
+
+    def test_charset(self):
+        """Test the charset."""
+        self.assertEqual(self.res.charset, "utf-8")
+
+    def test_headers(self):
+        """Test the headers from the response."""
+        self.assertEqual(
+            self.res.headers,
             ResponseHeaders([
                 ('XDODS-Server', 'pydap/3.2'),
-                ('Content-description', 'dods_dds'), 
-                ('Content-type', 'text/plain; charset=utf-8'), 
-                ('Access-Control-Allow-Origin', '*'), 
+                ('Content-description', 'dods_dds'),
+                ('Content-type', 'text/plain; charset=utf-8'),
+                ('Access-Control-Allow-Origin', '*'),
                 ('Access-Control-Allow-Headers',
-                    'Origin, X-Requested-With, Content-Type'), 
-                ('Content-Length', '164')]))
-                                                                                
-    def test_body(self):                                                        
+                    'Origin, X-Requested-With, Content-Type'),
+                ('Content-Length', '228')]))
+
+    def test_body(self):
+        """Test the generated DDS response."""
         self.assertEqual(self.res.body, """Dataset {
     Sequence {
-        String instrument_id;
-        String location;
-        Float64 latitude;
-        Float64 longitude;
-    } Drifters;
-} EOSDB%2EDBO;
+        String id;
+        Int32 lon;
+        Int32 lat;
+        Int32 depth;
+        Int32 time;
+        Int32 temperature;
+        Int32 salinity;
+        Int32 pressure;
+    } cast;
+} SimpleSequence;
 """)
 
 
 class TestDDSResponseGrid(unittest.TestCase):
-    def setUp(self):
-        # create WSGI app                                                       
-        app = TestApp(BaseHandler(rain))
-        self.res = app.get('/.dds')
 
-    def test_status(self):
-        self.assertEqual(self.res.status, "200 OK")                 
-                                                                                
-    def test_content_type(self):                                                
-        self.assertEqual(self.res.content_type, "text/plain")                   
-                                                                                
-    def test_charset(self):                                                     
-        self.assertEqual(self.res.charset, "utf-8")                             
-                                                                                
-    def test_headers(self):                                                     
-        self.assertEqual(self.res.headers,                                      
-            ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'), 
-                ('Content-description', 'dods_dds'), 
-                ('Content-type', 'text/plain; charset=utf-8'), 
-                ('Access-Control-Allow-Origin', '*'), 
-                ('Access-Control-Allow-Headers', 
-                    'Origin, X-Requested-With, Content-Type'), 
-                ('Content-Length', '164')]))
+    """Test DDS response from grids."""
 
     def test_body(self):
-        self.assertEqual(self.res.body, """Dataset {
+        """Test the generated DDS response."""
+        app = TestApp(BaseHandler(SimpleGrid))
+        res = app.get('/.dds')
+        self.assertEqual(res.body, """Dataset {
     Grid {
         Array:
-            Int32 rain[y = 2][x = 3];
+            Int32 SimpleGrid[y = 2][x = 3];
         Maps:
             Int32 x[x = 3];
             Int32 y[y = 2];
-    } rain;
-} test;
+    } SimpleGrid;
+    Int32 x[x = 3];
+    Int32 y[y = 2];
+} SimpleGrid;
 """)
 
 
 class TestDDSResponseStructure(unittest.TestCase):
+
+    """Test DDS response from structures."""
+
     def test_body(self):
+        """Test the generated DDS response."""
         app = TestApp(BaseHandler(SimpleStructure))
         res = app.get('/.dds')
         self.assertEqual(res.body, """Dataset {

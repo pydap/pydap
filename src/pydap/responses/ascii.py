@@ -1,6 +1,13 @@
-try:                                                                            
-    from functools import singledispatch                                        
-except ImportError:                                                             
+"""The ASCII response.
+
+The ASCII response is an unnoficial response used to return the data as ASCII.
+Pydap's implementation is reverse engineered from the official server.
+
+"""
+
+try:
+    from functools import singledispatch
+except ImportError:
     from singledispatch import singledispatch
 from itertools import izip
 import copy
@@ -14,6 +21,8 @@ from pydap.responses.dds import dds
 
 
 class ASCIIResponse(BaseResponse):
+
+    """The ASCII response."""
 
     __version__ = __version__
 
@@ -36,6 +45,7 @@ class ASCIIResponse(BaseResponse):
 
 @singledispatch
 def ascii(var, printname=True):
+    """A single dispatcher for the ASCII response."""
     raise StopIteration
 
 

@@ -1,52 +1,68 @@
+"""Test the DAS response."""
+
 import sys
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
 
-import numpy as np
 from webtest import TestApp
 from webob.headers import ResponseHeaders
 
-from pydap.model import *
 from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import bounds, rain, SimpleStructure
+from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 from pydap.responses.das import das
 
 
 class TestDASResponseSequence(unittest.TestCase):
+
+    """Test the DAS response from a sequence."""
+
     def setUp(self):
-        # create WSGI app                                                       
-        app = TestApp(BaseHandler(bounds))
+        """Create a simple WSGI app."""
+        app = TestApp(BaseHandler(SimpleSequence))
         self.res = app.get('/.das')
 
     def test_dispatcher(self):
+        """Test the single dispatcher."""
         with self.assertRaises(StopIteration):
             das(None)
 
-    def test_status(self):                                                      
-        self.assertEqual(self.res.status, "200 OK")                 
-                                                                                
-    def test_content_type(self):                                                
-        self.assertEqual(self.res.content_type, "text/plain")                   
-                                                                                
-    def test_charset(self):                                                     
-        self.assertEqual(self.res.charset, "utf-8")                             
-                                                                                
-    def test_headers(self):                                                     
-        self.assertEqual(self.res.headers,                                      
+    def test_status(self):
+        """Test the status code."""
+        self.assertEqual(self.res.status, "200 OK")
+
+    def test_content_type(self):
+        """Test the content type."""
+        self.assertEqual(self.res.content_type, "text/plain")
+
+    def test_charset(self):
+        """Test the charset."""
+        self.assertEqual(self.res.charset, "utf-8")
+
+    def test_headers(self):
+        """Test the response headers."""
+        self.assertEqual(
+            self.res.headers,
             ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'), 
-                ('Content-description', 'dods_das'), 
-                ('Content-type', 'text/plain; charset=utf-8'), 
-                ('Access-Control-Allow-Origin', '*'), 
-                ('Access-Control-Allow-Headers', 
-                    'Origin, X-Requested-With, Content-Type'), 
-                ('Content-Length', '333')]))
-                                                                                
-    def test_body(self):                                                        
+                ('XDODS-Server', 'pydap/3.2'),
+                ('Content-description', 'dods_das'),
+                ('Content-type', 'text/plain; charset=utf-8'),
+                ('Access-Control-Allow-Origin', '*'),
+                ('Access-Control-Allow-Headers',
+                    'Origin, X-Requested-With, Content-Type'),
+                ('Content-Length', '510')]))
+
+    def test_body(self):
+        """Test the generated DAS response."""
         self.assertEqual(self.res.body, """Attributes {
-    sequence {
+    String description "A simple sequence for testing.";
+    nested {
+        Int32 value 42;
+    }
+    cast {
+        id {
+        }
         lon {
             String axis "X";
         }
@@ -60,7 +76,11 @@ class TestDASResponseSequence(unittest.TestCase):
             String units "days since 1970-01-01";
             String axis "T";
         }
-        measurement {
+        temperature {
+        }
+        salinity {
+        }
+        pressure {
         }
     }
 }
@@ -68,41 +88,35 @@ class TestDASResponseSequence(unittest.TestCase):
 
 
 class TestDASResponseGrid(unittest.TestCase):
-    def setUp(self):
-        # create WSGI app                                                       
-        app = TestApp(BaseHandler(rain))
-        self.res = app.get('/.das')
 
-    def test_status(self):
-        self.assertEqual(self.res.status, "200 OK")                 
-                                                                                
-    def test_content_type(self):                                                
-        self.assertEqual(self.res.content_type, "text/plain")                   
-                                                                                
-    def test_charset(self):                                                     
-        self.assertEqual(self.res.charset, "utf-8")                             
-                                                                                
-    def test_headers(self):                                                     
-        self.assertEqual(self.res.headers,                                      
-            ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'),
-                ('Content-description', 'dods_das'),
-                ('Content-type', 'text/plain; charset=utf-8'),
-                ('Access-Control-Allow-Origin', '*'),
-                ('Access-Control-Allow-Headers', 
-                    'Origin, X-Requested-With, Content-Type'),
-                ('Content-Length', '32')]))
+    """Test the DAS response from a grid."""
 
     def test_body(self):
-        self.assertEqual(self.res.body, """Attributes {
-    rain {
+        """Test the generated DAS response."""
+        app = TestApp(BaseHandler(SimpleGrid))
+        res = app.get('/.das')
+        self.assertEqual(res.body, """Attributes {
+    String description "A simple grid for testing.";
+    SimpleGrid {
+    }
+    x {
+        String units "degrees_east";
+        String axis "X";
+    }
+    y {
+        String units "degrees_north";
+        String axis "Y";
     }
 }
 """)
 
 
 class TestDASResponseStructure(unittest.TestCase):
+
+    """The the DAS response from a structure."""
+
     def test_body(self):
+        """Test the generated DAS response."""
         app = TestApp(BaseHandler(SimpleStructure))
         res = app.get('/.das')
         self.assertEqual(res.body, """Attributes {

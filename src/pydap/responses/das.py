@@ -1,3 +1,12 @@
+"""The DAS response.
+
+The DAS response describes the attributes associated with a dataset and its
+variables. Together with the DDS the DAS response completely describes the
+metadata of a dataset, allowing it to be introspected and data to be
+downloaded.
+
+"""
+
 try:
     from functools import singledispatch
 except ImportError:
@@ -16,6 +25,8 @@ INDENT = ' ' * 4
 
 class DASResponse(BaseResponse):
 
+    """The DAS response."""
+
     __version__ = __version__
 
     def __init__(self, dataset):
@@ -32,6 +43,7 @@ class DASResponse(BaseResponse):
 
 @singledispatch
 def das(var, level=0):
+    """Single dispatcher that generates the DAS response."""
     raise StopIteration
 
 
@@ -75,10 +87,7 @@ def _(var, level=0):
 
 
 def build_attributes(attr, values, level=0):
-    """
-    Recursive function to build the DAS.
-
-    """
+    """Recursive function to build the DAS."""
     # check for metadata
     if isinstance(values, dict):
         yield '{indent}{attr} {{\n'.format(indent=(level)*INDENT, attr=attr)
@@ -98,20 +107,26 @@ def build_attributes(attr, values, level=0):
             values = map(encode, values)
 
         yield '{indent}{type} {attr} {values};\n'.format(
-                indent=(level)*INDENT,
-                type=type,
-                attr=quote(attr),
-                values=', '.join(values))
+            indent=(level)*INDENT,
+            type=type,
+            attr=quote(attr),
+            values=', '.join(values))
 
 
 def get_type(values):
+    """Extract the type of a variable.
+
+    This function tries to determine the DAP type of a Python variable using
+    several methods. Returns the DAP type as a string.
+
+    """
     if hasattr(values, 'dtype'):
         return typemap[values.dtype.char]
     elif isinstance(values, basestring) or not isinstance(values, Iterable):
         return type_convert(values)
     else:
-        # if there are several values, they may have different types, so we need
-        # to convert all of them and use a precedence table
+        # if there are several values, they may have different types, so we
+        # need to convert all of them and use a precedence table
         types = map(type_convert, values)
         precedence = ['String', 'Float64', 'Int32']
         types.sort(key=precedence.index)
@@ -119,8 +134,9 @@ def get_type(values):
 
 
 def type_convert(obj):
-    """
-    Map Python objects to the corresponding Opendap types.
+    """Map Python objects to the corresponding Opendap types.
+    
+    Returns the DAP representation of the type as a string.
 
     """
     if isinstance(obj, float):

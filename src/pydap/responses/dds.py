@@ -1,3 +1,13 @@
+"""The DDS response.
+
+The DDS response builds a representation of the structure of the dataset,
+informing which variables are contained, their shape, type and dimensions.
+Together with the DAS, the DDS describes all metadata associated with a given
+dataset, allowing clients to introspect the variables and request data as
+necessary.
+
+"""
+
 try:
     from functools import singledispatch
 except ImportError:
@@ -11,20 +21,22 @@ from pydap.lib import __version__
 INDENT = ' ' * 4
 
 typemap = {
-        'd': 'Float64',
-        'f': 'Float32',
-        'h': 'Int16',
-        'i': 'Int32', 'l': 'Int32', 'q': 'Int32',
-        'b': 'Byte',
-        'H': 'UInt16',
-        'I': 'UInt32', 'L': 'UInt32', 'Q': 'UInt32',
-        'B': 'Byte',
-        'S': 'String',
-        'U': 'String',
+    'd': 'Float64',
+    'f': 'Float32',
+    'h': 'Int16',
+    'i': 'Int32', 'l': 'Int32', 'q': 'Int32',
+    'b': 'Byte',
+    'H': 'UInt16',
+    'I': 'UInt32', 'L': 'UInt32', 'Q': 'UInt32',
+    'B': 'Byte',
+    'S': 'String',
+    'U': 'String',
 }
 
 
 class DDSResponse(BaseResponse):
+
+    """The DDS response."""
 
     __version__ = __version__
 
@@ -42,6 +54,7 @@ class DDSResponse(BaseResponse):
 
 @singledispatch
 def dds(var, level=0, sequence=0):
+    """Single dispatcher that generates the DDS response."""
     raise StopIteration
 
 
@@ -93,14 +106,15 @@ def _(var, level=0, sequence=0):
     shape = var.shape[sequence:]
 
     if var.dimensions:
-        shape = ''.join(map('[{0[0]} = {0[1]}]'.format, zip(var.dimensions, shape)))
+        shape = ''.join(
+            map('[{0[0]} = {0[1]}]'.format, zip(var.dimensions, shape)))
     elif len(shape) == 1:
         shape = '[{0} = {1}]'.format(var.name, shape[0])
     else:
         shape = ''.join('[{0}]'.format(len) for len in shape)
 
     yield '{indent}{type} {name}{shape};\n'.format(
-            indent=level*INDENT,
-            type=typemap[var.dtype.char], 
-            name=var.name,
-            shape=shape)
+        indent=level*INDENT,
+        type=typemap[var.dtype.char],
+        name=var.name,
+        shape=shape)

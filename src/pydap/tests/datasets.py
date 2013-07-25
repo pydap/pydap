@@ -142,7 +142,8 @@ ctd.cast.data = np.array(np.rec.fromrecords([
 
 # a simple sequence, simulating a CTD profile
 SimpleSequence = DatasetType(
-    "SimpleSequence", description="A simple sequence for testing.")
+    "SimpleSequence", description="A simple sequence for testing.",
+    nested={"value": 42})
 SimpleSequence["cast"] = SequenceType("cast")
 SimpleSequence["cast"]["id"] = BaseType("id")
 SimpleSequence["cast"]["lon"] = BaseType("lon", axis="X")
