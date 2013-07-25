@@ -10,6 +10,7 @@ import numpy as np
 
 from pydap.model import (
     DatasetType, BaseType, SequenceType, GridType, StructureType)
+from pydap.handlers.lib import IterData
 #from pydap.client import open_file
 
 
@@ -33,7 +34,7 @@ VerySimpleSequence["sequence"].data = np.array([
     ], dtype=[('byte', 'b'), ('int', 'i4'), ('float', 'f4')])
 
 
-# A nested sequence, similar to a Dapper dataset.
+# A nested sequence.
 NestedSequence = DatasetType("NestedSequence")
 NestedSequence["location"] = SequenceType("location")
 NestedSequence["location"]["lat"] = BaseType("lat")
@@ -42,24 +43,22 @@ NestedSequence["location"]["elev"] = BaseType("elev")
 NestedSequence["location"]["time_series"] = SequenceType("time_series")
 NestedSequence["location"]["time_series"]["time"] = BaseType("time")
 NestedSequence["location"]["time_series"]["slp"] = BaseType("slp")
-#NestedSequence["location"].data = np.array([
-#    (0, 0, 2000, (1970, 1000)),
-#    (10, -5, 10, (1980, 980)),
-#    ], dtype=[
-#        ("lat", "f4"), 
-#        ("lon", "f4"), 
-#        ("elev", "f4"),
-#        ("time_series", [(), ()])])
+NestedSequence["location"]["time_series"]["wind"] = BaseType("wind")
+NestedSequence["location"].data = IterData([
+    (1, 1, 1, IterData([(10, 11, 12), (21, 22, 23)], ("location.time_series", ("time", "slp", "wind")))),
+    (2, 4, 4, IterData([(15, 16, 17)], ("location.time_series", ("time", "slp", "wind")))),
+    (3, 6, 9, IterData([], ("location.time_series", ("time", "slp", "wind")))),
+    (4, 8, 16, IterData([(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)], ("location.time_series", ("time", "slp", "wind")))),
+    ], ("location",
+        ("lat", "lon", "elev", ("time_series", ("time", "slp", "wind")))))
 
-"""
-Sequence {
-    Float32 lat;
-    Float32 lon;
-    Float32 elev;
-    Int32 _id;
-    Sequence {
-        Float32 visibility;
-"""
+
+# A simple array with bytes, strings and shorts. These types require special
+# encoding for the DODS response.
+SimpleArray = DatasetType("SimpleArray")
+SimpleArray["byte"] = BaseType("byte", np.arange(5, dtype="b"))
+SimpleArray["string"] = BaseType("string", np.array(["one", "two"]))
+SimpleArray["short"] = BaseType("short", np.array(1, dtype="h"))
 
 
 DODS = os.path.join(
@@ -169,3 +168,4 @@ SimpleGrid["x"] = SimpleGrid["SimpleGrid"]["x"] = BaseType(
     "x", np.arange(3), axis="X", units="degrees_east")
 SimpleGrid["y"] = SimpleGrid["SimpleGrid"]["y"] = BaseType(
     "y", np.arange(2), axis="Y", units="degrees_north")
+
