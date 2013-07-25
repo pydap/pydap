@@ -10,7 +10,7 @@ from webtest import TestApp
 from webob.headers import ResponseHeaders
 
 from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import SimpleSequence, rain
+from pydap.tests.datasets import SimpleSequence, SimpleGrid
 from pydap.responses.ascii import ascii
 
 
@@ -78,19 +78,21 @@ class TestASCIIResponseGrid(unittest.TestCase):
 
     def test_body(self):
         """Test the generated ASCII response."""
-        app = TestApp(BaseHandler(rain))
+        app = TestApp(BaseHandler(SimpleGrid))
         res = app.get('/.asc')
         self.assertEqual(res.body, """Dataset {
     Grid {
         Array:
-            Int32 rain[y = 2][x = 3];
+            Int32 SimpleGrid[y = 2][x = 3];
         Maps:
             Int32 x[x = 3];
             Int32 y[y = 2];
-    } rain;
-} test;
+    } SimpleGrid;
+    Int32 x[x = 3];
+    Int32 y[y = 2];
+} SimpleGrid;
 ---------------------------------------------
-rain.rain
+SimpleGrid.SimpleGrid
 [0][0] 0
 [0][1] 1
 [0][2] 2
@@ -98,14 +100,23 @@ rain.rain
 [1][1] 4
 [1][2] 5
 
-rain.x
+SimpleGrid.x
 [0] 0
 [1] 1
 [2] 2
 
-rain.y
+SimpleGrid.y
 [0] 0
 [1] 1
 
+
+x
+[0] 0
+[1] 1
+[2] 2
+
+y
+[0] 0
+[1] 1
 
 """)
