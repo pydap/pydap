@@ -27,6 +27,7 @@ docs_extras = [
 
 tests_require = [
     'WebTest',
+    'beautifulsoup4',
 ]
 
 testing_extras = tests_require + [

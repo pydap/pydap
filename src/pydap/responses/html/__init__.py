@@ -5,10 +5,10 @@ The user can select a subset of the data and download in different formats.
 
 """
 
-import urllib 
+import urllib
 
-from jinja2 import Environment, PackageLoader, ChoiceLoader, TemplateNotFound
-from webob import Request, Response
+from jinja2 import Environment, PackageLoader, ChoiceLoader
+from webob import Response
 from webob.dec import wsgify
 from webob.exc import HTTPSeeOther
 
@@ -26,7 +26,7 @@ class HTMLResponse(BaseResponse):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
             ("Content-description", "dods_form"),
-            ("Content-type", "text/plain; charset=utf-8"),
+            ("Content-type", "text/html; charset=utf-8"),
         ])
 
         # our default environment; we need to include the base template from
@@ -42,14 +42,16 @@ class HTMLResponse(BaseResponse):
         if req.method == "POST":
             return self.redirect(req)
 
-        # check if the server has specified a render environment; if it has, 
+        # check if the server has specified a render environment; if it has,
         # make a copy and add our loaders to it
         if "pydap.jinja2.environment" in req.environ:
             env = req.environ["pydap.jinja2.environment"].overlay()
-            env.loader = ChoiceLoader([env.loader] + self.loaders)
+            env.loader = ChoiceLoader([
+                loader for loader in [env.loader] + self.loaders if loader])
         else:
             env = Environment(loader=ChoiceLoader(self.loaders))
-            env.filters["unquote"] = urllib.unquote
+
+        env.filters["unquote"] = urllib.unquote
         template = env.get_template("html.html")
 
         tokens = req.path_info.split("/")[1:]
@@ -68,8 +70,7 @@ class HTMLResponse(BaseResponse):
 
         return Response(
             body=template.render(context),
-            content_type="text/html",
-            charset="utf-8")
+            headers=self.headers)
 
     def redirect(self, req):
         """Return a redirect to the ASCII response."""
@@ -79,8 +80,8 @@ class HTMLResponse(BaseResponse):
             if k.startswith("var1_") and req.params[k] != "--":
                 name = k[5:]
                 tokens = (
-                    req.params[k], 
-                    req.params["op_%s" % name], 
+                    req.params[k],
+                    req.params["op_%s" % name],
                     req.params["var2_%s" % name])
                 selection.append("".join(tokens))
 
