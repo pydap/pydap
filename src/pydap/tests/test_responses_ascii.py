@@ -1,91 +1,86 @@
+"""Test ASCII response."""
+
 import sys
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
 
-import numpy as np
 from webtest import TestApp
 from webob.headers import ResponseHeaders
 
-from pydap.model import *
 from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import D1, rain
+from pydap.tests.datasets import SimpleSequence, rain
 from pydap.responses.ascii import ascii
 
 
 class TestASCIIResponseSequence(unittest.TestCase):
+
+    """Test ASCII response from a sequence."""
+
     def setUp(self):
-        # create WSGI app                                                       
-        app = TestApp(BaseHandler(D1))
+        """Create a simple WSGI app for testing."""
+        app = TestApp(BaseHandler(SimpleSequence))
         self.res = app.get('/.asc')
 
     def test_dispatcher(self):
+        """Test the single dispatcher."""
         with self.assertRaises(StopIteration):
             ascii(None)
 
-    def test_status(self):                                                      
-        self.assertEqual(self.res.status, "200 OK")                 
-                                                                                
-    def test_content_type(self):                                                
-        self.assertEqual(self.res.content_type, "text/plain")                   
-                                                                                
-    def test_charset(self):                                                     
-        self.assertEqual(self.res.charset, "utf-8")                             
-                                                                                
-    def test_headers(self):                                                     
-        self.assertEqual(self.res.headers,                                      
+    def test_status(self):
+        """Test the status code."""
+        self.assertEqual(self.res.status, "200 OK")
+
+    def test_content_type(self):
+        """Test the content type."""
+        self.assertEqual(self.res.content_type, "text/plain")
+
+    def test_charset(self):
+        """Test the charset."""
+        self.assertEqual(self.res.charset, "utf-8")
+
+    def test_headers(self):
+        """Test headers from the response."""
+        self.assertEqual(
+            self.res.headers,
             ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'), 
-                ('Content-description', 'dods_ascii'), 
+                ('XDODS-Server', 'pydap/3.2'),
+                ('Content-description', 'dods_ascii'),
                 ('Content-type', 'text/plain; charset=utf-8'),
-                ('Content-Length', '763')]))
-                                                                                
-    def test_body(self):                                                        
+                ('Content-Length', '440')]))
+
+    def test_body(self):
+        """Test the generated ASCII response."""
         self.assertEqual(self.res.body, """Dataset {
     Sequence {
-        String instrument_id;
-        String location;
-        Float64 latitude;
-        Float64 longitude;
-    } Drifters;
-} EOSDB%2EDBO;
+        String id;
+        Int32 lon;
+        Int32 lat;
+        Int32 depth;
+        Int32 time;
+        Int32 temperature;
+        Int32 salinity;
+        Int32 pressure;
+    } cast;
+} SimpleSequence;
 ---------------------------------------------
-Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
-"This is a data test string (pass 1).", "This is a data test string (pass 0).", 1000, 999.95
-"This is a data test string (pass 3).", "This is a data test string (pass 2).", 999.95, 999.55
-"This is a data test string (pass 5).", "This is a data test string (pass 4).", 999.8, 998.75
-"This is a data test string (pass 7).", "This is a data test string (pass 6).", 999.55, 997.55
-"This is a data test string (pass 9).", "This is a data test string (pass 8).", 999.2, 995.95
+cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salinity, cast.pressure
+"1", 100, -10, 0, -1, 21, 35, 0
+"2", 200, 10, 500, 1, 15, 35, 100
 
 """)
 
 
 class TestASCIIResponseGrid(unittest.TestCase):
-    def setUp(self):
-        # create WSGI app                                                       
-        app = TestApp(BaseHandler(rain))
-        self.res = app.get('/.asc')
 
-    def test_status(self):
-        self.assertEqual(self.res.status, "200 OK")                 
-                                                                                
-    def test_content_type(self):                                                
-        self.assertEqual(self.res.content_type, "text/plain")                   
-                                                                                
-    def test_charset(self):                                                     
-        self.assertEqual(self.res.charset, "utf-8")                             
-                                                                                
-    def test_headers(self):                                                     
-        self.assertEqual(self.res.headers,                                      
-            ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'), 
-                ('Content-description', 'dods_ascii'), 
-                ('Content-type', 'text/plain; charset=utf-8'), 
-                ('Content-Length', '322')]))
+    """Test ASCII response from a grid."""
 
     def test_body(self):
-        self.assertEqual(self.res.body, """Dataset {
+        """Test the generated ASCII response."""
+        app = TestApp(BaseHandler(rain))
+        res = app.get('/.asc')
+        self.assertEqual(res.body, """Dataset {
     Grid {
         Array:
             Int32 rain[y = 2][x = 3];

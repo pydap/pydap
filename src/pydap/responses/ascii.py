@@ -51,7 +51,7 @@ def ascii(var, printname=True):
 
 @ascii.register(SequenceType)
 def _(var, printname=True):
-    yield ', '.join(child.id for child in var.children())
+    yield ', '.join([child.id for child in var.children()])
     yield '\n'
     for rec in var:
         out = copy.copy(var)
@@ -84,5 +84,5 @@ def _(var, printname=True):
     else:
         for indexes, value in izip(np.ndindex(var.shape), var.data.flat):
             yield "{indexes} {value}\n".format(
-                indexes="[" + "][".join(str(idx) for idx in indexes) + "]",
+                indexes="[" + "][".join([str(idx) for idx in indexes]) + "]",
                 value=encode(value))
