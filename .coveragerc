@@ -3,6 +3,7 @@ exclude_lines =
     prama: no cover
     import unittest2 as unittest
     from ordereddict import OrderedDict
+    __import__('pkg_resources')
 
 [run]
 branch = True
