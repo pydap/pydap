@@ -11,7 +11,6 @@ import ast
 import operator
 
 from pydap.parsers import SimpleParser
-from pydap.model import *
 from pydap.lib import walk
 
 
@@ -59,7 +58,7 @@ class DASParser(SimpleParser):
 
     def attribute(self):
         """Parse attributes.
-        
+
         The function will parse attributes from the DAS, converting them to the
         corresponding Python object. Returns the name of the attribute and the
         attribute(s).
@@ -106,9 +105,9 @@ def parse_das(das):
 
 def add_attributes(dataset, attributes):
     """Add attributes from a parsed DAS to a dataset.
-    
+
     Returns the dataset with added attributes.
-    
+
     """
     dataset.attributes['NC_GLOBAL'] = attributes.get('NC_GLOBAL', {})
     dataset.attributes['DODS_EXTRA'] = attributes.get('DODS_EXTRA', {})

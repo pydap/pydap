@@ -1,6 +1,6 @@
-import re
+"""A DDS parser."""
 
-import numpy as np
+import re
 
 from pydap.parsers import SimpleParser
 from pydap.model import *
@@ -8,33 +8,38 @@ from pydap.lib import quote, STRING
 
 
 typemap = {
-    'byte'    : 'B',
-    'int'     : '>i',
-    'uint'    : '>I',
-    'int16'   : '>i',
-    'uint16'  : '>I',
-    'int32'   : '>i',
-    'uint32'  : '>I',
-    'float32' : '>f',
-    'float64' : '>d',
-    'string'  : STRING,  # default is "|S128"
-    'url'     : STRING,
+    'byte':    'B',
+    'int':     '>i',
+    'uint':    '>I',
+    'int16':   '>i',
+    'uint16':  '>I',
+    'int32':   '>i',
+    'uint32':  '>I',
+    'float32': '>f',
+    'float64': '>d',
+    'string':  STRING,  # default is "|S128"
+    'url':     STRING,
     }
 constructors = ('grid', 'sequence', 'structure')
 name_regexp = '[\w%!~"\'\*-]+'
 
 
 class DDSParser(SimpleParser):
+
+    """A parser for the DDS."""
+
     def __init__(self, dds):
         super(DDSParser, self).__init__(dds, re.IGNORECASE)
         self.dds = dds
 
     def consume(self, regexp):
+        """Consume and return a token."""
         token = super(DDSParser, self).consume(regexp)
         self.buffer = self.buffer.lstrip()
         return token
 
     def parse(self):
+        """Parse the DAS, returning a dataset."""
         dataset = DatasetType('nameless')
 
         self.consume('dataset')
@@ -53,17 +58,19 @@ class DDSParser(SimpleParser):
         return dataset
 
     def declaration(self):
+        """Parse and return a declaration."""
         token = self.peek('\w+').lower()
 
         map = {
-               'grid'      : self.grid,
-               'sequence'  : self.sequence,
-               'structure' : self.structure,
-               }
+            'grid':      self.grid,
+            'sequence':  self.sequence,
+            'structure': self.structure,
+        }
         method = map.get(token, self.base)
         return method()
 
     def base(self):
+        """Parse a base variable, returning a ``BaseType``."""
         type = self.consume('\w+')
 
         dtype = typemap[type.lower()]
@@ -77,6 +84,7 @@ class DDSParser(SimpleParser):
         return var
 
     def dimensions(self):
+        """Parse variable dimensions, returning tuples of dimensions/names."""
         shape = []
         names = []
         while not self.peek(';'):
@@ -91,6 +99,7 @@ class DDSParser(SimpleParser):
         return tuple(shape), tuple(names)
 
     def sequence(self):
+        """Parse a DAS sequence, returning a ``SequenceType``."""
         sequence = SequenceType('nameless')
         self.consume('sequence')
         self.consume('{')
@@ -103,11 +112,13 @@ class DDSParser(SimpleParser):
         sequence.name = quote(self.consume('[^;]+'))
         self.consume(';')
 
-        sequence.descr = sequence.name, [c.descr for c in sequence.children()], ()
+        sequence.descr = sequence.name, [
+            c.descr for c in sequence.children()], ()
 
         return sequence
 
     def structure(self):
+        """Parse a DAP structure, returning a ``StructureType``."""
         structure = StructureType('nameless')
         self.consume('structure')
         self.consume('{')
@@ -120,11 +131,13 @@ class DDSParser(SimpleParser):
         structure.name = quote(self.consume('[^;]+'))
         self.consume(';')
 
-        structure.descr = structure.name, [c.descr for c in structure.children()], ()
+        structure.descr = structure.name, [
+            c.descr for c in structure.children()], ()
 
         return structure
 
     def grid(self):
+        """Parse a DAP grid, returning a ``GridType``."""
         grid = GridType('nameless')
         self.consume('grid')
         self.consume('{')
@@ -150,4 +163,9 @@ class DDSParser(SimpleParser):
 
 
 def build_dataset(dds):
+    """Shortcut function for building a dataset from the DDS.
+
+    Return a dataset object.
+
+    """
     return DDSParser(dds).parse()
