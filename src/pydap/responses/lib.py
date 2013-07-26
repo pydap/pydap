@@ -57,12 +57,13 @@ class BaseResponse(object):
         return self
 
     def x_wsgiorg_parsed_response(self, type):
-        """Avoid serialization of datasets.
+        r"""Avoid serialization of datasets.
 
         This function will return the contained dataset if ``type`` is a
         ``pydap.model.DatasetType`` object. Based on this proposal:
 
-            http://wsgi.readthedocs.org/en/latest/specifications/avoiding_serialization.html
+            http://wsgi.readthedocs.org/en/latest/specifications/ \
+                    avoiding_serialization.html
 
         """
         if type is DatasetType:

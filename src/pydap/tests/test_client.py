@@ -148,13 +148,7 @@ class TestFunctions(unittest.TestCase):
     Calling server-side functions is implemented using a lazy mechanism where
     arbitrary names are mapped to remove calls. The resulting dataset is only
     evaluated when ``__getitem__`` or ``__getattr__`` are called, allowing
-    nested calls to be evaluated only once:
-
-        >>> dataset = functions.mean(
-        ...     functions.mean(remote.SimpleGrid, 0), 0)  # doctest: +SKIP
-
-    In this example the nested calls to ``mean`` will return a single proxy
-    object.
+    nested calls to be evaluated only once.
 
     """
 

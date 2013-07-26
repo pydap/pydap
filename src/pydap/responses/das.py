@@ -135,7 +135,7 @@ def get_type(values):
 
 def type_convert(obj):
     """Map Python objects to the corresponding Opendap types.
-    
+
     Returns the DAP representation of the type as a string.
 
     """
