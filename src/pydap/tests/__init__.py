@@ -14,13 +14,13 @@ def requests_intercept(app, location):
         >>> import requests
         >>> old_get = requests.get
         >>> requests.get = requests_intercept(wsgi_app,
-        ...     "http://localhost:8001/")
+        ...     "http://localhost:8001/")  # doctest: +SKIP
     
     Requests for ``http://localhost:8001/`` will now be routed to the WSGI 
     application ``app``:
 
         >>> from pydap.client import open_url
-        >>> dataset = open_url("http://localhost:8001/")
+        >>> dataset = open_url("http://localhost:8001/")  # doctest: +SKIP
 
     After using it, set it back:
 

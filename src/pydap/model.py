@@ -64,11 +64,10 @@ variable::
     >>> rain['x'] = BaseType('x', np.arange(3), units='degrees_east')
     >>> rain['y'] = BaseType('y', np.arange(2), units='degrees_north')
     >>> print rain.array  #doctest: +ELLIPSIS
-    <__main__.BaseType object at ...>
-    >>> print rain.maps  #doctest: +ELLIPSIS
-    OrderedDict([
-        ('x', <__main__.BaseType object at ...>),
-        ('y', <__main__.BaseType object at ...>)])
+    <BaseType with data array([[0, 1, 2],
+           [3, 4, 5]])>
+    >>> print rain.maps
+    OrderedDict([('x', <BaseType with data array([0, 1, 2])>), ('y', <BaseType with data array([0, 1])>)])
 
 There a last special container called `SequenceType`. This data structure is
 analogous to a series of records (or rows), with one column for each of its
@@ -369,6 +368,7 @@ class SequenceType(StructureType):
 
     Here's a standard dataset for testing sequential data:
 
+        >>> import numpy as np
         >>> data = np.array([
         ... (10, 15.2, 'Diamond_St'),
         ... (11, 13.1, 'Blacktail_Loop'),
@@ -377,14 +377,14 @@ class SequenceType(StructureType):
         ... dtype=np.dtype([
         ... ('index', np.int32), ('temperature', np.float32),
         ... ('site', np.dtype('|S14'))]))
-
-    Iteraring over the sequence returns data:
-
+        ... 
         >>> seq = SequenceType('example')
         >>> seq['index'] = BaseType('index')
         >>> seq['temperature'] = BaseType('temperature')
         >>> seq['site'] = BaseType('site')
         >>> seq.data = data
+
+    Iteraring over the sequence returns data:
 
         >>> for line in seq:
         ...     print line

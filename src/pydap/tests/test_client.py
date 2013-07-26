@@ -150,7 +150,8 @@ class TestFunctions(unittest.TestCase):
     evaluated when ``__getitem__`` or ``__getattr__`` are called, allowing
     nested calls to be evaluated only once:
 
-        >>> dataset = functions.mean(functions.mean(remote.SimpleGrid, 0), 0)
+        >>> dataset = functions.mean(
+        ...     functions.mean(remote.SimpleGrid, 0), 0)  # doctest: +SKIP
 
     In this example the nested calls to ``mean`` will return a single proxy
     object.

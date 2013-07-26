@@ -163,9 +163,5 @@ class DDSParser(SimpleParser):
 
 
 def build_dataset(dds):
-    """Shortcut function for building a dataset from the DDS.
-
-    Return a dataset object.
-
-    """
+    """Return a dataset object from a DDS representation."""
     return DDSParser(dds).parse()

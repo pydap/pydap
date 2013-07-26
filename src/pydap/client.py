@@ -5,7 +5,7 @@ open a dataset by its canonical URL, ie, without any DAP related extensions
 like dds/das/dods/html. Here is an example:
 
     >>> from pydap.client import open_url
-    >>> dataset = open_url("http://test.pydap.org/coads.nc")
+    >>> dataset = open_url("http://test.pydap.org/coads.nc")  # doctest: +SKIP
 
 This will return a `DatasetType` object, which is a container for lazy
 evaluated objects. Data is downloaded automatically when arrays are sliced or
@@ -16,8 +16,9 @@ This allows calling server-specific functions, like those supported by the
 Ferret and the GrADS data servers:
 
     >>> from pydap.client import open_dods
-    >>> dataset = open_dods("http://test.pydap.org/coads.nc.dods",
-    ...     metadata=True)
+    >>> dataset = open_dods(
+    ...     "http://test.pydap.org/coads.nc.dods",
+    ...     metadata=True)  # doctest: +SKIP
 
 Setting the `metadata` flag will also request the das response, populating the
 dataset with the corresponding metadata.
@@ -27,7 +28,8 @@ if it were a remote dataset. Optionally, it is also possible to specify a das
 response:
 
     >>> from pydap.client import open_file
-    >>> dataset = open_file("/path/to/file.dods", "/path/to/file.das")
+    >>> dataset = open_file(
+    ...     "/path/to/file.dods", "/path/to/file.das")  #doctest: +SKIP
 
 Remote datasets opened with `open_url` can call server functions. Pydap has a
 lazy mechanism for function call, supporting any function. Eg, to call the

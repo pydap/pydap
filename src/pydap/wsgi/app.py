@@ -214,7 +214,7 @@ def init(directory):
         shutil.copy(path, directory)
 
 
-def main():
+def main():  # pragma: no cover
     """Run server from the command line."""
     import multiprocessing
 
@@ -225,7 +225,7 @@ def main():
 
     # init templates?
     if arguments["--init"]:
-        return init(arguments["--init"])
+        init(arguments["--init"])
 
     # create pydap app
     data, templates = arguments["--data"], arguments["--templates"]
