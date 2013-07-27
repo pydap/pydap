@@ -8,7 +8,6 @@ else:
 
 import numpy as np
 
-from pydap.model import *
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import build_dataset
 from pydap.tests.test_parsers_dds import DDS
