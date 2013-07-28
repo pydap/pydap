@@ -5,7 +5,7 @@ open a dataset by its canonical URL, ie, without any DAP related extensions
 like dds/das/dods/html. Here is an example:
 
     >>> from pydap.client import open_url
-    >>> dataset = open_url("http://test.pydap.org/coads.nc")  # doctest: +SKIP
+    >>> dataset = open_url("http://test.pydap.org/coads.nc")
 
 This will return a `DatasetType` object, which is a container for lazy
 evaluated objects. Data is downloaded automatically when arrays are sliced or
@@ -18,7 +18,7 @@ Ferret and the GrADS data servers:
     >>> from pydap.client import open_dods
     >>> dataset = open_dods(
     ...     "http://test.pydap.org/coads.nc.dods",
-    ...     metadata=True)  # doctest: +SKIP
+    ...     metadata=True)
 
 Setting the `metadata` flag will also request the das response, populating the
 dataset with the corresponding metadata.

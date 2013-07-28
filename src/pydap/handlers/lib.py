@@ -1,3 +1,11 @@
+"""Basic functions for handlers.
+
+Pydap handlers are responsible for reading data in different formats -- NetCDF,
+SQL databases, CSV files, etc. -- and convert them into the internal data model
+so that the data may be served using different responses.
+
+"""
+
 from __future__ import division
 
 import sys
@@ -10,15 +18,15 @@ import copy
 import numpy as np
 from webob import Request
 from webob.exc import HTTPException
-from pkg_resources import iter_entry_points
+import pkg_resources
 from numpy.lib.arrayterator import Arrayterator
 
 from pydap.responses.lib import load_responses
 from pydap.responses.error import ErrorResponse
-from pydap.parsers import parse_ce
+from pydap.parsers import parse_ce, parse_selection
 from pydap.exceptions import (
     ConstraintExpressionError, ExtensionNotSupportedError)
-from pydap.lib import walk, fix_shorthand, get_var, encode, combine_slices
+from pydap.lib import walk, fix_shorthand, get_var, encode
 from pydap.model import *
 
 
@@ -28,11 +36,21 @@ BUFFER_SIZE = 2**27
 CORS_RESPONSES = ['dds', 'das', 'dods', 'ver', 'json']
 
 
-def load_handlers():
-    return [ep.load() for ep in iter_entry_points("pydap.handler")]
+def load_handlers(working_set=pkg_resources.working_set):
+    r"""Load all handlers, returning them on a list.
+
+    Passing ``working_set`` is used only for unit testing. Check the following
+    discussion for an explanation about this:
+
+        http://grokbase.com/t/python/distutils-sig/074rc4a6hb/ \
+                distutils-programmatically-adding-entry-points
+    
+    """
+    return [ep.load() for ep in working_set.iter_entry_points("pydap.handler")]
 
 
 def get_handler(filepath, handlers=None):
+    """Given a filepath, return the corresponding instantiated handler."""
     # Check each handler to see which one handles this file.
     for handler in handlers or load_handlers():
         p = re.compile(handler.extensions)
@@ -44,8 +62,8 @@ def get_handler(filepath, handlers=None):
 
 
 class BaseHandler(object):
-    """
-    Base class for Pydap handlers.
+
+    """Base class for Pydap handlers.
 
     Handlers are WSGI applications that parse the client request and build the
     corresponding dataset. The dataset is passed to proper Response (DDS, DAS,
@@ -73,8 +91,6 @@ class BaseHandler(object):
             # WSGI app
             dataset = self.parse(projection, selection, buffer_size)
             app = self.responses[response](dataset)
-            if hasattr(app, 'close'):
-                self.close = app.close
 
             # now build a Response and set additional headers
             res = req.get_response(app)
@@ -84,16 +100,13 @@ class BaseHandler(object):
             # CORS for Javascript requests
             if response in CORS_RESPONSES:
                 res.headers.add('Access-Control-Allow-Origin', '*')
-                res.headers.add('Access-Control-Allow-Headers',
-                        'Origin, X-Requested-With, Content-Type')
+                res.headers.add(
+                    'Access-Control-Allow-Headers',
+                    'Origin, X-Requested-With, Content-Type')
 
             return res(environ, start_response)
-        except HTTPException, exc:
-            # HTTP exceptions are used to redirect the user
-            return exc(environ, start_response)
         except:
             # should the exception be catched?
-            # http://wsgi.readthedocs.org/en/latest/specifications/throw_errors.html
             if environ.get('x-wsgiorg.throw_errors'):
                 raise
             else:
@@ -101,13 +114,11 @@ class BaseHandler(object):
                 return res(environ, start_response)
 
     def parse(self, projection, selection, buffer_size=BUFFER_SIZE):
-        """
-        Parse the constraint expression.
-
-        """
+        """Parse the constraint expression, returning a new dataset."""
         if self.dataset is None:
             raise NotImplementedError(
-                "Subclasses must define a dataset attribute pointing to a DatasetType.")
+                "Subclasses must define a ``dataset`` attribute pointing to a"
+                "``DatasetType`` object.")
 
         # make a copy of the dataset, so we can filter sequences inplace
         dataset = copy.copy(self.dataset)
@@ -127,13 +138,13 @@ class BaseHandler(object):
 
         return dataset
 
-    def close(self):
-        pass
-
 
 def wrap_arrayterator(dataset, size):
-    """
-    Wrap `BaseType` objects in an Arrayterator.
+    """Wrap `BaseType` objects in an Arrayterator.
+
+    This function is used to optimize access to huge datasets. It returns a new
+    dataset with data wrapped in Arrayterators. This way the data is read in
+    blocks instead of buffering everything in memory.
 
     Since the buffer size of the Arrayterator is in elements, not bytes, we
     convert according to the data item size.
@@ -149,109 +160,83 @@ def wrap_arrayterator(dataset, size):
 
 
 def apply_selection(selection, dataset):
-    """
-    Apply a given selection to a dataset, modifying it inplace.
+    """Apply a given selection to a dataset, modifying it inplace.
+    
+    Returns the original dataset.
 
     """
     for seq in walk(dataset, SequenceType):
         # apply only relevant selections
-        conditions = [condition for condition in selection
-                if re.match('%s\.[^\.]+(<=|<|>=|>|=|!=)' % re.escape(seq.id), condition)]
+        conditions = [
+            condition for condition in selection
+            if re.match(
+                '%s\.[^\.]+(<=|<|>=|>|=|!=)' % re.escape(seq.id), condition)]
         for condition in conditions:
             id1, op, id2 = parse_selection(condition, dataset)
-            seq.data = seq[ op(id1, id2) ].data
+            seq.data = seq[op(id1, id2)].data
     return dataset
 
 
 def apply_projection(projection, dataset):
-    """
-    Apply a given projection to a dataset.
+    """Apply a given projection to a dataset.
 
-    The function returns a new dataset object, after applying the projection to
-    the original dataset.
+    This function builds and returns a new dataset by adding those variables
+    that were requested on the projection.
 
     """
     out = DatasetType(name=dataset.name, attributes=dataset.attributes)
 
-    for var in projection:
+    # first collect all the variables
+    for p in projection:
         target, template = out, dataset
-        while var:
-            name, slice_ = var.pop(0)
+        for i, (name, slice_) in enumerate(p): 
             candidate = template[name]
 
-            # apply slice
-            if slice_:
-                if isinstance(candidate, BaseType):
-                    candidate.data = candidate[slice_]
-                elif isinstance(candidate, SequenceType):
-                    candidate = candidate[slice_[0]]
-                elif isinstance(candidate, GridType):
-                    candidate = candidate[slice_]
-
-            # handle structures
+            # add variable to target
             if isinstance(candidate, StructureType):
-                # add variable to target
                 if name not in target.keys():
-                    if var:
-                        # if there are more children to add we need to clear the
-                        # candidate so it has only explicitly added children;
-                        # also, Grids are degenerated into Structures
+                    if i < len(p) - 1:
+                        # if there are more children to add we need to clear
+                        # the candidate so it has only explicitly added
+                        # children; also, Grids are degenerated into Structures
                         if isinstance(candidate, GridType):
-                            candidate = StructureType(candidate.name, candidate.attributes)
+                            candidate = StructureType(
+                                candidate.name, candidate.attributes)
                         candidate._keys = []
                     target[name] = candidate
                 target, template = target[name], template[name]
             else:
                 target[name] = candidate
 
-    # fix sequence data, including only variables that are in the sequence
+    # fix sequence data to include only variables that are in the sequence
     for seq in walk(out, SequenceType):
         seq.data = get_var(dataset, seq.id)[tuple(seq.keys())].data
+
+    # apply slices
+    for p in projection:
+        target = out
+        for name, slice_ in p:
+            target, parent = target[name], target
+
+            if slice_:
+                if isinstance(target, BaseType):
+                    target.data = target[slice_]
+                elif isinstance(target, SequenceType):
+                    parent[name] = target[slice_[0]]
+                elif isinstance(target, GridType):
+                    parent[name] = target[slice_]
 
     return out
 
 
-def parse_selection(expression, dataset):
-    """
-    Parse a selection expression into its elements.
-
-    This function will parse a selection expression into three tokens: two
-    variables or values and a comparison operator. Variables are returned as
-    Pydap objects from a given dataset, while values are parsed using
-    `ast.literal_eval`.
-
-    """
-    id1, op, id2 = re.split('(<=|>=|!=|=~|>|<|=)', expression, 1)
-
-    op = {
-        '<=': operator.le,
-        '>=': operator.ge,
-        '!=': operator.ne,
-        '=': operator.eq,
-        '>': operator.gt,
-        '<': operator.lt,
-    }[op]
-
-    try:
-        id1 = get_var(dataset, id1)
-    except:
-        id1 = ast.literal_eval(id1)
-
-    try:
-        id2 = get_var(dataset, id2)
-    except:
-        id2 = ast.literal_eval(id2)
-
-    return id1, op, id2
-
-
 class ConstraintExpression(object):
-    """
-    An object representing a selection on a constraint expression.
 
-    These can be accumulated and evaluated only once.
+    """An object representing a selection on a constraint expression.
+
+    These can be accumulated so that they are evaluated only once.
 
     """
+
     def __init__(self, value):
         self.value = value
 
@@ -262,7 +247,7 @@ class ConstraintExpression(object):
         return unicode(self.value)
 
     def __and__(self, other):
-        """Join two CEs together."""
+        """Join two CEs together, returning a new object."""
         return self.__class__(self.value + '&' + str(other))
 
     def __or__(self, other):
@@ -300,6 +285,7 @@ class IterData(object):
 
     @property
     def dtype(self):
+        """Return Numpy dtype of the object."""
         peek = iter(self).next()
         return np.array(peek).dtype
 
@@ -316,7 +302,7 @@ class IterData(object):
         return data
 
     def __copy__(self):
-        """A lightweight copy of the object."""
+        """Return a lightweight copy of the object."""
         return IterData(self.stream, self.descr, self.names, self.ifilter[:],
                         self.imap[:], self.islice[:])
 
@@ -398,6 +384,7 @@ class IterData(object):
 
 
 def deepmap(function, level):
+    """Map a function inside a nested list, returning the modified data."""
     def out(row, level=level):
         if level == 1:
             return function(row)
@@ -407,6 +394,7 @@ def deepmap(function, level):
 
 
 def build_filter(expression, descr):
+    """Return a filter function based on a comparison expression."""
     id1, op, id2 = re.split('(<=|>=|!=|=~|>|<|=)', str(expression), 1)
 
     # get the list of variables in the sequence
@@ -426,7 +414,7 @@ def build_filter(expression, descr):
         raise ConstraintExpressionError(
             'Invalid constraint expression: "{expression}"'
             '("{id}" is not a valid variable)'.format(
-            expression=expression, id=id1))
+                expression=expression, id=id1))
 
     # if we're comparing two variables they must be on the same sequence, so
     # ``base1`` must be equal to ``base2``
@@ -439,13 +427,13 @@ def build_filter(expression, descr):
             raise ConstraintExpressionError(
                 'Invalid constraint expression: "{expression}"'
                 '("{id}" is not a valid variable)'.format(
-                expression=expression, id=id2))
+                    expression=expression, id=id2))
 
     op = {
-        '<' : operator.lt,
-        '>' : operator.gt,
+        '<':  operator.lt,
+        '>':  operator.gt,
         '!=': operator.ne,
-        '=' : operator.eq,
+        '=':  operator.eq,
         '>=': operator.ge,
         '<=': operator.le,
         '=~': lambda a, b: re.match(b, a),

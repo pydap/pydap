@@ -6,9 +6,12 @@ DDS and DAS responses.
 """
 
 import re
+import operator
+import ast
 from urllib import unquote
 
 from pydap.exceptions import ConstraintExpressionError
+from pydap.lib import get_var
 
 
 def parse_projection(input):
@@ -45,6 +48,39 @@ def parse_projection(input):
         return token
 
     return map(parse, tokenize(input))
+
+
+def parse_selection(expression, dataset):
+    """Parse a selection expression into its elements.
+
+    This function will parse a selection expression into three tokens: two
+    variables or values and a comparison operator. Variables are returned as
+    Pydap objects from a given dataset, while values are parsed using
+    ``ast.literal_eval``.
+
+    """
+    id1, op, id2 = re.split('(<=|>=|!=|=~|>|<|=)', expression, 1)
+
+    op = {
+        '<=': operator.le,
+        '>=': operator.ge,
+        '!=': operator.ne,
+        '=': operator.eq,
+        '>': operator.gt,
+        '<': operator.lt,
+    }[op]
+
+    try:
+        id1 = get_var(dataset, id1)
+    except:
+        id1 = ast.literal_eval(id1)
+
+    try:
+        id2 = get_var(dataset, id2)
+    except:
+        id2 = ast.literal_eval(id2)
+
+    return id1, op, id2
 
 
 def parse_ce(query_string):

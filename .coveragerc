@@ -3,7 +3,6 @@ exclude_lines =
     pragma: no cover
     import unittest2 as unittest
     from ordereddict import OrderedDict
-    __import__('pkg_resources')
     if __name__ == .__main__.
 
 [run]

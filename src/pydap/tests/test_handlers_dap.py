@@ -1,4 +1,4 @@
-"""Test the DAP handlers, which forms the core of the client."""
+"""Test the DAP handler, which forms the core of the client."""
 
 import sys
 if sys.version_info < (2, 7):
