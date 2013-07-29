@@ -1,14 +1,16 @@
 """Test parsing functions."""
 
 import sys
+import operator
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
 
 from pydap.parsers import (
-    parse_projection, parse_ce, parse_hyperslab, SimpleParser)
+    parse_projection, parse_selection, parse_ce, parse_hyperslab, SimpleParser)
 from pydap.exceptions import ConstraintExpressionError
+from pydap.tests.datasets import VerySimpleSequence
 
 
 class TestParseProjection(unittest.TestCase):
@@ -49,6 +51,25 @@ class TestParseProjection(unittest.TestCase):
         parsed = parse_projection("mean(mean(a[0],1))")
         self.assertEqual(
             parsed, ['mean(mean(a[0],1))'])
+
+
+class TestParseSelection(unittest.TestCase):
+
+    """Test selection parser."""
+
+    def test_simple(self):
+        """Test a simple selection."""
+        id1, op, id2 = parse_selection("sequence.byte>1", VerySimpleSequence)
+        self.assertIs(id1, VerySimpleSequence.sequence.byte)
+        self.assertIs(op, operator.gt)
+        self.assertEqual(id2, 1)
+
+    def test_inverted(self):
+        """Test an inverted selection."""
+        id1, op, id2 = parse_selection("1<sequence.byte", VerySimpleSequence)
+        self.assertEqual(id1, 1)
+        self.assertIs(op, operator.lt)
+        self.assertIs(id2, VerySimpleSequence.sequence.byte)
 
 
 class TestParseCe(unittest.TestCase):

@@ -377,7 +377,7 @@ class SequenceType(StructureType):
         ... dtype=np.dtype([
         ... ('index', np.int32), ('temperature', np.float32),
         ... ('site', np.dtype('|S14'))]))
-        ... 
+        ...
         >>> seq = SequenceType('example')
         >>> seq['index'] = BaseType('index')
         >>> seq['temperature'] = BaseType('temperature')
