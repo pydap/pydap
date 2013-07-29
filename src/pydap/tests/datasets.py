@@ -45,10 +45,10 @@ NestedSequence["location"]["time_series"]["time"] = BaseType("time")
 NestedSequence["location"]["time_series"]["slp"] = BaseType("slp")
 NestedSequence["location"]["time_series"]["wind"] = BaseType("wind")
 NestedSequence["location"].data = IterData([
-    (1, 1, 1, IterData([(10, 11, 12), (21, 22, 23)], ("location.time_series", ("time", "slp", "wind")))),
-    (2, 4, 4, IterData([(15, 16, 17)], ("location.time_series", ("time", "slp", "wind")))),
-    (3, 6, 9, IterData([], ("location.time_series", ("time", "slp", "wind")))),
-    (4, 8, 16, IterData([(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)], ("location.time_series", ("time", "slp", "wind")))),
+    (1, 1, 1, [(10, 11, 12), (21, 22, 23)]),
+    (2, 4, 4, [(15, 16, 17)]),
+    (3, 6, 9, []),
+    (4, 8, 16, [(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)]),
     ], ("location",
         ("lat", "lon", "elev", ("time_series", ("time", "slp", "wind")))))
 

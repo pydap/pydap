@@ -267,9 +267,9 @@ class IterData(object):
 
     def __init__(self, stream, descr, names=None, ifilter=None, imap=None,
                  islice=None):
-        self.stream = stream
         self.descr = descr
         self.names = names or descr
+        self.stream = self.fix(stream, self.names)
 
         # these are used to lazily evaluate the data stream
         self.ifilter = ifilter or []
@@ -278,6 +278,14 @@ class IterData(object):
 
         self.id = self.names[0]
         self.level = 1
+
+    def fix(self, stream, names):
+        """Wrap nested data."""
+        wrap = lambda row, names=names: tuple(
+            col if isinstance(name, basestring)
+            else IterData(col, ("%s.%s" % (names[0], name[0]), name[1]))
+            for col, name in zip(row, names[1]))
+        return map(wrap, stream)
 
     def __repr__(self):
         return repr(self.stream)
