@@ -17,7 +17,6 @@ import copy
 
 import numpy as np
 from webob import Request
-from webob.exc import HTTPException
 import pkg_resources
 from numpy.lib.arrayterator import Arrayterator
 
@@ -44,7 +43,7 @@ def load_handlers(working_set=pkg_resources.working_set):
 
         http://grokbase.com/t/python/distutils-sig/074rc4a6hb/ \
                 distutils-programmatically-adding-entry-points
-    
+
     """
     return [ep.load() for ep in working_set.iter_entry_points("pydap.handler")]
 
@@ -161,7 +160,7 @@ def wrap_arrayterator(dataset, size):
 
 def apply_selection(selection, dataset):
     """Apply a given selection to a dataset, modifying it inplace.
-    
+
     Returns the original dataset.
 
     """
@@ -189,7 +188,7 @@ def apply_projection(projection, dataset):
     # first collect all the variables
     for p in projection:
         target, template = out, dataset
-        for i, (name, slice_) in enumerate(p): 
+        for i, (name, slice_) in enumerate(p):
             candidate = template[name]
 
             # add variable to target
@@ -286,8 +285,11 @@ class IterData(object):
     @property
     def dtype(self):
         """Return Numpy dtype of the object."""
-        peek = iter(self).next()
-        return np.array(peek).dtype
+        if isinstance(self.names, basestring):
+            peek = iter(self).next()
+            return np.array(peek).dtype
+        else:
+            return [(name, self[name].dtype) for name in self.names[1]]
 
     def __iter__(self):
         data = iter(self.stream)
@@ -365,22 +367,46 @@ class IterData(object):
         return out
 
     def __eq__(self, other):
-        return ConstraintExpression('%s=%s' % (self.id, encode(other)))
+        if isinstance(other, self.__class__):
+            right = other.id
+        else:
+            right = encode(other)
+        return ConstraintExpression('%s=%s' % (self.id, right))
 
     def __ne__(self, other):
-        return ConstraintExpression('%s!=%s' % (self.id, encode(other)))
+        if isinstance(other, self.__class__):
+            right = other.id
+        else:
+            right = encode(other)
+        return ConstraintExpression('%s!=%s' % (self.id, right))
 
     def __ge__(self, other):
-        return ConstraintExpression('%s>=%s' % (self.id, encode(other)))
+        if isinstance(other, self.__class__):
+            right = other.id
+        else:
+            right = encode(other)
+        return ConstraintExpression('%s>=%s' % (self.id, right))
 
     def __le__(self, other):
-        return ConstraintExpression('%s<=%s' % (self.id, encode(other)))
+        if isinstance(other, self.__class__):
+            right = other.id
+        else:
+            right = encode(other)
+        return ConstraintExpression('%s<=%s' % (self.id, right))
 
     def __gt__(self, other):
-        return ConstraintExpression('%s>%s' % (self.id, encode(other)))
+        if isinstance(other, self.__class__):
+            right = other.id
+        else:
+            right = encode(other)
+        return ConstraintExpression('%s>%s' % (self.id, right))
 
     def __lt__(self, other):
-        return ConstraintExpression('%s<%s' % (self.id, encode(other)))
+        if isinstance(other, self.__class__):
+            right = other.id
+        else:
+            right = encode(other)
+        return ConstraintExpression('%s<%s' % (self.id, right))
 
 
 def deepmap(function, level):
@@ -422,11 +448,12 @@ def build_filter(expression, descr):
         b = operator.itemgetter(descr.index(id2.rsplit(".")[-1]))
     else:
         try:
-            b = lambda row, id2=id2: ast.literal_eval(id2)
+            value = ast.literal_eval(id2)
+            b = lambda row, value=value: value
         except:
             raise ConstraintExpressionError(
                 'Invalid constraint expression: "{expression}"'
-                '("{id}" is not a valid variable)'.format(
+                '("{id}" is not valid)'.format(
                     expression=expression, id=id2))
 
     op = {

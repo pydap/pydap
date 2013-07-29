@@ -16,7 +16,8 @@ from pydap.lib import walk
 from pydap.exceptions import ConstraintExpressionError
 from pydap.handlers.lib import (
     load_handlers, get_handler, BaseHandler, ExtensionNotSupportedError,
-    apply_selection, apply_projection, parse_selection, ConstraintExpression)
+    apply_selection, apply_projection, parse_selection, ConstraintExpression,
+    IterData)
 from pydap.parsers import parse_projection
 from pydap.tests.datasets import (
     SimpleArray, SimpleSequence, SimpleGrid, VerySimpleSequence)
@@ -174,7 +175,7 @@ class TestApplyProjectionGrid(unittest.TestCase):
         dataset = apply_projection(parse_projection("x"), self.dataset)
         self.assertEqual(dataset.keys(), ["x"])
 
-    def test_simple_projection(self):
+    def test_simple_projection_with_index(self):
         """Test simple projections."""
         dataset = apply_projection(parse_projection("x[1]"), self.dataset)
         np.testing.assert_array_equal(
@@ -243,6 +244,122 @@ class TestConstraintExpression(unittest.TestCase):
         ce2 = ConstraintExpression("b>0")
         with self.assertRaises(ConstraintExpressionError):
             ce1 | ce2
+
+
+class TestIterData(unittest.TestCase):
+
+    """Test the ``IterData`` class, used to store flat/nested sequence data.
+    
+    A flat ``IterData`` should behave like a Numpy structured array, except
+    all operations are stored to be lazily evaluated when the object is
+    iterated over.
+
+    """
+
+    def setUp(self):
+        """Create a flat IterData."""
+        self.data = IterData([
+            (1, 2, 3),
+            (4, 5, 6),
+        ], ("a", ("b", "c", "d")))
+
+        self.array = np.array(np.rec.fromrecords([
+            (1, 2, 3),
+            (4, 5, 6),
+        ], names=["b", "c", "d"]))
+
+    def test_repr(self):
+        """Test the object representation."""
+        self.assertEqual(repr(self.data), "[(1, 2, 3), (4, 5, 6)]")
+
+    def test_dtype(self):
+        """Test the ``dtype`` property."""
+        self.assertEqual(self.data.dtype, self.array.dtype)
+        self.assertEqual(self.data["b"].dtype, self.array["b"].dtype)
+
+    def test_iteration(self):
+        """Test iteration over data."""
+        self.assertEqual(map(tuple, self.data), map(tuple, self.array))
+        self.assertEqual(list(self.data["b"]), list(self.array["b"]))
+
+    def test_filter(self):
+        """Test filtering the object."""
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] == 1]),
+            map(tuple, self.array[self.array["b"] == 1]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] != 1]),
+            map(tuple, self.array[self.array["b"] != 1]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] >= 1]),
+            map(tuple, self.array[self.array["b"] >= 1]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] <= 1]),
+            map(tuple, self.array[self.array["b"] <= 1]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] > 1]),
+            map(tuple, self.array[self.array["b"] > 1]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] < 1]),
+            map(tuple, self.array[self.array["b"] < 1]))
+
+    def test_slice(self):
+        """Test slicing the object."""
+        self.assertEqual(map(tuple, self.data[1:]), map(tuple, self.array[1:]))
+
+    def test_integer_slice(self):
+        """Test slicing with an integer.
+
+        Note that the behavior here is different from Numpy arrays, since the
+        data access to ``IterData`` is through iteration it has no direct index
+        access.
+
+        """
+        self.assertEqual(map(tuple, self.data[0]), map(tuple, self.array[0:1]))
+
+    def test_invalid_child(self):
+        """Test accessing a non-existing child."""
+        with self.assertRaises(KeyError):
+            self.data["e"]
+
+    def test_selecting_children(self):
+        """Test that we can select children."""
+        self.assertEqual(
+            map(tuple, self.data[["d", "b"]]),
+            map(tuple, self.array[["d", "b"]]))
+
+    def test_invalid_selection(self):
+        """Test invalid selections.
+
+        In theory this should never happen, since ``ConstraintExpression``
+        object are constructly directly from existing children.
+        
+        """
+        with self.assertRaises(ConstraintExpressionError):
+            self.data[ConstraintExpression("a.e<1")]
+        with self.assertRaises(ConstraintExpressionError):
+            self.data[ConstraintExpression("a.d<foo")]
+
+    def test_intercomparison_selection(self):
+        """Test comparing children in the selection."""
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] == self.data["c"]]),
+            map(tuple, self.array[self.array["b"] == self.array["c"]]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] != self.data["c"]]),
+            map(tuple, self.array[self.array["b"] != self.array["c"]]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] >= self.data["c"]]),
+            map(tuple, self.array[self.array["b"] >= self.array["c"]]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] <= self.data["c"]]),
+            map(tuple, self.array[self.array["b"] <= self.array["c"]]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] > self.data["c"]]),
+            map(tuple, self.array[self.array["b"] > self.array["c"]]))
+        self.assertEqual(
+            map(tuple, self.data[self.data["b"] < self.data["c"]]),
+            map(tuple, self.array[self.array["b"] < self.array["c"]]))
 
 
 
