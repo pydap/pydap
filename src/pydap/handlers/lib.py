@@ -269,7 +269,12 @@ class IterData(object):
                  islice=None):
         self.descr = descr
         self.names = names or descr
-        self.stream = self.fix(stream, self.names)
+
+        # convert nested lists into nested ``IterData`` objects
+        if self.names == descr:
+            self.stream = self.fix(stream, self.names)
+        else:
+            self.stream = stream
 
         # these are used to lazily evaluate the data stream
         self.ifilter = ifilter or []
@@ -282,7 +287,7 @@ class IterData(object):
     def fix(self, stream, names):
         """Wrap nested data."""
         wrap = lambda row, names=names: tuple(
-            col if isinstance(name, basestring)
+            col if (isinstance(name, basestring) or isinstance(col, IterData))
             else IterData(col, ("%s.%s" % (names[0], name[0]), name[1]))
             for col, name in zip(row, names[1]))
         return map(wrap, stream)
