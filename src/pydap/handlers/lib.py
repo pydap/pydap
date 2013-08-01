@@ -286,10 +286,12 @@ class IterData(object):
 
     def fix(self, stream, names):
         """Wrap nested data."""
-        wrap = lambda row, names=names: tuple(
-            col if (isinstance(name, basestring) or isinstance(col, IterData))
-            else IterData(col, ("%s.%s" % (names[0], name[0]), name[1]))
-            for col, name in zip(row, names[1]))
+        def wrap(row):
+            return tuple(
+                col if (isinstance(name, basestring) or 
+                    isinstance(col, IterData))
+                else IterData(col, ("%s.%s" % (names[0], name[0]), name[1]))
+                for col, name in zip(row, names[1]))
         return map(wrap, stream)
 
     def tolist(self):
@@ -471,7 +473,8 @@ def build_filter(expression, descr):
     else:
         try:
             value = ast.literal_eval(id2)
-            b = lambda row, value=value: value
+            def b(row):
+                return value
         except:
             raise ConstraintExpressionError(
                 'Invalid constraint expression: "{expression}"'
@@ -488,6 +491,7 @@ def build_filter(expression, descr):
         '=~': lambda a, b: re.match(b, a),
     }[op]
 
-    f = lambda row, op=op, a=a, b=b: op(a(row), b(row))
+    def f(row):
+        return op(a(row), b(row))
 
     return f, level
