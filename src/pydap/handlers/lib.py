@@ -259,7 +259,7 @@ class IterData(object):
     """Class for manipulating complex data streams as structured arrays.
 
     A structured array is a Numpy construct that has some very interesting
-    properties for working with tabular data:
+    properties for working with tabular data.
 
     """
 
@@ -292,8 +292,17 @@ class IterData(object):
             for col, name in zip(row, names[1]))
         return map(wrap, stream)
 
+    def tolist(self):
+        """Return data with ``IterData`` converted to nested lists."""
+        def unwrap(obj):
+            if isinstance(obj, IterData):
+                return [tuple(map(unwrap, child)) for child in obj]
+            else:
+                return obj
+        return [tuple(map(unwrap, obj)) for obj in self]
+
     def __repr__(self):
-        return repr(self.stream)
+        return repr(self.tolist())
 
     @property
     def dtype(self):
