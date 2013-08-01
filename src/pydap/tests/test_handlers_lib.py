@@ -20,7 +20,8 @@ from pydap.handlers.lib import (
     IterData)
 from pydap.parsers import parse_projection
 from pydap.tests.datasets import (
-    SimpleArray, SimpleSequence, SimpleGrid, VerySimpleSequence)
+    SimpleArray, SimpleSequence, SimpleGrid, VerySimpleSequence,
+    NestedSequence)
 
 
 class TestHandlersLib(unittest.TestCase):
@@ -361,6 +362,72 @@ class TestIterData(unittest.TestCase):
             map(tuple, self.data[self.data["b"] < self.data["c"]]),
             map(tuple, self.array[self.array["b"] < self.array["c"]]))
 
+
+class TestNestedIterData(unittest.TestCase):
+
+    """Test ``IterData`` with nested data."""
+
+    def setUp(self):
+        """Load data from test dataset."""
+        self.data = NestedSequence.location.data
+
+    def test_iteration(self):
+        """Test basic iteration."""
+        self.assertEqual(
+            self.data.tolist(), [
+            (1, 1, 1, [(10, 11, 12), (21, 22, 23)]),
+            (2, 4, 4, [(15, 16, 17)]),
+            (3, 6, 9, []),
+            (4, 8, 16, [
+                (31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)])
+        ])
+
+    def test_selecting_children(self):
+        """Test that we can select children."""
+        self.assertEqual(
+            self.data[["time_series", "elev"]].tolist(), [
+            ([(10, 11, 12), (21, 22, 23)], 1),
+            ([(15, 16, 17)], 4),
+            ([], 9),
+            ([(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)], 16)
+        ])
+
+    def test_slice(self):
+        """Test slicing the object."""
+        self.assertEqual(
+            self.data[1::2].tolist(), [
+            (2, 4, 4, [(15, 16, 17)]),
+            (4, 8, 16, [
+                (31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)])
+        ])
+
+    def test_children_data(self):
+        """Test getting children data."""
+        self.assertEqual(
+            self.data["time_series"].tolist(), [
+            [(10, 11, 12), (21, 22, 23)],
+            [(15, 16, 17)],
+            [],
+            [(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)]
+        ])
+
+    def test_children_data_from_slice(self):
+        """Test getting children data from a sliced sequence."""
+        self.assertEqual(
+            self.data[1::2]["time_series"], [
+            [(15, 16, 17)],
+            [(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)]
+        ])
+
+    def test_deep_slice(self):
+        """Test slicing the inner sequence."""
+        self.assertEqual(
+            list(self.data["time_series"][::2]), [
+            [(10, 11, 12)],
+            [(15, 16, 17)],
+            [],
+            [(31, 32, 33), (51, 52, 53)]
+        ])
 
 
 class MockWorkingSet(object):
