@@ -25,9 +25,9 @@ def TypeFactory(name, typecode, size):
 Float64 = TypeFactory('Float64', 'f', 8)
 Float32 = TypeFactory('Float32', 'f', 4)
 Int32 = TypeFactory('Int32', 'i', 4)
-Int16 = TypeFactory('Int16', 'i', 4)
+Int16 = TypeFactory('Int16', 'i', 2)
 UInt32 = TypeFactory('UInt32', 'I', 4)
-UInt16 = TypeFactory('UInt16', 'I', 4)
+UInt16 = TypeFactory('UInt16', 'I', 2)
 Byte = TypeFactory('Byte', 'B', 1)
 String = TypeFactory('String', 'S', None)
 Url = TypeFactory('Url', 'S', None)
@@ -94,9 +94,9 @@ class DapType(object):
         """
         Attribute shortcut.
 
-        The data classes have their attributes stored in the 
+        The data classes have their attributes stored in the
         ``attributes`` attribute, which is a dictionary. Access
-        to these values can be shortcutted by accessing the 
+        to these values can be shortcutted by accessing the
         attribute directly::
 
             >>> var = DapType()
@@ -111,7 +111,7 @@ class DapType(object):
             raise AttributeError(
                     "'%s' object has no attribute '%s'"
                     % (self.__class__, attr))
-    
+
     def walk(self):
         """
         Iterate over children.
@@ -370,7 +370,7 @@ class SequenceType(StructureType):
 
     Note that we had to use ``s['id']`` to refer to the variable ``id``,
     since ``s.id`` already points to the id of the Sequence.
-    
+
     (An important point is that the ``data`` attribute must be copiable,
     so don't use consumable iterables like older versions of Pydap
     allowed.)
@@ -411,7 +411,7 @@ class SequenceType(StructureType):
     first, while in this case we're working locally with the data. Don't
     worry, though: when this happens while accessing an Opendap server
     a warning will be issued by the client.)
-    
+
     When filtering a Sequence, don't use the Python extended comparison
     syntax of ``1 < a < 2``, otherwise bad things will happen.
 
@@ -610,7 +610,7 @@ class GridType(StructureType):
         >>> print g.array.data
         [[ 0.  1.  2.]
          [ 3.  4.  5.]]
-    
+
     We can treat the Grid like an array and slice it. This will return a new
     grid object with the proper data and axes::
 
@@ -692,7 +692,7 @@ class GridType(StructureType):
     def _get_shape(self): return self.array.shape
     def _set_shape(self, shape): self.array.shape = shape
     shape = property(_get_shape, _set_shape)
-    
+
 
 
 def _test():
