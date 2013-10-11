@@ -368,11 +368,27 @@ def unpack_children(buf, descr):
         if d.char == 'V':
             if buf.peek(4) in [START_OF_SEQUENCE, END_OF_SEQUENCE]:
                 rows = unpack_sequence(buf, descr)
-                #out.append(ListData(name, d.names, rows))
                 out.append(np.array(
                     np.rec.fromrecords(list(rows), names=d.names)))
             else:
                 out.append(tuple(unpack_children(buf, descr)))
+
+        # unpack arrays
+        elif shape:
+            n = np.fromstring(buf.read(4), ">I")[0]
+            count = d.itemsize * n
+            if d.char != "S":
+                buf.read(4)  # read additional length
+                out.append(np.fromstring(buf.read(count), d).reshape(shape))
+                if d.char == "B":
+                    buf.read(-n % 4)
+            else:
+                data = []
+                for _ in range(n):
+                    k = np.fromstring(buf.read(4), ">I")[0]
+                    data.append(buf.read(k))
+                    buf.read(-k % 4)
+                out.append(np.array(data))
 
         # special types: strings and bytes
         elif d.char == 'S':
@@ -384,15 +400,10 @@ def unpack_children(buf, descr):
             buf.read(3)
             out.append(data)
 
-        # usual array data
+        # usual data
         else:
-            if shape:
-                n = np.fromstring(buf.read(4), '>I')[0]
-                buf.read(4)
-                data = np.fromstring(buf.read(d.itemsize*n), d).reshape(shape)
-            else:
-                data = np.fromstring(buf.read(d.itemsize), d)[0]
-            out.append(data)
+            out.append(np.fromstring(buf.read(d.itemsize), d)[0])
+
     return out
 
 
@@ -431,24 +442,3 @@ def dump():
     data = unpack_data(xdrdata, dataset)
 
     pprint.pprint(data)
-
-
-if __name__ == "__main__":
-    from pydap.lib import STRING
-    seq = SequenceProxy('http://test.opendap.org:8080/dods/dts/test.07', 'types',
-            ('types', [('b', 'B', ()), ('i32', '>i', ()), ('ui32', '>I', ()), ('i16', '>i', ()), ('ui16', '>I', ()), ('f32', '>f', ()), ('f64', '>d', ()), ('s', STRING, ()), ('u', STRING, ())], ()))
-    for rec in seq:
-        print rec
-    for rec in seq['s']:
-        print rec
-
-    seq = SequenceProxy('http://test.opendap.org:8080/dods/dts/NestedSeq', 'person1',
-            ('person1', [('age', '>i', ()), ('stuff', [('foo', '>i', ())], ())], ()))
-    for rec in seq:
-        print rec
-    for rec in seq['age']:
-        print rec
-    for rec in seq['stuff']:
-        print rec
-    for rec in seq['stuff']['foo']:
-        print rec

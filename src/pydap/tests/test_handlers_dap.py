@@ -1,6 +1,8 @@
 """Test the DAP handler, which forms the core of the client."""
 
 import sys
+import pprint
+from cStringIO import StringIO
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
@@ -10,10 +12,10 @@ from webtest import TestApp
 import requests
 import numpy as np
 
-from pydap.model import StructureType, GridType
+from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
-from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy
-from pydap.tests.datasets import SimpleSequence, SimpleGrid
+from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy, dump
+from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleArray
 from pydap.tests import requests_intercept
 
 
@@ -179,6 +181,102 @@ class TestDapHandler(unittest.TestCase):
         #        ('2', 200, 10, 500, 1, 15, 35, 100)])
 
 
+class TestBaseProxy(unittest.TestCase):
+
+    """Test `BaseProxy` objects."""
+
+    def setUp(self):
+        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        app = TestApp(BaseHandler(SimpleArray))
+
+        self.requests_get = requests.get
+        requests.get = requests_intercept(app, "http://localhost:8001/")
+
+        self.data = BaseProxy(
+            "http://localhost:8001/", "byte", ("byte", "b", (5,)))
+
+    def tearDown(self):
+        """Return method to its original version."""
+        requests.get = self.requests_get
+
+    def test_repr(self):
+        """Test the object representation."""
+        self.assertEqual(
+            repr(self.data), 
+            "BaseProxy('http://localhost:8001/', 'byte', dtype('int8'), (5,), "
+            "(slice(None, None, None),))")
+
+    def test_getitem(self):
+        """Test the ``__getitem__`` method."""
+        np.testing.assert_array_equal(self.data[:], np.arange(5))
+
+    def test_len(self):
+        """Test length method."""
+        self.assertEqual(len(self.data), 5)
+
+    def test_iteration(self):
+        """Test iteration."""
+        self.assertEqual(list(iter(self.data)), range(5))
+
+    def test_comparisons(self):
+        """Test all the comparisons."""
+        np.testing.assert_array_equal(self.data == 2, np.arange(5) == 2)
+        np.testing.assert_array_equal(self.data != 2, np.arange(5) != 2)
+        np.testing.assert_array_equal(self.data >= 2, np.arange(5) >= 2)
+        np.testing.assert_array_equal(self.data <= 2, np.arange(5) <= 2)
+        np.testing.assert_array_equal(self.data > 2, np.arange(5) > 2)
+        np.testing.assert_array_equal(self.data < 2, np.arange(5) < 2)
+
+
+class TestBaseProxyShort(unittest.TestCase):
+
+    """Test `BaseProxy` objects with short dtype."""
+
+    def setUp(self):
+        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        app = TestApp(BaseHandler(SimpleArray))
+
+        self.requests_get = requests.get
+        requests.get = requests_intercept(app, "http://localhost:8001/")
+
+        self.data = BaseProxy(
+            "http://localhost:8001/", "short", ("short", ">i", ()))
+
+    def tearDown(self):
+        """Return method to its original version."""
+        requests.get = self.requests_get
+
+    def test_getitem(self):
+        """Test the ``__getitem__`` method."""
+        np.testing.assert_array_equal(self.data[:], np.array(1))
+
+
+class TestBaseProxyString(unittest.TestCase):
+
+    """Test a ``BaseProxy`` with string data."""
+
+    def setUp(self):
+        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        dataset = DatasetType("test")
+        dataset["s"] = BaseType("s", np.array(["one", "two", "three"]))
+        app = TestApp(BaseHandler(dataset))
+
+        self.requests_get = requests.get
+        requests.get = requests_intercept(app, "http://localhost:8001/")
+
+        self.data = BaseProxy(
+            "http://localhost:8001/", "s", ("s", "|S5", (3,)))
+
+    def tearDown(self):
+        """Return method to its original version."""
+        requests.get = self.requests_get
+
+    def test_getitem(self):
+        """Test the ``__getitem__`` method."""
+        np.testing.assert_array_equal(
+            self.data[:], np.array(["one", "two", "three"]))
+
+
 class TestSequenceProxy(unittest.TestCase):
 
     """Test that a ``SequenceProxy`` behaves like a Numpy structured array."""
@@ -278,3 +376,32 @@ class TestSequenceProxy(unittest.TestCase):
         # filtering works because we store comparisons as lazy objects
         self.assertIsInstance(self.remote["lon"] > 100, ConstraintExpression)
         self.assertEqual(filtered.selection, ['cast.lon>100'])
+
+
+class TestDump(unittest.TestCase):
+
+    """Test the ``dump()`` function."""
+
+    def setUp(self):
+        """Monkeypatch ``sys.stdin`` and ``pprint.pprint``."""
+        app = TestApp(BaseHandler(SimpleArray))
+        dods = app.get("/.dods").body
+
+        self.stdin, sys.stdin = sys.stdin, StringIO(dods)
+        self.buffer = StringIO()
+        self.pprint = pprint.pprint
+        pprint.pprint = lambda obj: self.buffer.write(pprint.pformat(obj))
+    
+    def tearDown(self):
+        """Reset ``sys.stdin`` and ``pprint.pprint``."""
+        sys.stdin = self.stdin
+        pprint.pprint = self.pprint
+
+    def test_dump(self):
+        dump()
+        self.assertEqual(
+            self.buffer.getvalue(),
+            """[array([0, 1, 2, 3, 4], dtype=uint8),
+ array(['one', 'two'], 
+      dtype='|S3'),
+ 1]""")
