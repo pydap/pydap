@@ -13,8 +13,6 @@ install_requires = [
     'docopt',
     'gunicorn',
     'PasteDeploy',
-    'coards',
-    'gsw',
 ]
 
 if sys.version_info < (2, 7):
@@ -59,6 +57,7 @@ setup(name='Pydap',
     namespace_packages=["pydap", "pydap.responses", "pydap.handlers"],
     install_requires=install_requires,
     extras_require = {
+        'functions': ["gsw", "coards"],
         'testing': testing_extras,
         'docs': docs_extras,
     },
