@@ -167,7 +167,9 @@ class SequenceProxy(object):
     """A proxy for remote sequences.
 
     This class behaves like a Numpy structured array, proxying the data from a
-    sequence on a remote dataset.
+    sequence on a remote dataset. The data is streamed from the dataset, 
+    meaning it can be treated one record at a time before the whole data is
+    downloaded.
 
     """
 
@@ -298,11 +300,8 @@ class StreamReader(object):
 
     def peek(self, n):
         """Read and return `n` bytes without consuming them."""
-        if n > len(self.buf):
-            for chunk in self.stream:
-                self.buf += chunk
-                if len(self.buf) >= n:
-                    break
+        while len(self.buf) < n:
+            self.buf += self.stream.next()
         return self.buf[:n]
 
 
