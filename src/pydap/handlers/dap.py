@@ -56,9 +56,11 @@ class DAPHandler(BaseHandler):
 
         # now add data proxies
         for var in walk(self.dataset, BaseType):
-            var.data = BaseProxy(url, var.id, var.descr)
+            dtype, shape = var.info
+            var.data = BaseProxy(url, var.id, dtype, shape)
         for var in walk(self.dataset, SequenceType):
-            var.data = SequenceProxy(url, var.id, var.descr)
+            template = copy.copy(var)
+            var.data = SequenceProxy(url, var.id, template)
 
         # apply projections
         for var in projection:
@@ -86,11 +88,11 @@ class BaseProxy(object):
 
     """
 
-    def __init__(self, baseurl, id, descr, slice_=None):
+    def __init__(self, baseurl, id, dtype, shape, slice_=None):
         self.baseurl = baseurl
         self.id = id
-        self.dtype = np.dtype(descr[1])
-        self.shape = descr[2]
+        self.dtype = dtype
+        self.shape = shape
         self.slice = slice_ or tuple(slice(None) for s in self.shape)
 
     def __repr__(self):
@@ -175,22 +177,49 @@ class SequenceProxy(object):
 
     shape = ()
 
-    def __init__(self, baseurl, id, descr, selection=None, slice_=None):
+    def __init__(self, baseurl, id, template, selection=None, slice_=None):
         self.baseurl = baseurl
         self.id = id
-        self.descr = descr
-        dtype = descr[1]
-        if not isinstance(dtype, list):
-            dtype = [dtype]
-        self.dtype = np.dtype(dtype)
+        self.template = template
         self.selection = selection or []
         self.slice = slice_ or (slice(None),)
 
     def __repr__(self):
         return 'SequenceProxy(%s)' % ', '.join(
             map(repr, [
-                self.baseurl, self.id, self.descr, self.selection, self.slice
-                ]))
+                self.baseurl, self.id, self.template, self.selection,
+                self.slice]))
+
+    def __copy__(self):
+        """Return a lightweight copy of the object."""
+        return self.__class__(
+            self.baseurl, self.id, self.template, self.selection[:],
+            self.slice[:])
+
+    def __getitem__(self, key):
+        """Return a new object representing a subset of the data."""
+        out = copy.copy(self)
+
+        # return the data for a children
+        if isinstance(key, basestring):
+            out.id = '{id}.{child}'.format(id=self.id, child=key)
+            out.template = out.template[key]
+
+        # return a new object with requested columns
+        elif isinstance(key, list):
+            out.template._keys = key
+
+        # return a copy with the added constraints
+        elif isinstance(key, ConstraintExpression):
+            out.selection.extend(str(key).split('&'))
+
+        # slice data
+        else:
+            if isinstance(key, int):
+                key = slice(key, key+1)
+            out.slice = combine_slices(self.slice, (key,))
+
+        return out
 
     def __iter__(self):
         scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
@@ -219,50 +248,6 @@ class SequenceProxy(object):
             buf = buf[-len(marker):]
 
         return unpack_sequence(stream, self.descr)
-
-    def __getitem__(self, key):
-        out = copy.copy(self)
-
-        # return the data for a children
-        if isinstance(key, basestring):
-            out.id = '{id}.{child}'.format(id=self.id, child=key)
-
-            def get_child(descr):
-                mapping = dict((d[0], d) for d in descr)
-                return mapping[key]
-
-            out.descr = apply_to_list(get_child, out.descr)
-            dtype = out.descr[1][1]
-            out.dtype = np.dtype(dtype)
-
-        # return a new object with requested columns
-        elif isinstance(key, list):
-            def get_children(descr):
-                mapping = dict((d[0], d) for d in descr)
-                return [mapping[k] for k in key]
-            out.descr = apply_to_list(get_children, out.descr)
-            dtype = out.descr[1]
-            if not isinstance(dtype, list):
-                dtype = [dtype]
-            out.dtype = np.dtype(dtype)
-
-        # return a copy with the added constraints
-        elif isinstance(key, ConstraintExpression):
-            out.selection.extend(str(key).split('&'))
-
-        # slice data
-        else:
-            if isinstance(key, int):
-                key = slice(key, key+1)
-            out.slice = combine_slices(self.slice, (key,))
-
-        return out
-
-    def __copy__(self):
-        """Return a lightweight copy of the object."""
-        return self.__class__(
-            self.baseurl, self.id, self.descr, self.selection[:],
-            self.slice[:])
 
     def __eq__(self, other):
         return ConstraintExpression('%s=%s' % (self.id, encode(other)))

@@ -130,30 +130,6 @@ class TestDapHandler(unittest.TestCase):
         self.assertEqual(
             dataset.cast.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.cast.data.id, "cast")
-        self.assertEqual(
-            dataset.cast.data.descr,  (
-                'cast', 
-                [
-                    ('id', '|S128', ()), 
-                    ('lon', '>i', ()), 
-                    ('lat', '>i', ()), 
-                    ('depth', '>i', ()), 
-                    ('time', '>i', ()), 
-                    ('temperature', '>i', ()), 
-                    ('salinity', '>i', ()), 
-                    ('pressure', '>i', ())],
-                ()))
-        self.assertEqual(
-            dataset.cast.data.dtype,
-            np.dtype([
-                ('id', 'S128'),
-                ('lon', '>i4'),
-                ('lat', '>i4'),
-                ('depth', '>i4'),
-                ('time', '>i4'),
-                ('temperature', '>i4'),
-                ('salinity', '>i4'),
-                ('pressure', '>i4')]))
         self.assertEqual(dataset.cast.data.shape, ())
         self.assertEqual(dataset.cast.data.selection, [])
         self.assertEqual(dataset.cast.data.slice, (slice(None),))
@@ -163,9 +139,6 @@ class TestDapHandler(unittest.TestCase):
         self.assertEqual(
             dataset.cast.lon.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.cast.lon.data.id, "cast.lon")
-        self.assertEqual(
-            dataset.cast.lon.data.descr, ('cast', ('lon', '>i', ()), ()))
-        self.assertEqual(dataset.cast.lon.data.dtype, np.dtype(">i4"))
         self.assertEqual(dataset.cast.lon.data.selection, [])
         self.assertEqual(dataset.cast.lon.data.slice, (slice(None),))
 
@@ -193,7 +166,7 @@ class TestBaseProxy(unittest.TestCase):
         requests.get = requests_intercept(app, "http://localhost:8001/")
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "byte", ("byte", "b", (5,)))
+            "http://localhost:8001/", "byte", np.dtype("b"), (5,))
 
     def tearDown(self):
         """Return method to its original version."""
@@ -240,7 +213,7 @@ class TestBaseProxyShort(unittest.TestCase):
         requests.get = requests_intercept(app, "http://localhost:8001/")
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "short", ("short", ">i", ()))
+            "http://localhost:8001/", "short", np.dtype(">i"), ())
 
     def tearDown(self):
         """Return method to its original version."""
@@ -265,7 +238,7 @@ class TestBaseProxyString(unittest.TestCase):
         requests.get = requests_intercept(app, "http://localhost:8001/")
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "s", ("s", "|S5", (3,)))
+            "http://localhost:8001/", "s", np.dtype("|S5"), (3,))
 
     def tearDown(self):
         """Return method to its original version."""
@@ -295,37 +268,30 @@ class TestSequenceProxy(unittest.TestCase):
         """Return method to its original version."""
         requests.get = self.requests_get
 
-    def test_dtype(self):
-        """Test dtype."""
+    def test_attributes(self):
+        """Test attributes of the remote sequence."""
+        self.assertEqual(self.remote.baseurl, "http://localhost:8001/")
+        self.assertEqual(self.remote.id, "cast")
+        self.assertEqual(self.remote.template.id, "cast")
         self.assertEqual(
-            self.local.dtype,
-            np.dtype([
-                ('id', 'S1'),
-                ('lon', '<i8'),
-                ('lat', '<i8'),
-                ('depth', '<i8'),
-                ('time', '<i8'),
-                ('temperature', '<i8'),
-                ('salinity', '<i8'),
-                ('pressure', '<i8')]))
+            self.remote.template.keys(),
+            ["id", "lon", "lat", "depth", "time", "temperature", "salinity",
+                "pressure"])
+        self.assertEqual(self.remote.selection, [])
+        self.assertEqual(self.remote.slice, (slice(None),))
 
-        # dtype is different because of strings, integers and endianess
-        self.assertEqual(
-            self.remote.dtype,
-            np.dtype([
-                ('id', 'S128'),
-                ('lon', '>i4'),
-                ('lat', '>i4'),
-                ('depth', '>i4'),
-                ('time', '>i4'),
-                ('temperature', '>i4'),
-                ('salinity', '>i4'),
-                ('pressure', '>i4')]))
+    def test_getitem(self):
+        """Test modifications to the proxy object."""
+        child = self.remote["lon"]
+        self.assertEqual(child.id, "cast.lon")
+        self.assertEqual(child.template.id, "cast.lon")
+        self.assertEqual(child.template.dtype, np.dtype(">i4"))
+        self.assertEqual(child.template.shape, ())
 
-    def test_dtype_child(self):
-        """Test dtype of children."""
-        self.assertEqual(self.local['time'].dtype, "<i8")
-        self.assertEqual(self.remote['time'].dtype, ">i4")
+        child = self.remote[["lat", "lon"]]
+        self.assertEqual(child.id, "cast")
+        self.assertEqual(child.template.id, "cast")
+        self.assertEqual(child.template.keys(), ["lat", "lon"])
 
     def test_iter(self):
         """Test iteration."""

@@ -2,23 +2,25 @@
 
 import re
 
+import numpy as np
+
 from pydap.parsers import SimpleParser
 from pydap.model import *
 from pydap.lib import quote, STRING
 
 
 typemap = {
-    'byte':    'B',
-    'int':     '>i',
-    'uint':    '>I',
-    'int16':   '>i',
-    'uint16':  '>I',
-    'int32':   '>i',
-    'uint32':  '>I',
-    'float32': '>f',
-    'float64': '>d',
-    'string':  STRING,  # default is "|S128"
-    'url':     STRING,
+    'byte':    np.dtype("B"),
+    'int':     np.dtype(">i4"),
+    'uint':    np.dtype(">u4"),
+    'int16':   np.dtype(">i4"),
+    'uint16':  np.dtype(">u4"),
+    'int32':   np.dtype(">i4"),
+    'uint32':  np.dtype(">u4"),
+    'float32': np.dtype(">f4"),
+    'float64': np.dtype(">f8"),
+    'string':  np.dtype(STRING),  # default is "|S128"
+    'url':     np.dtype(STRING),
     }
 constructors = ('grid', 'sequence', 'structure')
 name_regexp = '[\w%!~"\'\*-]+'
@@ -53,8 +55,6 @@ class DDSParser(SimpleParser):
         dataset._set_id(dataset.name)
         self.consume(';')
 
-        dataset.descr = dataset.name, [c.descr for c in dataset.children()], ()
-
         return dataset
 
     def declaration(self):
@@ -79,7 +79,9 @@ class DDSParser(SimpleParser):
         self.consume(';')
 
         var = BaseType(name, dimensions=dimensions)
-        var.descr = quote(name), dtype, shape
+
+        # store shape/type information for proxy object
+        var.info = dtype, shape
 
         return var
 
@@ -112,9 +114,6 @@ class DDSParser(SimpleParser):
         sequence.name = quote(self.consume('[^;]+'))
         self.consume(';')
 
-        sequence.descr = sequence.name, [
-            c.descr for c in sequence.children()], ()
-
         return sequence
 
     def structure(self):
@@ -130,9 +129,6 @@ class DDSParser(SimpleParser):
 
         structure.name = quote(self.consume('[^;]+'))
         self.consume(';')
-
-        structure.descr = structure.name, [
-            c.descr for c in structure.children()], ()
 
         return structure
 
@@ -156,8 +152,6 @@ class DDSParser(SimpleParser):
 
         grid.name = quote(self.consume('[^;]+'))
         self.consume(';')
-
-        grid.descr = grid.name, [c.descr for c in grid.children()], ()
 
         return grid
 
