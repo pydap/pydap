@@ -47,13 +47,13 @@ class DASParser(SimpleParser):
         """Collect the attributes for a DAP variable."""
         self.consume('{')
         while not self.peek('}'):
-            if self.peek('[^\s]+').lower() in atomic:
-                name, values = self.attribute()
-                target[name] = values
-            else:
+            if self.peek('[^\s]+\s+{'):
                 name = self.consume('[^\s]+')
                 target[name] = {}
                 self.container(target[name])
+            else:
+                name, values = self.attribute()
+                target[name] = values
         self.consume('}')
 
     def attribute(self):

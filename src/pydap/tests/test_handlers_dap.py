@@ -15,7 +15,8 @@ import numpy as np
 from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
 from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy, dump
-from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleArray
+from pydap.tests.datasets import (
+    SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
 from pydap.tests import requests_intercept
 
 
@@ -139,6 +140,7 @@ class TestDapHandler(unittest.TestCase):
         self.assertEqual(
             dataset.cast.lon.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.cast.lon.data.id, "cast.lon")
+        self.assertEqual(dataset.cast.lon.data.shape, ())
         self.assertEqual(dataset.cast.lon.data.selection, [])
         self.assertEqual(dataset.cast.lon.data.slice, (slice(None),))
 
@@ -149,9 +151,9 @@ class TestDapHandler(unittest.TestCase):
             "http://localhost:8001/?cast[1]").dataset
 
         self.assertEqual(dataset.cast.data.slice, (slice(1, 2, 1),))
-        #self.assertEqual(
-        #    [tuple(row) for row in dataset.cast], [
-        #        ('2', 200, 10, 500, 1, 15, 35, 100)])
+        self.assertEqual(
+            [tuple(row) for row in dataset.cast], [
+                ('2', 200, 10, 500, 1, 15, 35, 100)])
 
 
 class TestBaseProxy(unittest.TestCase):
@@ -256,6 +258,84 @@ class TestSequenceProxy(unittest.TestCase):
 
     def setUp(self):
         """Create a WSGI app and monkeypatch ``requests`` for direct access."""
+        app = TestApp(BaseHandler(VerySimpleSequence))
+        self.local = VerySimpleSequence.sequence.data
+
+        self.requests_get = requests.get
+        requests.get = requests_intercept(app, "http://localhost:8001/")
+        dataset = DAPHandler("http://localhost:8001/").dataset
+        self.remote = dataset.sequence.data
+
+    def tearDown(self):
+        """Return method to its original version."""
+        requests.get = self.requests_get
+
+    def test_attributes(self):
+        """Test attributes of the remote sequence."""
+        self.assertEqual(self.remote.baseurl, "http://localhost:8001/")
+        self.assertEqual(self.remote.id, "sequence")
+        self.assertEqual(self.remote.template.keys(), ["byte", "int", "float"])
+        self.assertEqual(self.remote.selection, [])
+        self.assertEqual(self.remote.slice, (slice(None),))
+
+    def test_getitem(self):
+        """Test modifications to the proxy object."""
+        child = self.remote["int"]
+        self.assertEqual(child.id, "sequence.int")
+        self.assertEqual(child.template.dtype, np.dtype(">i4"))
+        self.assertEqual(child.template.shape, ())
+
+        child = self.remote[["float", "int"]]
+        self.assertEqual(child.id, "sequence.float,sequence.int")
+        self.assertEqual(child.template.keys(), ["float", "int"])
+
+    def test_url(self):
+        """Test URL generation."""
+        self.assertEqual(
+            self.remote.url, "http://localhost:8001/.dods?sequence")
+        self.assertEqual(
+            self.remote["int"].url, "http://localhost:8001/.dods?sequence.int")
+        self.assertEqual(
+            self.remote[["float", "int"]].url,
+            "http://localhost:8001/.dods?sequence.float,sequence.int")
+
+    def test_iter(self):
+        """Test iteration."""
+        self.assertEqual(
+            [tuple(row) for row in self.local], [
+                (0, 1, 10.0),
+                (1, 2, 20.0),
+                (2, 3, 30.0),
+                (3, 4, 40.0),
+                (4, 5, 50.0),
+                (5, 6, 60.0),
+                (6, 7, 70.0),
+                (7, 8, 80.0)])
+
+        self.assertEqual(
+            [tuple(row) for row in self.remote], [
+                (0, 1, 10.0),
+                (1, 2, 20.0),
+                (2, 3, 30.0),
+                (3, 4, 40.0),
+                (4, 5, 50.0),
+                (5, 6, 60.0),
+                (6, 7, 70.0),
+                (7, 8, 80.0)])
+
+    def test_iter_child(self):
+        """Test iteration over a child."""
+        child = self.local["byte"]
+        self.assertEqual(list(child), [0, 1, 2, 3, 4, 5, 6, 7])
+
+        child = self.remote["byte"]
+        self.assertEqual(list(child), [0, 1, 2, 3, 4, 5, 6, 7])
+
+
+class TestSequenceWithString(unittest.TestCase):
+
+    def setUp(self):
+        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
         app = TestApp(BaseHandler(SimpleSequence))
         self.local = SimpleSequence.cast.data
 
@@ -267,31 +347,6 @@ class TestSequenceProxy(unittest.TestCase):
     def tearDown(self):
         """Return method to its original version."""
         requests.get = self.requests_get
-
-    def test_attributes(self):
-        """Test attributes of the remote sequence."""
-        self.assertEqual(self.remote.baseurl, "http://localhost:8001/")
-        self.assertEqual(self.remote.id, "cast")
-        self.assertEqual(self.remote.template.id, "cast")
-        self.assertEqual(
-            self.remote.template.keys(),
-            ["id", "lon", "lat", "depth", "time", "temperature", "salinity",
-                "pressure"])
-        self.assertEqual(self.remote.selection, [])
-        self.assertEqual(self.remote.slice, (slice(None),))
-
-    def test_getitem(self):
-        """Test modifications to the proxy object."""
-        child = self.remote["lon"]
-        self.assertEqual(child.id, "cast.lon")
-        self.assertEqual(child.template.id, "cast.lon")
-        self.assertEqual(child.template.dtype, np.dtype(">i4"))
-        self.assertEqual(child.template.shape, ())
-
-        child = self.remote[["lat", "lon"]]
-        self.assertEqual(child.id, "cast")
-        self.assertEqual(child.template.id, "cast")
-        self.assertEqual(child.template.keys(), ["lat", "lon"])
 
     def test_iter(self):
         """Test iteration."""
@@ -309,13 +364,9 @@ class TestSequenceProxy(unittest.TestCase):
         """Test if we can select only a few variables."""
         filtered = self.local[["salinity", "depth"]]
         self.assertEqual(
-            filtered.dtype, np.dtype([('salinity', '<i8'), ('depth', '<i8')]))
-        self.assertEqual(
             [tuple(row) for row in filtered], [(35, 0), (35, 500)])
 
         filtered = self.remote[["salinity", "depth"]]
-        self.assertEqual(
-            filtered.dtype, np.dtype([('salinity', '>i4'), ('depth', '>i4')]))
         self.assertEqual(
             [tuple(row) for row in filtered], [(35, 0), (35, 500)])
 

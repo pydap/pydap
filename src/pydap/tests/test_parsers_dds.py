@@ -6,6 +6,8 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
+import numpy as np
+
 from pydap.parsers.dds import build_dataset
 from pydap.model import *
 
@@ -55,54 +57,65 @@ class TestBuildDataset(unittest.TestCase):
     def test_byte(self):
         """Test byte parsing."""
         self.assertIsInstance(self.dataset.structure.b, BaseType)
-        self.assertEqual(self.dataset.structure.b.descr, ("b", "B", ()))
+        self.assertEqual(self.dataset.structure.b.dtype, np.dtype("B"))
+        self.assertEqual(self.dataset.structure.b.shape, ())
 
     def test_integer(self):
         """Test integer parsing."""
         self.assertIsInstance(self.dataset.structure.i, BaseType)
-        self.assertEqual(self.dataset.structure.i.descr, ("i", ">i", ()))
+        self.assertEqual(self.dataset.structure.i.dtype, np.dtype(">i"))
+        self.assertEqual(self.dataset.structure.i.shape, ())
 
     def test_unsigned_integer(self):
         """Test unsigned integer parsing."""
         self.assertIsInstance(self.dataset.structure.ui, BaseType)
-        self.assertEqual(self.dataset.structure.ui.descr, ("ui", ">I", ()))
+        self.assertEqual(self.dataset.structure.ui.dtype, np.dtype(">I"))
+        self.assertEqual(self.dataset.structure.ui.shape, ())
 
     def test_integer_16(self):
         """Test integer 16 parsing."""
         self.assertIsInstance(self.dataset.structure.i16, BaseType)
-        self.assertEqual(self.dataset.structure.i16.descr, ("i16", ">i", ()))
+        self.assertEqual(self.dataset.structure.i16.dtype, np.dtype(">i"))
+        self.assertEqual(self.dataset.structure.i16.shape, ())
 
     def test_unsigned_integer_16(self):
         """Test unsigned integer 16 parsing."""
         self.assertIsInstance(self.dataset.structure.ui16, BaseType)
-        self.assertEqual(self.dataset.structure.ui16.descr, ("ui16", ">I", ()))
+        self.assertEqual(self.dataset.structure.ui16.dtype, np.dtype(">I"))
+        self.assertEqual(self.dataset.structure.ui16.shape, ())
 
     def test_integer_32(self):
         """Test integer 32 parsing."""
         self.assertIsInstance(self.dataset.structure.i32, BaseType)
-        self.assertEqual(self.dataset.structure.i32.descr, ("i32", ">i", ()))
+        self.assertEqual(self.dataset.structure.i32.dtype, np.dtype(">i"))
+        self.assertEqual(self.dataset.structure.i32.shape, ())
 
     def test_unsigned_integer_32(self):
         """Test unsigned integer 32 parsing."""
         self.assertIsInstance(self.dataset.structure.ui32, BaseType)
-        self.assertEqual(self.dataset.structure.ui32.descr, ("ui32", ">I", ()))
+        self.assertEqual(self.dataset.structure.ui32.dtype, np.dtype(">I"))
+        self.assertEqual(self.dataset.structure.ui32.shape, ())
 
     def test_float_32(self):
         """Test float 32 parsing."""
         self.assertIsInstance(self.dataset.structure.f32, BaseType)
-        self.assertEqual(self.dataset.structure.f32.descr, ("f32", ">f", ()))
+        self.assertEqual(self.dataset.structure.f32.dtype, np.dtype(">f"))
+        self.assertEqual(self.dataset.structure.f32.shape, ())
 
     def test_float_64(self):
         """Test float 64 parsing."""
         self.assertIsInstance(self.dataset.structure.f64, BaseType)
-        self.assertEqual(self.dataset.structure.f64.descr, ("f64", ">d", ()))
+        self.assertEqual(self.dataset.structure.f64.dtype, np.dtype(">d"))
+        self.assertEqual(self.dataset.structure.f64.shape, ())
 
     def test_string(self):
         """Test string parsing."""
         self.assertIsInstance(self.dataset.structure.s, BaseType)
-        self.assertEqual(self.dataset.structure.s.descr, ("s", "|S128", ()))
+        self.assertEqual(self.dataset.structure.s.dtype, np.dtype("|S128"))
+        self.assertEqual(self.dataset.structure.s.shape, ())
 
     def test_url(self):
         """Test url parsing."""
         self.assertIsInstance(self.dataset.structure.u, BaseType)
-        self.assertEqual(self.dataset.structure.u.descr, ("u", "|S128", ()))
+        self.assertEqual(self.dataset.structure.u.dtype, np.dtype("|S128"))
+        self.assertEqual(self.dataset.structure.u.shape, ())

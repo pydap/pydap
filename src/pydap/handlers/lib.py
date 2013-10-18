@@ -256,7 +256,7 @@ class ConstraintExpression(object):
 
 class IterData(object):
 
-    """Class for manipulating complex data streams as structured arrays.
+    """Class for manipulating data streams as structured arrays.
 
     A structured array is a Numpy construct that has some very interesting
     properties for working with tabular data.
@@ -265,56 +265,23 @@ class IterData(object):
 
     shape = ()
 
-    def __init__(self, stream, descr, names=None, ifilter=None, imap=None,
-                 islice=None):
-        self.descr = descr
-        self.names = names or descr
-
-        # convert nested lists into nested ``IterData`` objects
-        if self.names == descr:
-            self.stream = self.fix(stream, self.names)
-        else:
-            self.stream = stream
+    def __init__(self, stream, template, ifilter=None, imap=None, islice=None,
+            level=0):
+        self.stream = stream
+        self.template = template
+        self.level = level
 
         # these are used to lazily evaluate the data stream
         self.ifilter = ifilter or []
         self.imap = imap or []
         self.islice = islice or []
 
-        self.id = self.names[0]
-        self.level = 1
-
-    def fix(self, stream, names):
-        """Wrap nested data."""
-        def wrap(row):
-            return tuple(
-                col if (isinstance(name, basestring) or 
-                    isinstance(col, IterData))
-                else IterData(col, ("%s.%s" % (names[0], name[0]), name[1]))
-                for col, name in zip(row, names[1]))
-        return map(wrap, stream)
-
-    def tolist(self):
-        """Return data with ``IterData`` converted to nested lists."""
-        def unwrap(obj):
-            if isinstance(obj, IterData):
-                return [tuple(map(unwrap, child)) for child in obj]
-            else:
-                return obj
-        return [tuple(map(unwrap, obj)) for obj in self]
-
-    def __repr__(self):
-        return repr(self.tolist())
-
     @property
     def dtype(self):
         """Return Numpy dtype of the object."""
-        if isinstance(self.names, basestring):
-            peek = iter(self).next()
-            return np.array(peek).dtype
-        else:
-            return [(name, self[name].dtype) for name in self.names[1]]
-
+        peek = iter(self).next()
+        return np.array(peek).dtype
+        
     def __iter__(self):
         data = iter(self.stream)
 
@@ -329,43 +296,33 @@ class IterData(object):
 
     def __copy__(self):
         """Return a lightweight copy of the object."""
-        return IterData(self.stream, self.descr, self.names, self.ifilter[:],
-                        self.imap[:], self.islice[:])
+        return IterData(self.stream, copy.copy(self.template), self.ifilter[:], 
+            self.imap[:], self.islice[:], self.level)
+
+    def __repr__(self):
+        return repr(self.stream)
 
     def __getitem__(self, key):
         out = copy.copy(self)
-        out.level = self.level
 
         # return a child, and adjust the data so that only the corresponding
         # column is returned
         if isinstance(key, basestring):
-            out.id = "%s.%s" % (self.id, key)
-            out.level += 1
-            for col, obj in enumerate(self.names[1]):
-                if key == obj:
-                    out.names = out.id
-                    break
-                elif isinstance(obj, tuple) and key == obj[0]:
-                    out.names = out.id, obj[1]
-                    break
-            else:
+            try:
+                col = self.template.keys().index(key)
+            except:
                 raise KeyError(key)
-            out.imap.append(deepmap(operator.itemgetter(col), out.level-1))
+            out.level += 1
+            out.template = out.template[key]
+            out.imap.append(deepmap(operator.itemgetter(col), out.level))
 
-        # return a new sequence with the selected children; data is adjusted
-        # accordingly, and order is changed following the request using a DSU
+        # return a new sequence with the selected children
         elif isinstance(key, list):
-            children = []
-            for col, obj in enumerate(self.names[1]):
-                if obj in key:
-                    children.append((key.index(obj), col, obj))
-                elif isinstance(obj, tuple) and obj[0] in key:
-                    children.append((key.index(obj[0]), col, obj))
-            children.sort()
-            out.names = self.id, tuple(child for pos, col, child in children)
-            indexes = [col for pos, col, child in children]
+            cols = [self.template.keys().index(k) for k in key]
+            out.level += 1
+            out.template._keys = key
             out.imap.append(deepmap(
-                lambda row: [row[i] for i in indexes], out.level))
+                lambda row: tuple(row[i] for i in cols), out.level))
 
         # slice the data; if ``self`` is the main sequence the data can be
         # sliced using ``itertools.islice``, but if it's a child variable the
@@ -382,55 +339,53 @@ class IterData(object):
         # only if the selection is applied to the outermost sequence, otherwise
         # we need to do a deep map
         elif isinstance(key, ConstraintExpression):
-            f, level = build_filter(key, self.descr)
-            if level > 1:
-                out.imap.append(deepmap(lambda data: filter(f, data), level-1))
-            else:
-                out.ifilter.append(f)
+            f, m = build_filter(key, self.template)
+            out.ifilter.append(f)
+            out.imap.append(m)
 
         return out
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
-            right = other.id
+            right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s=%s' % (self.id, right))
+        return ConstraintExpression('%s=%s' % (self.template.id, right))
 
     def __ne__(self, other):
         if isinstance(other, self.__class__):
-            right = other.id
+            right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s!=%s' % (self.id, right))
+        return ConstraintExpression('%s!=%s' % (self.template.id, right))
 
     def __ge__(self, other):
         if isinstance(other, self.__class__):
-            right = other.id
+            right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s>=%s' % (self.id, right))
+        return ConstraintExpression('%s>=%s' % (self.template.id, right))
 
     def __le__(self, other):
         if isinstance(other, self.__class__):
-            right = other.id
+            right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s<=%s' % (self.id, right))
+        return ConstraintExpression('%s<=%s' % (self.template.id, right))
 
     def __gt__(self, other):
         if isinstance(other, self.__class__):
-            right = other.id
+            right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s>%s' % (self.id, right))
+        return ConstraintExpression('%s>%s' % (self.template.id, right))
 
     def __lt__(self, other):
         if isinstance(other, self.__class__):
-            right = other.id
+            right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s<%s' % (self.id, right))
+        return ConstraintExpression('%s<%s' % (self.template.id, right))
 
 
 def deepmap(function, level):
@@ -443,23 +398,19 @@ def deepmap(function, level):
     return out
 
 
-def build_filter(expression, descr):
+def build_filter(expression, template):
     """Return a filter function based on a comparison expression."""
     id1, op, id2 = re.split('(<=|>=|!=|=~|>|<|=)', str(expression), 1)
 
-    # get the list of variables in the sequence
-    descr = descr,
-    base1, name1 = id1.rsplit(".", 1)
-    level = 0
-    for token in base1.split("."):
-        level += 1
-        for obj in descr:
-            if isinstance(obj, tuple) and token == obj[0]:
-                descr = obj[1]
-                break
-
+    # calculate the column index were filtering and how deep it is
     try:
-        a = operator.itemgetter(descr.index(name1))
+        id1 = id1[len(template.id)+1:]
+        target = template
+        for level, token in enumerate(id1.split(".")):
+            parent1 = target.id
+            col = target.keys().index(token)
+            target = target[token]
+        a = operator.itemgetter(col)
     except:
         raise ConstraintExpressionError(
             'Invalid constraint expression: "{expression}"'
@@ -467,9 +418,10 @@ def build_filter(expression, descr):
                 expression=expression, id=id1))
 
     # if we're comparing two variables they must be on the same sequence, so
-    # ``base1`` must be equal to ``base2``
-    if id2.rsplit(".", 1)[0] == base1:  # base2 == base1
-        b = operator.itemgetter(descr.index(id2.rsplit(".")[-1]))
+    # ``parent1`` must be equal to ``parent2``
+    if id2.rsplit(".", 1)[0] == parent1:  # parent2 == parent1
+        col = template.keys().index(id2.split(".")[-1])
+        b = operator.itemgetter(col)
     else:
         try:
             value = ast.literal_eval(id2)
@@ -491,7 +443,36 @@ def build_filter(expression, descr):
         '=~': lambda a, b: re.match(b, a),
     }[op]
 
-    def f(row):
-        return op(a(row), b(row))
+    # if the filtering is applied in the outermost sequence we can simply pass
+    # a filter, and ignore the map
+    if level == 0:
+        f = lambda row: op(a(row), b(row))
+        m = lambda row: row
 
-    return f, level
+    # if the filtering is applied to a nested sequence we actually need to map
+    # the outer data so that the inner data is filtered
+    else:
+        f = bool
+
+        def recurse(row, tokens, target):
+            token = tokens.pop(0)
+
+            # return the filtered inner data
+            if not tokens:
+                return filter(lambda row: op(a(row), b(row)), row)
+
+            # navigate inside the sequence
+            col = target.keys().index(token)
+            target = target[col]
+
+            # modify data in place; we need to convert tuple to list
+            row = list(row)
+            row[col] = recurse(row[col], tokens, target)
+            return tuple(row)
+
+        def m(row):
+            tokens = id1.split(".")
+            return recurse(row, tokens, template)
+
+    return f, m
+

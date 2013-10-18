@@ -78,10 +78,8 @@ class DDSParser(SimpleParser):
         shape, dimensions = self.dimensions()
         self.consume(';')
 
-        var = BaseType(name, dimensions=dimensions)
-
-        # store shape/type information for proxy object
-        var.info = dtype, shape
+        data = DummyData(dtype, shape)
+        var = BaseType(name, data, dimensions=dimensions)
 
         return var
 
@@ -159,3 +157,9 @@ class DDSParser(SimpleParser):
 def build_dataset(dds):
     """Return a dataset object from a DDS representation."""
     return DDSParser(dds).parse()
+
+
+class DummyData(object):
+    def __init__(self, dtype, shape):
+        self.dtype = dtype
+        self.shape = shape

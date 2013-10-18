@@ -56,11 +56,10 @@ class DAPHandler(BaseHandler):
 
         # now add data proxies
         for var in walk(self.dataset, BaseType):
-            dtype, shape = var.info
-            var.data = BaseProxy(url, var.id, dtype, shape)
+            var.data = BaseProxy(url, var.id, var.dtype, var.shape)
         for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
-            var.data = SequenceProxy(url, var.id, template)
+            var.data = SequenceProxy(url, template)
 
         # apply projections
         for var in projection:
@@ -177,24 +176,28 @@ class SequenceProxy(object):
 
     shape = ()
 
-    def __init__(self, baseurl, id, template, selection=None, slice_=None):
+    def __init__(self, baseurl, template, selection=None, slice_=None):
         self.baseurl = baseurl
-        self.id = id
         self.template = template
         self.selection = selection or []
         self.slice = slice_ or (slice(None),)
 
+        # this variable is true when only a subset of the children are selected
+        self.sub_children = False
+
+    @property
+    def dtype(self):
+        return self.template.dtype
+
     def __repr__(self):
         return 'SequenceProxy(%s)' % ', '.join(
             map(repr, [
-                self.baseurl, self.id, self.template, self.selection,
-                self.slice]))
+                self.baseurl, self.template, self.selection, self.slice]))
 
     def __copy__(self):
         """Return a lightweight copy of the object."""
         return self.__class__(
-            self.baseurl, self.id, self.template, self.selection[:],
-            self.slice[:])
+            self.baseurl, self.template, self.selection[:], self.slice[:])
 
     def __getitem__(self, key):
         """Return a new object representing a subset of the data."""
@@ -202,11 +205,11 @@ class SequenceProxy(object):
 
         # return the data for a children
         if isinstance(key, basestring):
-            out.id = '{id}.{child}'.format(id=self.id, child=key)
             out.template = out.template[key]
 
         # return a new object with requested columns
         elif isinstance(key, list):
+            out.sub_children = True
             out.template._keys = key
 
         # return a copy with the added constraints
@@ -221,19 +224,30 @@ class SequenceProxy(object):
 
         return out
 
-    def __iter__(self):
+    @property
+    def url(self):
+        """Return url from where data is fetched."""
         scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
-        if isinstance(self.descr[1], list):
-            id = ','.join('%s.%s' % (self.id, d[0]) for d in self.descr[1])
-        else:
-            id = self.id
         url = urlunsplit((
             scheme, netloc, path + '.dods',
-            quote(id) + hyperslab(self.slice) + '&' +
+            self.id + hyperslab(self.slice) + '&' +
             '&'.join(self.selection), fragment)).rstrip('&')
 
+        return url
+
+    @property
+    def id(self):
+        """Return the id of this sequence."""
+        if self.sub_children:
+            id_ = ','.join(
+                quote(child.id) for child in self.template.children())
+        else:
+            id_ = quote(self.template.id)
+        return id_
+
+    def __iter__(self):
         # download and unpack data
-        r = requests.get(url, stream=True)
+        r = requests.get(self.url, stream=True)
         r.raise_for_status()
         stream = StreamReader(r.iter_content(BLOCKSIZE))
 
@@ -247,7 +261,7 @@ class SequenceProxy(object):
             buf.append(chunk)
             buf = buf[-len(marker):]
 
-        return unpack_sequence(stream, self.descr)
+        return unpack_sequence(stream, self.template)
 
     def __eq__(self, other):
         return ConstraintExpression('%s=%s' % (self.id, encode(other)))
@@ -290,33 +304,21 @@ class StreamReader(object):
         return self.buf[:n]
 
 
-def apply_to_list(func, descr):
-    """Apply a function to a list inside a dtype descriptor.
-
-    Return tuple with name, modified dtype, and shape.
-
-    """
-    name, dtype, shape = descr
-    if isinstance(dtype, list):
-        dtype = func(dtype)
-    else:
-        dtype = apply_to_list(func, dtype)
-    return name, dtype, shape
-
-
-def unpack_sequence(buf, descr):
+def unpack_sequence(buf, template):
     """Unpack data from a sequence, yielding records."""
-    name, dtype, shape = descr
+    # is this a sequence or a base type?
+    # XXX this has to be fixed later when we test nested sequences
+    sequence = isinstance(template, SequenceType)
 
-    # is this a sequence or a sequence child?
-    sequence = isinstance(dtype, list)
+    # if there are no children, we use the template as the only column
+    cols = list(template.children()) or [template]
 
-    # if there are no strings and no nested sequences we can
-    # unpack record by record easily
-    simple = all(isinstance(d, basestring) and 'S' not in d for d in dtype)
+    # if there are no strings and no nested sequences we can unpack record by
+    # record easily
+    simple = all(isinstance(c, BaseType) and c.dtype.char != "S" for c in cols)
 
     if simple:
-        dtype = np.dtype(fix(dtype))
+        dtype = np.dtype([("", c.dtype, c.shape) for c in cols])
         marker = buf.read(4)
         while marker == START_OF_SEQUENCE:
             rec = np.fromstring(buf.read(dtype.itemsize), dtype=dtype)[0]
@@ -327,7 +329,7 @@ def unpack_sequence(buf, descr):
     else:
         marker = buf.read(4)
         while marker == START_OF_SEQUENCE:
-            rec = unpack_children(buf, descr)
+            rec = unpack_children(buf, template)
             if not sequence:
                 rec = rec[0]
             else:
@@ -336,35 +338,29 @@ def unpack_sequence(buf, descr):
             marker = buf.read(4)
 
 
-def unpack_children(buf, descr):
+def unpack_children(buf, template):
     """Unpack children from a structure, returning their data."""
-    name, dtype, shape = descr
+    cols = list(template.children()) or [template]
 
     out = []
-    if not isinstance(dtype, list):
-        dtype = [dtype]
-
-    for descr in dtype:
-        name, d, shape = descr
-        d = np.dtype(fix(d))
-
+    for col in cols:
         # sequences and other structures
-        if d.char == 'V':
+        if isinstance(col, StructureType):
             if buf.peek(4) in [START_OF_SEQUENCE, END_OF_SEQUENCE]:
-                rows = unpack_sequence(buf, descr)
-                out.append(np.array(
-                    np.rec.fromrecords(list(rows), names=d.names)))
+                out.append(list(unpack_sequence(buf, col)))
             else:
-                out.append(tuple(unpack_children(buf, descr)))
+                out.append(tuple(unpack_children(buf, col)))
 
         # unpack arrays
-        elif shape:
+        elif col.shape:
             n = np.fromstring(buf.read(4), ">I")[0]
-            count = d.itemsize * n
-            if d.char != "S":
+            count = col.dtype.itemsize * n
+            if col.dtype.char != "S":
                 buf.read(4)  # read additional length
-                out.append(np.fromstring(buf.read(count), d).reshape(shape))
-                if d.char == "B":
+                out.append(
+                    np.fromstring(
+                        buf.read(count), col.dtype).reshape(col.shape))
+                if col.dtype.char == "B":
                     buf.read(-n % 4)
             else:
                 data = []
@@ -375,43 +371,26 @@ def unpack_children(buf, descr):
                 out.append(np.array(data))
 
         # special types: strings and bytes
-        elif d.char == 'S':
+        elif col.dtype.char == 'S':
             n = np.fromstring(buf.read(4), '>I')[0]
             out.append(buf.read(n))
             buf.read(-n % 4)
-        elif d.char == 'B':
-            data = np.fromstring(buf.read(1), d)[0]
+        elif col.dtype.char == 'B':
+            data = np.fromstring(buf.read(1), col.dtype)[0]
             buf.read(3)
             out.append(data)
 
         # usual data
         else:
-            out.append(np.fromstring(buf.read(d.itemsize), d)[0])
+            out.append(
+                np.fromstring(buf.read(col.dtype.itemsize), col.dtype)[0])
 
     return out
 
 
 def unpack_data(xdrdata, dataset):
     """Unpack a string of encoded data, returning data as lists."""
-    return unpack_children(StreamReader(iter(xdrdata)), dataset.descr)
-
-
-def fix(descr):
-    """Fix descriptor for Numpy.
-
-    Numpy dtypes must be list of tuples, but we use single tuples to
-    differentiate children from sequences with only one child, ie,
-    ``sequence['foo']`` is the children ``foo`` from ``sequence``, while
-    ``sequence[['foo']]`` is a sequence with only one child.
-
-    Return the descriptor as a list so Numpy can understand it.
-
-    """
-    if isinstance(descr, tuple):
-        name, dtype, shape = descr
-        return [(name, fix(dtype), shape)]
-    else:
-        return descr
+    return unpack_children(StreamReader(iter(xdrdata)), dataset)
 
 
 def dump():
