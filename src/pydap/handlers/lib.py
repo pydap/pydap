@@ -314,14 +314,14 @@ class IterData(object):
                 raise KeyError(key)
             out.level += 1
             out.template = out.template[key]
-            out.imap.append(deepmap(operator.itemgetter(col), out.level))
+            out.imap.append(deep_map(operator.itemgetter(col), out.level))
 
         # return a new sequence with the selected children
         elif isinstance(key, list):
             cols = [self.template.keys().index(k) for k in key]
             out.level += 1
             out.template._keys = key
-            out.imap.append(deepmap(
+            out.imap.append(deep_map(
                 lambda row: tuple(row[i] for i in cols), out.level))
 
         # slice the data; if ``self`` is the main sequence the data can be
@@ -329,7 +329,7 @@ class IterData(object):
         # slicing must be applied deeper in the data
         elif isinstance(key, (int, slice)):
             if out.level > 1:
-                out.imap.append(deepmap(lambda data: data[key], out.level-1))
+                out.imap.append(deep_map(lambda data: data[key], out.level-1))
             elif isinstance(key, int):
                 out.islice.append(slice(key, key+1))
             else:
@@ -398,7 +398,7 @@ def fix_nested(template):
     return func
 
 
-def deepmap(function, level):
+def deep_map(function, level):
     """Map a function inside a nested list, returning the modified data."""
     def out(row, level=level):
         if level == 1:
