@@ -435,7 +435,7 @@ def build_filter(expression, template):
                 return value
         except:
             raise ConstraintExpressionError(
-                'Invalid constraint expression: "{expression}"'
+                'Invalid constraint expression: "{expression}" '
                 '("{id}" is not valid)'.format(
                     expression=expression, id=id2))
 
