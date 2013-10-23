@@ -15,7 +15,7 @@ from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import (
     VerySimpleSequence, SimpleSequence, SimpleGrid,
     SimpleArray, NestedSequence)
-from pydap.responses.dods import dods
+from pydap.responses.dods import dods, DODSResponse
 
 
 class TestDODSResponse(unittest.TestCase):
@@ -266,13 +266,80 @@ class TestDODSResponseNestedSequence(unittest.TestCase):
 
     """Test the DODS response with nested sequences."""
 
-    def setUp(self):
-        """Create the base WSGI app."""
-        self.app = TestApp(BaseHandler(NestedSequence))
+    def test_iteration(self):
+        """Test direct iteration over data."""
+        response = DODSResponse(NestedSequence)
+        output = "".join(response)
+        output = output.replace('\x5a\x00\x00\x00', '<start of sequence>')
+        output = output.replace('\xa5\x00\x00\x00', '<end of sequence>')
+        self.assertEqual(
+            output,"""Dataset {
+    Sequence {
+        Int32 lat;
+        Int32 lon;
+        Int32 elev;
+        Sequence {
+            Int32 time;
+            Int32 slp;
+            Int32 wind;
+        } time_series;
+    } location;
+} NestedSequence;
+Data:
+"""
+            "<start of sequence>"
+                "\x00\x00\x00\x01"
+                "\x00\x00\x00\x01"
+                "\x00\x00\x00\x01"
+                "<start of sequence>"
+                    "\x00\x00\x00\n"
+                    "\x00\x00\x00\x0b"
+                    "\x00\x00\x00\x0c"
+                "<start of sequence>"
+                    "\x00\x00\x00\x15"
+                    "\x00\x00\x00\x16"
+                    "\x00\x00\x00\x17"
+            "<end of sequence>"
+            "<start of sequence>"
+                "\x00\x00\x00\x02"
+                "\x00\x00\x00\x04"
+                "\x00\x00\x00\x04"
+                "<start of sequence>"
+                    "\x00\x00\x00\x0f"
+                    "\x00\x00\x00\x10"
+                    "\x00\x00\x00\x11"
+            "<end of sequence>"
+            "<start of sequence>"
+                "\x00\x00\x00\x03"
+                "\x00\x00\x00\x06"
+                "\x00\x00\x00\t"
+            "<start of sequence>"
+                "\x00\x00\x00\x04"
+                "\x00\x00\x00\x08"
+                "\x00\x00\x00\x10"
+                "<start of sequence>"
+                    "\x00\x00\x00\x1f"
+                    "\x00\x00\x00 "
+                    "\x00\x00\x00!"
+                "<start of sequence>"
+                    "\x00\x00\x00)"
+                    "\x00\x00\x00*"
+                    "\x00\x00\x00+"
+                "<start of sequence>"
+                    "\x00\x00\x003"
+                    "\x00\x00\x004"
+                    "\x00\x00\x005"
+                "<start of sequence>"
+                    "\x00\x00\x00="
+                    "\x00\x00\x00>"
+                    "\x00\x00\x00?"
+                "<end of sequence>"
+            "<end of sequence>")
 
     def test_body(self):
         """Test response body."""
-        res = self.app.get("/.dods")
+        app = TestApp(BaseHandler(NestedSequence))
+        res = app.get("/.dods")
         dds, xdrdata = res.body.split('\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Sequence {

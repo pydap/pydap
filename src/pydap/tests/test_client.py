@@ -113,21 +113,17 @@ class TestOpenDods(unittest.TestCase):
 
         """
         dataset = open_dods('http://localhost:8001/.dods')
-        np.testing.assert_array_equal(
-            dataset.data,
-            np.array([[
-                ('1', 100, -10, 0, -1, 21, 35, 0),
-                ('2', 200, 10, 500, 1, 15, 35, 100)]],
-                dtype=[
-                    ('id', 'S1'), ('lon', '<i4'), ('lat', '<i4'),
-                    ('depth', '<i4'), ('time', '<i4'), ('temperature', '<i4'),
-                    ('salinity', '<i4'), ('pressure', '<i4')]))
+        self.assertEqual(
+            list(dataset.data), [[
+                ('1', 100, -10, 0, -1, 21, 35, 0), 
+                ('2', 200, 10, 500, 1, 15, 35, 100),
+            ]])
 
         # attributes should be empty
         self.assertEqual(dataset.attributes, {})
 
     def test_open_dods_with_attributes(self):
-        """Open the dods response together with the dsa response."""
+        """Open the dods response together with the das response."""
         dataset = open_dods('http://localhost:8001/.dods', metadata=True)
         self.assertEqual(dataset.NC_GLOBAL, {})
         self.assertEqual(dataset.DODS_EXTRA, {})

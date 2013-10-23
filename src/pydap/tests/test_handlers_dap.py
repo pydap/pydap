@@ -141,6 +141,7 @@ class TestDapHandler(unittest.TestCase):
             dataset.cast.lon.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.cast.lon.data.id, "cast.lon")
         self.assertEqual(dataset.cast.lon.data.shape, ())
+        self.assertEqual(dataset.cast.lon.data.dtype, np.dtype(">i4"))
         self.assertEqual(dataset.cast.lon.data.selection, [])
         self.assertEqual(dataset.cast.lon.data.slice, (slice(None),))
 
@@ -270,6 +271,14 @@ class TestSequenceProxy(unittest.TestCase):
         """Return method to its original version."""
         requests.get = self.requests_get
 
+    def test_repr(self):
+        """Test the object representation."""
+        self.assertEqual(
+            repr(self.remote), 
+            "SequenceProxy('http://localhost:8001/', "
+            "<SequenceType with children 'byte', 'int', 'float'>, [], "
+            "(slice(None, None, None),))")
+
     def test_attributes(self):
         """Test attributes of the remote sequence."""
         self.assertEqual(self.remote.baseurl, "http://localhost:8001/")
@@ -288,6 +297,9 @@ class TestSequenceProxy(unittest.TestCase):
         child = self.remote[["float", "int"]]
         self.assertEqual(child.id, "sequence.float,sequence.int")
         self.assertEqual(child.template.keys(), ["float", "int"])
+
+        child = self.remote[0]
+        self.assertEqual(child.slice, (slice(0, 1, 1),))
 
     def test_url(self):
         """Test URL generation."""
@@ -330,6 +342,20 @@ class TestSequenceProxy(unittest.TestCase):
 
         child = self.remote["byte"]
         self.assertEqual(list(child), [0, 1, 2, 3, 4, 5, 6, 7])
+
+    def test_comparisons(self):
+        """Test lazy comparisons on the object."""
+        filtered = self.remote[self.remote["byte"] == 4]
+        self.assertEqual(filtered.selection, ["sequence.byte=4"])
+
+        filtered = self.remote[self.remote["byte"] != 4]
+        self.assertEqual(filtered.selection, ["sequence.byte!=4"])
+
+        filtered = self.remote[self.remote["byte"] >= 4]
+        self.assertEqual(filtered.selection, ["sequence.byte>=4"])
+
+        filtered = self.remote[self.remote["byte"] <= 4]
+        self.assertEqual(filtered.selection, ["sequence.byte<=4"])
 
 
 class TestSequenceWithString(unittest.TestCase):
