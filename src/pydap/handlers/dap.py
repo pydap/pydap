@@ -256,8 +256,6 @@ class SequenceProxy(object):
         buf = []
         while ''.join(buf) != marker:
             chunk = stream.read(1)
-            if not chunk:
-                break
             buf.append(chunk)
             buf = buf[-len(marker):]
 
