@@ -19,7 +19,7 @@ from pydap.model import *
 from pydap.lib import (
     encode, combine_slices, fix_slice, hyperslab,
     START_OF_SEQUENCE, END_OF_SEQUENCE, walk)
-from pydap.handlers.lib import ConstraintExpression, BaseHandler
+from pydap.handlers.lib import ConstraintExpression, BaseHandler, IterData
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 from pydap.parsers import parse_ce
@@ -284,24 +284,19 @@ class SequenceProxy(object):
 
 class StreamReader(object):
 
-    """Class to allow reading and peeking a `urllib3.HTTPResponse`."""
+    """Class to allow reading a `urllib3.HTTPResponse`."""
 
     def __init__(self, stream):
         self.stream = stream
         self.buf = ''
 
     def read(self, n):
-        """Read and return `n` bytes from the stream."""
-        # read n bytes and update buffer
-        out = self.peek(n)
-        self.buf = self.buf[n:]
-        return out
-
-    def peek(self, n):
-        """Read and return `n` bytes without consuming them."""
+        """Read and return `n` bytes."""
         while len(self.buf) < n:
             self.buf += self.stream.next()
-        return self.buf[:n]
+        out = self.buf[:n]
+        self.buf = self.buf[n:]
+        return out
 
 
 def unpack_sequence(buf, template):
@@ -345,11 +340,10 @@ def unpack_children(buf, template):
     out = []
     for col in cols:
         # sequences and other structures
-        if isinstance(col, StructureType):
-            if buf.peek(4) in [START_OF_SEQUENCE, END_OF_SEQUENCE]:
-                out.append(list(unpack_sequence(buf, col)))
-            else:
-                out.append(tuple(unpack_children(buf, col)))
+        if isinstance(col, SequenceType):
+            out.append(IterData(list(unpack_sequence(buf, col)), col))
+        elif isinstance(col, StructureType):
+            out.append(tuple(unpack_children(buf, col)))
 
         # unpack arrays
         elif col.shape:
