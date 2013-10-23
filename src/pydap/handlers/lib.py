@@ -324,13 +324,9 @@ class IterData(object):
             out.imap.append(deep_map(
                 lambda row: tuple(row[i] for i in cols), out.level))
 
-        # slice the data; if ``self`` is the main sequence the data can be
-        # sliced using ``itertools.islice``, but if it's a child variable the
-        # slicing must be applied deeper in the data
+        # slice the data
         elif isinstance(key, (int, slice)):
-            if out.level > 1:
-                out.imap.append(deep_map(lambda data: data[key], out.level-1))
-            elif isinstance(key, int):
+            if isinstance(key, int):
                 out.islice.append(slice(key, key+1))
             else:
                 out.islice.append(key)
