@@ -273,7 +273,7 @@ class IterData(object):
 
         # these are used to lazily evaluate the data stream
         self.ifilter = ifilter or []
-        self.imap = imap or []
+        self.imap = imap or [fix_nested(template)]
         self.islice = islice or []
 
     @property
@@ -386,6 +386,16 @@ class IterData(object):
         else:
             right = encode(other)
         return ConstraintExpression('%s<%s' % (self.template.id, right))
+
+
+def fix_nested(template):
+    """Apply ``IterData`` to nested sequences on iteration."""
+    def func(row):
+        return tuple(
+            IterData(col, child) if isinstance(child, SequenceType)
+            else col
+            for col, child in zip(row, template.children()))
+    return func
 
 
 def deepmap(function, level):
