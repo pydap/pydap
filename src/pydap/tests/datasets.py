@@ -157,6 +157,10 @@ SimpleSequence["cast"].data = np.array(np.rec.fromrecords([
     ("1", 100, -10,   0, -1, 21, 35,   0),
     ("2", 200,  10, 500,  1, 15, 35, 100),
 ], names=SimpleSequence['cast'].keys()))
+#SimpleSequence["cast"].data = IterData([
+#    ("1", 100, -10,   0, -1, 21, 35,   0),
+#    ("2", 200,  10, 500,  1, 15, 35, 100),
+#], SimpleSequence.cast)
 
 # a simple grid
 SimpleGrid = DatasetType(

@@ -2,6 +2,7 @@
 
 import sys
 import copy
+import re
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
@@ -21,7 +22,7 @@ from pydap.handlers.lib import (
 from pydap.parsers import parse_projection
 from pydap.tests.datasets import (
     SimpleArray, SimpleSequence, SimpleGrid, VerySimpleSequence,
-    NestedSequence)
+    NestedSequence, SimpleStructure)
 
 
 class TestHandlersLib(unittest.TestCase):
@@ -218,6 +219,16 @@ class TestApplyProjectionSequence(unittest.TestCase):
             dataset.sequence.data, VerySimpleSequence.sequence.data[2])
 
 
+class TestInvalidProjection(unittest.TestCase):
+
+    """Test applying a projection to a structure object."""
+
+    def test_structure_projection(self):
+        """Test projection slicing on a structure."""
+        with self.assertRaises(ConstraintExpressionError):
+            apply_projection(parse_projection("types[0]"), SimpleStructure)
+
+
 class TestConstraintExpression(unittest.TestCase):
 
     """Test the constraint expression object."""
@@ -272,7 +283,9 @@ class TestIterData(unittest.TestCase):
 
     def test_repr(self):
         """Test the object representation."""
-        self.assertEqual(repr(self.data), "[(1, 2, 3), (4, 5, 6)]")
+        self.assertEqual(
+            repr(self.data),
+            "<IterData to stream [(1, 2, 3), (4, 5, 6)]>")
 
     def test_dtype(self):
         """Test the ``dtype`` property."""
@@ -324,6 +337,11 @@ class TestIterData(unittest.TestCase):
         with self.assertRaises(KeyError):
             self.data["e"]
 
+    def test_invalid_key(self):
+        """Test accessing using an invalid key."""
+        with self.assertRaises(KeyError):
+            self.data[(1,2)]
+
     def test_selecting_children(self):
         """Test that we can select children."""
         self.assertEqual(
@@ -362,6 +380,21 @@ class TestIterData(unittest.TestCase):
         self.assertEqual(
             map(tuple, self.data[self.data["b"] < self.data["c"]]),
             map(tuple, self.array[self.array["b"] < self.array["c"]]))
+
+
+class TestRegexp(unittest.TestCase):
+
+    """Test regular expression match."""
+
+    def test_regexp(self):
+        sequence = SequenceType("sequence")
+        sequence["name"] = BaseType("name")
+        sequence.data = IterData([
+            ("John", "Paul", "George", "Ringo"),
+        ], sequence)
+
+        filtered = sequence[ConstraintExpression('sequence.name=~"J.*"')]
+        self.assertEqual(list(filtered), [("John",)])
 
 
 class TestNestedIterData(unittest.TestCase):

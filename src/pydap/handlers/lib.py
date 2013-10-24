@@ -224,6 +224,8 @@ def apply_projection(projection, dataset):
                     parent[name] = target[slice_[0]]
                 elif isinstance(target, GridType):
                     parent[name] = target[slice_]
+                else:
+                    raise ConstraintExpressionError("Invalid projection!")
 
     return out
 
@@ -300,9 +302,7 @@ class IterData(object):
             self.imap[:], self.islice[:], self.level)
 
     def __repr__(self):
-        return "IterData(%s)" % ", ".join(
-            map(repr, [self.stream, self.template.id, self.ifilter, self.imap,
-                self.islice, self.level]))
+        return "<IterData to stream %r>" % self.stream
 
     def __getitem__(self, key):
         out = copy.copy(self)
@@ -339,6 +339,9 @@ class IterData(object):
             f, m = build_filter(key, self.template)
             out.ifilter.append(f)
             out.imap.append(m)
+
+        else:
+            raise KeyError(key)
 
         return out
 

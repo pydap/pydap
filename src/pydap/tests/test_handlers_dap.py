@@ -301,6 +301,9 @@ class TestSequenceProxy(unittest.TestCase):
         child = self.remote[0]
         self.assertEqual(child.slice, (slice(0, 1, 1),))
 
+        child = self.remote[0:2]
+        self.assertEqual(child.slice, (slice(0, 2, 1),))
+
     def test_url(self):
         """Test URL generation."""
         self.assertEqual(
