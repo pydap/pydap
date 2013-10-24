@@ -321,6 +321,8 @@ class IterData(object):
         # return a new sequence with the selected children
         elif isinstance(key, list):
             cols = [self.template.keys().index(k) for k in key]
+            out.template._original_keys = getattr(
+                out.template, "_original_keys", out.template._keys)
             out.template._keys = key
             out.imap.append(deep_map(
                 lambda row: tuple(row[i] for i in cols), out.level+1))
@@ -418,7 +420,8 @@ def build_filter(expression, template):
         target = template
         for level, token in enumerate(id1.split(".")):
             parent1 = target.id
-            col = target.keys().index(token)
+            keys = getattr(target, "_original_keys", target._keys)
+            col = keys.index(token)
             target = target[token]
         a = operator.itemgetter(col)
     except:
@@ -430,7 +433,8 @@ def build_filter(expression, template):
     # if we're comparing two variables they must be on the same sequence, so
     # ``parent1`` must be equal to ``parent2``
     if id2.rsplit(".", 1)[0] == parent1:  # parent2 == parent1
-        col = template.keys().index(id2.split(".")[-1])
+        keys = getattr(template, "_original_keys", template._keys)
+        col = keys.index(id2.split(".")[-1])
         b = operator.itemgetter(col)
     else:
         try:
