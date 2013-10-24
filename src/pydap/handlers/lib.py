@@ -312,7 +312,7 @@ class IterData(object):
         if isinstance(key, basestring):
             try:
                 col = self.template.keys().index(key)
-            except:
+            except ValueError:
                 raise KeyError(key)
             out.level += 1
             out.template = out.template[key]
