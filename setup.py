@@ -18,12 +18,17 @@ install_requires = [
 if sys.version_info < (2, 7):
     install_requires.append('ordereddict')
 
+functions_extras = [
+    'gsw',
+    'coards',
+]
+
 docs_extras = [
     'Sphinx',
     'Pygments',
 ]
 
-tests_require = [
+tests_require = functions_extras + [
     'WebTest',
     'beautifulsoup4',
 ]
@@ -57,7 +62,7 @@ setup(name='Pydap',
     namespace_packages=["pydap", "pydap.responses", "pydap.handlers"],
     install_requires=install_requires,
     extras_require = {
-        'functions': ["gsw", "coards"],
+        'functions': functions_extras,
         'testing': testing_extras,
         'docs': docs_extras,
     },
