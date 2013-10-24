@@ -300,7 +300,9 @@ class IterData(object):
             self.imap[:], self.islice[:], self.level)
 
     def __repr__(self):
-        return repr(self.stream)
+        return "IterData(%s)" % ", ".join(
+            map(repr, [self.stream, self.template.id, self.ifilter, self.imap,
+                self.islice, self.level]))
 
     def __getitem__(self, key):
         out = copy.copy(self)
@@ -319,10 +321,9 @@ class IterData(object):
         # return a new sequence with the selected children
         elif isinstance(key, list):
             cols = [self.template.keys().index(k) for k in key]
-            out.level += 1
             out.template._keys = key
             out.imap.append(deep_map(
-                lambda row: tuple(row[i] for i in cols), out.level))
+                lambda row: tuple(row[i] for i in cols), out.level+1))
 
         # slice the data
         elif isinstance(key, (int, slice)):
