@@ -423,7 +423,7 @@ def build_filter(expression, template):
         a = operator.itemgetter(col)
     except:
         raise ConstraintExpressionError(
-            'Invalid constraint expression: "{expression}"'
+            'Invalid constraint expression: "{expression}" '
             '("{id}" is not a valid variable)'.format(
                 expression=expression, id=id1))
 
