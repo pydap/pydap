@@ -226,6 +226,7 @@ def main():  # pragma: no cover
     # init templates?
     if arguments["--init"]:
         init(arguments["--init"])
+        return
 
     # create pydap app
     data, templates = arguments["--data"], arguments["--templates"]
