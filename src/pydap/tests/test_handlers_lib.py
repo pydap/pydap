@@ -381,6 +381,12 @@ class TestIterData(unittest.TestCase):
             map(tuple, self.data[self.data["b"] < self.data["c"]]),
             map(tuple, self.array[self.array["b"] < self.array["c"]]))
 
+    def test_selection_not_in_projection(self):
+        """Test selection with variables that are not in the projection."""
+        subset = self.data[["d", "b"]]
+        filtered = self.data[["d", "b"]][self.data["c"] > 3]
+        self.assertEqual(filtered, self.array[["d", "b"]][self.array["c"] > 3])
+
 
 class TestRegexp(unittest.TestCase):
 

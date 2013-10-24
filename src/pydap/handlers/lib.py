@@ -321,8 +321,8 @@ class IterData(object):
         # return a new sequence with the selected children
         elif isinstance(key, list):
             cols = [self.template.keys().index(k) for k in key]
-            out.template._original_keys = getattr(
-                out.template, "_original_keys", out.template._keys)
+            # store the original keys for filtering
+            out.template._original_keys = out.template._keys
             out.template._keys = key
             out.imap.append(deep_map(
                 lambda row: tuple(row[i] for i in cols), out.level+1))
