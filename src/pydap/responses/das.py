@@ -11,8 +11,9 @@ try:
     from functools import singledispatch
 except ImportError:
     from singledispatch import singledispatch
-
 from collections import Iterable
+
+from six import string_types
 
 from pydap.model import *
 from pydap.lib import encode, quote, __version__
@@ -100,7 +101,7 @@ def build_attributes(attr, values, level=0):
         type = get_type(values)
 
         # encode values
-        if (isinstance(values, basestring) or not isinstance(values, Iterable)
+        if (isinstance(values, string_types) or not isinstance(values, Iterable)
                 or getattr(values, 'shape', None) == ()):
             values = [encode(values)]
         else:
@@ -122,7 +123,7 @@ def get_type(values):
     """
     if hasattr(values, 'dtype'):
         return typemap[values.dtype.char]
-    elif isinstance(values, basestring) or not isinstance(values, Iterable):
+    elif isinstance(values, string_types) or not isinstance(values, Iterable):
         return type_convert(values)
     else:
         # if there are several values, they may have different types, so we

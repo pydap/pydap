@@ -1,10 +1,12 @@
 """Basic functions related to the DAP spec."""
 import sys
-import urllib
 import itertools
 import operator
 
 from pkg_resources import get_distribution
+from six.moves.urllib.parse import quote as quote_
+from six.moves import reduce, zip_longest
+from six import text_type, MAXSIZE
 
 from pydap.exceptions import ConstraintExpressionError
 
@@ -23,18 +25,12 @@ def quote(name):
 
         >>> quote("White space")
         'White%20space'
-
-    This function is similar to `urllib.quote`, with the difference that
-    periods are also quoted:
-
-        >>> urllib.quote("Period.")
-        'Period.'
         >>> quote("Period.")
         'Period%2E'
 
     """
     safe = '%_!~*\'-"'
-    return urllib.quote(name.encode('utf-8'), safe=safe).replace('.', '%2E')
+    return quote_(name.encode('utf-8'), safe=safe).replace('.', '%2E')
 
 
 def encode(obj):
@@ -42,7 +38,7 @@ def encode(obj):
     try:
         return '%.6g' % obj
     except:
-        if isinstance(obj, unicode):
+        if isinstance(obj, text_type):
             obj = obj.encode('utf-8')
         return '"%s"' % str(obj).replace('"', r'\"')
 
@@ -108,7 +104,7 @@ def combine_slices(slice1, slice2):
 
     """
     out = []
-    for exp1, exp2 in itertools.izip_longest(
+    for exp1, exp2 in zip_longest(
             slice1, slice2, fillvalue=slice(None)):
         if isinstance(exp1, int):
             exp1 = slice(exp1, exp1+1)
@@ -142,7 +138,7 @@ def hyperslab(slice_):
         slice_.pop(-1)
 
     return ''.join('[%s:%s:%s]' % (
-        s.start or 0, s.step or 1, (s.stop or sys.maxint)-1) for s in slice_)
+        s.start or 0, s.step or 1, (s.stop or MAXSIZE)-1) for s in slice_)
 
 
 def walk(var, type=object):

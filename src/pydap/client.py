@@ -43,9 +43,9 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 """
 
-from urlparse import urlsplit, urlunsplit
-
 import requests
+
+from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from pydap.model import DapType
 from pydap.lib import encode
@@ -71,8 +71,8 @@ def open_file(dods, das=None):
     dataset.
 
     """
-    with open(dods) as f:
-        dds, data = f.read().split('\nData:\n', 1)
+    with open(dods, "rb") as f:
+        dds, data = f.read().split(b'\nData:\n', 1)
         dataset = build_dataset(dds)
         dataset.data = unpack_data(data, dataset)
 
@@ -86,7 +86,7 @@ def open_file(dods, das=None):
 def open_dods(url, metadata=False):
     """Open a `.dods` response directly, returning a dataset."""
     r = requests.get(url)
-    dds, data = r.content.split('\nData:\n', 1)
+    dds, data = r.content.split(b'\nData:\n', 1)
     dataset = build_dataset(dds)
     dataset.data = unpack_data(data, dataset)
 

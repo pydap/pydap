@@ -16,6 +16,7 @@ except ImportError:
     from singledispatch import singledispatch
 
 import numpy as np
+from six import string_types
 
 from pydap.model import *
 from pydap.lib import walk, START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
@@ -55,7 +56,7 @@ class DODSResponse(BaseResponse):
         for line in dds(self.dataset):
             yield line
 
-        yield 'Data:\n'
+        yield b'Data:\n'
         for block in dods(self.dataset):
             yield block
 
@@ -100,7 +101,7 @@ def _(var):
                 out = []
                 padded = []
                 for value in record:
-                    if isinstance(value, basestring):
+                    if isinstance(value, string_types):
                         length = len(value) or 1
                         out.append(length)
                         padded.append(length + (-length % 4))
@@ -199,6 +200,6 @@ def calculate_size(dataset):
                 length += size * opendap_size
 
     # account for DDS
-    length += len(''.join(dds(dataset))) + len('Data:\n')
+    length += len(''.join(dds(dataset))) + len(b'Data:\n')
 
     return length

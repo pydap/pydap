@@ -19,6 +19,7 @@ import numpy as np
 from webob import Request
 import pkg_resources
 from numpy.lib.arrayterator import Arrayterator
+from six import string_types
 
 from pydap.responses.lib import load_responses
 from pydap.responses.error import ErrorResponse
@@ -309,7 +310,7 @@ class IterData(object):
 
         # return a child, and adjust the data so that only the corresponding
         # column is returned
-        if isinstance(key, basestring):
+        if isinstance(key, string_types):
             try:
                 col = self.template.keys().index(key)
             except ValueError:

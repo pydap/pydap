@@ -13,6 +13,8 @@ import ast
 from webob import Request
 from pkg_resources import iter_entry_points
 import numpy as np
+from six.moves import reduce
+from six import string_types
 
 from pydap.model import DatasetType, SequenceType
 from pydap.parsers import parse_ce
@@ -52,7 +54,7 @@ class ServerSideFunctions(object):
         # check if there are any functions calls in the request
         called = (
             any(s for s in selection if FUNCTION.match(s)) or
-            any(p for p in projection if isinstance(p, basestring)))
+            any(p for p in projection if isinstance(p, string_types)))
 
         # ignore DAS requests and requests without functions
         path, response = req.path.rsplit('.', 1)
@@ -114,8 +116,8 @@ class ServerSideFunctions(object):
         # now apply projection
         if projection:
             projection = fix_shorthand(projection, dataset)
-            base = [p for p in projection if not isinstance(p, basestring)]
-            func = [p for p in projection if isinstance(p, basestring)]
+            base = [p for p in projection if not isinstance(p, string_types)]
+            func = [p for p in projection if isinstance(p, string_types)]
 
             # apply non-function projection
             out = apply_projection(base, dataset)

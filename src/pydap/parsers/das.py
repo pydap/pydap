@@ -10,6 +10,8 @@ import re
 import ast
 import operator
 
+from six.moves import reduce
+
 from pydap.parsers import SimpleParser
 from pydap.lib import walk
 

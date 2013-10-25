@@ -8,12 +8,12 @@ dataset to the internal model.
 
 import sys
 import pprint
-from urlparse import urlsplit, urlunsplit
-from urllib import quote
 import copy
 
 import numpy as np
 import requests
+from six.moves.urllib.parse import urlsplit, urlunsplit, quote
+from six import string_types
 
 from pydap.model import *
 from pydap.lib import (
@@ -111,7 +111,7 @@ class BaseProxy(object):
         # download and unpack data
         r = requests.get(url)
         r.raise_for_status()
-        dds, data = r.content.split('\nData:\n', 1)
+        dds, data = r.content.split(b'\nData:\n', 1)
 
         if self.shape:
             # skip size packing
@@ -204,7 +204,7 @@ class SequenceProxy(object):
         out = copy.copy(self)
 
         # return the data for a children
-        if isinstance(key, basestring):
+        if isinstance(key, string_types):
             out.template = out.template[key]
 
         # return a new object with requested columns
@@ -252,7 +252,7 @@ class SequenceProxy(object):
         stream = StreamReader(r.iter_content(BLOCKSIZE))
 
         # strip dds response
-        marker = '\nData:\n'
+        marker = b'\nData:\n'
         buf = []
         while ''.join(buf) != marker:
             chunk = stream.read(1)
@@ -392,7 +392,7 @@ def dump():
 
     """
     dods = sys.stdin.read()
-    dds, xdrdata = dods.split('\nData:\n', 1)
+    dds, xdrdata = dods.split(b'\nData:\n', 1)
     dataset = build_dataset(dds)
     data = unpack_data(xdrdata, dataset)
 

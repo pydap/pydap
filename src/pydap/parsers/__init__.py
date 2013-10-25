@@ -8,7 +8,8 @@ DDS and DAS responses.
 import re
 import operator
 import ast
-from urllib import unquote
+
+from six.moves.urllib.parse import unquote
 
 from pydap.exceptions import ConstraintExpressionError
 from pydap.lib import get_var

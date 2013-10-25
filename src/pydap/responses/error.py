@@ -6,9 +6,9 @@ formated as a DAP error response.
 """
 
 from traceback import print_exception
-from StringIO import StringIO
 
 from webob import Response
+from six import StringIO
 
 from pydap.lib import encode, __version__
 

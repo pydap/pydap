@@ -60,7 +60,7 @@ class TestDODSResponse(unittest.TestCase):
 
     def test_body(self):
         """Test response body."""
-        dds, xdrdata = self.res.body.split('\nData:\n', 1)
+        dds, xdrdata = self.res.body.split(b'\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Sequence {
         Byte byte;
@@ -103,7 +103,7 @@ class TestDODSResponseGrid(unittest.TestCase):
 
     def test_body(self):
         """Test the response body."""
-        dds, xdrdata = self.res.body.split('\nData:\n', 1)
+        dds, xdrdata = self.res.body.split(b'\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Grid {
         Array:
@@ -161,7 +161,7 @@ class TestDODSResponseSequence(unittest.TestCase):
 
     def test_body(self):
         """Test response body."""
-        dds, xdrdata = self.res.body.split('\nData:\n', 1)
+        dds, xdrdata = self.res.body.split(b'\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Sequence {
         String id;
@@ -195,7 +195,7 @@ class TestDODSResponseArray(unittest.TestCase):
     def test_body(self):
         """Test response body."""
         res = self.app.get("/.dods")
-        dds, xdrdata = res.body.split('\nData:\n', 1)
+        dds, xdrdata = res.body.split(b'\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Byte byte[byte = 5];
     String string[string = 2];
@@ -340,7 +340,7 @@ Data:
         """Test response body."""
         app = TestApp(BaseHandler(NestedSequence))
         res = app.get("/.dods")
-        dds, xdrdata = res.body.split('\nData:\n', 1)
+        dds, xdrdata = res.body.split(b'\nData:\n', 1)
         self.assertEqual(dds, """Dataset {
     Sequence {
         Int32 lat;

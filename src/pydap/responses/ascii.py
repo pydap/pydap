@@ -9,10 +9,10 @@ try:
     from functools import singledispatch
 except ImportError:
     from singledispatch import singledispatch
-from itertools import izip
 import copy
 
 import numpy as np
+from six.moves import zip
 
 from pydap.model import *
 from pydap.lib import encode, __version__
@@ -82,7 +82,7 @@ def _(var, printname=True):
     if not getattr(var, "shape", ()):
         yield encode(var.data)
     else:
-        for indexes, value in izip(np.ndindex(var.shape), var.data.flat):
+        for indexes, value in zip(np.ndindex(var.shape), var.data.flat):
             yield "{indexes} {value}\n".format(
                 indexes="[" + "][".join([str(idx) for idx in indexes]) + "]",
                 value=encode(value))

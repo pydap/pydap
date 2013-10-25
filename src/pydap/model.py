@@ -120,6 +120,9 @@ if sys.version_info < (2, 7):
 else:
     from collections import OrderedDict
 
+from six.moves import reduce
+from six import string_types
+
 from pydap.lib import quote
 
 
@@ -477,7 +480,7 @@ class SequenceType(StructureType):
 
     def __getitem__(self, key):
         # If key is a string, return child with the corresponding data.
-        if isinstance(key, basestring):
+        if isinstance(key, string_types):
             return StructureType.__getitem__(self, key)
 
         # If it's a tuple, return a new `SequenceType` with selected children.
@@ -526,7 +529,7 @@ class GridType(StructureType):
 
     def __getitem__(self, key):
         # Return a child.
-        if isinstance(key, basestring):
+        if isinstance(key, string_types):
             return StructureType.__getitem__(self, key)
 
         # Return a new `GridType` with part of the data.

@@ -2,7 +2,6 @@
 
 import sys
 import pprint
-from cStringIO import StringIO
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
@@ -11,6 +10,7 @@ else:
 from webtest import TestApp
 import requests
 import numpy as np
+from six import StringIO
 
 from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression

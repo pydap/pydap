@@ -19,7 +19,6 @@ import os
 import re
 import mimetypes
 from datetime import datetime
-import urllib
 import shutil
 
 from jinja2 import Environment, PackageLoader, FileSystemLoader, ChoiceLoader
@@ -28,6 +27,8 @@ from webob.dec import wsgify
 from webob.exc import HTTPNotFound, HTTPForbidden
 from webob.static import FileApp, DirectoryApp
 import pkg_resources
+from six.moves.urllib.parse import unquote
+from six import string_types
 
 from pydap.lib import __version__
 from pydap.handlers.lib import get_handler, load_handlers
@@ -54,7 +55,7 @@ class DapServer(object):
         # that need to render templates (like HTML, WMS, KML, etc.)
         self.env = Environment(loader=ChoiceLoader(loaders))
         self.env.filters["datetimeformat"] = datetimeformat
-        self.env.filters["unquote"] = urllib.unquote
+        self.env.filters["unquote"] = unquote
 
         # cache available handlers, so we don't need to load them every request
         self.handlers = load_handlers()
@@ -184,7 +185,7 @@ class StaticMiddleware(object):
         req.path_info_pop()
 
         # statically serve the directory
-        if isinstance(self.static, basestring):
+        if isinstance(self.static, string_types):
             return req.get_response(DirectoryApp(self.static))
 
         # otherwise, load resource from package
