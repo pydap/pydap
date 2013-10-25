@@ -164,7 +164,7 @@ def fix_shorthand(projection, dataset):
     """
     out = []
     for var in projection:
-        if len(var) == 1 and var[0][0] not in dataset.keys():
+        if len(var) == 1 and var[0][0] not in list(dataset.keys()):
             token, slice_ = var.pop(0)
             for child in walk(dataset):
                 if token == child.name:

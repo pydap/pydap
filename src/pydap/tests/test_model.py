@@ -10,7 +10,7 @@ else:
 import numpy as np
 
 from pydap.model import *
-from pydap.model import DapType, pack_rows, unpack_rows
+from pydap.model import DapType
 
 
 class TestDapType(unittest.TestCase):
@@ -401,47 +401,3 @@ class TestGridType(unittest.TestCase):
     def test_dimensions(self):
         """Test ``dimensions`` property."""
         self.assertEqual(self.example.dimensions, ("x", "y"))
-
-
-class TestPackRows(unittest.TestCase):
-
-    """Test the ``pack_rows`` function used for sequences."""
-
-    def test_pack_simple(self):
-        """Test function with flat data."""
-        a = [1, 2, 3]
-        b = [10, 20, 30]
-        c = [1, 1, 1]
-        self.assertEqual(
-            pack_rows([a, b, c], 1),
-            [(1, 10, 1), (2, 20, 1), (3, 30, 1)])
-
-    def test_pack_nested(self):
-        """Test function with nested data."""
-        d = [['a', 'b', 'c'], ['d'], ['e', 'f']]
-        e = [[1, 2, 3], [4], [5, 6]]
-        self.assertEqual(
-            pack_rows([d, e], 2), [
-                [('a', 1), ('b', 2), ('c', 3)],
-                [('d', 4)],
-                [('e', 5), ('f', 6)]])
-
-
-class TestUnpackRows(unittest.TestCase):
-
-    """Test the ``unpack_rows`` function."""
-
-    def test_unpack_simple(self):
-        """Test unpacking a flat sequence data."""
-        data = [(1, 10, 1), (2, 20, 1)]
-        self.assertEqual(unpack_rows(data, 1), [(1, 2), (10, 20), (1, 1)])
-
-    def test_unpack_nested(self):
-        """Test unpacking a nested sequence data."""
-        data = [
-            [('a', 1), ('b', 2), ('c', 3)],
-            [('d', 4)],
-            [('e', 5), ('f', 6)]]
-        self.assertEqual(
-            unpack_rows(data, 2),
-            [(('a', 'b', 'c'), ('d',), ('e', 'f')), ((1, 2, 3), (4,), (5, 6))])

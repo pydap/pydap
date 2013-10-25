@@ -525,7 +525,8 @@ class GridType(StructureType):
     def __repr__(self):
         return '<%s with array %s and maps %s>' % (
             self.__class__.__name__,
-            repr(self.keys()[0]), ', '.join(map(repr, self.keys()[1:])))
+            repr(list(self.keys())[0]),
+            ', '.join(map(repr, list(self.keys())[1:])))
 
     def __getitem__(self, key):
         # Return a child.
@@ -545,78 +546,14 @@ class GridType(StructureType):
     @property
     def array(self):
         """Return the first children."""
-        return self[self.keys()[0]]
+        return self[list(self.keys())[0]]
 
     @property
     def maps(self):
         """Return the axes in an ordered dict."""
-        return OrderedDict((k, self[k]) for k in self.keys()[1:])
+        return OrderedDict((k, self[k]) for k in list(self.keys())[1:])
 
     @property
     def dimensions(self):
         """Return the name of the axes."""
-        return tuple(self.keys()[1:])
-
-
-def pack_rows(data, level):
-    """Pack data from separate variables.
-
-    This function is used to pack columnar data into a sequence of records::
-
-        >>> a = [1, 2, 3]
-        >>> b = [10, 20, 30]
-        >>> c = [1, 1, 1]
-        >>> for record in pack_rows([a, b, c], 1):
-        ...     print record
-        ...
-        (1, 10, 1)
-        (2, 20, 1)
-        (3, 30, 1)
-
-    "This is trival!", you might say. But what if we have nested containers? It
-    works too::
-
-        >>> d = [ ['a', 'b', 'c'], ['d'], ['e', 'f'] ]
-        >>> e = [ [1, 2, 3], [4], [5, 6] ]
-        >>> for record in pack_rows([d, e], 2):
-        ...     print record
-        ...
-        [('a', 1), ('b', 2), ('c', 3)]
-        [('d', 4)]
-        [('e', 5), ('f', 6)]
-
-    Returns the data as viewed by the outermost Sequence.
-
-    """
-    if level == 0:
-        return data
-    else:
-        return [pack_rows(value, level-1) for value in zip(*data)]
-
-
-def unpack_rows(data, level):
-    """Unpack container data into columns.
-
-    Suppose we have a list of records, one for each of 3 variables, this
-    function will unpack the data into 3 columns::
-
-        >>> data = [(1, 10, 1), (2, 20, 1)]
-        >>> print unpack_rows(data, 1)
-        [(1, 2), (10, 20), (1, 1)]
-
-    It works with nested data too::
-
-        >>> data = [
-        ...     [('a', 1), ('b', 2), ('c', 3)],
-        ...     [('d', 4)],
-        ...     [('e', 5), ('f', 6)] ]
-        >>> print unpack_rows(data, 2)
-        [(('a', 'b', 'c'), ('d',), ('e', 'f')), ((1, 2, 3), (4,), (5, 6))]
-
-    Returns the data as viewed by the Sequence's children.
-
-    """
-    if level == 0:
-        return data
-    else:
-        return zip(*[unpack_rows(value, level-1) for value in data])
+        return tuple(self.keys())[1:]
