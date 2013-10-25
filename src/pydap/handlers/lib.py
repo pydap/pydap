@@ -19,7 +19,8 @@ import numpy as np
 from webob import Request
 import pkg_resources
 from numpy.lib.arrayterator import Arrayterator
-from six import string_types
+from six.moves import filter, map
+from six import string_types, next
 
 from pydap.responses.lib import load_responses
 from pydap.responses.error import ErrorResponse
@@ -245,9 +246,6 @@ class ConstraintExpression(object):
     def __str__(self):
         return str(self.value)
 
-    def __unicode__(self):
-        return unicode(self.value)
-
     def __and__(self, other):
         """Join two CEs together, returning a new object."""
         return self.__class__(self.value + '&' + str(other))
@@ -282,16 +280,16 @@ class IterData(object):
     @property
     def dtype(self):
         """Return Numpy dtype of the object."""
-        peek = iter(self).next()
+        peek = next(iter(self))
         return np.array(peek).dtype
         
     def __iter__(self):
         data = iter(self.stream)
 
         for f in self.ifilter:
-            data = itertools.ifilter(f, data)
+            data = filter(f, data)
         for m in self.imap:
-            data = itertools.imap(m, data)
+            data = map(m, data)
         for s in self.islice:
             data = itertools.islice(data, s.start, s.stop, s.step)
 
@@ -474,7 +472,7 @@ def build_filter(expression, template):
 
             # return the filtered inner data
             if not tokens:
-                return filter(lambda row: op(a(row), b(row)), row)
+                return [col for col in row if op(a(col), b(col))]
 
             # navigate inside the sequence
             col = target.keys().index(token)

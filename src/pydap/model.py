@@ -525,8 +525,7 @@ class GridType(StructureType):
     def __repr__(self):
         return '<%s with array %s and maps %s>' % (
             self.__class__.__name__,
-            repr(list(self.keys())[0]),
-            ', '.join(map(repr, list(self.keys())[1:])))
+            repr(self.keys()[0]), ', '.join(map(repr, self.keys()[1:])))
 
     def __getitem__(self, key):
         # Return a child.
@@ -546,14 +545,14 @@ class GridType(StructureType):
     @property
     def array(self):
         """Return the first children."""
-        return self[list(self.keys())[0]]
+        return self[self.keys()[0]]
 
     @property
     def maps(self):
         """Return the axes in an ordered dict."""
-        return OrderedDict((k, self[k]) for k in list(self.keys())[1:])
+        return OrderedDict((k, self[k]) for k in self.keys()[1:])
 
     @property
     def dimensions(self):
         """Return the name of the axes."""
-        return tuple(self.keys())[1:]
+        return tuple(self.keys()[1:])

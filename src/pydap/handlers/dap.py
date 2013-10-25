@@ -13,7 +13,7 @@ import copy
 import numpy as np
 import requests
 from six.moves.urllib.parse import urlsplit, urlunsplit, quote
-from six import string_types
+from six import string_types, next
 
 from pydap.model import *
 from pydap.lib import (
@@ -291,7 +291,7 @@ class StreamReader(object):
     def read(self, n):
         """Read and return `n` bytes."""
         while len(self.buf) < n:
-            self.buf += self.stream.next()
+            self.buf += next(self.stream)
         out = self.buf[:n]
         self.buf = self.buf[n:]
         return out
@@ -300,7 +300,6 @@ class StreamReader(object):
 def unpack_sequence(buf, template):
     """Unpack data from a sequence, yielding records."""
     # is this a sequence or a base type?
-    # XXX this has to be fixed later when we test nested sequences
     sequence = isinstance(template, SequenceType)
 
     # if there are no children, we use the template as the only column

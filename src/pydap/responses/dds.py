@@ -13,6 +13,8 @@ try:
 except ImportError:
     from singledispatch import singledispatch
 
+from six.moves import map, zip
+
 from pydap.model import *
 from pydap.responses.lib import BaseResponse
 from pydap.lib import __version__

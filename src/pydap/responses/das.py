@@ -13,7 +13,8 @@ except ImportError:
     from singledispatch import singledispatch
 from collections import Iterable
 
-from six import string_types
+from six import string_types, integer_types
+from six.moves import map
 
 from pydap.model import *
 from pydap.lib import encode, quote, __version__
@@ -128,7 +129,7 @@ def get_type(values):
     else:
         # if there are several values, they may have different types, so we
         # need to convert all of them and use a precedence table
-        types = map(type_convert, values)
+        types = list(map(type_convert, values))
         precedence = ['String', 'Float64', 'Int32']
         types.sort(key=precedence.index)
         return types[0]
@@ -142,7 +143,7 @@ def type_convert(obj):
     """
     if isinstance(obj, float):
         return 'Float64'
-    elif isinstance(obj, (long, int)):
+    elif isinstance(obj, integer_types):
         return 'Int32'
     else:
         return 'String'

@@ -13,7 +13,7 @@ import ast
 from webob import Request
 from pkg_resources import iter_entry_points
 import numpy as np
-from six.moves import reduce
+from six.moves import reduce, map
 from six import string_types
 
 from pydap.model import DatasetType, SequenceType
@@ -104,7 +104,8 @@ class ServerSideFunctions(object):
                 data = np.fromiter(child.data, child.dtype)
                 if data.dtype.char == "S":
                     valid = np.array(
-                        map(lambda v: op(str(v), str(other)), data), bool)
+                        list(map(lambda v: op(str(v), str(other)), data)), 
+                        bool)
                 else:
                     valid = op(data, other)
 

@@ -10,6 +10,7 @@ import operator
 import ast
 
 from six.moves.urllib.parse import unquote
+from six.moves import map
 
 from pydap.exceptions import ConstraintExpressionError
 from pydap.lib import get_var
@@ -48,7 +49,7 @@ def parse_projection(input):
                 for (name, slice_) in token]
         return token
 
-    return map(parse, tokenize(input))
+    return list(map(parse, tokenize(input)))
 
 
 def parse_selection(expression, dataset):
@@ -133,7 +134,7 @@ def parse_hyperslab(hyperslab):
 
     out = []
     for expr in exprs:
-        tokens = map(int, expr.split(':'))
+        tokens = list(map(int, expr.split(':')))
         start = tokens[0]
         step = 1
 
