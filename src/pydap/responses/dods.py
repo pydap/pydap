@@ -171,7 +171,7 @@ def _(var):
             data = data.reshape(1, -1)
 
         for block in data:
-            yield block.astype(typemap[block.dtype.char]).tostring()
+            yield block.astype(typemap[data.dtype.char]).tostring()
 
 
 def calculate_size(dataset):
