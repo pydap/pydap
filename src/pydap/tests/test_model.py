@@ -40,10 +40,10 @@ class TestDapType(unittest.TestCase):
 
     def test_repr(self):
         """Test the ``__repr__`` method."""
-        var = DapType("var", foo="bar", value=42)
+        var = DapType("var", foo="bar")
         self.assertEqual(
             repr(var),
-            "DapType('var', {'foo': 'bar', 'value': 42})")
+            "DapType('var', {'foo': 'bar'})")
 
     def test_id_property(self):
         """Test id set/get property."""
@@ -132,12 +132,12 @@ class TestBaseType(unittest.TestCase):
         var = BaseType("var", np.arange(10))
         self.assertEqual(var[-5], 5)
         self.assertEqual(len(var), 10)
-        self.assertEqual(list(var), range(10))
+        self.assertEqual(list(var), list(range(10)))
 
     def test_iter_protocol(self):
         """Test that the object behaves like an iterable."""
         var = BaseType("var", np.arange(10))
-        self.assertEqual(list(iter(var)), range(10))
+        self.assertEqual(list(iter(var)), list(range(10)))
 
 
 class TestStructureType(unittest.TestCase):
@@ -216,7 +216,6 @@ class TestStructureType(unittest.TestCase):
 
         del var["one"]
         self.assertEqual(var.keys(), [])
-        self.assertNotIn(child, var)
 
     def test_get_data(self):
         """Test that structure collects data from children."""
@@ -395,7 +394,7 @@ class TestGridType(unittest.TestCase):
     def test_maps(self):
         """Test ``maps`` property."""
         self.assertEqual(
-            self.example.maps.items(),
+            list(self.example.maps.items()),
             [("x", self.example["x"]), ("y", self.example["y"])])
 
     def test_dimensions(self):
