@@ -10,6 +10,12 @@ import sys
 import pprint
 import copy
 
+# handlers should be set by the application
+# http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
+import logging
+logger = logging.getLogger('pydap')
+logger.addHandler(logging.NullHandler())
+
 import numpy as np
 import requests
 from six.moves.urllib.parse import urlsplit, urlunsplit, quote
@@ -109,6 +115,7 @@ class BaseProxy(object):
             fragment)).rstrip('&')
 
         # download and unpack data
+        logger.info("Fetching URL: %s" % url)
         r = requests.get(url)
         r.raise_for_status()
         dds, data = r.content.split(b'\nData:\n', 1)
