@@ -128,7 +128,8 @@ class BaseProxy(object):
                 data = data[8:]
 
         # calculate array size
-        shape = tuple((s.stop-s.start)/s.step for s in index)
+        shape = tuple(
+            int(np.ceil((s.stop-s.start)/float(s.step))) for s in index)
         size = np.prod(shape)
 
         if self.dtype == np.byte:
