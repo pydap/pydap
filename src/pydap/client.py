@@ -44,7 +44,6 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 """
 
 import requests
-
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from pydap.model import DapType
