@@ -13,7 +13,7 @@ class DDSResponse(BaseResponse):
 
     @staticmethod
     def serialize(dataset):
-        output = ''.join(dispatch(dataset))
+        output = ''.join(dispatch(dataset)).encode("utf-8")
         if hasattr(dataset, 'close'): dataset.close()
         return [output]
 
