@@ -136,7 +136,7 @@ class BaseProxy(object):
             return np.fromstring(data[:size], 'B')
         elif self.dtype.char == 'S':
             out = []
-            for word in range(size):
+            for word in range(int(size)):
                 n = np.fromstring(data[:4], '>I')  # read length
                 data = data[4:]
                 out.append(data[:n])
