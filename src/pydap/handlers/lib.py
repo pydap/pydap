@@ -92,6 +92,7 @@ class BaseHandler(object):
             # WSGI app
             dataset = self.parse(projection, selection, buffer_size)
             app = self.responses[response](dataset)
+            app.close = self.close
 
             # now build a Response and set additional headers
             res = req.get_response(app)
@@ -138,6 +139,10 @@ class BaseHandler(object):
         dataset = apply_projection(projection, dataset)
 
         return dataset
+
+    def close(self):
+        """Optional method for closing the dataset."""
+        pass
 
 
 def wrap_arrayterator(dataset, size):

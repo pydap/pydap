@@ -95,8 +95,3 @@ class TestBaseResponse(unittest.TestCase):
         """Test that calling the base class directly raises an exception."""
         with self.assertRaises(NotImplementedError):
             iter(self.response)
-
-    def test_close(self):
-        """Test that the close method exists."""
-        self.assertTrue(hasattr(self.response, "close"))
-        self.assertIsNone(self.response.close())

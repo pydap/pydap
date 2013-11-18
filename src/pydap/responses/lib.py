@@ -72,7 +72,3 @@ class BaseResponse(object):
     def __iter__(self):
         raise NotImplementedError(
             'Subclasses must implement __iter__')
-
-    def close(self):
-        """Optional close method for the dataset."""
-        pass
