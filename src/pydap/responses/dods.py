@@ -153,15 +153,6 @@ def _(var):
             yield block.tostring()
         yield (-length % 4) * '\0'
 
-    # strings are also zero padded and preceeded by their length
-    elif data.dtype.char == 'S':
-        for block in data:
-            for word in block.flat:
-                length = len(word)
-                yield np.array(length).astype('>I').tostring()
-                yield word
-                yield (-length % 4) * '\0'
-
     # regular data
     else:
         # make data iterable; 1D arrays must be converted to 2D, since
@@ -170,8 +161,17 @@ def _(var):
         if len(data.shape) < 2:
             data = data.reshape(1, -1)
 
-        for block in data:
-            yield block.astype(typemap[data.dtype.char]).tostring()
+        # strings are also zero padded and preceeded by their length
+        if data.dtype.char == 'S':
+            for block in data:
+                for word in block.flat:
+                    length = len(word)
+                    yield np.array(length).astype('>I').tostring()
+                    yield word
+                    yield (-length % 4) * '\0'
+        else:
+            for block in data:
+                yield block.astype(typemap[data.dtype.char]).tostring()
 
 
 def calculate_size(dataset):

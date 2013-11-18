@@ -455,3 +455,29 @@ class TestDump(unittest.TestCase):
  array(['one', 'two'], 
       dtype='|S3'),
  1]""")
+
+
+class TestStringBaseType(unittest.TestCase):
+
+    """Regression test for string base type."""
+
+    def setUp(self):
+        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        dataset = DatasetType("test")
+        data = np.array("This is a test")
+        dataset["s"] = BaseType("s", data)
+        app = TestApp(BaseHandler(dataset))
+
+        self.requests_get = requests.get
+        requests.get = requests_intercept(app, "http://localhost:8001/")
+
+        self.data = BaseProxy(
+            "http://localhost:8001/", "s", np.dtype("|S14"), ())
+
+    def tearDown(self):
+        """Return method to its original version."""
+        requests.get = self.requests_get
+
+    def test_getitem(self):
+        """Test the ``__getitem__`` method."""
+        np.testing.assert_array_equal(self.data[:], "This is a test")
