@@ -17,7 +17,7 @@ from pydap.handlers.lib import BaseHandler, ConstraintExpression
 from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy, dump
 from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
-from pydap.tests import requests_intercept
+from pydap.tests.lib import requests_intercept
 
 
 class TestDapHandler(unittest.TestCase):

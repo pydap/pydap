@@ -14,7 +14,7 @@ import requests
 from pydap.model import *
 from pydap.handlers.lib import BaseHandler
 from pydap.client import open_url, open_dods, open_file
-from pydap.tests import requests_intercept
+from pydap.tests.lib import requests_intercept
 from pydap.tests.datasets import SimpleSequence, SimpleGrid
 from pydap.wsgi.ssf import ServerSideFunctions
 

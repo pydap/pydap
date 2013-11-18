@@ -60,7 +60,7 @@ setup(name='Pydap',
     package_dir = {'': 'src'},
     include_package_data=True,
     zip_safe=False,
-    namespace_packages=["pydap", "pydap.responses", "pydap.handlers"],
+    namespace_packages=["pydap", "pydap.responses", "pydap.handlers", "pydap.tests"],
     install_requires=install_requires,
     extras_require = {
         'functions': functions_extras,
