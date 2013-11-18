@@ -130,13 +130,13 @@ class BaseProxy(object):
         # calculate array size
         shape = tuple(
             int(np.ceil((s.stop-s.start)/float(s.step))) for s in index)
-        size = np.prod(shape)
+        size = int(np.prod(shape))
 
         if self.dtype == np.byte:
             return np.fromstring(data[:size], 'B')
         elif self.dtype.char == 'S':
             out = []
-            for word in range(int(size)):
+            for word in range(size):
                 n = np.fromstring(data[:4], '>I')  # read length
                 data = data[4:]
                 out.append(data[:n])
