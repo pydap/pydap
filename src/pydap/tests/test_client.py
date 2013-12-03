@@ -15,7 +15,7 @@ from pydap.model import *
 from pydap.handlers.lib import BaseHandler
 from pydap.client import open_url, open_dods, open_file
 from pydap.tests.lib import requests_intercept
-from pydap.tests.datasets import SimpleSequence, SimpleGrid
+from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 from pydap.wsgi.ssf import ServerSideFunctions
 
 
@@ -115,7 +115,7 @@ class TestOpenDods(unittest.TestCase):
         dataset = open_dods('http://localhost:8001/.dods')
         self.assertEqual(
             list(dataset.data), [[
-                ('1', 100, -10, 0, -1, 21, 35, 0), 
+                ('1', 100, -10, 0, -1, 21, 35, 0),
                 ('2', 200, 10, 500, 1, 15, 35, 100),
             ]])
 
@@ -215,3 +215,35 @@ class TestFunctions(unittest.TestCase):
         np.testing.assert_array_equal(
             dataset.x.data,
             np.array(1.0))
+
+
+@unittest.skip("Unsure about this behavior")
+class Test16Bits(unittest.TestCase):
+
+    """Test that 16-bit values are represented correctly.
+
+    Even though the DAP transfers int16 and uint16 as 32 bits, we want them to
+    be represented locally using the correct type.
+
+    """
+
+    def setUp(self):
+        """Load a dataset with 16-bit types."""
+        app = TestApp(BaseHandler(SimpleStructure))
+        self.requests_get = requests.get
+        requests.get = requests_intercept(app, "http://localhost:8001/")
+
+    def tearDown(self):
+        """Return method to its original version."""
+        requests.get = self.requests_get
+
+    def test_int16(self):
+        """Load an int16."""
+        dataset = open_url("http://localhost:8001/")
+        self.assertEqual(dataset.types.i16.dtype, np.dtype(">i2"))
+
+    def test_uint16(self):
+        """Load an uint16."""
+        dataset = open_url("http://localhost:8001/")
+        self.assertEqual(dataset.types.ui16.dtype, np.dtype(">u2"))
+
