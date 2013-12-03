@@ -33,6 +33,7 @@ from six import string_types
 from pydap.lib import __version__
 from pydap.handlers.lib import get_handler, load_handlers
 from pydap.exceptions import ExtensionNotSupportedError
+from pydap.wsgi.ssf import ServerSideFunctions
 
 
 class DapServer(object):
@@ -82,7 +83,8 @@ class DapServer(object):
         base, ext = os.path.splitext(path)
         if os.path.isfile(base):
             req.environ["pydap.jinja2.environment"] = self.env
-            return req.get_response(get_handler(base, self.handlers))
+            app = ServerSideFunctions(get_handler(base, self.handlers))
+            return req.get_response(app)
         else:
             return HTTPNotFound(comment=path)
 
