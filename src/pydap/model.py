@@ -115,7 +115,7 @@ It is possible to select only a few variables::
 import operator
 import sys
 import copy
-if sys.version_info < (2, 7):
+if sys.version_info < (2, 7):  # pragma: no cover
     from ordereddict import OrderedDict
 else:
     from collections import OrderedDict

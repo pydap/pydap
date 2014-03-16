@@ -14,7 +14,7 @@ import copy
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 import logging
 logger = logging.getLogger('pydap')
-if sys.version_info >= (2, 7):
+if sys.version_info >= (2, 7):  # pragma: no cover
     logger.addHandler(logging.NullHandler())
 
 import numpy as np

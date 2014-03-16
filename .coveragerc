@@ -2,7 +2,6 @@
 exclude_lines = 
     pragma: no cover
     import unittest2 as unittest
-    from ordereddict import OrderedDict
     if __name__ == .__main__.
 
 [run]
