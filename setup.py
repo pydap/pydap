@@ -27,6 +27,7 @@ functions_extras = [
 docs_extras = [
     'Sphinx',
     'Pygments',
+    'sphinx_rtd_theme',
 ]
 
 tests_require = functions_extras + [
