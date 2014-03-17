@@ -10,7 +10,7 @@ Options:
   -b ADDRESS --bind ADDRESS     The ip to listen to [default: 127.0.0.1]
   -p PORT --port PORT           The port to connect [default: 8001]
   -d DIR --data DIR             The directory with files [default: .]
-  -t dIR --templates DIR        The directory with templates
+  -t DIR --templates DIR        The directory with templates
   --worker-class=CLASS          Gunicorn worker class [default: sync]
 
 """
