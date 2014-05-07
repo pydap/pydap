@@ -42,7 +42,9 @@ class TestD1(unittest.TestCase):
 ''')
 
     def test_ascii(self):
-        self.assertEqual(self.app.get('/.asc').body,
+        resp = self.app.get('/.asc')
+        content = resp.body
+        self.assertEqual(content,
             '''Dataset {
     Sequence {
         String instrument_id;
@@ -59,7 +61,7 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
 "This is a data test string (pass 7).", "This is a data test string (pass 6).", 999.55, 997.55
 "This is a data test string (pass 9).", "This is a data test string (pass 8).", 999.2, 995.95
 
-''')
+'''.encode('ascii'))
 
     def test_data(self):
         dataset = open_url('http://localhost:8001/')

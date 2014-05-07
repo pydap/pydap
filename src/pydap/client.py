@@ -52,7 +52,6 @@ from pydap.handlers.dap import DAPHandler, unpack_data
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 
-
 def open_url(url):
     """Open a remote URL, returning a dataset."""
     dataset = DAPHandler(url).dataset
@@ -70,10 +69,22 @@ def open_file(dods, das=None):
     dataset.
 
     """
+    dds = ''
+    # This file contains both ascii _and_ binary data
+    # Let's handle them separately in sequence
+    # Without ignoring errors, the IO library will actually read past the ascii part of the
+    # file (despite our break from iteration) and will error out on the binary data
+    with open(dods, "rt", buffering=1, encoding='ascii', newline='\n', errors='ignore') as f:
+        for line in f:
+            if line.strip() == 'Data:':
+                break
+            dds += line
+    dataset = build_dataset(dds)
+    pos = len(dds) + len('Data:\n')
+
     with open(dods, "rb") as f:
-        dds, data = f.read().split(b'\nData:\n', 1)
-        dataset = build_dataset(dds)
-        dataset.data = unpack_data(data, dataset)
+        f.seek(pos)
+        dataset.data = unpack_data(f, dataset)
 
     if das is not None:
         with open(das) as f:
@@ -86,6 +97,7 @@ def open_dods(url, metadata=False):
     """Open a `.dods` response directly, returning a dataset."""
     r = requests.get(url)
     dds, data = r.content.split(b'\nData:\n', 1)
+    dds = dds.decode('ascii')
     dataset = build_dataset(dds)
     dataset.data = unpack_data(data, dataset)
 
