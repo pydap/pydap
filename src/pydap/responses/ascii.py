@@ -30,17 +30,16 @@ class ASCIIResponse(BaseResponse):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
             ('Content-description', 'dods_ascii'),
-            ('Content-type', 'text/plain; charset=utf-8'),
+            ('Content-type', 'text/plain; charset=ascii'),
         ])
 
     def __iter__(self):
         for line in dds(self.dataset):
-            yield line
-        yield 45 * '-'
-        yield '\n'
+            yield line.encode('ascii')
+        yield (45 * '-' + '\n').encode('ascii')
 
         for line in ascii(self.dataset):
-            yield line
+            yield line.encode('ascii')
 
 
 @singledispatch

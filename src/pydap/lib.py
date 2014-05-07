@@ -15,8 +15,8 @@ __dap__ = '2.15'
 __version__ = get_distribution("Pydap").version
 
 
-START_OF_SEQUENCE = '\x5a\x00\x00\x00'
-END_OF_SEQUENCE = '\xa5\x00\x00\x00'
+START_OF_SEQUENCE = b'\x5a\x00\x00\x00'
+END_OF_SEQUENCE = b'\xa5\x00\x00\x00'
 STRING = '|S128'
 
 

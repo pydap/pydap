@@ -46,12 +46,12 @@ class DDSResponse(BaseResponse):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
             ('Content-description', 'dods_dds'),
-            ('Content-type', 'text/plain; charset=utf-8'),
+            ('Content-type', 'text/plain; charset=ascii'),
         ])
 
     def __iter__(self):
         for line in dds(self.dataset):
-            yield line
+            yield line.encode('ascii')
 
 
 @singledispatch

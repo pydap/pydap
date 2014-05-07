@@ -33,6 +33,7 @@ docs_extras = [
 tests_require = functions_extras + [
     'WebTest',
     'beautifulsoup4',
+    'scipy'
 ]
 
 testing_extras = tests_require + [

@@ -295,13 +295,15 @@ class StreamReader(object):
 
     def __init__(self, stream):
         self.stream = stream
-        self.buf = ''
+        self.buf = bytearray()
 
     def read(self, n):
         """Read and return `n` bytes."""
         while len(self.buf) < n:
-            self.buf += next(self.stream)
-        out = self.buf[:n]
+            bytes_read = next(self.stream)
+            self.buf.extend(bytes_read)
+
+        out = bytes(self.buf[:n])
         self.buf = self.buf[n:]
         return out
 

@@ -73,11 +73,12 @@ D1['Drifters']['instrument_id'] = BaseType('instrument_id')
 D1['Drifters']['location'] = BaseType('location')
 D1['Drifters']['latitude'] = BaseType('latitude')
 D1['Drifters']['longitude'] = BaseType('longitude')
-D1.Drifters.data = np.array(np.rec.fromrecords(zip(
+D1.Drifters.data = np.array(np.rec.fromrecords( list(zip(
     [("This is a data test string (pass %d)." % (1+i*2)) for i in range(5)],
     [("This is a data test string (pass %d)." % (i*2)) for i in range(5)],
     [1000.0, 999.95, 999.80, 999.55, 999.20],
-    [999.95, 999.55, 998.75, 997.55, 995.95]), names=D1.Drifters.keys()))
+    [999.95, 999.55, 998.75, 997.55, 995.95])),
+    names=D1.Drifters.keys()))
 
 
 # testing structures
