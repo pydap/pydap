@@ -25,6 +25,7 @@ class TestD1(unittest.TestCase):
         # intercept HTTP requests
         self.requests_get = requests.get
         requests.get = requests_intercept(self.app, 'http://localhost:8001/')
+        self.maxDiff = None
 
     def tearDown(self):
         requests.get = self.requests_get
@@ -44,7 +45,7 @@ class TestD1(unittest.TestCase):
     def test_ascii(self):
         resp = self.app.get('/.asc')
         content = resp.body
-        self.assertEqual(content,
+        self.assertEqual(content.decode('utf-8'),
             '''Dataset {
     Sequence {
         String instrument_id;
@@ -61,7 +62,7 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
 "This is a data test string (pass 7).", "This is a data test string (pass 6).", 999.55, 997.55
 "This is a data test string (pass 9).", "This is a data test string (pass 8).", 999.2, 995.95
 
-'''.encode('ascii'))
+''')
 
     def test_data(self):
         dataset = open_url('http://localhost:8001/')
