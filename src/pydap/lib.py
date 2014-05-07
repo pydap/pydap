@@ -38,9 +38,7 @@ def encode(obj):
     try:
         return '%.6g' % obj
     except:
-        if isinstance(obj, text_type):
-            obj = obj.encode('utf-8')
-        return '"%s"' % str(obj).replace('"', r'\"')
+        return '"{}"'.format(obj)
 
 
 def fix_slice(slice_, shape):
