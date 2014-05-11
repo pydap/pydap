@@ -10,7 +10,6 @@ before_install:
     - sudo apt-get install -qq python-numpy python-scipy
 install:
     - pip install tox
-    - "pip install -e .[testing,functions]"
 
 env:
     - TOX_ENV=py26
