@@ -3,13 +3,14 @@ python: 2.7
 virtualenv:
     system_site_packages: true
 branches:
-  only:
-      - toxify
+    only:
+        - toxify
 
 before_install:
- - sudo apt-get install -qq python-numpy python-scipy
+    - sudo apt-get install -qq python-numpy python-scipy
 install:
-  - "pip install -e .[testing] --use-mirrors"
+    - pip install tox
+    - "pip install -e .[testing,functions]"
 
 env:
     - TOX_ENV=py26
