@@ -1,7 +1,8 @@
 language: python
 branches:
     only:
-        - toxify
+        - develop
+	- 2to3
 
 before_install:
     # In python 2.7 we have scipy/numpy through the Ubuntu package manager
