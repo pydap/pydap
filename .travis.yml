@@ -1,20 +1,24 @@
 language: python
-python: 2.7
-virtualenv:
-    system_site_packages: true
 branches:
     only:
         - toxify
 
 before_install:
-    - sudo apt-get install -qq python-numpy python-scipy
-install:
-    - pip install tox
+    # In python 2.7 we have scipy/numpy through the Ubuntu package manager
+    # otherwise, we have to install development pacakges and build it
+    - if [[ $TRAVIS_PYTHON_VERSION == '2.7_with_system_site_packages' ]]; then
+          sudo apt-get install -qq python-numpy python-scipy;
+      else
+          sudo apt-get install -qq gfortran libblas-dev liblapack-dev cython;
+      fi
 
-env:
-    - TOX_ENV=py26
-    - TOX_ENV=py27
-    - TOX_ENV=py33
+install:
+    - pip install -e .[testing,functions,tests]
+
+python:
+    - 2.6
+    - 2.7_with_system_site_packages
+    - 3.3
 
 script:
-    - tox -e $TOX_ENV
+    - python setup.py nosetests
