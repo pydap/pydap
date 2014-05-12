@@ -12,7 +12,7 @@ install_requires = [
     'Jinja2',
     'docopt',
     'gunicorn',
-    'PasteDeploy',
+#    'PasteDeploy',
     'six',
 ]
 
@@ -22,6 +22,7 @@ if sys.version_info < (2, 7):
 functions_extras = [
     'gsw',
     'coards',
+    'scipy',
 ]
 
 docs_extras = [
@@ -39,11 +40,11 @@ tests_require = functions_extras + [
 testing_extras = tests_require + [
     'nose',
     'coverage',
-    'virtualenv', # for scaffolding tests
+#    'virtualenv', # for scaffolding tests
 ]
 
 if sys.version_info < (2, 7):
-    testing_extras.append('unittest2')
+    tests_require.append('unittest2')
 
 
 setup(name='Pydap',
@@ -51,6 +52,9 @@ setup(name='Pydap',
     description="An implementation of the Data Access Protocol.",
     long_description="",
     classifiers=[
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.3"
       # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
     ],
     keywords='opendap dods dap science data',
