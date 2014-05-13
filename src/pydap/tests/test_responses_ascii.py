@@ -38,7 +38,7 @@ class TestASCIIResponseSequence(unittest.TestCase):
 
     def test_charset(self):
         """Test the charset."""
-        self.assertEqual(self.res.charset, "utf-8")
+        self.assertEqual(self.res.charset, "ascii")
 
     def test_headers(self):
         """Test headers from the response."""
@@ -47,7 +47,7 @@ class TestASCIIResponseSequence(unittest.TestCase):
             ResponseHeaders([
                 ('XDODS-Server', 'pydap/3.2'),
                 ('Content-description', 'dods_ascii'),
-                ('Content-type', 'text/plain; charset=utf-8'),
+                ('Content-type', 'text/plain; charset=ascii'),
                 ('Content-Length', '440')]))
 
     def test_body(self):
