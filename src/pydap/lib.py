@@ -38,7 +38,7 @@ def encode(obj):
     try:
         return '%.6g' % obj
     except:
-        return '"{}"'.format(obj)
+        return '"{0}"'.format(obj)
 
 
 def fix_slice(slice_, shape):

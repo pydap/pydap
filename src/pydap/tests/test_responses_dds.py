@@ -38,7 +38,7 @@ class TestDDSResponseSequence(unittest.TestCase):
 
     def test_charset(self):
         """Test the charset."""
-        self.assertEqual(self.res.charset, "utf-8")
+        self.assertEqual(self.res.charset, "ascii")
 
     def test_headers(self):
         """Test the headers from the response."""
@@ -47,7 +47,7 @@ class TestDDSResponseSequence(unittest.TestCase):
             ResponseHeaders([
                 ('XDODS-Server', 'pydap/3.2'),
                 ('Content-description', 'dods_dds'),
-                ('Content-type', 'text/plain; charset=utf-8'),
+                ('Content-type', 'text/plain; charset=ascii'),
                 ('Access-Control-Allow-Origin', '*'),
                 ('Access-Control-Allow-Headers',
                     'Origin, X-Requested-With, Content-Type'),
