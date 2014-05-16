@@ -13,7 +13,7 @@ install_requires = [
     'docopt',
     'gunicorn',
 #    'PasteDeploy',
-    'six',
+    'six >= 1.4.0',
 ]
 
 if sys.version_info < (2, 7):

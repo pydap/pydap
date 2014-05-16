@@ -38,7 +38,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
     >>> dataset = open_url(
     ...     'http://test.opendap.org/dap/data/nc/coads_climatology.nc')
     >>> new_dataset = dataset.functions.geogrid(dataset.SST, 10, 20, -10, 60)
-    >>> print new_dataset.SST.SST.shape
+    >>> print(new_dataset.SST.SST.shape)
     (12, 12, 21)
 
 """

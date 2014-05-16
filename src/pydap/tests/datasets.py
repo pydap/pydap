@@ -4,7 +4,11 @@ This module defines a few datasets for testing, covering the whole DAP data
 model.
 
 """
-import os
+import os, sys
+if sys.version_info < (2, 7):  # pragma: no cover
+    from ordereddict import OrderedDict
+else:
+    from collections import OrderedDict
 
 import numpy as np
 
@@ -86,12 +90,12 @@ SimpleStructure = DatasetType('SimpleStructure')
 SimpleStructure['types'] = StructureType(
     name='types',
     key="value",
-    nested={
-        "string": "bar",
-        "list": [42, 43],
-        "array": np.array(1),
-        "float": 1000.0,
-    })
+    nested=OrderedDict([
+        ("string", "bar"),
+        ("list", [42, 43]),
+        ("array", np.array(1)),
+        ("float", 1000.0),
+    ]))
 SimpleStructure['types']['b'] = BaseType('b', np.array(0, np.byte))
 SimpleStructure['types']['i32'] = BaseType('i32', np.array(1, np.int32))
 SimpleStructure['types']['ui32'] = BaseType('ui32', np.array(0, np.uint32))

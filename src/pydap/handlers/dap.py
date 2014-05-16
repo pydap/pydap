@@ -46,12 +46,12 @@ class DAPHandler(BaseHandler):
         ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
         r = requests.get(ddsurl)
         r.raise_for_status()
-        dds = r.text.encode('utf-8')
+        dds = r.text.decode('ascii')
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
         r = requests.get(dasurl)
         r.raise_for_status()
-        das = r.text.encode('utf-8')
+        das = r.text.decode('ascii')
 
         # build the dataset from the DDS and add attributes from the DAS
         self.dataset = build_dataset(dds)

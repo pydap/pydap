@@ -54,7 +54,7 @@ class DODSResponse(BaseResponse):
     def __iter__(self):
         # generate DDS
         for line in dds(self.dataset):
-            yield line
+            yield line.encode('ascii')
 
         yield b'Data:\n'
         for block in dods(self.dataset):
