@@ -55,7 +55,7 @@ class TestDDSResponseSequence(unittest.TestCase):
 
     def test_body(self):
         """Test the generated DDS response."""
-        self.assertEqual(self.res.body, """Dataset {
+        self.assertEqual(self.res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -78,7 +78,7 @@ class TestDDSResponseGrid(unittest.TestCase):
         """Test the generated DDS response."""
         app = TestApp(BaseHandler(SimpleGrid))
         res = app.get('/.dds')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Grid {
         Array:
             Int32 SimpleGrid[y = 2][x = 3];
@@ -100,7 +100,7 @@ class TestDDSResponseStructure(unittest.TestCase):
         """Test the generated DDS response."""
         app = TestApp(BaseHandler(SimpleStructure))
         res = app.get('/.dds')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Structure {
         Byte b;
         Int32 i32;

@@ -32,7 +32,7 @@ class TestDensity(unittest.TestCase):
     def test_plain(self):
         """Test a direct request."""
         res = self.app.get('/.asc')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -55,7 +55,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
         """Test using density as a projection."""
         res = self.app.get(
             '/.asc?density(cast.salinity,cast.temperature,cast.pressure)')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Float64 rho;
     } result;
@@ -72,7 +72,7 @@ result.rho
         res = self.app.get(
             "/.asc?cast.temperature&"
             "density(cast.salinity,cast.temperature,cast.pressure)>1025")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 temperature;
     } cast;
@@ -104,7 +104,7 @@ class TestBounds(unittest.TestCase):
         """Test the default bounding box."""
         res = self.app.get(
             '/.asc?cast&bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z01JAN1970)')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -125,7 +125,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
         """Test using the function alone in the selection."""
         res = self.app.get(
             '/.asc?bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z01JAN1970)')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -146,7 +146,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
         """Test a requesting a subset of the data."""
         res = self.app.get(
             "/.asc?bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z31JAN1970)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -169,7 +169,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
         res = self.app.get(
             "/.asc?"
             "bounds(0,360,-90,90,0,500,00Z01JAN1969,00Z31JAN1970)&cast.lat<0")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -192,7 +192,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
         res = self.app.get(
             "/.asc?cast.pressure&"
             "bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z31JAN1970)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 pressure;
     } cast;
@@ -207,7 +207,7 @@ cast.pressure
         """Test a request for a point."""
         res = self.app.get(
             "/.asc?bounds(100,100,-10,-10,0,0,00Z31DEC1969,00Z31DEC1969)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -233,7 +233,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
         res = app.get(
             "/.asc?cast.pressure&"
             "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 pressure;
     } cast;
@@ -248,7 +248,7 @@ cast.pressure
         res = app.get(
             "/.asc?cast.pressure&"
             "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 pressure;
     } cast;
@@ -263,7 +263,7 @@ cast.pressure
         res = app.get(
             "/.asc?cast.pressure&"
             "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 pressure;
     } cast;
@@ -313,7 +313,7 @@ class TestMean(unittest.TestCase):
     def test_base_type(self):
         """Test mean of base types."""
         res = self.app.get("/.asc?mean(x)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Float64 x;
 } SimpleGrid;
 ---------------------------------------------
@@ -324,7 +324,7 @@ x
     def test_grid_type(self):
         """Test mean of grid objects."""
         res = self.app.get("/.asc?mean(SimpleGrid)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Grid {
         Array:
             Float64 SimpleGrid[y = 3];
@@ -348,7 +348,7 @@ SimpleGrid.y
     def test_nested(self):
         """Test nested function calls."""
         res = self.app.get("/.asc?mean(mean(SimpleGrid))")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Grid {
         Array:
             Float64 SimpleGrid;

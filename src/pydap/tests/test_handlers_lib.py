@@ -62,7 +62,7 @@ class TestBaseHandler(unittest.TestCase):
     def test_unconstrained_das(self):
         """DAS responses are always unconstrained."""
         res = self.app.get("/.dds")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Byte byte[byte = 5];
     String string[string = 2];
     Int16 short;
@@ -70,13 +70,13 @@ class TestBaseHandler(unittest.TestCase):
 """)
         
         res = self.app.get("/.dds?byte")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Byte byte[byte = 5];
 } SimpleArray;
 """)
 
         res = self.app.get("/.das")
-        das = res.body
+        das = res.text
         self.assertEqual(das, """Attributes {
     byte {
     }
@@ -89,7 +89,7 @@ class TestBaseHandler(unittest.TestCase):
 
         # check that DAS is unmodifed with constraint expression
         res = self.app.get("/.das?byte")
-        self.assertEqual(res.body, das)
+        self.assertEqual(res.text, das)
 
     def test_exception(self):
         """Test exception handling.

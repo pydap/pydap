@@ -56,7 +56,7 @@ class TestMiddleware(unittest.TestCase):
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
         res = app.get(
             "/.asc?density(cast.salinity,cast.temperature,cast.pressure)>1025")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -79,7 +79,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
         app = TestApp(
             ServerSideFunctions(BaseHandler(SimpleSequence), double=double))
         res = app.get("/.asc?cast.lat&double(cast.lat)>10")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -91,7 +91,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)>=20")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -103,7 +103,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)<10")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -115,7 +115,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)<=-20")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -127,7 +127,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)=20")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -139,7 +139,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.lat&double(cast.lat)!=20")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -151,7 +151,7 @@ cast.lat
 """)
 
         res = app.get("/.asc?cast.id&double(cast.id)=~11")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         String id;
     } cast;
@@ -173,7 +173,7 @@ cast.id
         res = app.get(
             "/.asc?cast.lat,cast.lon&"
             "bounds(0,360,-90,0,0,500,00Z01JAN1900,00Z01JAN2000)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Sequence {
         Int32 lat;
         Int32 lon;
@@ -189,7 +189,7 @@ cast.lat, cast.lon
         """Test a simple function call on a projection."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Float64 x;
 } SimpleGrid;
 ---------------------------------------------
@@ -201,7 +201,7 @@ x
         """Test a function call creating a variable with a conflicting name."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x),x")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Int32 x[x = 3];
 } SimpleGrid;
 ---------------------------------------------
@@ -216,7 +216,7 @@ x
         """Test a nested function call."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(mean(SimpleGrid.SimpleGrid,0),0)")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Float64 SimpleGrid;
 } SimpleGrid;
 ---------------------------------------------
