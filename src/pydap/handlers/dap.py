@@ -120,10 +120,11 @@ class BaseProxy(object):
         r = requests.get(url)
         r.raise_for_status()
         dds, data = r.content.split(b'\nData:\n', 1)
+        dds = dds.decode('ascii')
 
         if self.shape:
             # skip size packing
-            if self.dtype.char == 'S':
+            if self.dtype.char in 'SU':
                 data = data[4:]
             else:
                 data = data[8:]
@@ -135,14 +136,14 @@ class BaseProxy(object):
 
         if self.dtype == np.byte:
             return np.fromstring(data[:size], 'B')
-        elif self.dtype.char == 'S':
+        elif self.dtype.char in 'SU':
             out = []
             for word in range(size):
                 n = np.fromstring(data[:4], '>I')  # read length
                 data = data[4:]
                 out.append(data[:n])
                 data = data[n + (-n % 4):]
-            return np.array(out, 'S')
+            return np.array([ x.decode('ascii') for x in out ], 'S')
         else:
             return np.fromstring(data, self.dtype).reshape(shape)
 
@@ -403,6 +404,7 @@ def dump():
     """
     dods = sys.stdin.read()
     dds, xdrdata = dods.split(b'\nData:\n', 1)
+    dds = dds.decode('ascii')
     dataset = build_dataset(dds)
     data = unpack_data(xdrdata, dataset)
 

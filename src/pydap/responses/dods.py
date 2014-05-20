@@ -168,7 +168,12 @@ def _(var):
                 for word in block.flat:
                     length = len(word)
                     yield np.array(length).astype('>I').tostring()
-                    yield word.encode('ascii')
+                    if hasattr(word, 'encode'):
+                        yield word.encode('ascii')
+                    elif hasattr(word, 'tostring'):
+                        yield word.tostring()
+                    else:
+                        raise TypeError("Could not convert word '{0}' to bytes".format(word))
                     yield (-length % 4) * b'\0'
         else:
             for block in data:

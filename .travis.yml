@@ -14,7 +14,7 @@ before_install:
       fi
 
 install:
-    - pip install -q -e .[testing,functions,tests]
+    - pip install -e .[testing,functions,tests]
 
 python:
     - 2.6

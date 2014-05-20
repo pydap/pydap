@@ -196,7 +196,7 @@ class TestBaseProxy(unittest.TestCase):
 
     def test_iteration(self):
         """Test iteration."""
-        self.assertEqual(list(iter(self.data)), range(5))
+        self.assertEqual(list(iter(self.data)), list(range(5)))
 
     def test_comparisons(self):
         """Test all the comparisons."""
@@ -253,8 +253,9 @@ class TestBaseProxyString(unittest.TestCase):
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
+        #from nose.tools import set_trace; set_trace()
         np.testing.assert_array_equal(
-            self.data[:], np.array(["one", "two", "three"]))
+            self.data[:], np.array(["one", "two", "three"], dtype='S'))
 
 
 class TestSequenceProxy(unittest.TestCase):
@@ -464,7 +465,7 @@ class TestStringBaseType(unittest.TestCase):
     def setUp(self):
         """Create a WSGI app with array data and monkeypatch ``requests``."""
         dataset = DatasetType("test")
-        data = np.array("This is a test")
+        data = np.array("This is a test", dtype='S')
         dataset["s"] = BaseType("s", data)
         app = TestApp(BaseHandler(dataset))
 
@@ -480,4 +481,4 @@ class TestStringBaseType(unittest.TestCase):
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
-        np.testing.assert_array_equal(self.data[:], "This is a test")
+        np.testing.assert_array_equal(self.data[:], np.array("This is a test", dtype='S'))
