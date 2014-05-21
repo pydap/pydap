@@ -37,11 +37,11 @@ class TestErrorResponse(unittest.TestCase):
         self.assertEqual(self.res.headers['XDODS-Server'], 'pydap/3.2')
 
     def test_body(self):
-        self.assertRegexpMatches(self.res.body, """Error {
+        self.assertRegexpMatches(self.res.text, """Error {
     code = -1;
     message = "Traceback \(most recent call last\):
   File .*
     1/0
-ZeroDivisionError: integer division or modulo by zero
+ZeroDivisionError:( integer)? division( or modulo)? by zero
 ";
 }""")
