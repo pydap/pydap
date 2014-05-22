@@ -428,36 +428,6 @@ class TestSequenceWithString(unittest.TestCase):
         self.assertIsInstance(self.remote["lon"] > 100, ConstraintExpression)
         self.assertEqual(filtered.selection, ['cast.lon>100'])
 
-
-class TestDump(unittest.TestCase):
-
-    """Test the ``dump()`` function."""
-
-    def setUp(self):
-        """Monkeypatch ``sys.stdin`` and ``pprint.pprint``."""
-        app = TestApp(BaseHandler(SimpleArray))
-        dods = app.get("/.dods").body
-
-        self.stdin, sys.stdin = sys.stdin, StringIO(dods)
-        self.buffer = StringIO()
-        self.pprint = pprint.pprint
-        pprint.pprint = lambda obj: self.buffer.write(pprint.pformat(obj))
-    
-    def tearDown(self):
-        """Reset ``sys.stdin`` and ``pprint.pprint``."""
-        sys.stdin = self.stdin
-        pprint.pprint = self.pprint
-
-    def test_dump(self):
-        dump()
-        self.assertEqual(
-            self.buffer.getvalue(),
-            """[array([0, 1, 2, 3, 4], dtype=uint8),
- array(['one', 'two'], 
-      dtype='|S3'),
- 1]""")
-
-
 class TestStringBaseType(unittest.TestCase):
 
     """Regression test for string base type."""

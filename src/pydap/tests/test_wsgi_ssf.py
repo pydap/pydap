@@ -5,6 +5,7 @@ if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
+from six import next
 
 from webtest import TestApp
 import numpy as np
@@ -244,7 +245,7 @@ def double(dataset, var):
 
     """
     # sequence is the first variable
-    sequence = dataset.children().next()
+    sequence = next(dataset.children())
 
     # get a single variable and double its value
     selection = sequence[var.name]
