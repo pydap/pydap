@@ -38,7 +38,7 @@ class TestDASResponseSequence(unittest.TestCase):
 
     def test_charset(self):
         """Test the charset."""
-        self.assertEqual(self.res.charset, "utf-8")
+        self.assertEqual(self.res.charset, "ascii")
 
     def test_headers(self):
         """Test the response headers."""
@@ -47,7 +47,7 @@ class TestDASResponseSequence(unittest.TestCase):
             ResponseHeaders([
                 ('XDODS-Server', 'pydap/3.2'),
                 ('Content-description', 'dods_das'),
-                ('Content-type', 'text/plain; charset=utf-8'),
+                ('Content-type', 'text/plain; charset=ascii'),
                 ('Access-Control-Allow-Origin', '*'),
                 ('Access-Control-Allow-Headers',
                     'Origin, X-Requested-With, Content-Type'),
@@ -55,7 +55,7 @@ class TestDASResponseSequence(unittest.TestCase):
 
     def test_body(self):
         """Test the generated DAS response."""
-        self.assertEqual(self.res.body, """Attributes {
+        self.assertEqual(self.res.text, """Attributes {
     String description "A simple sequence for testing.";
     nested {
         Int32 value 42;
@@ -73,8 +73,8 @@ class TestDASResponseSequence(unittest.TestCase):
             String axis "Z";
         }
         time {
-            String units "days since 1970-01-01";
             String axis "T";
+            String units "days since 1970-01-01";
         }
         temperature {
         }
@@ -95,17 +95,17 @@ class TestDASResponseGrid(unittest.TestCase):
         """Test the generated DAS response."""
         app = TestApp(BaseHandler(SimpleGrid))
         res = app.get('/.das')
-        self.assertEqual(res.body, """Attributes {
+        self.assertEqual(res.text, """Attributes {
     String description "A simple grid for testing.";
     SimpleGrid {
     }
     x {
-        String units "degrees_east";
         String axis "X";
+        String units "degrees_east";
     }
     y {
-        String units "degrees_north";
         String axis "Y";
+        String units "degrees_north";
     }
 }
 """)
@@ -119,14 +119,14 @@ class TestDASResponseStructure(unittest.TestCase):
         """Test the generated DAS response."""
         app = TestApp(BaseHandler(SimpleStructure))
         res = app.get('/.das')
-        self.assertEqual(res.body, """Attributes {
+        self.assertEqual(res.text, """Attributes {
     types {
         String key "value";
         nested {
+            String string "bar";
+            Int32 list 42, 43;
             Int32 array 1;
             Float64 float 1000;
-            Int32 list 42, 43;
-            String string "bar";
         }
         b {
         }

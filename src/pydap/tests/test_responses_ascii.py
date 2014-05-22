@@ -52,7 +52,7 @@ class TestASCIIResponseSequence(unittest.TestCase):
 
     def test_body(self):
         """Test the generated ASCII response."""
-        self.assertEqual(self.res.body, """Dataset {
+        self.assertEqual(self.res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -80,7 +80,7 @@ class TestASCIIResponseGrid(unittest.TestCase):
         """Test the generated ASCII response."""
         app = TestApp(BaseHandler(SimpleGrid))
         res = app.get('/.asc')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Grid {
         Array:
             Int32 SimpleGrid[y = 2][x = 3];

@@ -38,18 +38,18 @@ lazy mechanism for function call, supporting any function. Eg, to call the
     >>> dataset = open_url(
     ...     'http://test.opendap.org/dap/data/nc/coads_climatology.nc')
     >>> new_dataset = dataset.functions.geogrid(dataset.SST, 10, 20, -10, 60)
-    >>> print new_dataset.SST.SST.shape
+    >>> print(new_dataset.SST.SST.shape)
     (12, 12, 21)
 
 """
 
 import requests
-from io import open
+from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from pydap.model import DapType
 from pydap.lib import encode
-from pydap.handlers.dap import DAPHandler, unpack_data
+from pydap.handlers.dap import DAPHandler, unpack_data, StreamReader
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 
@@ -100,13 +100,14 @@ def open_dods(url, metadata=False):
     dds, data = r.content.split(b'\nData:\n', 1)
     dds = dds.decode('ascii')
     dataset = build_dataset(dds)
-    dataset.data = unpack_data(data, dataset)
+    stream = StreamReader(BytesIO(data))
+    dataset.data = unpack_data(stream, dataset)
 
     if metadata:
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
             (scheme, netloc, path[:-4] + 'das', query, fragment))
-        das = requests.get(dasurl).text.encode('utf-8')
+        das = requests.get(dasurl).text.decode('ascii')
         add_attributes(dataset, parse_das(das))
 
     return dataset

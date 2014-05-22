@@ -28,14 +28,14 @@ class TestQuote(unittest.TestCase):
         self.assertEqual(self.dataset.keys(), ["foo%5B"])
 
     def test_dds(self):
-        self.assertEqual(self.app.get("/.dds").body,
+        self.assertEqual(self.app.get("/.dds").text,
             """Dataset {
     Int32 foo%5B;
 } test;
 """)
 
     def test_request(self):
-        self.assertEqual(self.app.get("/.dds?foo%255B").body, 
+        self.assertEqual(self.app.get("/.dds?foo%255B").text, 
             """Dataset {
     Int32 foo%5B;
 } test;
@@ -63,7 +63,7 @@ class TestPeriod(unittest.TestCase):
         self.app = TestApp(BaseHandler(dataset))
 
     def test_dds(self):
-        self.assertEqual(self.app.get("/.dds").body,
+        self.assertEqual(self.app.get("/.dds").text,
             """Dataset {
     Int32 a%2Eb;
 } test;

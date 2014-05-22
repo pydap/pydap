@@ -58,7 +58,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
 
         """
         res = self.app.get('/.html')
-        soup = BeautifulSoup(res.body)
+        soup = BeautifulSoup(res.text)
 
         self.assertEqual(soup.title.string, "Dataset http://localhost/.html")
         self.assertEqual(soup.form["action"], "http://localhost/.html")
@@ -140,7 +140,7 @@ class TestHTMLTemplate(unittest.TestCase):
         req = Request.blank('/.html')
         req.environ["pydap.jinja2.environment"] = env
         res = req.get_response(app)
-        self.assertEqual(res.body, "global")
+        self.assertEqual(res.text, "global")
 
     def test_environ_loader_without_template(self):
         """Test that global environment is used."""
@@ -151,4 +151,4 @@ class TestHTMLTemplate(unittest.TestCase):
         req = Request.blank('/.html')
         req.environ["pydap.jinja2.environment"] = env
         res = req.get_response(app)
-        self.assertNotEqual(res.body, "global")
+        self.assertNotEqual(res.text, "global")

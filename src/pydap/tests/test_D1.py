@@ -31,7 +31,7 @@ class TestD1(unittest.TestCase):
         requests.get = self.requests_get
 
     def test_dds(self):
-        self.assertEqual(self.app.get('/.dds').body, 
+        self.assertEqual(self.app.get('/.dds').text,
             '''Dataset {
     Sequence {
         String instrument_id;
@@ -44,8 +44,8 @@ class TestD1(unittest.TestCase):
 
     def test_ascii(self):
         resp = self.app.get('/.asc')
-        content = resp.body
-        self.assertEqual(content.decode('utf-8'),
+        content = resp.text
+        self.assertEqual(content,
             '''Dataset {
     Sequence {
         String instrument_id;

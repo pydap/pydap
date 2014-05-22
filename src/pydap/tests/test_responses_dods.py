@@ -11,6 +11,7 @@ import numpy as np
 from webtest import TestApp
 from webob.headers import ResponseHeaders
 
+from pydap.lib import START_OF_SEQUENCE, END_OF_SEQUENCE
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import (
     VerySimpleSequence, SimpleSequence, SimpleGrid,
@@ -61,6 +62,7 @@ class TestDODSResponse(unittest.TestCase):
     def test_body(self):
         """Test response body."""
         dds, xdrdata = self.res.body.split(b'\nData:\n', 1)
+        dds = dds.decode('ascii')
         self.assertEqual(dds, """Dataset {
     Sequence {
         Byte byte;
@@ -69,27 +71,25 @@ class TestDODSResponse(unittest.TestCase):
     } sequence;
 } VerySimpleSequence;""")
 
-        output = xdrdata.replace('\x5a\x00\x00\x00', '<start of sequence>')
-        output = output.replace('\xa5\x00\x00\x00', '<end of sequence>')
         self.assertEqual(
-            output,
-            "<start of sequence>"
-            "\x00" "\x00\x00\x00\x01" "A \x00\x00"
-            "<start of sequence>"
-            "\x01" "\x00\x00\x00\x02" "A\xa0\x00\x00"
-            "<start of sequence>"
-            "\x02" "\x00\x00\x00\x03" "A\xf0\x00\x00"
-            "<start of sequence>"
-            "\x03" "\x00\x00\x00\x04" "B \x00\x00"
-            "<start of sequence>"
-            "\x04" "\x00\x00\x00\x05" "BH\x00\x00"
-            "<start of sequence>"
-            "\x05" "\x00\x00\x00\x06" "Bp\x00\x00"
-            "<start of sequence>"
-            "\x06" "\x00\x00\x00\x07" "B\x8c\x00\x00"
-            "<start of sequence>"
-            "\x07" "\x00\x00\x00\x08" "B\xa0\x00\x00"
-            "<end of sequence>")
+            xdrdata,
+            START_OF_SEQUENCE + 
+            b"\x00" b"\x00\x00\x00\x01" b"A \x00\x00" +
+            START_OF_SEQUENCE +
+            b"\x01" b"\x00\x00\x00\x02" b"A\xa0\x00\x00" +
+            START_OF_SEQUENCE +
+            b"\x02" b"\x00\x00\x00\x03" b"A\xf0\x00\x00" +
+            START_OF_SEQUENCE +
+            b"\x03" b"\x00\x00\x00\x04" b"B \x00\x00" +
+            START_OF_SEQUENCE +
+            b"\x04" b"\x00\x00\x00\x05" b"BH\x00\x00" +
+            START_OF_SEQUENCE +
+            b"\x05" b"\x00\x00\x00\x06" b"Bp\x00\x00" +
+            START_OF_SEQUENCE +
+            b"\x06" b"\x00\x00\x00\x07" b"B\x8c\x00\x00" +
+            START_OF_SEQUENCE +
+            b"\x07" b"\x00\x00\x00\x08" b"B\xa0\x00\x00" +
+            END_OF_SEQUENCE)
 
 
 class TestDODSResponseGrid(unittest.TestCase):
@@ -104,6 +104,7 @@ class TestDODSResponseGrid(unittest.TestCase):
     def test_body(self):
         """Test the response body."""
         dds, xdrdata = self.res.body.split(b'\nData:\n', 1)
+        dds = dds.decode('ascii')
         self.assertEqual(dds, """Dataset {
     Grid {
         Array:
@@ -118,36 +119,36 @@ class TestDODSResponseGrid(unittest.TestCase):
 
         self.assertEqual(
             xdrdata,
-            "\x00\x00\x00\x06"  # length
-            "\x00\x00\x00\x06"  # length, again
-            "\x00\x00\x00\x00"
-            "\x00\x00\x00\x01"
-            "\x00\x00\x00\x02"
-            "\x00\x00\x00\x03"
-            "\x00\x00\x00\x04"
-            "\x00\x00\x00\x05"
+            b"\x00\x00\x00\x06"  # length
+            b"\x00\x00\x00\x06"  # length, again
+            b"\x00\x00\x00\x00"
+            b"\x00\x00\x00\x01"
+            b"\x00\x00\x00\x02"
+            b"\x00\x00\x00\x03"
+            b"\x00\x00\x00\x04"
+            b"\x00\x00\x00\x05"
 
-            "\x00\x00\x00\x03"
-            "\x00\x00\x00\x03"
-            "\x00\x00\x00\x00"
-            "\x00\x00\x00\x01"
-            "\x00\x00\x00\x02"
+            b"\x00\x00\x00\x03"
+            b"\x00\x00\x00\x03"
+            b"\x00\x00\x00\x00"
+            b"\x00\x00\x00\x01"
+            b"\x00\x00\x00\x02"
 
-            "\x00\x00\x00\x02"
-            "\x00\x00\x00\x02"
-            "\x00\x00\x00\x00"
-            "\x00\x00\x00\x01"
+            b"\x00\x00\x00\x02"
+            b"\x00\x00\x00\x02"
+            b"\x00\x00\x00\x00"
+            b"\x00\x00\x00\x01"
 
-            "\x00\x00\x00\x03"
-            "\x00\x00\x00\x03"
-            "\x00\x00\x00\x00"
-            "\x00\x00\x00\x01"
-            "\x00\x00\x00\x02"
+            b"\x00\x00\x00\x03"
+            b"\x00\x00\x00\x03"
+            b"\x00\x00\x00\x00"
+            b"\x00\x00\x00\x01"
+            b"\x00\x00\x00\x02"
 
-            "\x00\x00\x00\x02"
-            "\x00\x00\x00\x02"
-            "\x00\x00\x00\x00"
-            "\x00\x00\x00\x01""")
+            b"\x00\x00\x00\x02"
+            b"\x00\x00\x00\x02"
+            b"\x00\x00\x00\x00"
+            b"\x00\x00\x00\x01")
 
 
 class TestDODSResponseSequence(unittest.TestCase):
@@ -162,6 +163,7 @@ class TestDODSResponseSequence(unittest.TestCase):
     def test_body(self):
         """Test response body."""
         dds, xdrdata = self.res.body.split(b'\nData:\n', 1)
+        dds = dds.decode('ascii')
         self.assertEqual(dds, """Dataset {
     Sequence {
         String id;
@@ -169,19 +171,17 @@ class TestDODSResponseSequence(unittest.TestCase):
     } cast;
 } SimpleSequence;""")
 
-        output = xdrdata.replace('\x5a\x00\x00\x00', '<start of sequence>')
-        output = output.replace('\xa5\x00\x00\x00', '<end of sequence>')
         self.assertEqual(
-            output,
-            "<start of sequence>"
-            "\x00\x00\x00\x01"   # length of the string (=1)
-            "1\x00\x00\x00"      # string zero-paddded to 4 bytes
-            "\x00\x00\x00d"  # lon
-            "<start of sequence>"
-            "\x00\x00\x00\x01"
-            "2\x00\x00\x00"
-            "\x00\x00\x00\xc8"
-            "<end of sequence>")
+            xdrdata,
+            START_OF_SEQUENCE +
+            b"\x00\x00\x00\x01"   # length of the string (=1)
+            b"1\x00\x00\x00"      # string zero-paddded to 4 bytes
+            b"\x00\x00\x00d" + # lon
+            START_OF_SEQUENCE +
+            b"\x00\x00\x00\x01"
+            b"2\x00\x00\x00"
+            b"\x00\x00\x00\xc8" +
+            END_OF_SEQUENCE)
 
 
 class TestDODSResponseArray(unittest.TestCase):
@@ -196,6 +196,7 @@ class TestDODSResponseArray(unittest.TestCase):
         """Test response body."""
         res = self.app.get("/.dods")
         dds, xdrdata = res.body.split(b'\nData:\n', 1)
+        dds = dds.decode('ascii')
         self.assertEqual(dds, """Dataset {
     Byte byte[byte = 5];
     String string[string = 2];
@@ -204,22 +205,22 @@ class TestDODSResponseArray(unittest.TestCase):
 
         self.assertEqual(
             xdrdata,
-            "\x00\x00\x00\x05"   # length of the byte array
-            "\x00\x00\x00\x05"   # length, again
-            "\x00"
-            "\x01"
-            "\x02"
-            "\x03"
-            "\x04"
-            "\x00\x00\x00"       # zero-padding to 4 bytes
+            b"\x00\x00\x00\x05"   # length of the byte array
+            b"\x00\x00\x00\x05"   # length, again
+            b"\x00"
+            b"\x01"
+            b"\x02"
+            b"\x03"
+            b"\x04"
+            b"\x00\x00\x00"       # zero-padding to 4 bytes
 
-            "\x00\x00\x00\x02"   # length of the array, only once (string)
-            "\x00\x00\x00\x03"   # length of the first string
-            "one\x00"            # string padded to 4 bytes
-            "\x00\x00\x00\x03"
-            "two\x00"
+            b"\x00\x00\x00\x02"   # length of the array, only once (string)
+            b"\x00\x00\x00\x03"   # length of the first string
+            b"one\x00"            # string padded to 4 bytes
+            b"\x00\x00\x00\x03"
+            b"two\x00"
 
-            "\x00\x00\x00\x01")  # shorts are encoded in 4 bytes
+            b"\x00\x00\x00\x01")  # shorts are encoded in 4 bytes
 
     def test_calculate_size_short(self):
         """Test that size is calculated correctly with shorts."""
@@ -245,21 +246,21 @@ class TestDODSResponseArrayterator(unittest.TestCase):
 
         app = TestApp(BaseHandler(modified))
         res = app.get("/.dods?SimpleGrid.SimpleGrid")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.body, b"""Dataset {
     Structure {
         Int32 SimpleGrid[y = 2][x = 3];
     } SimpleGrid;
 } SimpleGrid;
 Data:
 """
-            "\x00\x00\x00\x06"
-            "\x00\x00\x00\x06"
-            "\x00\x00\x00\x00"
-            "\x00\x00\x00\x01"
-            "\x00\x00\x00\x02"
-            "\x00\x00\x00\x03"
-            "\x00\x00\x00\x04"
-            "\x00\x00\x00\x05")
+            b"\x00\x00\x00\x06"
+            b"\x00\x00\x00\x06"
+            b"\x00\x00\x00\x00"
+            b"\x00\x00\x00\x01"
+            b"\x00\x00\x00\x02"
+            b"\x00\x00\x00\x03"
+            b"\x00\x00\x00\x04"
+            b"\x00\x00\x00\x05")
 
 
 class TestDODSResponseNestedSequence(unittest.TestCase):
@@ -269,11 +270,9 @@ class TestDODSResponseNestedSequence(unittest.TestCase):
     def test_iteration(self):
         """Test direct iteration over data."""
         response = DODSResponse(NestedSequence)
-        output = "".join(response)
-        output = output.replace('\x5a\x00\x00\x00', '<start of sequence>')
-        output = output.replace('\xa5\x00\x00\x00', '<end of sequence>')
+        output = b"".join(response)
         self.assertEqual(
-            output,"""Dataset {
+            output,b"""Dataset {
     Sequence {
         Int32 lat;
         Int32 lon;
@@ -286,61 +285,62 @@ class TestDODSResponseNestedSequence(unittest.TestCase):
     } location;
 } NestedSequence;
 Data:
-"""
-            "<start of sequence>"
-                "\x00\x00\x00\x01"
-                "\x00\x00\x00\x01"
-                "\x00\x00\x00\x01"
-                "<start of sequence>"
-                    "\x00\x00\x00\n"
-                    "\x00\x00\x00\x0b"
-                    "\x00\x00\x00\x0c"
-                "<start of sequence>"
-                    "\x00\x00\x00\x15"
-                    "\x00\x00\x00\x16"
-                    "\x00\x00\x00\x17"
-            "<end of sequence>"
-            "<start of sequence>"
-                "\x00\x00\x00\x02"
-                "\x00\x00\x00\x04"
-                "\x00\x00\x00\x04"
-                "<start of sequence>"
-                    "\x00\x00\x00\x0f"
-                    "\x00\x00\x00\x10"
-                    "\x00\x00\x00\x11"
-            "<end of sequence>"
-            "<start of sequence>"
-                "\x00\x00\x00\x03"
-                "\x00\x00\x00\x06"
-                "\x00\x00\x00\t"
-            "<start of sequence>"
-                "\x00\x00\x00\x04"
-                "\x00\x00\x00\x08"
-                "\x00\x00\x00\x10"
-                "<start of sequence>"
-                    "\x00\x00\x00\x1f"
-                    "\x00\x00\x00 "
-                    "\x00\x00\x00!"
-                "<start of sequence>"
-                    "\x00\x00\x00)"
-                    "\x00\x00\x00*"
-                    "\x00\x00\x00+"
-                "<start of sequence>"
-                    "\x00\x00\x003"
-                    "\x00\x00\x004"
-                    "\x00\x00\x005"
-                "<start of sequence>"
-                    "\x00\x00\x00="
-                    "\x00\x00\x00>"
-                    "\x00\x00\x00?"
-                "<end of sequence>"
-            "<end of sequence>")
+""" +
+            START_OF_SEQUENCE +
+                b"\x00\x00\x00\x01"
+                b"\x00\x00\x00\x01"
+                b"\x00\x00\x00\x01" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00\n"
+                    b"\x00\x00\x00\x0b"
+                    b"\x00\x00\x00\x0c" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00\x15"
+                    b"\x00\x00\x00\x16"
+                    b"\x00\x00\x00\x17" +
+            END_OF_SEQUENCE +
+            START_OF_SEQUENCE +
+                b"\x00\x00\x00\x02"
+                b"\x00\x00\x00\x04"
+                b"\x00\x00\x00\x04" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00\x0f"
+                    b"\x00\x00\x00\x10"
+                    b"\x00\x00\x00\x11" +
+            END_OF_SEQUENCE +
+            START_OF_SEQUENCE +
+                b"\x00\x00\x00\x03"
+                b"\x00\x00\x00\x06"
+                b"\x00\x00\x00\t" +
+            START_OF_SEQUENCE +
+                b"\x00\x00\x00\x04"
+                b"\x00\x00\x00\x08"
+                b"\x00\x00\x00\x10" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00\x1f"
+                    b"\x00\x00\x00 "
+                    b"\x00\x00\x00!" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00)"
+                    b"\x00\x00\x00*"
+                    b"\x00\x00\x00+" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x003"
+                    b"\x00\x00\x004"
+                    b"\x00\x00\x005" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00="
+                    b"\x00\x00\x00>"
+                    b"\x00\x00\x00?" +
+                END_OF_SEQUENCE +
+            END_OF_SEQUENCE)
 
     def test_body(self):
         """Test response body."""
         app = TestApp(BaseHandler(NestedSequence))
         res = app.get("/.dods")
         dds, xdrdata = res.body.split(b'\nData:\n', 1)
+        dds = dds.decode('ascii')
         self.assertEqual(dds, """Dataset {
     Sequence {
         Int32 lat;
@@ -354,55 +354,53 @@ Data:
     } location;
 } NestedSequence;""")
 
-        output = xdrdata.replace('\x5a\x00\x00\x00', '<start of sequence>')
-        output = output.replace('\xa5\x00\x00\x00', '<end of sequence>')
         self.assertEqual(
-            output,
-            "<start of sequence>"
-                "\x00\x00\x00\x01"
-                "\x00\x00\x00\x01"
-                "\x00\x00\x00\x01"
-                "<start of sequence>"
-                    "\x00\x00\x00\n"
-                    "\x00\x00\x00\x0b"
-                    "\x00\x00\x00\x0c"
-                "<start of sequence>"
-                    "\x00\x00\x00\x15"
-                    "\x00\x00\x00\x16"
-                    "\x00\x00\x00\x17"
-            "<end of sequence>"
-            "<start of sequence>"
-                "\x00\x00\x00\x02"
-                "\x00\x00\x00\x04"
-                "\x00\x00\x00\x04"
-                "<start of sequence>"
-                    "\x00\x00\x00\x0f"
-                    "\x00\x00\x00\x10"
-                    "\x00\x00\x00\x11"
-            "<end of sequence>"
-            "<start of sequence>"
-                "\x00\x00\x00\x03"
-                "\x00\x00\x00\x06"
-                "\x00\x00\x00\t"
-            "<start of sequence>"
-                "\x00\x00\x00\x04"
-                "\x00\x00\x00\x08"
-                "\x00\x00\x00\x10"
-                "<start of sequence>"
-                    "\x00\x00\x00\x1f"
-                    "\x00\x00\x00 "
-                    "\x00\x00\x00!"
-                "<start of sequence>"
-                    "\x00\x00\x00)"
-                    "\x00\x00\x00*"
-                    "\x00\x00\x00+"
-                "<start of sequence>"
-                    "\x00\x00\x003"
-                    "\x00\x00\x004"
-                    "\x00\x00\x005"
-                "<start of sequence>"
-                    "\x00\x00\x00="
-                    "\x00\x00\x00>"
-                    "\x00\x00\x00?"
-                "<end of sequence>"
-            "<end of sequence>")
+            xdrdata,
+            START_OF_SEQUENCE +
+                b"\x00\x00\x00\x01"
+                b"\x00\x00\x00\x01"
+                b"\x00\x00\x00\x01" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00\n"
+                    b"\x00\x00\x00\x0b"
+                    b"\x00\x00\x00\x0c" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00\x15"
+                    b"\x00\x00\x00\x16"
+                    b"\x00\x00\x00\x17" +
+            END_OF_SEQUENCE +
+            START_OF_SEQUENCE +
+                b"\x00\x00\x00\x02"
+                b"\x00\x00\x00\x04"
+                b"\x00\x00\x00\x04" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00\x0f"
+                    b"\x00\x00\x00\x10"
+                    b"\x00\x00\x00\x11" +
+            END_OF_SEQUENCE +
+            START_OF_SEQUENCE +
+                b"\x00\x00\x00\x03"
+                b"\x00\x00\x00\x06"
+                b"\x00\x00\x00\t" +
+            START_OF_SEQUENCE +
+                b"\x00\x00\x00\x04"
+                b"\x00\x00\x00\x08"
+                b"\x00\x00\x00\x10" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00\x1f"
+                    b"\x00\x00\x00 "
+                    b"\x00\x00\x00!" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00)"
+                    b"\x00\x00\x00*"
+                    b"\x00\x00\x00+" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x003"
+                    b"\x00\x00\x004"
+                    b"\x00\x00\x005" +
+                START_OF_SEQUENCE +
+                    b"\x00\x00\x00="
+                    b"\x00\x00\x00>"
+                    b"\x00\x00\x00?" +
+                END_OF_SEQUENCE +
+            END_OF_SEQUENCE)

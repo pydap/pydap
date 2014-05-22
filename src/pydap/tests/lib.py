@@ -55,4 +55,12 @@ class MockResponse(object):
 
     def iter_content(self, blocksize):
         """Return the content as an iterator, emulating ``iter_content``."""
-        return iter(self.content)
+        i = self.response.app_iter
+        if type(i) == list:
+            return iter(i)
+        else:
+            return i
+
+    def iter_lines(self):
+        for line in self.content.splitlines():
+            yield line + b'\n'
