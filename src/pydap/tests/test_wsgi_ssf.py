@@ -151,17 +151,6 @@ cast.lat
 
 """)
 
-        res = app.get("/.asc?cast.id&double(cast.id)=~11")
-        self.assertEqual(res.text, """Dataset {
-    Sequence {
-        String id;
-    } cast;
-} SimpleSequence;
----------------------------------------------
-cast.id
-"1"
-
-""")
 
     def test_selection_no_comparison(self):
         """Test function calls in the selection without comparison.
