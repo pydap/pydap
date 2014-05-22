@@ -3,8 +3,11 @@
 import sys
 if sys.version_info < (2, 7):
     import unittest2 as unittest
+    from ordereddict import OrderedDict
 else:
     import unittest
+    from collections import OrderedDict
+
 
 from webtest import TestApp
 from webob import Request
@@ -82,10 +85,11 @@ class TestHTMLResponseSequence(unittest.TestCase):
 
     def test_post_multiple_selection(self):
         """Test that the data redirect works with a subset request."""
+        #from nose.tools import set_trace; set_trace()
         res = self.app.post(
-            '/.html', {"sequence.byte": "on", "sequence.int": "on"})
+            '/.html', OrderedDict([("sequence.byte", "on"), ("sequence.int", "on")]))
         self.assertEqual(
-            res.location, "http://localhost/.ascii?sequence.int,sequence.byte")
+            res.location, "http://localhost/.ascii?sequence.byte,sequence.int")
 
     def test_filter(self):
         """Test that filtering the data works."""
