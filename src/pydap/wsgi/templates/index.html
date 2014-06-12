@@ -42,8 +42,9 @@
             <td><i class="icon-globe icon-fixed-width"></i>
             <a title="Inspect and filter data" href="{{ file.name }}.html">{{ file.name }}</a>
             <span class="dap">
-            <a title="View the DDS response" href="{{ file.name }}.dds">dds</a> |
-            <a title="View the DAS response" href="{{ file.name }}.das">das</a>
+              {% for response in responses %}
+              <a title="View the {{response}} response" href="{{ file.name }}.{{response}}">{{response}}</a> |
+              {% endfor %}
             </span>
             </td>
             {% elif file.name.endswith(".html") %}
