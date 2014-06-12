@@ -4,6 +4,10 @@ python:
   - "2.7"
 install:
   - "pip install -e .[testing] --use-mirrors"
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq libatlas-dev libatlas-base-dev liblapack-dev gfortran
+
 script: nosetests
 branches:
   only:
