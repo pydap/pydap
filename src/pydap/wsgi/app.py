@@ -32,6 +32,7 @@ from six import string_types
 
 from pydap.lib import __version__
 from pydap.handlers.lib import get_handler, load_handlers
+from pydap.responses.lib import load_responses
 from pydap.exceptions import ExtensionNotSupportedError
 from pydap.wsgi.ssf import ServerSideFunctions
 
@@ -97,10 +98,9 @@ class DapServer(object):
             "name": os.path.split(path)[1],
             "size": os.path.getsize(path),
             "last_modified": datetime.fromtimestamp(os.path.getmtime(path)),
-            "supported": supported(path, self.handlers),
+            "supported": supported(path, self.handlers)
         } for path in content if os.path.isfile(path)]
         files.sort(key=lambda d: alphanum_key(d["name"]))
-
         directories = [{
             "name": os.path.split(path)[1],
             "last_modified": datetime.fromtimestamp(os.path.getmtime(path)),
@@ -113,6 +113,8 @@ class DapServer(object):
             "title": token,
         } for i, token in enumerate(tokens) if token]
 
+        responses = load_responses()
+
         context = {
             "root": req.application_url,
             "location": req.path_url,
@@ -120,6 +122,7 @@ class DapServer(object):
             "directories": directories,
             "files": files,
             "version": __version__,
+            "responses": responses
         }
         template = self.env.get_template("index.html")
         return Response(
@@ -250,7 +253,8 @@ def main():  # pragma: no cover
         host=arguments["--bind"],
         port=int(arguments["--port"]),
         workers=workers,
-        worker_class=arguments["--worker-class"])
+        worker_class=arguments["--worker-class"]
+    )
 
 
 if __name__ == "__main__":
