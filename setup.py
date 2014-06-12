@@ -21,6 +21,7 @@ if sys.version_info < (2, 7):
 
 functions_extras = [
     'gsw',
+    'scipy', # dependency from gsw
     'coards',
 ]
 
