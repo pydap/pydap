@@ -13,7 +13,6 @@ install_requires = [
     'docopt',
     'gunicorn',
     'PasteDeploy',
-    'wsgi_intercept',
     'six',
 ]
 
