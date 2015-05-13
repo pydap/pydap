@@ -7,7 +7,6 @@ class BaseResponse(object):
         self.dataset = dataset
         self.headers = [
                 ('XDODS-Server', 'dods/%s' % '.'.join([str(i) for i in __dap__])),
-                ('Access-Control-Allow-Origin', '*'),
                 ]
 
     @staticmethod
