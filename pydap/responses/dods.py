@@ -23,8 +23,8 @@ class DODSResponse(BaseResponse):
     def serialize(dataset):
         # Generate DDS.
         for line in dds_dispatch(dataset):
-            yield line
-        yield 'Data:\n'
+            yield line.encode('utf-8')
+        yield 'Data:\n'.encode('utf-8')
         for line in DapPacker(dataset):
             yield line
         if hasattr(dataset, 'close'): dataset.close()

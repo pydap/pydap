@@ -20,11 +20,11 @@ class ASCIIResponse(BaseResponse):
     def serialize(dataset):
         # Generate DDS.
         for line in dds_dispatch(dataset):
-            yield line
-        yield 45 * '-'
-        yield '\n'
+            yield line.encode("utf-8")
+        yield 45 * '-'.encode("utf-8")
+        yield '\n'.encode("utf-8")
         for line in dispatch(dataset):
-            yield line
+            yield line.encode("utf-8")
         if hasattr(dataset, 'close'): dataset.close()
 
 
