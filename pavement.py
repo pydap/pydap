@@ -1,4 +1,8 @@
-import string
+try:
+    from string import strip
+except:
+    def strip(str_to_strip):
+        return str_to_strip.strip()
 
 from paver.easy import *
 from paver.setuputils import setup, find_packages, find_package_data
@@ -28,7 +32,7 @@ bandwidth and time. The module also comes with a robust-but-lightweight
 Opendap server, implemented as a WSGI application.
         ''',
         keywords='opendap dods dap data science climate oceanography meteorology',
-        classifiers=filter(None, map(string.strip, '''
+        classifiers=filter(None, map(strip, '''
             Development Status :: 5 - Production/Stable
             Environment :: Console
             Environment :: Web Environment
