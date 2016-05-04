@@ -5,7 +5,7 @@ import sys, os
 __version__ = '3.2'
 
 install_requires = [
-    'Numpy',
+    'numpy',
     'requests',
     'singledispatch',
     'Webob',
@@ -71,8 +71,8 @@ setup(name='Pydap',
         'functions': functions_extras,
         'testing': testing_extras,
         'docs': docs_extras,
+        'tests': tests_require
     },
-    tests_require = tests_require,
     test_suite="pydap.tests",
     entry_points="""
         [pydap.response]
