@@ -12,7 +12,6 @@ install_requires = [
     'Jinja2',
     'docopt',
     'gunicorn',
-#    'PasteDeploy',
     'six >= 1.4.0',
 ]
 
@@ -40,7 +39,6 @@ tests_require = functions_extras + [
 testing_extras = tests_require + [
     'nose',
     'coverage',
-#    'virtualenv', # for scaffolding tests
 ]
 
 if sys.version_info < (2, 7):
