@@ -1,0 +1,4 @@
+LDAP/Basic https://130.56.244.153/opendap/data/nc/coads_climatology.nc, tesla, password
+URS/OAuth2 https://52.1.74.222/opendap/data/hdf4/S3096277.HDF.dds,
+	uat.urs.earthdata.nasa.gov, '...', '...')
+	urs.earthdata.nasa.gov,  ...

@@ -31,6 +31,10 @@ TIMEOUT = None
 # >>> pydap.lib.PROXY = httplib2.ProxyInfo(pydap.util.socks.PROXY_TYPE_HTTP, 'localhost', 8000)
 PROXY = None
 
+# Should HTTPS require a valid certificate? Setting this to True will cause
+# sites with self-signed certificates to fail; False will enable HTTPS to 
+#  work with those sites. jhrg 4/22/15
+SSL_VALIDATE = True
 
 def isiterable(obj):
     """

@@ -25,7 +25,8 @@ def request(url):
     """
     h = httplib2.Http(cache=pydap.lib.CACHE,
             timeout=pydap.lib.TIMEOUT,
-            proxy_info=pydap.lib.PROXY)
+            proxy_info=pydap.lib.PROXY,
+            disable_ssl_certificate_validation= not pydap.lib.SSL_VALIDATE) # jhrg 4/21/15
     scheme, netloc, path, query, fragment = urlsplit(url)
     if '@' in netloc:
         credentials, netloc = netloc.split('@', 1)  # remove credentials from netloc
