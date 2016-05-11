@@ -1,7 +1,7 @@
 Pydap
 =====
 
-[![Build Status](https://travis-ci.org/robertodealmeida/pydap.svg)](https://travis-ci.org/robertodealmeida/pydap)
+[![Build Status](https://travis-ci.org/pydap/pydap.svg)](https://travis-ci.org/pydap/pydap)
 
 Pydap is an implementation of the Opendap/DODS protocol, written from scratch. 
 You can use Pydap to access scientific data on the internet without having to 
