@@ -28,7 +28,7 @@ bandwidth and time. The module also comes with a robust-but-lightweight
 Opendap server, implemented as a WSGI application.
         ''',
         keywords='opendap dods dap data science climate oceanography meteorology',
-        classifiers=filter(None, map(string.strip, '''
+        classifiers=filter(None, map(lambda x: x.strip(), '''
             Development Status :: 5 - Production/Stable
             Environment :: Console
             Environment :: Web Environment
