@@ -6,6 +6,8 @@ testing.
 
 """
 
+from webob.request import Request
+
 def requests_intercept(app, location):
     """Intercept WSGI requests and pass them to ``webtest.TestApp``.
     

@@ -11,7 +11,6 @@ import requests
 from pydap.model import *                                                       
 from pydap.handlers.lib import BaseHandler
 from pydap.client import open_url
-from pydap.tests.lib import requests_intercept
                                  
                                                                                 
 class TestQuote(unittest.TestCase):                                            

@@ -21,11 +21,11 @@ if sys.version_info >= (2, 7):  # pragma: no cover
     logger.addHandler(logging.NullHandler())
 
 import numpy as np
-import requests
 from six.moves.urllib.parse import urlsplit, urlunsplit, quote
 from six import text_type, string_types, next
 
 from pydap.model import *
+from pydap.net import GET, raise_for_status
 from pydap.lib import (
     encode, combine_slices, fix_slice, hyperslab,
     START_OF_SEQUENCE, END_OF_SEQUENCE, walk)
@@ -42,19 +42,20 @@ class DAPHandler(BaseHandler):
 
     """Build a dataset from a DAP base URL."""
 
-    def __init__(self, url):
+    def __init__(self, url, application=None):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
         ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-        r = requests.get(ddsurl)
-        r.raise_for_status()
-        dds = r.text.decode('ascii')
+        r = GET(ddsurl, application)
+        raise_for_status(r)
+        dds = r.text
+
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-        r = requests.get(dasurl)
-        r.raise_for_status()
-        das = r.text.decode('ascii')
+        r = GET(dasurl, application)
+        raise_for_status(r)
+        das = r.text
 
         # build the dataset from the DDS and add attributes from the DAS
         self.dataset = build_dataset(dds)
@@ -66,10 +67,10 @@ class DAPHandler(BaseHandler):
 
         # now add data proxies
         for var in walk(self.dataset, BaseType):
-            var.data = BaseProxy(url, var.id, var.dtype, var.shape)
+            var.data = BaseProxy(url, var.id, var.dtype, var.shape, application=application)
         for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
-            var.data = SequenceProxy(url, template)
+            var.data = SequenceProxy(url, template, application=application)
 
         # apply projections
         for var in projection:
@@ -97,12 +98,13 @@ class BaseProxy(object):
 
     """
 
-    def __init__(self, baseurl, id, dtype, shape, slice_=None):
+    def __init__(self, baseurl, id, dtype, shape, slice_=None, application=None):
         self.baseurl = baseurl
         self.id = id
         self.dtype = dtype
         self.shape = shape
         self.slice = slice_ or tuple(slice(None) for s in self.shape)
+        self.application = application
 
     def __repr__(self):
         return 'BaseProxy(%s)' % ', '.join(
@@ -120,10 +122,10 @@ class BaseProxy(object):
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
-        r = requests.get(url)
-        r.raise_for_status()
-        dds, data = r.content.split(b'\nData:\n', 1)
-        dds = dds.decode('ascii')
+        r = GET(url, self.application)
+        raise_for_status(r)
+        dds, data = r.body.split(b'\nData:\n', 1)
+        dds = dds.decode(r.content_encoding or 'ascii')
 
         if self.shape:
             # skip size packing
@@ -189,11 +191,12 @@ class SequenceProxy(object):
 
     shape = ()
 
-    def __init__(self, baseurl, template, selection=None, slice_=None):
+    def __init__(self, baseurl, template, selection=None, slice_=None, application=None):
         self.baseurl = baseurl
         self.template = template
         self.selection = selection or []
         self.slice = slice_ or (slice(None),)
+        self.application = application
 
         # this variable is true when only a subset of the children are selected
         self.sub_children = False
@@ -210,7 +213,7 @@ class SequenceProxy(object):
     def __copy__(self):
         """Return a lightweight copy of the object."""
         return self.__class__(
-            self.baseurl, self.template, self.selection[:], self.slice[:])
+            self.baseurl, self.template, self.selection[:], self.slice[:], self.application)
 
     def __getitem__(self, key):
         """Return a new object representing a subset of the data."""
@@ -260,12 +263,12 @@ class SequenceProxy(object):
 
     def __iter__(self):
         # download and unpack data
-        r = requests.get(self.url, stream=True)
-        r.raise_for_status()
+        r = GET(self.url, self.application)
+        raise_for_status(r)
 
         # Fast forward past the DDS header
         # the pattern could span chunk boundaries though so make sure to check
-        i = r.iter_content(1024)
+        i = r.app_iter
         previous_chunk = b''
         this_chunk = b''
         pattern = b'Data:\n'
