@@ -266,21 +266,30 @@ class SequenceProxy(object):
         r = GET(self.url, self.application)
         raise_for_status(r)
 
+        i = r.app_iter
+        if not hasattr(i, '__next__'):
+            i = iter(i)
+
         # Fast forward past the DDS header
         # the pattern could span chunk boundaries though so make sure to check
-        i = r.app_iter
         previous_chunk = b''
         this_chunk = b''
         pattern = b'Data:\n'
-        while not re.search(pattern, previous_chunk + this_chunk):
-            previous_chunk = this_chunk
-            this_chunk = next(i)
-        end_chunk = (previous_chunk + this_chunk).split(b'Data:\n', 1)[1]
+        for this_chunk in i:
+           m = re.search(pattern, previous_chunk + this_chunk)
+           if m:
+               break
+        if not m:
+            raise ValueError(
+                    "Could not find data segment in response from {}"\
+                    .format(self.url))
 
-        # The constrct a stream consisting of everything from 'Data:\n' to the end
-        # of the chunk + the rest of the stream
+        last_chunk = (previous_chunk + this_chunk)[m.end():]
+
+        # Then construct a stream consisting of everything from
+        # 'Data:\n' to the end of the chunk + the rest of the stream
         def stream_start():
-            yield end_chunk
+            yield last_chunk
 
         stream = StreamReader(chain(stream_start(), i))
 

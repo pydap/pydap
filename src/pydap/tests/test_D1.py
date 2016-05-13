@@ -7,31 +7,21 @@ This is a simple example from the DODS Test Server.
 import unittest                                                                 
 
 import numpy as np
-from webtest import TestApp
-import requests
-                                                                                
+from webob.request import Request
+
 from pydap.model import *                                                       
 from pydap.handlers.lib import BaseHandler
 from pydap.client import open_url
-from pydap.tests.lib import requests_intercept
 from pydap.tests.datasets import D1
 
 
 class TestD1(unittest.TestCase):                                            
     def setUp(self):
         # create WSGI app
-        self.app = TestApp(BaseHandler(D1))
-
-        # intercept HTTP requests
-        self.requests_get = requests.get
-        requests.get = requests_intercept(self.app, 'http://localhost:8001/')
-        self.maxDiff = None
-
-    def tearDown(self):
-        requests.get = self.requests_get
+        self.app = BaseHandler(D1)
 
     def test_dds(self):
-        self.assertEqual(self.app.get('/.dds').text,
+        self.assertEqual(Request.blank('/.dds').get_response(self.app).text,
             '''Dataset {
     Sequence {
         String instrument_id;
@@ -43,7 +33,7 @@ class TestD1(unittest.TestCase):
 ''')
 
     def test_ascii(self):
-        resp = self.app.get('/.asc')
+        resp = Request.blank('/.asc').get_response(self.app)
         content = resp.text
         self.assertEqual(content,
             '''Dataset {
@@ -65,12 +55,12 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
 ''')
 
     def test_data(self):
-        dataset = open_url('http://localhost:8001/')
+        dataset = open_url('http://localhost:8001/', application=self.app)
         data = list(dataset.Drifters)
         self.assertEqual(data, D1.Drifters.data.tolist())
 
     def test_filtering(self):
-        dataset = open_url('http://localhost:8001/')
+        dataset = open_url('http://localhost:8001/', application=self.app)
         drifters = dataset.Drifters
         selection = np.rec.fromrecords(
             list(drifters[ drifters.longitude < 999 ]), names=drifters.keys())
@@ -82,7 +72,7 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
         np.testing.assert_array_equal(filtered, selection)
 
     def test_filtering_child(self):
-        dataset = open_url('http://localhost:8001/')
+        dataset = open_url('http://localhost:8001/', application=self.app)
         drifters = dataset.Drifters
         selection = np.array(
             list(drifters[ drifters.longitude < 999 ]['location']))

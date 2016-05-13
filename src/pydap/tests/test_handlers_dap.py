@@ -22,7 +22,7 @@ class TestDapHandler(unittest.TestCase):
     """Test that the handler creates the correct dataset from a URL."""
 
     def setUp(self):
-        """Create WSGI apps and monkeypatch ``requests`` for direct access."""
+        """Create WSGI apps"""
         self.app1 = BaseHandler(SimpleGrid)
         self.app2 = BaseHandler(SimpleSequence)
 
@@ -147,7 +147,7 @@ class TestBaseProxy(unittest.TestCase):
     """Test `BaseProxy` objects."""
 
     def setUp(self):
-        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        """Create a WSGI app"""
         self.app = BaseHandler(SimpleArray)
 
         self.data = BaseProxy(
@@ -191,7 +191,7 @@ class TestBaseProxyShort(unittest.TestCase):
     """Test `BaseProxy` objects with short dtype."""
 
     def setUp(self):
-        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        """Create a WSGI app with array data"""
         self.app = BaseHandler(SimpleArray)
 
         self.data = BaseProxy(
@@ -207,7 +207,7 @@ class TestBaseProxyString(unittest.TestCase):
     """Test a ``BaseProxy`` with string data."""
 
     def setUp(self):
-        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        """Create a WSGI app with array data"""
         dataset = DatasetType("test")
         dataset["s"] = BaseType("s", np.array(["one", "two", "three"]))
         self.app = BaseHandler(dataset)
@@ -227,7 +227,7 @@ class TestSequenceProxy(unittest.TestCase):
     """Test that a ``SequenceProxy`` behaves like a Numpy structured array."""
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
+        """Create a WSGI app"""
         self.app = BaseHandler(VerySimpleSequence)
         self.local = VerySimpleSequence.sequence.data
 
@@ -327,7 +327,7 @@ class TestSequenceProxy(unittest.TestCase):
 class TestSequenceWithString(unittest.TestCase):
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
+        """Create a WSGI app"""
         self.app = BaseHandler(SimpleSequence)
         self.local = SimpleSequence.cast.data
 
@@ -385,7 +385,7 @@ class TestStringBaseType(unittest.TestCase):
     """Regression test for string base type."""
 
     def setUp(self):
-        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        """Create a WSGI app with array data"""
         dataset = DatasetType("test")
         data = np.array("This is a test", dtype='S')
         dataset["s"] = BaseType("s", data)

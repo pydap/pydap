@@ -6,7 +6,6 @@ __version__ = '3.2'
 
 install_requires = [
     'numpy',
-    'requests',
     'singledispatch',
     'Webob',
     'Jinja2',
