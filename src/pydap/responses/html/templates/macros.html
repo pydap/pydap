@@ -13,9 +13,9 @@
     {% for name in var.maps %}
     <div class="pure-control-group">
         <label for="{{ var.id }}[{{ loop.index0 }}]">{{ name }}</label>
-        <input 
-            id="{{ var.id }}[{{ loop.index0 }}]" 
-            type="text" 
+        <input
+            id="{{ var.id }}[{{ loop.index0 }}]"
+            type="text"
             placeholder="0:1:{{ var[name].shape[0]-1 }}">
     </div>
     {% endfor %}
@@ -32,11 +32,17 @@
 {% if var.shape %}
 <fieldset>
     <div class="pure-control-group">
-        <label for="{{ var.id }}[0]">{{ var.name }}</label>
-        <input 
-            id="{{ var.id }}[0]" 
-            type="text" 
-            placeholder="0:1:{{ var.shape[0]-1 }}">
+        {% for shp in var.shape %}
+        <label for="{{ var.id }}[{{ loop.index0 }}]">{{ var.name }}[{{ loop.index0 }}]</label>
+        {% if shp > 0 %}
+        <input
+            id="{{ var.id }}[{{ loop.index0 }}]"
+            type="text"
+            placeholder="0:1:{{ shp - 1 }}">
+        {% else %}
+        <input id="{{ var.id }}[{{ loop.index0 }}]" type="text" value="0" readonly>
+        {% endif %}
+        {% endfor %}
     </div>
 </fieldset>
 {% endif %}
