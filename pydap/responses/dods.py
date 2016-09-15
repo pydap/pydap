@@ -1,4 +1,4 @@
-import numpy 
+import numpy
 
 from pydap.responses.dds import dispatch as dds_dispatch
 from pydap.responses.lib import BaseResponse
@@ -8,12 +8,13 @@ from pydap.model import *
 
 
 class DODSResponse(BaseResponse):
+
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
-                ('Content-description', 'dods_data'),
-                ('Content-type', 'application/octet-stream'),
-                ])
+            ('Content-description', 'dods_data'),
+            ('Content-type', 'application/octet-stream'),
+        ])
 
         size = calculate_size(dataset)
         if size is not None:
@@ -27,13 +28,14 @@ class DODSResponse(BaseResponse):
         yield 'Data:\n'
         for line in DapPacker(dataset):
             yield line
-        if hasattr(dataset, 'close'): dataset.close()
+        if hasattr(dataset, 'close'):
+            dataset.close()
 
 
 def calculate_size(dataset):
     size = 0
     for var in walk(dataset):
-        # Pydap can't calculate the size of a dataset with a 
+        # Pydap can't calculate the size of a dataset with a
         # Sequence since the data is streamed directly.
         if (isinstance(var, SequenceType) or
                 (isinstance(var, BaseType) and

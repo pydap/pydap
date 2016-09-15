@@ -20,7 +20,7 @@ __all__ = ['StructureType', 'SequenceType', 'DatasetType', 'GridType',
 # placeholders for attributes.
 def TypeFactory(name, typecode, size):
     return classobj(name, (object,),
-            {'typecode': typecode, 'size': size, 'descriptor': name})
+                    {'typecode': typecode, 'size': size, 'descriptor': name})
 
 Float64 = TypeFactory('Float64', 'f', 8)
 Float32 = TypeFactory('Float32', 'f', 4)
@@ -75,6 +75,7 @@ class DapType(object):
     attributes for other all classes in the Opendap data model.
 
     """
+
     def __init__(self, name='nameless', attributes=None, nesting_level=0):
         self.name = name
         self._id = self.name
@@ -86,6 +87,7 @@ class DapType(object):
     # is set.
     def _get_name(self):
         return self._name
+
     def _set_name(self, name):
         self._name = quote(name)
     name = property(_get_name, _set_name)
@@ -109,9 +111,9 @@ class DapType(object):
             return self.attributes[attr]
         except (KeyError, TypeError):
             raise AttributeError(
-                    "'%s' object has no attribute '%s'"
-                    % (self.__class__, attr))
-    
+                "'%s' object has no attribute '%s'"
+                % (self.__class__, attr))
+
     def walk(self):
         """
         Iterate over children.
@@ -175,8 +177,9 @@ class BaseType(DapType):
         [2 3]
 
     """
+
     def __init__(self, name='nameless', data=None, shape=None,
-            dimensions=None, type=Int32, attributes=None):
+                 dimensions=None, type=Int32, attributes=None):
         DapType.__init__(self, name, attributes)
         self.type = type in basetypes and type or typemap[type]
         self.data = data
@@ -195,26 +198,33 @@ class BaseType(DapType):
     def __array_interface__(self):
         data = numpy.asarray(self.data)
         return {
-                'version': 3,
-                'shape': data.shape,
-                'typestr': data.dtype.str,
-                'data': data,
-                }
+            'version': 3,
+            'shape': data.shape,
+            'typestr': data.dtype.str,
+            'data': data,
+        }
 
     # Comparisons and other operations are applied directly to
     # the ``data`` attribute.
     def __eq__(self, other): return self.data == other
+
     def __ne__(self, other): return self.data != other
+
     def __ge__(self, other): return self.data >= other
+
     def __le__(self, other): return self.data <= other
+
     def __gt__(self, other): return self.data > other
+
     def __lt__(self, other): return self.data < other
+
     def __iter__(self): return iter(self.data)
+
     def __len__(self): return len(self.data)
 
     def __copy__(self):
         out = self.__class__(self.name, self.data, self.shape,
-                self.dimensions, self.type, self.attributes)
+                             self.dimensions, self.type, self.attributes)
         out._id = self._id
         return out
 
@@ -224,8 +234,8 @@ class BaseType(DapType):
 
         """
         out = self.__class__(self.name, copy.copy(self.data),
-                self.shape[:], self.dimensions[:], self.type,
-                self.attributes.copy())
+                             self.shape[:], self.dimensions[:], self.type,
+                             self.attributes.copy())
         out._id = self._id
         return out
 
@@ -247,6 +257,7 @@ class StructureType(odict, DapType):
         ['a', 'b']
 
     """
+
     def __init__(self, name='nameless', attributes=None):
         odict.__init__(self)
         DapType.__init__(self, name, attributes)
@@ -275,7 +286,7 @@ class StructureType(odict, DapType):
     def __setitem__(self, key, item):
         if key != item.name:
             raise KeyError('Key "%s" is different from variable name "%s"!' %
-                    (key, item.name))
+                           (key, item.name))
         odict.__setitem__(self, key, item)
 
         # Fix id in item.
@@ -283,9 +294,10 @@ class StructureType(odict, DapType):
 
     # Propagate to and collect data from children.
     def _get_data(self):
-        data = [ var.data for var in self.walk() ]
+        data = [var.data for var in self.walk()]
         return tuple(
-                combine_rows(data, self._nesting_level))
+            combine_rows(data, self._nesting_level))
+
     def _set_data(self, data):
         data = [get_row(data, i, self._nesting_level) for
                 i, k in enumerate(self.keys())]
@@ -325,10 +337,11 @@ class DatasetType(StructureType):
         bar
 
     """
+
     def __setitem__(self, key, item):
         if key != item.name:
             raise KeyError('Key "%s" is different from variable name "%s"!' %
-                    (key, item.name))
+                           (key, item.name))
         odict.__setitem__(self, key, item)
 
         # Do not propagate id.
@@ -370,7 +383,7 @@ class SequenceType(StructureType):
 
     Note that we had to use ``s['id']`` to refer to the variable ``id``,
     since ``s.id`` already points to the id of the Sequence.
-    
+
     (An important point is that the ``data`` attribute must be copiable,
     so don't use consumable iterables like older versions of Pydap
     allowed.)
@@ -411,7 +424,7 @@ class SequenceType(StructureType):
     first, while in this case we're working locally with the data. Don't
     worry, though: when this happens while accessing an Opendap server
     a warning will be issued by the client.)
-    
+
     When filtering a Sequence, don't use the Python extended comparison
     syntax of ``1 < a < 2``, otherwise bad things will happen.
 
@@ -421,6 +434,7 @@ class SequenceType(StructureType):
         True
 
     """
+
     def __init__(self, name='nameless', attributes=None, data=None):
         StructureType.__init__(self, name, attributes)
         self._nesting_level = 1
@@ -440,13 +454,13 @@ class SequenceType(StructureType):
         increase_level(self)
 
         if self._data is not None:
-            self.data = self.data[ tuple([var.name for var in self.walk()]) ]
+            self.data = self.data[tuple([var.name for var in self.walk()])]
 
     def __delitem__(self, key):
         StructureType.__delitem__(self, key)
 
         if self._data is not None:
-            self.data = self.data[ tuple([var.name for var in self.walk()]) ]
+            self.data = self.data[tuple([var.name for var in self.walk()])]
 
     # When we set the Sequence data we also set the data for its children.
     def _set_data(self, data):
@@ -454,21 +468,22 @@ class SequenceType(StructureType):
             self._data = data
             for var in walk(self, (BaseType, SequenceType)):
                 if var is not self:
-                    id_ = var.id[len(self.id)+1:]
+                    id_ = var.id[len(self.id) + 1:]
                     var.data = data[id_]
         else:
             self._data = None
             for i, var in enumerate(self.walk()):
                 var.data = numpy.asarray(
-                        get_row(data, i, self._nesting_level), 'O')
+                    get_row(data, i, self._nesting_level), 'O')
+
     def _get_data(self):
         if self._data is not None:
             return self._data
         else:
             # Combine the data using the children's data.
-            data = [ var.data for var in self.walk() ]
+            data = [var.data for var in self.walk()]
             return numpy.asarray(
-                    combine_rows(data, self._nesting_level), 'O')
+                combine_rows(data, self._nesting_level), 'O')
     data = property(_get_data, _set_data)
 
     def __getitem__(self, key):
@@ -509,7 +524,8 @@ class SequenceType(StructureType):
                 if out._data is not None:
                     out.data = out.data[key]  # SequenceData protocol
             else:
-                if isinstance(key, (int, long)): key = slice(key, key+1, 1)
+                if isinstance(key, (int, long)):
+                    key = slice(key, key + 1, 1)
                 out.data = out.data[key]
             return out
 
@@ -523,7 +539,8 @@ class SequenceType(StructureType):
         """
         data = copy.deepcopy(self.data)
         for row in data:
-            row = [get_row(row, i, self._nesting_level-1) for i, k in enumerate(self.keys())]
+            row = [get_row(row, i, self._nesting_level - 1)
+                   for i, k in enumerate(self.keys())]
             struct_ = StructureType(self.name, self.attributes.copy())
             for col, name in zip(row, self.keys()):
                 var = struct_[name] = copy.deepcopy(self[name])
@@ -548,6 +565,7 @@ class SequenceData(object):
     object with only those children.
 
     """
+
     def __init__(self, data, keys):
         self.data = data
         self.keys = keys
@@ -561,7 +579,7 @@ class SequenceData(object):
     def __getitem__(self, key):
         if isinstance(key, basestring):
             col = self.keys.index(key)
-            return SequenceData(self.data[:,col], ())
+            return SequenceData(self.data[:, col], ())
         elif isinstance(key, tuple):
             return SequenceData(
                 numpy.dstack([self.data[:, self.keys.index(k)] for k in key]),
@@ -571,10 +589,15 @@ class SequenceData(object):
 
     # comparison are passed to the data object
     def __eq__(self, other): return self.data == other
+
     def __ne__(self, other): return self.data != other
+
     def __ge__(self, other): return self.data >= other
+
     def __le__(self, other): return self.data <= other
+
     def __gt__(self, other): return self.data > other
+
     def __lt__(self, other): return self.data < other
 
 
@@ -582,14 +605,14 @@ def get_row(data, col, level):
     if level == 0:
         return data[col]
     else:
-        return [ get_row(value, col, level-1) for value in data ]
+        return [get_row(value, col, level - 1) for value in data]
 
 
 def combine_rows(data, level):
     if level == 0:
         return data
     else:
-        return [ combine_rows(value, level-1) for value in zip(*data) ]
+        return [combine_rows(value, level - 1) for value in zip(*data)]
 
 
 class GridType(StructureType):
@@ -610,7 +633,7 @@ class GridType(StructureType):
         >>> print g.array.data
         [[ 0.  1.  2.]
          [ 3.  4.  5.]]
-    
+
     We can treat the Grid like an array and slice it. This will return a new
     grid object with the proper data and axes::
 
@@ -645,6 +668,7 @@ class GridType(StructureType):
     for continuous conditions, ie, with a start and an end index.
 
     """
+
     def __str__(self):
         return """%s
     with data
@@ -667,11 +691,11 @@ class GridType(StructureType):
     def __array_interface__(self):
         data = numpy.asarray(self.array.data)
         return {
-                'version': 3,
-                'shape': data.shape,
-                'typestr': data.dtype.str,
-                'data': data,
-                }
+            'version': 3,
+            'shape': data.shape,
+            'typestr': data.dtype.str,
+            'data': data,
+        }
 
     @property
     def array(self):
@@ -687,12 +711,14 @@ class GridType(StructureType):
 
     # These attributes all come from the array object.
     def __len__(self): return len(self.array)
+
     @property
     def type(self): return self.array.type
+
     def _get_shape(self): return self.array.shape
+
     def _set_shape(self, shape): self.array.shape = shape
     shape = property(_get_shape, _set_shape)
-    
 
 
 def _test():

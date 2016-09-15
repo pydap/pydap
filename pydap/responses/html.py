@@ -20,7 +20,8 @@ from pydap.responses.dds import dispatch as dds_dispatch
 from pydap.responses.lib import BaseResponse
 
 
-COMMON_RESPONSES = ['dds', 'das', 'dods', 'asc', 'ascii', 'html', 'ver', 'version', 'help']
+COMMON_RESPONSES = ['dds', 'das', 'dods', 'asc',
+                    'ascii', 'html', 'ver', 'version', 'help']
 
 
 DEFAULT_TEMPLATE = """<html xmlns="http://www.w3.org/1999/xhtml"
@@ -116,14 +117,14 @@ DEFAULT_TEMPLATE = """<html xmlns="http://www.w3.org/1999/xhtml"
 class HTMLResponse(BaseResponse):
 
     renderer = GenshiRenderer(
-            options={}, loader=StringLoader( {'html.html': DEFAULT_TEMPLATE} ))
+        options={}, loader=StringLoader({'html.html': DEFAULT_TEMPLATE}))
 
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
-                ('Content-description', 'dods_form'),
-                ('Content-type', 'text/html'),
-                ])
+            ('Content-description', 'dods_form'),
+            ('Content-type', 'text/html'),
+        ])
 
     def __call__(self, environ, start_response):
         # If we came from a post, parse response and redirect to ascii.
@@ -135,14 +136,15 @@ class HTMLResponse(BaseResponse):
                 # Selection.
                 if k.startswith('var1') and form[k] != '--':
                     name = k[5:]
-                    sel = '%s%s%s' % (form[k], form['op_%s' % name], form['var2_%s' % name])
+                    sel = '%s%s%s' % (form[k], form['op_%s' % name], form[
+                                      'var2_%s' % name])
                     selection.append(sel)
                 # Projection.
                 if form[k] == 'on':
                     var = [k]
                     i = 0
                     while '%s[%d]' % (k, i) in form:
-                        var.append('[%s]' % form[ '%s[%d]' % (k, i) ])
+                        var.append('[%s]' % form['%s[%d]' % (k, i)])
                         i += 1
                     var = ''.join(var)
                     if var not in projection:
@@ -151,7 +153,7 @@ class HTMLResponse(BaseResponse):
             projection = ','.join(projection)
             selection = '&'.join(selection)
             query = projection + '&' + selection
-            
+
             # Get current location.
             location = construct_url(environ, with_query_string=False)
 
@@ -180,13 +182,15 @@ class HTMLResponse(BaseResponse):
                 'location': location,
                 'dataset': dataset,
                 'responses': dict([(r.name, getattr(r.load(), '__description__', r.name))
-                        for r in iter_entry_points('pydap.response')
-                        if r.name not in COMMON_RESPONSES]),
+                                   for r in iter_entry_points('pydap.response')
+                                   if r.name not in COMMON_RESPONSES]),
                 'version': '.'.join(str(i) for i in __version__),
             }
             renderer = environ.get('pydap.renderer', self.renderer)
             template = renderer.loader('html.html')
-            output = renderer.render(template, context, output_format='text/html')
-            if hasattr(dataset, 'close'): dataset.close()
+            output = renderer.render(
+                template, context, output_format='text/html')
+            if hasattr(dataset, 'close'):
+                dataset.close()
             return [output.encode('utf-8')]
         return serialize

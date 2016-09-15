@@ -5,17 +5,19 @@ from pydap.responses.lib import BaseResponse
 
 
 class DASResponse(BaseResponse):
+
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
-                ('Content-description', 'dods_das'),
-                ('Content-type', 'text/plain; charset=utf-8'),
-                ])
+            ('Content-description', 'dods_das'),
+            ('Content-type', 'text/plain; charset=utf-8'),
+        ])
 
     @staticmethod
     def serialize(dataset):
-        output = ''.join(dispatch(dataset)).encode('utf-8') 
-        if hasattr(dataset, 'close'): dataset.close()
+        output = ''.join(dispatch(dataset)).encode('utf-8')
+        if hasattr(dataset, 'close'):
+            dataset.close()
         return [output]
 
 
@@ -38,7 +40,7 @@ def _dataset(var, level=0):
             yield line
 
     for child in var.walk():
-        for line in dispatch(child, level=level+1):
+        for line in dispatch(child, level=level + 1):
             yield line
     yield '%s}\n' % (level * INDENT)
 
@@ -51,7 +53,7 @@ def _structure(var, level=0):
             yield line
 
     for child in var.walk():
-        for line in dispatch(child, level=level+1):
+        for line in dispatch(child, level=level + 1):
             yield line
     yield '%s}\n' % (level * INDENT)
 
@@ -68,15 +70,15 @@ def _base(dapvar, level=0):
 def _recursive_build(attr, values, level=0):
     """
     Recursive function to build the DAS.
-    
+
     """
     # Check for metadata.
     if isinstance(values, dict):
-        yield '%s%s {\n' % ((level+1) * INDENT, attr)
+        yield '%s%s {\n' % ((level + 1) * INDENT, attr)
         for k, v in values.items():
-            for line in _recursive_build(k, v, level+1):
+            for line in _recursive_build(k, v, level + 1):
                 yield line
-        yield '%s}\n' % ((level+1) * INDENT)
+        yield '%s}\n' % ((level + 1) * INDENT)
     else:
         type_ = get_type(values).descriptor
         if not isiterable(values):
@@ -84,8 +86,8 @@ def _recursive_build(attr, values, level=0):
 
         # Encode values
         values = [encode_atom(atom) for atom in values]
-        yield '%s%s %s %s;\n' % ((level+1) * INDENT, type_,
-                attr.replace(' ', '_'), ', '.join(values))
+        yield '%s%s %s %s;\n' % ((level + 1) * INDENT, type_,
+                                 attr.replace(' ', '_'), ', '.join(values))
 
 
 def get_type(values):

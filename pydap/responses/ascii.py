@@ -9,12 +9,13 @@ from pydap.responses.lib import BaseResponse
 
 
 class ASCIIResponse(BaseResponse):
+
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
-                ('Content-description', 'dods_ascii'),
-                ('Content-type', 'text/plain'),
-                ])
+            ('Content-description', 'dods_ascii'),
+            ('Content-type', 'text/plain'),
+        ])
 
     @staticmethod
     def serialize(dataset):
@@ -25,14 +26,15 @@ class ASCIIResponse(BaseResponse):
         yield '\n'
         for line in dispatch(dataset):
             yield line
-        if hasattr(dataset, 'close'): dataset.close()
+        if hasattr(dataset, 'close'):
+            dataset.close()
 
 
 def dispatch(var, printname=True):
     dispatchers = [(SequenceType, _sequence),
                    (StructureType, _structure),
                    (BaseType, _base)]
-    
+
     for klass, func in dispatchers:
         if isinstance(var, klass):
             return func(var, printname)

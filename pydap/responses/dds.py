@@ -4,17 +4,19 @@ from pydap.responses.lib import BaseResponse
 
 
 class DDSResponse(BaseResponse):
+
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
-                ('Content-description', 'dods_dds'),
-                ('Content-type', 'text/plain; charset=utf-8'),
-                ])
+            ('Content-description', 'dods_dds'),
+            ('Content-type', 'text/plain; charset=utf-8'),
+        ])
 
     @staticmethod
     def serialize(dataset):
         output = ''.join(dispatch(dataset)).encode("utf-8")
-        if hasattr(dataset, 'close'): dataset.close()
+        if hasattr(dataset, 'close'):
+            dataset.close()
         return [output]
 
 
@@ -36,7 +38,7 @@ def structure_builder(name):
 
         # Get the DDS from stored variables.
         for child in var.walk():
-            for line in dispatch(child, level=level+1):
+            for line in dispatch(child, level=level + 1):
                 yield line
         yield '%s} %s;\n' % (level * INDENT, var.name)
     return func
@@ -45,13 +47,13 @@ def structure_builder(name):
 def _grid(var, level=0):
     yield '%sGrid {\n' % (level * INDENT)
 
-    yield '%sArray:\n' % ((level+1) * INDENT)
-    for line in _base(var.array, level=level+2):
+    yield '%sArray:\n' % ((level + 1) * INDENT)
+    for line in _base(var.array, level=level + 2):
         yield line
 
-    yield '%sMaps:\n' % ((level+1) * INDENT)
+    yield '%sMaps:\n' % ((level + 1) * INDENT)
     for map_ in var.maps.values():
-        for line in _base(map_, level=level+2):
+        for line in _base(map_, level=level + 2):
             yield line
 
     yield '%s} %s;\n' % (level * INDENT, var.name)

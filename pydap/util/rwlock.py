@@ -70,7 +70,7 @@ class ReadWriteLock(object):
 
         In case the timeout expires before the lock could be serviced, a
         RuntimeError is thrown.
-        
+
         """
         if not blocking:
             endtime = -1
@@ -100,7 +100,7 @@ class ReadWriteLock(object):
                     else:
                         # Grant a new read lock, always, in case there are
                         # no pending writers (and no writer).
-                        self.__readers[me] = self.__readers.get(me,0) + 1
+                        self.__readers[me] = self.__readers.get(me, 0) + 1
                         return
                 if endtime is not None:
                     remaining = endtime - time()
@@ -126,7 +126,7 @@ class ReadWriteLock(object):
 
         In case the timeout expires before the lock could be serviced, a
         RuntimeError is thrown.
-        
+
         """
         if not blocking:
             endtime = -1
@@ -151,7 +151,7 @@ class ReadWriteLock(object):
                     # Signal this to user.
                     raise ValueError(
                         "Inevitable dead lock, denying write lock"
-                        )
+                    )
                 upgradewriter = True
                 self.__upgradewritercount = self.__readers.pop(me)
             else:
@@ -211,7 +211,7 @@ class ReadWriteLock(object):
         Release the currently held lock.
 
         In case the current thread holds no lock, a ValueError is thrown.
-        
+
         """
         me = currentThread()
         self.__condition.acquire()

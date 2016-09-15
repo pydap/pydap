@@ -5,12 +5,14 @@ from pydap.lib import __dap__, INDENT, escape
 
 
 class ErrorResponse(object):
+
     def __init__(self, dataset=None, info=None):
-        self.info = info 
+        self.info = info
 
     def __call__(self, environ, start_response):
         headers = [('Content-description', 'dods_error'),
-                   ('XDODS-Server', 'dods/%s' % '.'.join(str(d) for d in __dap__)),
+                   ('XDODS-Server', 'dods/%s' %
+                    '.'.join(str(d) for d in __dap__)),
                    ('Content-type', 'text/plain')]
 
         type_, value, traceback_ = self.info

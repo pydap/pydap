@@ -11,6 +11,7 @@ END_OF_SEQUENCE = '\xa5\x00\x00\x00'
 
 
 class DapPacker(object):
+
     def __init__(self, var):
         self.var = var
 
@@ -56,7 +57,8 @@ class DapPacker(object):
                         yield self._pack_string(word)
             else:
                 for block in data:
-                    dtype = ">%s%s" % (self.var.type.typecode, self.var.type.size)
+                    dtype = ">%s%s" % (
+                        self.var.type.typecode, self.var.type.size)
                     yield block.astype(dtype).tostring()
 
     def __str__(self):
@@ -78,7 +80,7 @@ class DapPacker(object):
     def _pack_string(self, s):
         """
         Pack a string.
-        
+
         We first pack the string length, followed by the string padded
         to size 4n.
 
@@ -93,6 +95,7 @@ class DapPacker(object):
 
 
 class DapUnpacker(object):
+
     def __init__(self, xdrdata, var):
         self._buf = xdrdata
         self.var = var
@@ -127,7 +130,7 @@ class DapUnpacker(object):
                 n = self._unpack_uint()
                 if self.var.type not in [Url, String]:
                     self._unpack_uint()
-                
+
             # Bytes are treated differently.
             if self.var.type == Byte:
                 out = self._unpack_bytes(n)
@@ -138,20 +141,20 @@ class DapUnpacker(object):
                 out = numpy.array(out, self.var.type.typecode)
             else:
                 i = self._pos
-                self._pos = j = i + (n*self.var.type.size)
+                self._pos = j = i + (n * self.var.type.size)
                 dtype = ">%s%s" % (self.var.type.typecode, self.var.type.size)
                 out = numpy.fromstring(self._buf[i:j], dtype=dtype)
 
             if getattr(self.var, 'shape', False):
                 out.shape = self.var.shape
-            else:   
+            else:
                 out = out[0]
 
         return out
 
     def _unpack_uint(self):
         i = self._pos
-        self._pos = j = i+4
+        self._pos = j = i + 4
         data = self._buf[i:j]
         if len(data) < 4:
             raise EOFError
@@ -163,7 +166,7 @@ class DapUnpacker(object):
 
     def _unpack_bytes(self, count):
         i = self._pos
-        self._pos = j = i+count
+        self._pos = j = i + count
         out = numpy.fromstring(self._buf[i:j], dtype='B')
         padding = -count % 4
         self._pos += padding
@@ -176,7 +179,7 @@ class DapUnpacker(object):
             n = self._unpack_uint()
 
             i = self._pos
-            self._pos = j = i+n
+            self._pos = j = i + n
             data = self._buf[i:j]
             out.append(data)
 

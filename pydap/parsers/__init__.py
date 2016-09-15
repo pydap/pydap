@@ -2,6 +2,7 @@ import re
 
 
 class SimpleParser(object):
+
     def __init__(self, input, flags=0):
         self.buffer = input
         self.flags = flags
@@ -9,7 +10,7 @@ class SimpleParser(object):
     def peek(self, regexp):
         p = re.compile(regexp, self.flags)
         m = p.match(self.buffer)
-        if m: 
+        if m:
             token = m.group()
         else:
             token = ''
@@ -18,7 +19,7 @@ class SimpleParser(object):
     def consume(self, regexp):
         p = re.compile(regexp, self.flags)
         m = p.match(self.buffer)
-        if m: 
+        if m:
             token = m.group()
             self.buffer = self.buffer[len(token):]
         else:
