@@ -14,7 +14,7 @@ import copy
 class odict(dict):
 
     """Ordered dictionary."""
-    
+
     def __init__(self, pairs=None, **kw):
         self._keys = []
         self._dict = {}
@@ -29,7 +29,8 @@ class odict(dict):
 
     def __setitem__(self, key, item):
         self._dict.__setitem__(key, item)
-        if key not in self._keys: self._keys.append(key)
+        if key not in self._keys:
+            self._keys.append(key)
 
     def __getitem__(self, key):
         return self._dict.__getitem__(key)
@@ -48,13 +49,16 @@ class odict(dict):
         return [self._dict.__getitem__(key) for key in self._keys]
 
     def iterkeys(self):
-        for key in self._keys: yield key
+        for key in self._keys:
+            yield key
 
     def iteritems(self):
-        for key in self._keys: yield (key, self._dict.__getitem__(key))
+        for key in self._keys:
+            yield (key, self._dict.__getitem__(key))
 
     def itervalues(self):
-        for key in self._keys: yield self._dict.__getitem__(key)
+        for key in self._keys:
+            yield self._dict.__getitem__(key)
 
     def clear(self):
         self._dict.clear()
@@ -69,19 +73,24 @@ class odict(dict):
             self.__setitem__(k, v)
 
     def setdefault(self, key, d=None):
-        if key not in self._keys: self._keys.append(key)
+        if key not in self._keys:
+            self._keys.append(key)
         return self._dict.setdefault(key, d)
 
     def get(self, key, d=None):
-        if key in self._keys: return self._dict.__getitem__(key)
-        else: return d
+        if key in self._keys:
+            return self._dict.__getitem__(key)
+        else:
+            return d
 
     def has_key(self, key):
         return self._dict.has_key(key)
 
     def popitem(self):
-        try: key = self._keys[-1]
-        except IndexError: raise KeyError('dictionary is empty')
+        try:
+            key = self._keys[-1]
+        except IndexError:
+            raise KeyError('dictionary is empty')
 
         self._keys.remove(key)
         return self._dict.pop(key)
@@ -89,14 +98,17 @@ class odict(dict):
     def pop(self, key, d=None):
         value = self._dict.pop(key, d)
 
-        try: self._keys.remove(key)
-        except ValueError: pass
-        
+        try:
+            self._keys.remove(key)
+        except ValueError:
+            pass
+
         return value
 
     def fromkeys(keys, d=None):
         new = odict()
-        for key in keys: new.__setitem__(key, d)
+        for key in keys:
+            new.__setitem__(key, d)
         return new
 
     def __contains__(self, key):
@@ -118,7 +130,7 @@ class odict(dict):
         new = odict()
         for k, v in self.items():
             new.__setitem__(k, copy.deepcopy(v))
-        return new 
+        return new
 
 
 def _test():

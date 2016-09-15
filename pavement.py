@@ -9,7 +9,7 @@ from paver.release import setup_meta
 try:
     from pydap.lib import __version__
 except ImportError:
-    __version__ = ('unknown',)
+    __version__ = ('3.1.2',)
 
 options = environment.options
 setup(**setup_meta)
@@ -28,7 +28,7 @@ bandwidth and time. The module also comes with a robust-but-lightweight
 Opendap server, implemented as a WSGI application.
         ''',
         keywords='opendap dods dap data science climate oceanography meteorology',
-        classifiers=filter(None, map(string.strip, '''
+        classifiers=filter(None, map(str.strip, '''
             Development Status :: 5 - Production/Stable
             Environment :: Console
             Environment :: Web Environment
@@ -53,7 +53,8 @@ Opendap server, implemented as a WSGI application.
                 only_in_packages=False),
         include_package_data=True,
         zip_safe=False,
-        namespace_packages=['pydap', 'pydap.responses', 'pydap.handlers', 'pydap.wsgi'],
+        namespace_packages=['pydap', 'pydap.responses',
+            'pydap.handlers', 'pydap.wsgi'],
 
         test_suite='nose.collector',
 
@@ -82,33 +83,33 @@ Opendap server, implemented as a WSGI application.
             version = pydap.responses.version:VersionResponse
             help = pydap.responses.help:HelpResponse
             html = pydap.responses.html:HTMLResponse
-      
+
             [paste.app_factory]
             server = pydap.wsgi.file:make_app
-      
+
             [paste.paster_create_template]
             pydap = pydap.wsgi.templates:DapServerTemplate
         """,
     ),
-    minilib=Bunch(
+    minilib = Bunch(
         extra_files=['doctools', 'virtual'],
         versioned_name=True
-    ), 
-    virtualenv=Bunch(
+    ),
+    virtualenv = Bunch(
         packages_to_install=['Paste', 'Pydap'],
         script_name='bootstrap.py',
         paver_command_line=None,
         install_paver=True
     ),
-    sphinx=Bunch(
+    sphinx = Bunch(
         builddir='_build',
     ),
-    cog=Bunch(
+    cog = Bunch(
         includedir='.',
     ),
-    deploy=Bunch(
-        htmldir = path('pydap.org'),
-        bucket = 'pydap.org',
+    deploy = Bunch(
+        htmldir=path('pydap.org'),
+        bucket='pydap.org',
     ),
 )
 
@@ -118,9 +119,9 @@ if paver.doctools.has_sphinx:
     @needs(['cog', 'paver.doctools.html'])
     def html():
         """Build the docs and put them into our package."""
-        destdir = path('pydap.org')
+        destdir=path('pydap.org')
         destdir.rmtree()
-        builtdocs = path("docs") / options.builddir / "html"
+        builtdocs=path("docs") / options.builddir / "html"
         builtdocs.move(destdir)
 
     @task
@@ -156,14 +157,14 @@ def deploy():
     from boto.s3.connection import S3Connection
     from boto.s3.key import Key
 
-    conn = S3Connection()
-    bucket = conn.create_bucket(options.bucket)
+    conn=S3Connection()
+    bucket=conn.create_bucket(options.bucket)
     bucket.set_acl('public-read')
 
     for root, dirs, files in os.walk(options.htmldir):
         for file in files:
-            path = os.path.join(root, file)
-            k = Key(bucket)
-            k.key = path[len(options.htmldir)+1:]  # strip pydap.org/
+            path=os.path.join(root, file)
+            k=Key(bucket)
+            k.key=path[len(options.htmldir) + 1:]  # strip pydap.org/
             k.set_contents_from_filename(path)
             k.set_acl('public-read')

@@ -91,7 +91,7 @@ class FileSource(object):
         self.filename = filename
         self.real_name = filename
         self.mtime = None
-        
+
     def open(self):
         if self.mtime is None:
             self.mtime = os.path.getmtime(self.filename)

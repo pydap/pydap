@@ -36,7 +36,8 @@ request D instead of B, to minimize downloaded data.
 """
 from __future__ import division
 
-import sys, logging
+import sys
+import logging
 logging.basicConfig(stream=sys.stdout)
 logger = logging.getLogger('pydap')
 logger.setLevel(logging.INFO)
@@ -66,7 +67,7 @@ pydap.lib.USER_AGENT = 'DapCache/0.1'
 
 
 TILESIZE = int(2e6)  # bytes
-MAXSIZE  = int(1e8)
+MAXSIZE = int(1e8)
 LOCK = defaultdict(ReadWriteLock)
 
 # TODO:
@@ -79,6 +80,7 @@ LOCK = defaultdict(ReadWriteLock)
 
 
 class DapCache(object):
+
     def __init__(self, url, responses, cachedir, tilesize=TILESIZE, maxsize=MAXSIZE):
         self.url = url
         self.responses = responses
@@ -101,26 +103,28 @@ class DapCache(object):
             dataset = open_url(url)
             cachepath = os.path.join(self.cachedir, basename.replace('/', '_'))
 
-            # here we an use mstat to check the mtime of the file, and 
+            # here we an use mstat to check the mtime of the file, and
             # do a HEAD on the dataset to compare with Last-Modified header
             r = requests.head(url + '.dods')
             if 'last-modified' in r.headers:
-                last_modified = time.mktime(parsedate(r.headers['last-modified']))
-                mtime = time.mktime(time.localtime( os.stat(cachepath)[ST_MTIME] ))
+                last_modified = time.mktime(
+                    parsedate(r.headers['last-modified']))
+                mtime = time.mktime(time.localtime(
+                    os.stat(cachepath)[ST_MTIME]))
                 if last_modified > mtime:
                     os.unlink(cachepath)
 
             # replace data with a caching version
             for var in walk(dataset, BaseType):
                 var.data = CachingArrayProxy(
-                        cachepath, self.tilesize, self.maxsize,
-                        var.type, var.id,
-                        var.data.url, var.data.shape, var.data._slice)
-            #for var in walk(dataset, SequenceType):
+                    cachepath, self.tilesize, self.maxsize,
+                    var.type, var.id,
+                    var.data.url, var.data.shape, var.data._slice)
+            # for var in walk(dataset, SequenceType):
             #    var.data = CachingSequenceProxy(
             #            cachepath,
             #            var.id,
-            #            var.data.url, var.data.slice, var.data._slice, var.data.children)
+            # var.data.url, var.data.slice, var.data._slice, var.data.children)
 
             app = SimpleHandler(dataset)
         # pass this upstream
@@ -131,6 +135,7 @@ class DapCache(object):
 
 
 class CachingArrayProxy(ArrayProxy):
+
     def __init__(self, cachepath, tilesize, maxsize, dtype, id_, url, shape, slice_=None):
         super(CachingArrayProxy, self).__init__(id_, url, shape, slice_)
 
@@ -145,7 +150,7 @@ class CachingArrayProxy(ArrayProxy):
         size = np.prod(shape) * dtype.size
         divisions = 0
         while size > tilesize:
-            size = np.ceil(size/2)
+            size = np.ceil(size / 2)
             divisions += 1
         self.tiles = 2**divisions
 
@@ -176,7 +181,8 @@ class CachingArrayProxy(ArrayProxy):
             # update cache with needed data
             with self.lock.writelock:
                 for tile in self.get_tiles(needed):
-                    self.cache[tile] = super(CachingArrayProxy, self).__getitem__(tile)
+                    self.cache[tile] = super(
+                        CachingArrayProxy, self).__getitem__(tile)
                 # update index with newly requested data
                 self.index[:] = self.index[:] | needed
 
@@ -190,13 +196,13 @@ class CachingArrayProxy(ArrayProxy):
         # check which of the smaller tiles are in the request
         height = int(np.log2(self.tiles))
         requested = []
-        queue = [ (0, list(0 for dim in self.shape), list(self.shape)) ]
+        queue = [(0, list(0 for dim in self.shape), list(self.shape))]
         while queue:
             depth, start, end = queue.pop(0)
             if depth < height:
                 left, right = split(start, end)
-                queue.append( ((depth+1,) + left) )
-                queue.append( ((depth+1,) + right) )
+                queue.append(((depth + 1,) + left))
+                queue.append(((depth + 1,) + right))
             else:
                 for s, min_, max_ in zip(slice_, start, end):
                     if s.stop <= min_ or s.start >= max_:
@@ -219,12 +225,12 @@ class CachingArrayProxy(ArrayProxy):
               0   0
              /|   |\
             1 1   1 1
-            
+
         We can make a request for a continuous region that contains
         all child nodes.
 
         """
-        queue = [ (needed, list(0 for dim in self.shape), list(self.shape)) ]
+        queue = [(needed, list(0 for dim in self.shape), list(self.shape))]
         while queue:
             needed, start, end = queue.pop(0)
             size = sum(needed) * self.tilesize
@@ -233,18 +239,18 @@ class CachingArrayProxy(ArrayProxy):
             elif any(needed):
                 middle = np.floor(len(needed) / 2)
                 left, right = split(start, end)
-                queue.append( ((needed[:middle],) + left) )
-                queue.append( ((needed[middle:],) + right) )
+                queue.append(((needed[:middle],) + left))
+                queue.append(((needed[middle:],) + right))
 
 
 def split(start, end):
     # split along longest dimension
-    shape = tuple(p1-p0 for p0, p1 in zip(start, end))
+    shape = tuple(p1 - p0 for p0, p1 in zip(start, end))
     axis = shape.index(max(shape))
     middle = int(start[axis] + np.floor(shape[axis] / 2))
 
-    left = start, end[:axis] + [middle] + end[axis+1:]
-    right = start[:axis] + [middle] + start[axis+1:], end
+    left = start, end[:axis] + [middle] + end[axis + 1:]
+    right = start[:axis] + [middle] + start[axis + 1:], end
 
     return left, right
 
@@ -256,6 +262,7 @@ def make_cache(global_conf, url, responses, **kwargs):
 
 
 if __name__ == '__main__':
-    app = DapCache('http://pydap.zenofdata.com/', ['dods', 'asc', 'ascii'], '.cache', 64)
+    app = DapCache('http://pydap.zenofdata.com/',
+                   ['dods', 'asc', 'ascii'], '.cache', 64)
     from paste import httpserver
     httpserver.serve(app, '127.0.0.1', port=8003)

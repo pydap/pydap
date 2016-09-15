@@ -1,5 +1,6 @@
 from paste.script import templates
 
+
 class DapServerTemplate(templates.Template):
 
     egg_plugins = ['pydap']
@@ -9,7 +10,7 @@ class DapServerTemplate(templates.Template):
 
     def post(self, command, output_dir, vars):
         if command.verbose:
-            print '*'*72
-            print '* Run "paster serve %s/server.ini" to run' % output_dir
-            print '* the DAP server on http://localhost:8001/'
-            print '*'*72
+            print('*' * 72)
+            print('* Run "paster serve %s/server.ini" to run' % output_dir)
+            print('* the DAP server on http://localhost:8001/')
+            print('*' * 72)

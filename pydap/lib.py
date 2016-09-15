@@ -8,9 +8,9 @@ import numpy
 from pydap.exceptions import ConstraintExpressionError
 
 
-__author__  = 'Roberto De Almeida <rob@pydap.org>'
-__version__ = (3,1,1)       # pydap version
-__dap__     = (2,15)       # protocol version
+__author__ = 'Roberto De Almeida <rob@pydap.org>'
+__version__ = (3, 1, 1)       # pydap version
+__dap__ = (2, 15)       # protocol version
 
 
 # Global variables -- I know we should try to avoid them, but we need
@@ -44,7 +44,8 @@ def isiterable(obj):
         True
 
     """
-    if isinstance(obj, basestring): return False
+    if isinstance(obj, basestring):
+        return False
 
     try:
         iter(obj)
@@ -158,18 +159,20 @@ def hyperslab(slices):
 
     """ % sys.maxint
 
-    if not isinstance(slices, tuple): slices = [slices]
-    else: slices = list(slices)
+    if not isinstance(slices, tuple):
+        slices = [slices]
+    else:
+        slices = list(slices)
 
     # Remove unnecessary slices from the end.
     while slices and slices[-1] == slice(None):
         slices.pop()
 
     return ''.join('[%d:%d:%d]' % (
-            slice_.start or 0,
-            slice_.step or 1,
-            (slice_.stop or sys.maxint)-1)
-            for slice_ in slices)
+        slice_.start or 0,
+        slice_.step or 1,
+        (slice_.stop or sys.maxint) - 1)
+        for slice_ in slices)
 
 
 def fix_slice(slices, shape):
@@ -186,13 +189,15 @@ def fix_slice(slices, shape):
         (slice(0, 1, 1), slice(0, 4, 1), slice(0, 4, 1), slice(3, 4, 1))
 
     """
-    if not isinstance(slices, tuple): slices = (slices,)
-    n = len(shape)-len(slices)
-    if [s for s in slices if s is Ellipsis]:  # ``Ellipsis in slices`` fails due to numpy comparison problem
+    if not isinstance(slices, tuple):
+        slices = (slices,)
+    n = len(shape) - len(slices)
+    # ``Ellipsis in slices`` fails due to numpy comparison problem
+    if [s for s in slices if s is Ellipsis]:
         i = list(slices).index(Ellipsis)
-        slices = slices[:i] + (slice(None),)*(n+1) + slices[i+1:]
+        slices = slices[:i] + (slice(None),) * (n + 1) + slices[i + 1:]
     else:
-        slices = slices + (slice(None),)*n
+        slices = slices + (slice(None),) * n
 
     out = []
     for slice_, length in zip(slices, shape):
@@ -201,14 +206,16 @@ def fix_slice(slices, shape):
             stop = slice_.nonzero()[0][-1] + 1
             slice_ = slice(start, stop, 1)
         elif isinstance(slice_, (int, long)):
-            if slice_ < 0: slice_ += length
-            slice_ = slice(slice_, slice_+1, 1)
+            if slice_ < 0:
+                slice_ += length
+            slice_ = slice(slice_, slice_ + 1, 1)
         else:
             if slice_.start is None:
                 start = 0
             else:
                 start = slice_.start
-            if start < 0: start += length
+            if start < 0:
+                start += length
             if slice_.step is None:
                 step = 1
             else:
@@ -217,7 +224,8 @@ def fix_slice(slices, shape):
                 stop = length
             else:
                 stop = slice_.stop
-            if stop < 0: stop += length
+            if stop < 0:
+                stop += length
             slice_ = slice(start, stop, step)
         out.append(slice_)
     return tuple(out)
@@ -265,7 +273,7 @@ def get_slice(hyperslab):
         elif len(tokens) == 3:
             step = int(tokens[1])
             stop = int(tokens[2])
-        output.append(slice(start, stop+1, step))
+        output.append(slice(start, stop + 1, step))
     return tuple(output)
 
 
@@ -276,14 +284,16 @@ def parse_qs(query):
     """
     projection = []
     selection = [token for token in urllib.unquote(query).split('&') if token]
-    if selection and not re.search('<=|>=|!=|=~|>|<|=', selection[0]): 
+    if selection and not re.search('<=|>=|!=|=~|>|<|=', selection[0]):
         projection = [p for p in selection.pop(0).split(',') if p]
 
     fields = []
     for var in projection:
         tokens = var.split('.')
-        tokens = [re.match('(.*?)(\[.*\])?$', token).groups() for token in tokens]
-        tokens = [(urllib.quote(token), get_slice(slice_ or '')) for (token, slice_) in tokens]
+        tokens = [re.match('(.*?)(\[.*\])?$', token).groups()
+                  for token in tokens]
+        tokens = [(urllib.quote(token), get_slice(slice_ or ''))
+                  for (token, slice_) in tokens]
         fields.append(tokens)
 
     return fields, selection
@@ -292,7 +302,7 @@ def parse_qs(query):
 def fix_shn(projection, dataset):
     """
     Fix shorthand notation for variables.
-    
+
     Shorthand notation is the syntax some clients use to retrieve data
     using the variable name instead of its fully qualified id.
 
@@ -305,10 +315,11 @@ def fix_shn(projection, dataset):
             token, slice_ = var.pop(0)
             for child in walk(dataset):
                 if token == child.name:
-                    if var: raise ConstraintExpressionError(
+                    if var:
+                        raise ConstraintExpressionError(
                             "Ambiguous shorthand notation request: %s" % token)
-                    var = [(parent, ()) 
-                            for parent in child.id.split('.')[:-1]] + [(token, slice_)]
+                    var = [(parent, ())
+                           for parent in child.id.split('.')[:-1]] + [(token, slice_)]
         out.append(var)
     return out
 
@@ -327,9 +338,11 @@ def escape_dods(dods, pad=''):
     for i, char in enumerate(dods):
         char = hex(ord(char))
         char = char.replace('0x', '\\x')
-        if len(char) < 4: char = char.replace('\\x', '\\x0')
+        if len(char) < 4:
+            char = char.replace('\\x', '\\x0')
         out.append(char)
-        if pad and (i%4 == 3): out.append(pad)
+        if pad and (i % 4 == 3):
+            out.append(pad)
     out = ''.join(out)
     out = out.replace(r'\x5a\x00\x00\x00', '<start of sequence>')
     out = out.replace(r'\xa5\x00\x00\x00', '<end of sequence>')

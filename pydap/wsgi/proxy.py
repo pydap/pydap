@@ -14,6 +14,7 @@ def make_proxy(global_conf, url, responses, cache=None, **kwargs):
 
 
 class DapProxy(object):
+
     def __init__(self, url, responses, cache=None):
         self.url = url
         self.responses = responses
@@ -24,10 +25,10 @@ class DapProxy(object):
         basename, response = path_info.rsplit('.', 1)
 
         if response in self.responses:
-            dataset = open_url( urljoin(self.url, basename) )
+            dataset = open_url(urljoin(self.url, basename))
             app = SimpleHandler(dataset)
         else:
-            app = Proxy( urljoin(self.url, path_info) )
+            app = Proxy(urljoin(self.url, path_info))
 
         return app(environ, start_response)
 

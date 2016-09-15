@@ -11,7 +11,8 @@ Patch pydap to enable ESGF security.
 
 import urllib2
 import re
-import os, sys
+import os
+import sys
 
 import M2Crypto
 
@@ -20,6 +21,7 @@ from pydap.exceptions import ClientError
 
 import logging
 log = logging.getLogger('esgf.security')
+
 
 def install_esgf_client(certfile, keyfile):
     """
@@ -35,10 +37,10 @@ def install_esgf_client(certfile, keyfile):
 
     """
 
-    # Create HTTPSHandler    
+    # Create HTTPSHandler
     ssl_context = M2Crypto.SSL.Context()
     ssl_context.load_cert_chain(certfile, keyfile)
-    opener = M2Crypto.m2urllib2.build_opener(ssl_context, 
+    opener = M2Crypto.m2urllib2.build_opener(ssl_context,
                                              urllib2.HTTPCookieProcessor,
                                              urllib2.ProxyHandler)
 
@@ -58,7 +60,7 @@ def install_esgf_client(certfile, keyfile):
         # server and return it in a ``ClientError`` exception.
         if resp.get("content-description") == "dods_error":
             m = re.search('code = (?P<code>\d+);\s*message = "(?P<msg>.*)"',
-                    data, re.DOTALL | re.MULTILINE)
+                          data, re.DOTALL | re.MULTILINE)
             msg = 'Server error %(code)s: "%(msg)s"' % m.groupdict()
             raise ClientError(msg)
 
@@ -66,5 +68,3 @@ def install_esgf_client(certfile, keyfile):
 
     from pydap.util import http
     http.request = new_request
-
-

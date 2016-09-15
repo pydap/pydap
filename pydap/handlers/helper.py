@@ -71,7 +71,7 @@ def constrain(dataset, ce):
                [21.0, 35.4, 200.0],
                [20.0, 33.5, 300.0],
                [19.0, 33.0, 500.0]], dtype=object))
-        
+
     Instead, inner sequences have to be filtered inside a loop::
 
         >>> for struct_ in dataset.casts:
@@ -86,7 +86,7 @@ def constrain(dataset, ce):
     """
     projection, selection = parse_qs(ce)
     projection = projection or [[(key, ())]
-            for key in dataset.keys()]
+                                for key in dataset.keys()]
     projection = fix_shn(projection, dataset)
 
     # Make a copy of the dataset.
@@ -99,15 +99,15 @@ def constrain(dataset, ce):
             # Check only selections that apply to the direct children of this sequence
             # (ie, skip children from nested sequences).
             for cond in [cond for cond in selection
-                    if re.match('%s\.[^\.]+(<=|<|>=|>|=|!=)' % re.escape(seq.id), cond)]:
+                         if re.match('%s\.[^\.]+(<=|<|>=|>|=|!=)' % re.escape(seq.id), cond)]:
                 id_, op, other = parse_selection(cond, dataset)
                 filter_.append(op(id_, other))
             if filter_:
-                seq.data = seq[ reduce(lambda c1, c2: c1 & c2, filter_) ].data
+                seq.data = seq[reduce(lambda c1, c2: c1 & c2, filter_)].data
 
     # Create a new empty dataset to build it up.
     new_ = DatasetType(name=filtered.name,
-            attributes=filtered.attributes.copy())
+                       attributes=filtered.attributes.copy())
 
     for var in projection:
         target, template = new_, filtered
@@ -121,7 +121,7 @@ def constrain(dataset, ce):
                     candidate.data = candidate[slice_]
                     candidate.shape = candidate.data.shape
                 else:
-                    candidate = candidate[slice_] 
+                    candidate = candidate[slice_]
 
             if isinstance(candidate, StructureType):
                 if var:
@@ -145,9 +145,9 @@ def parse_selection(cond, dataset):
     """
     id_, op, other = re.split('(<=|>=|!=|=~|>|<|=)', cond)
 
-    op = { '<=': operator.le, '>=': operator.ge,
-            '!=': operator.ne, '=': operator.eq,
-            '>': operator.gt, '<': operator.lt }[op]
+    op = {'<=': operator.le, '>=': operator.ge,
+          '!=': operator.ne, '=': operator.eq,
+          '>': operator.gt, '<': operator.lt}[op]
     try:
         names = [dataset] + id_.split('.')
         id_ = reduce(operator.getitem, names)
@@ -169,4 +169,3 @@ def _test():
 
 if __name__ == "__main__":
     _test()
-

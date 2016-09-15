@@ -30,14 +30,14 @@ DEFAULT_TEMPLATE = """<html xmlns="http://www.w3.org/1999/xhtml">
 class HelpResponse(BaseResponse):
 
     renderer = GenshiRenderer(
-            options={}, loader=StringLoader( {'help.html': DEFAULT_TEMPLATE} ))
+        options={}, loader=StringLoader({'help.html': DEFAULT_TEMPLATE}))
 
     def __init__(self, dataset=None):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
-                ('Content-description', 'dods_help'),
-                ('Content-type', 'text/html'),
-                ])
+            ('Content-description', 'dods_help'),
+            ('Content-type', 'text/html'),
+        ])
 
     def __call__(self, environ, start_response):
         def serialize(dataset):
@@ -47,12 +47,14 @@ class HelpResponse(BaseResponse):
                 'root': construct_url(environ, with_query_string=False, with_path_info=False, script_name='').rstrip('/'),
                 'base': base,
                 'location': location,
-                'version' : '.'.join(str(d) for d in __version__),
+                'version': '.'.join(str(d) for d in __version__),
             }
             renderer = environ.get('pydap.renderer', self.renderer)
             template = renderer.loader('help.html')
-            output = renderer.render(template, context, output_format='text/html')
-            if hasattr(dataset, 'close'): dataset.close()
+            output = renderer.render(
+                template, context, output_format='text/html')
+            if hasattr(dataset, 'close'):
+                dataset.close()
             return [output]
         self.serialize = serialize
         return BaseResponse.__call__(self, environ, start_response)

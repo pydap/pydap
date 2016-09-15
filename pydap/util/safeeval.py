@@ -5,16 +5,16 @@ import dis
 
 
 _expr_codes = map(dis.opmap.__getitem__, [
-    'POP_TOP','ROT_TWO','ROT_THREE','ROT_FOUR','DUP_TOP',
-    'BUILD_LIST','BUILD_MAP','BUILD_TUPLE',
-    'LOAD_CONST','RETURN_VALUE','STORE_SUBSCR',
-    'UNARY_POSITIVE','UNARY_NEGATIVE','UNARY_NOT',
-    'UNARY_INVERT','BINARY_POWER','BINARY_MULTIPLY',
-    'BINARY_DIVIDE','BINARY_FLOOR_DIVIDE','BINARY_TRUE_DIVIDE',
-    'BINARY_MODULO','BINARY_ADD','BINARY_SUBTRACT',
-    'BINARY_LSHIFT','BINARY_RSHIFT','BINARY_AND','BINARY_XOR',
+    'POP_TOP', 'ROT_TWO', 'ROT_THREE', 'ROT_FOUR', 'DUP_TOP',
+    'BUILD_LIST', 'BUILD_MAP', 'BUILD_TUPLE',
+    'LOAD_CONST', 'RETURN_VALUE', 'STORE_SUBSCR',
+    'UNARY_POSITIVE', 'UNARY_NEGATIVE', 'UNARY_NOT',
+    'UNARY_INVERT', 'BINARY_POWER', 'BINARY_MULTIPLY',
+    'BINARY_DIVIDE', 'BINARY_FLOOR_DIVIDE', 'BINARY_TRUE_DIVIDE',
+    'BINARY_MODULO', 'BINARY_ADD', 'BINARY_SUBTRACT',
+    'BINARY_LSHIFT', 'BINARY_RSHIFT', 'BINARY_AND', 'BINARY_XOR',
     'BINARY_OR',
-    ])
+])
 
 
 def _get_opcodes(codeobj):
@@ -36,7 +36,7 @@ def _get_opcodes(codeobj):
             i += 3
         else:
             i += 1
-    return opcodes        
+    return opcodes
 
 
 def test_expr(expr, allowed_codes):
@@ -53,7 +53,8 @@ def test_expr(expr, allowed_codes):
     codes = _get_opcodes(c)
     for code in codes:
         if code not in allowed_codes:
-            raise ValueError("opcode %s not allowed (%s)" % (dis.opname[code], repr(expr)))
+            raise ValueError("opcode %s not allowed (%s)" %
+                             (dis.opname[code], repr(expr)))
     return c
 
 

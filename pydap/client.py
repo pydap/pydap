@@ -58,7 +58,8 @@ def open_url(url):
     """
     for response in [_ddx, _ddsdas]:
         dataset = response(url)
-        if dataset: break
+        if dataset:
+            break
     else:
         raise ClientError("Unable to open dataset.")
 
@@ -66,7 +67,7 @@ def open_url(url):
     scheme, netloc, path, query, fragment = urlsplit(url)
     projection, selection = parse_qs(query)
     url = urlunsplit(
-            (scheme, netloc, path, '&'.join(selection), fragment))
+        (scheme, netloc, path, '&'.join(selection), fragment))
 
     # Set data to a Proxy object for BaseType and SequenceType. These
     # variables can then be sliced to retrieve the data on-the-fly.
@@ -101,6 +102,7 @@ class Functions(object):
     with the corresponding arguments.
 
     """
+
     def __init__(self, baseurl):
         self.baseurl = baseurl
 
@@ -117,6 +119,7 @@ class ServerFunction(object):
     downloads data when actually accessed by the user.
 
     """
+
     def __init__(self, baseurl, name):
         self.baseurl = baseurl
         self.name = name
@@ -140,20 +143,23 @@ class ServerFunctionResult(object):
     accessed, simulating a dataset object.
 
     """
+
     def __init__(self, baseurl, id_):
         self.id = id_
         self.dataset = None
 
         scheme, netloc, path, query, fragment = urlsplit(baseurl)
         self.url = urlunsplit((
-                scheme, netloc, path + '.dods', id_, None))
-    
+            scheme, netloc, path + '.dods', id_, None))
+
     def __getattr__(self, name):
-        if self.dataset is None: self.dataset = open_dods(self.url, True)
+        if self.dataset is None:
+            self.dataset = open_dods(self.url, True)
         return getattr(self.dataset, name)
 
     def __getitem__(self, key):
-        if self.dataset is None: self.dataset = open_dods(self.url, True)
+        if self.dataset is None:
+            self.dataset = open_dods(self.url, True)
         return self.dataset[key]
 
 
@@ -172,7 +178,7 @@ def open_dods(url, get_metadata=False):
     if get_metadata:
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
-                (scheme, netloc, path[:-5] + '.das', query, fragment))
+            (scheme, netloc, path[:-5] + '.das', query, fragment))
         resp, das = request(dasurl)
         dataset = DASParser(das, dataset).parse()
 
@@ -199,9 +205,9 @@ def _ddsdas(url):
     """
     scheme, netloc, path, query, fragment = urlsplit(url)
     ddsurl = urlunsplit(
-            (scheme, netloc, path + '.dds', query, fragment))
+        (scheme, netloc, path + '.dds', query, fragment))
     dasurl = urlunsplit(
-            (scheme, netloc, path + '.das', query, fragment))
+        (scheme, netloc, path + '.das', query, fragment))
 
     respdds, dds = request(ddsurl)
     respdas, das = request(dasurl)
@@ -210,4 +216,3 @@ def _ddsdas(url):
     dataset = DDSParser(dds).parse()
     dataset = DASParser(das, dataset).parse()
     return dataset
-

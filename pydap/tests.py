@@ -21,5 +21,7 @@ def to_list(L):
 
     Works with nested iterables.
     """
-    if isiterable(L): return [to_list(item) for item in L]
-    else: return L
+    if isiterable(L):
+        return [to_list(item) for item in L]
+    else:
+        return L

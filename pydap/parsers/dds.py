@@ -4,13 +4,15 @@ from urllib import unquote
 from pydap.parsers import SimpleParser
 from pydap.model import *
 
-atomic_types = ('byte', 'int', 'uint', 'int16', 'uint16', 'int32', 
-        'uint32', 'float32', 'float64', 'string', 'url')
+atomic_types = ('byte', 'int', 'uint', 'int16', 'uint16', 'int32',
+                'uint32', 'float32', 'float64', 'string', 'url')
 constructors = ('grid', 'sequence', 'structure')
 
 name_regexp = '[' + '\w%!~"\'\*-' + ']+'  # regular expression for name
 
+
 class DDSParser(SimpleParser):
+
     def __init__(self, dds):
         SimpleParser.__init__(self, dds, re.IGNORECASE)
         self.dds = dds
@@ -57,7 +59,7 @@ class DDSParser(SimpleParser):
         self.consume(';')
 
         var = BaseType(name=name, shape=shape,
-                dimensions=dimensions, type=type_)
+                       dimensions=dimensions, type=type_)
         return var
 
     def _dimensions(self):

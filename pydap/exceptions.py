@@ -15,8 +15,9 @@ algorithm.
 class DapError(Exception):
     """
     Base DAP exception.
-    
+
     """
+
     def __init__(self, value):
         self.value = value
 
@@ -27,7 +28,7 @@ class DapError(Exception):
 class ClientError(DapError):
     """
     Generic error with the client.
-    
+
     """
     code = 100
 
@@ -35,7 +36,7 @@ class ClientError(DapError):
 class ServerError(DapError):
     """
     Generic error with the server.
-    
+
     """
     code = 200
 
@@ -43,7 +44,7 @@ class ServerError(DapError):
 class ConstraintExpressionError(ServerError):
     """
     Exception raised when an invalid constraint expression is given.
-    
+
     """
     code = 201
 
@@ -51,7 +52,7 @@ class ConstraintExpressionError(ServerError):
 class HandlerError(DapError):
     """
     Generic error with a handler.
-    
+
     """
     code = 300
 
@@ -60,7 +61,7 @@ class ExtensionNotSupportedError(HandlerError):
     """
     Exception raised when trying to open a file not supported by any
     handlers.
-    
+
     """
     code = 301
 
@@ -68,7 +69,6 @@ class ExtensionNotSupportedError(HandlerError):
 class OpenFileError(HandlerError):
     """
     Exception raised when unable to open a file.
-    
+
     """
     code = 302
-

@@ -9,12 +9,14 @@ from pydap.model import *
 from pydap.util.safeeval import expr_eval
 
 atomic_types = ('byte', 'int', 'uint', 'int16', 'uint16', 'int32',
-        'uint32', 'float32', 'float64', 'string', 'url', 'alias')
+                'uint32', 'float32', 'float64', 'string', 'url', 'alias')
 
 
 class DASParser(SimpleParser):
+
     def __init__(self, das, dataset):
-        SimpleParser.__init__(self, das, re.IGNORECASE | re.VERBOSE | re.DOTALL)
+        SimpleParser.__init__(self, das, re.IGNORECASE |
+                              re.VERBOSE | re.DOTALL)
         self.das = das
         self.dataset = dataset
 
@@ -31,7 +33,7 @@ class DASParser(SimpleParser):
         while not self.peek('}'):
             self._attr_container()
         self.consume('}')
-        
+
         return self.dataset
 
     def _attr_container(self):
@@ -103,21 +105,21 @@ class DASParser(SimpleParser):
         if type_.lower() in ['string'] and name == 'PCF1':
             endstrindx = self.buffer.index('";')
             value = self.buffer[1:endstrindx]
-            self.buffer = self.buffer[endstrindx+1:]
+            self.buffer = self.buffer[endstrindx + 1:]
             self.consume(';')
             return name, value
 
         while not self.peek(';'):
             value = self.consume(
-                    r'''
+                r'''
                         ""          # empty attribute
                         |           # or
                         ".*?[^\\]"  # from quote up to an unquoted quote
                         |           # or
                         [^;,]+      # up to semicolon or comma 
                         '''
-                    )
-            
+            )
+
             if type_.lower() in ['string', 'url']:
                 value = expr_eval(repr(value))
                 value = value.strip('"')
@@ -151,11 +153,11 @@ class DASParser(SimpleParser):
                     # difference between float 32 vs. 64.
                     dtype = {'float64': 'd',
                              'float32': 'f',
-                             'int32'  : 'l',
-                             'int16'  : 'h',
-                             'uint32' : 'L',
-                             'uint16' : 'H',
-                             'byte'   : 'B'}[type_.lower()]
+                             'int32': 'l',
+                             'int16': 'h',
+                             'uint32': 'L',
+                             'uint16': 'H',
+                             'byte': 'B'}[type_.lower()]
                     if dtype in ['d', 'f']:
                         value = array.array(dtype, [float(value)])[0]
                     else:
