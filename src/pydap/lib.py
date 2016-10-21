@@ -6,7 +6,7 @@ import operator
 from pkg_resources import get_distribution
 from six.moves.urllib.parse import quote as quote_
 from six.moves import reduce, zip_longest
-from six import text_type, MAXSIZE
+from six import text_type, binary_type, MAXSIZE
 
 from pydap.exceptions import ConstraintExpressionError
 
@@ -180,3 +180,10 @@ def get_var(dataset, id_):
     """Given an id, return the corresponding variable from the dataset."""
     tokens = id_.split('.')
     return reduce(operator.getitem, [dataset] + tokens)
+
+def decode_np_strings(numpy_var):
+    """Given a fixed-width numpy string, decode it to a unicode type"""
+    if isinstance(numpy_var, binary_type):
+        return numpy_var.tostring().decode('utf-8')
+    else:
+        return numpy_var

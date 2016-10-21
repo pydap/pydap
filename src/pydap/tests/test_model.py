@@ -302,9 +302,10 @@ class TestSequenceType(unittest.TestCase):
 
     def test_iter_(self):
         """Test that iteration happens over the data attribute."""
-        self.assertEqual(
-            list(iter(self.example)),
-            list(iter(self.example.data)))
+        for a, b in zip(iter(self.example), iter(self.example.data)):
+            self.assertEqual(a[0], b[0])
+            self.assertAlmostEqual(a[1], b[1])
+            self.assertEqual(a[2], b[2])
 
     def test_getitem(self):
         """Test item retrieval.

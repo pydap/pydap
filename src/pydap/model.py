@@ -120,10 +120,10 @@ if sys.version_info < (2, 7):  # pragma: no cover
 else:
     from collections import OrderedDict
 
-from six.moves import reduce
-from six import string_types
+from six.moves import reduce, map
+from six import string_types, binary_type
 
-from pydap.lib import quote
+from pydap.lib import quote, decode_np_strings
 
 
 __all__ = [
@@ -198,7 +198,7 @@ class BaseType(DapType):
     def __init__(self, name, data=None, dimensions=None, attributes=None,
                  **kwargs):
         DapType.__init__(self, name, attributes, **kwargs)
-        self.data = data
+        self._data = data
         self.dimensions = dimensions or ()
 
         # these are set when not data is present (eg, when parsing a DDS)
@@ -251,14 +251,26 @@ class BaseType(DapType):
 
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
-        return self.data[index]
+        if hasattr(self.data, 'dtype') and self.data.dtype.char == 'S':
+            return map(decode_np_strings, self.data[index])
+        else:
+            return self.data[index]
 
     def __len__(self):
         return len(self.data)
 
     def __iter__(self):
-        return iter(self.data)
+        if hasattr(self._data, 'dtype') and self._data.dtype.char == 'S':
+            return map(decode_np_strings, self._data)
+        else:
+            return iter(self.data)
 
+    def _get_data(self):
+        return self._data
+
+    def _set_data(self, data):
+        self._data = data
+    data = property(_get_data, _set_data)
 
 class StructureType(DapType):
 
@@ -287,7 +299,12 @@ class StructureType(DapType):
 
     def __iter__(self):
         for key in self._keys:
-            yield self._dict[key]
+            x = self._dict[key]
+            if isinstance(x, binary_type):
+                yield x.tostring().decode('utf-8')
+            else:
+                yield x
+
     children = __iter__
 
     def __setitem__(self, key, item):
@@ -476,7 +493,8 @@ class SequenceType(StructureType):
         return len(self.data)
 
     def __iter__(self):
-        return iter(self.data)
+        for line in self.data:
+            yield tuple(map(decode_np_strings, line))
 
     def __getitem__(self, key):
         # If key is a string, return child with the corresponding data.
