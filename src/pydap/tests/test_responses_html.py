@@ -48,7 +48,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
                 ('XDODS-Server', 'pydap/3.2'),
                 ('Content-description', 'dods_form'),
                 ('Content-type', 'text/html; charset=utf-8'),
-                ('Content-Length', '5105')]))
+                ('Content-Length', '5213')]))
 
     def test_body(self):
         """Test the HTML response.

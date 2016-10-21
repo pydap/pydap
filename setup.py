@@ -22,6 +22,7 @@ if sys.version_info < (2, 7):
 functions_extras = [
     'gsw',
     'coards',
+    'scipy',
 ]
 
 docs_extras = [
