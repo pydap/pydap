@@ -38,7 +38,7 @@ class TestASCIIResponseSequence(unittest.TestCase):
 
     def test_charset(self):
         """Test the charset."""
-        self.assertEqual(self.res.charset, "utf-8")
+        self.assertEqual(self.res.charset, "ascii")
 
     def test_headers(self):
         """Test headers from the response."""
@@ -47,12 +47,12 @@ class TestASCIIResponseSequence(unittest.TestCase):
             ResponseHeaders([
                 ('XDODS-Server', 'pydap/3.2'),
                 ('Content-description', 'dods_ascii'),
-                ('Content-type', 'text/plain; charset=utf-8'),
+                ('Content-type', 'text/plain; charset=ascii'),
                 ('Content-Length', '440')]))
 
     def test_body(self):
         """Test the generated ASCII response."""
-        self.assertEqual(self.res.body, """Dataset {
+        self.assertEqual(self.res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -80,7 +80,7 @@ class TestASCIIResponseGrid(unittest.TestCase):
         """Test the generated ASCII response."""
         app = TestApp(BaseHandler(SimpleGrid))
         res = app.get('/.asc')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Grid {
         Array:
             Int32 SimpleGrid[y = 2][x = 3];

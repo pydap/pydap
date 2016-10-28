@@ -7,8 +7,6 @@ if sys.version_info < (2, 7):
 else:
     import unittest
 
-from webtest import TestApp
-import requests
 import numpy as np
 from six import StringIO
 
@@ -17,7 +15,6 @@ from pydap.handlers.lib import BaseHandler, ConstraintExpression
 from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy, dump
 from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
-from pydap.tests.lib import requests_intercept
 
 
 class TestDapHandler(unittest.TestCase):
@@ -25,19 +22,13 @@ class TestDapHandler(unittest.TestCase):
     """Test that the handler creates the correct dataset from a URL."""
 
     def setUp(self):
-        """Create WSGI apps and monkeypatch ``requests`` for direct access."""
-        self.app1 = TestApp(BaseHandler(SimpleGrid))
-        self.app2 = TestApp(BaseHandler(SimpleSequence))
-        self.requests_get = requests.get
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
+        """Create WSGI apps"""
+        self.app1 = BaseHandler(SimpleGrid)
+        self.app2 = BaseHandler(SimpleSequence)
 
     def test_grid(self):
         """Test that dataset has the correct data proxies for grids."""
-        requests.get = requests_intercept(self.app1, "http://localhost:8001/")
-        dataset = DAPHandler("http://localhost:8001/").dataset
+        dataset = DAPHandler("http://localhost:8001/", self.app1).dataset
 
         self.assertEqual(dataset.keys(), ["SimpleGrid", "x", "y"])
         self.assertEqual(
@@ -69,8 +60,7 @@ class TestDapHandler(unittest.TestCase):
 
     def test_grid_with_projection(self):
         """Test that a sliced proxy can be created for grids."""
-        requests.get = requests_intercept(self.app1, "http://localhost:8001/")
-        dataset = DAPHandler("http://localhost:8001/?SimpleGrid[0]").dataset
+        dataset = DAPHandler("http://localhost:8001/?SimpleGrid[0]", self.app1).dataset
 
         self.assertEqual(dataset.SimpleGrid.x.data.shape, (1,))
         self.assertEqual(dataset.SimpleGrid.x.data.slice, (slice(0, 1, 1),))
@@ -83,17 +73,15 @@ class TestDapHandler(unittest.TestCase):
 
     def test_base_type_with_projection(self):
         """Test that a sliced proxy can be created for a base type."""
-        requests.get = requests_intercept(self.app1, "http://localhost:8001/")
-        dataset = DAPHandler("http://localhost:8001/?x[1:1:2]").dataset
+        dataset = DAPHandler("http://localhost:8001/?x[1:1:2]", self.app1).dataset
 
         self.assertEqual(dataset.x.data.shape, (2,))
         self.assertEqual(dataset.x.data.slice, (slice(1, 3, 1),))
 
     def test_grid_array_with_projection(self):
         """Test that a grid array can be properly pre sliced."""
-        requests.get = requests_intercept(self.app1, "http://localhost:8001/")
         dataset = DAPHandler(
-            "http://localhost:8001/?SimpleGrid.SimpleGrid[0]").dataset
+            "http://localhost:8001/?SimpleGrid.SimpleGrid[0]", self.app1).dataset
 
         # object should be a structure, not a grid
         self.assertEqual(dataset.keys(), ["SimpleGrid"])
@@ -107,8 +95,7 @@ class TestDapHandler(unittest.TestCase):
 
     def test_grid_map_with_projection(self):
         """Test that a grid map can be properly pre sliced."""
-        requests.get = requests_intercept(self.app1, "http://localhost:8001/")
-        dataset = DAPHandler("http://localhost:8001/?SimpleGrid.x[0]").dataset
+        dataset = DAPHandler("http://localhost:8001/?SimpleGrid.x[0]", self.app1).dataset
 
         self.assertEqual(dataset.SimpleGrid.x.data.shape, (1,))
         self.assertEqual(
@@ -117,8 +104,7 @@ class TestDapHandler(unittest.TestCase):
 
     def test_sequence(self):
         """Test that dataset has the correct data proxies for sequences."""
-        requests.get = requests_intercept(self.app2, "http://localhost:8001/")
-        dataset = DAPHandler("http://localhost:8001/").dataset
+        dataset = DAPHandler("http://localhost:8001/", self.app2).dataset
 
         self.assertEqual(dataset.keys(), ["cast"])
         self.assertEqual(
@@ -147,9 +133,8 @@ class TestDapHandler(unittest.TestCase):
 
     def test_sequence_with_projection(self):
         """Test projections applied to sequences."""
-        requests.get = requests_intercept(self.app2, "http://localhost:8001/")
         dataset = DAPHandler(
-            "http://localhost:8001/?cast[1]").dataset
+            "http://localhost:8001/?cast[1]", self.app2).dataset
 
         self.assertEqual(dataset.cast.data.slice, (slice(1, 2, 1),))
         self.assertEqual(
@@ -162,18 +147,11 @@ class TestBaseProxy(unittest.TestCase):
     """Test `BaseProxy` objects."""
 
     def setUp(self):
-        """Create a WSGI app with array data and monkeypatch ``requests``."""
-        app = TestApp(BaseHandler(SimpleArray))
-
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, "http://localhost:8001/")
+        """Create a WSGI app"""
+        self.app = BaseHandler(SimpleArray)
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "byte", np.dtype("b"), (5,))
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
+            "http://localhost:8001/", "byte", np.dtype("b"), (5,), application=self.app)
 
     def test_repr(self):
         """Test the object representation."""
@@ -196,7 +174,7 @@ class TestBaseProxy(unittest.TestCase):
 
     def test_iteration(self):
         """Test iteration."""
-        self.assertEqual(list(iter(self.data)), range(5))
+        self.assertEqual(list(iter(self.data)), list(range(5)))
 
     def test_comparisons(self):
         """Test all the comparisons."""
@@ -213,18 +191,11 @@ class TestBaseProxyShort(unittest.TestCase):
     """Test `BaseProxy` objects with short dtype."""
 
     def setUp(self):
-        """Create a WSGI app with array data and monkeypatch ``requests``."""
-        app = TestApp(BaseHandler(SimpleArray))
-
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, "http://localhost:8001/")
+        """Create a WSGI app with array data"""
+        self.app = BaseHandler(SimpleArray)
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "short", np.dtype(">i"), ())
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
+            "http://localhost:8001/", "short", np.dtype(">i"), (), application=self.app)
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
@@ -236,25 +207,18 @@ class TestBaseProxyString(unittest.TestCase):
     """Test a ``BaseProxy`` with string data."""
 
     def setUp(self):
-        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        """Create a WSGI app with array data"""
         dataset = DatasetType("test")
         dataset["s"] = BaseType("s", np.array(["one", "two", "three"]))
-        app = TestApp(BaseHandler(dataset))
-
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, "http://localhost:8001/")
+        self.app = BaseHandler(dataset)
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "s", np.dtype("|S5"), (3,))
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
+            "http://localhost:8001/", "s", np.dtype("|S5"), (3,), application=self.app)
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(
-            self.data[:], np.array(["one", "two", "three"]))
+            self.data[:], np.array(["one", "two", "three"], dtype='S'))
 
 
 class TestSequenceProxy(unittest.TestCase):
@@ -262,18 +226,12 @@ class TestSequenceProxy(unittest.TestCase):
     """Test that a ``SequenceProxy`` behaves like a Numpy structured array."""
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
-        app = TestApp(BaseHandler(VerySimpleSequence))
+        """Create a WSGI app"""
+        self.app = BaseHandler(VerySimpleSequence)
         self.local = VerySimpleSequence.sequence.data
 
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, "http://localhost:8001/")
-        dataset = DAPHandler("http://localhost:8001/").dataset
+        dataset = DAPHandler("http://localhost:8001/", self.app).dataset
         self.remote = dataset.sequence.data
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
 
     def test_repr(self):
         """Test the object representation."""
@@ -368,18 +326,12 @@ class TestSequenceProxy(unittest.TestCase):
 class TestSequenceWithString(unittest.TestCase):
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
-        app = TestApp(BaseHandler(SimpleSequence))
+        """Create a WSGI app"""
+        self.app = BaseHandler(SimpleSequence)
         self.local = SimpleSequence.cast.data
 
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, "http://localhost:8001/")
-        dataset = DAPHandler("http://localhost:8001/").dataset
+        dataset = DAPHandler("http://localhost:8001/", self.app).dataset
         self.remote = dataset.cast.data
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
 
     def test_iter(self):
         """Test iteration."""
@@ -427,57 +379,20 @@ class TestSequenceWithString(unittest.TestCase):
         self.assertIsInstance(self.remote["lon"] > 100, ConstraintExpression)
         self.assertEqual(filtered.selection, ['cast.lon>100'])
 
-
-class TestDump(unittest.TestCase):
-
-    """Test the ``dump()`` function."""
-
-    def setUp(self):
-        """Monkeypatch ``sys.stdin`` and ``pprint.pprint``."""
-        app = TestApp(BaseHandler(SimpleArray))
-        dods = app.get("/.dods").body
-
-        self.stdin, sys.stdin = sys.stdin, StringIO(dods)
-        self.buffer = StringIO()
-        self.pprint = pprint.pprint
-        pprint.pprint = lambda obj: self.buffer.write(pprint.pformat(obj))
-    
-    def tearDown(self):
-        """Reset ``sys.stdin`` and ``pprint.pprint``."""
-        sys.stdin = self.stdin
-        pprint.pprint = self.pprint
-
-    def test_dump(self):
-        dump()
-        self.assertEqual(
-            self.buffer.getvalue(),
-            """[array([0, 1, 2, 3, 4], dtype=uint8),
- array(['one', 'two'], 
-      dtype='|S3'),
- 1]""")
-
-
 class TestStringBaseType(unittest.TestCase):
 
     """Regression test for string base type."""
 
     def setUp(self):
-        """Create a WSGI app with array data and monkeypatch ``requests``."""
+        """Create a WSGI app with array data"""
         dataset = DatasetType("test")
-        data = np.array("This is a test")
+        data = np.array("This is a test", dtype='S')
         dataset["s"] = BaseType("s", data)
-        app = TestApp(BaseHandler(dataset))
-
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, "http://localhost:8001/")
+        self.app = BaseHandler(dataset)
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "s", np.dtype("|S14"), ())
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
+            "http://localhost:8001/", "s", np.dtype("|S14"), (), application=self.app)
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
-        np.testing.assert_array_equal(self.data[:], "This is a test")
+        np.testing.assert_array_equal(self.data[:], np.array("This is a test", dtype='S'))

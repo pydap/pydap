@@ -8,13 +8,10 @@ else:
     import unittest
 
 import numpy as np
-from webtest import TestApp
-import requests
 
 from pydap.model import *
 from pydap.handlers.lib import BaseHandler
 from pydap.client import open_url, open_dods, open_file
-from pydap.tests.lib import requests_intercept
 from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 from pydap.wsgi.ssf import ServerSideFunctions
 
@@ -22,24 +19,17 @@ from pydap.wsgi.ssf import ServerSideFunctions
 DODS = os.path.join(os.path.dirname(__file__), 'test.01.dods')
 DAS = os.path.join(os.path.dirname(__file__), 'test.01.das')
 
-
 class TestOpenUrl(unittest.TestCase):
 
     """Test the ``open_url`` function, to access remote datasets."""
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
-        app = TestApp(BaseHandler(SimpleSequence))
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, 'http://localhost:8001/')
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
+        """Create a WSGI app to send requests to"""
+        self.app = BaseHandler(SimpleSequence)
 
     def test_open_url(self):
         """Open an URL and check dataset keys."""
-        dataset = open_url('http://localhost:8001/')
+        dataset = open_url('http://localhost:8001/', self.app)
         self.assertEqual(dataset.keys(), ["cast"])
 
 
@@ -95,14 +85,8 @@ class TestOpenDods(unittest.TestCase):
     """Test the ``open_dods`` function, to access binary data directly."""
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
-        app = TestApp(BaseHandler(SimpleSequence))
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, 'http://localhost:8001/')
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
+        """Create a WSGI app to send requests to."""
+        self.app = BaseHandler(SimpleSequence)
 
     def test_open_dods(self):
         """Open the dods response from a server.
@@ -112,7 +96,7 @@ class TestOpenDods(unittest.TestCase):
         contains int16 values which are transmitted as int32 in the DAP spec.
 
         """
-        dataset = open_dods('http://localhost:8001/.dods')
+        dataset = open_dods('.dods', application=self.app)
         self.assertEqual(
             list(dataset.data), [[
                 ('1', 100, -10, 0, -1, 21, 35, 0),
@@ -124,7 +108,7 @@ class TestOpenDods(unittest.TestCase):
 
     def test_open_dods_with_attributes(self):
         """Open the dods response together with the das response."""
-        dataset = open_dods('http://localhost:8001/.dods', metadata=True)
+        dataset = open_dods('.dods', metadata=True, application=self.app)
         self.assertEqual(dataset.NC_GLOBAL, {})
         self.assertEqual(dataset.DODS_EXTRA, {})
         self.assertEqual(
@@ -149,23 +133,17 @@ class TestFunctions(unittest.TestCase):
     """
 
     def setUp(self):
-        """Create a WSGI app and monkeypatch ``requests`` for direct access."""
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, 'http://localhost:8001/')
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
+        """Create a WSGI app to send requests to."""
+        self.app = ServerSideFunctions(BaseHandler(SimpleGrid))
 
     def test_original(self):
         """Test an unmodified call, without function calls."""
-        original = open_url('http://localhost:8001/')
+        original = open_url('/', application=self.app)
         self.assertEqual(original.SimpleGrid.SimpleGrid.shape, (2, 3))
 
     def test_first_axis(self):
         """Test mean over the first axis."""
-        original = open_url('http://localhost:8001/')
+        original = open_url('/', application=self.app)
         dataset = original.functions.mean(original.SimpleGrid, 0)
         self.assertEqual(dataset.SimpleGrid.SimpleGrid.shape, (3,))
         np.testing.assert_array_equal(
@@ -174,7 +152,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_second_axis(self):
         """Test mean over the second axis."""
-        original = open_url('http://localhost:8001/')
+        original = open_url('/', application=self.app)
         dataset = original.functions.mean(original.SimpleGrid, 1)
         self.assertEqual(dataset.SimpleGrid.SimpleGrid.shape, (2,))
         np.testing.assert_array_equal(
@@ -183,7 +161,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_lazy_evaluation_getitem(self):
         """Test that the dataset is only loaded when accessed."""
-        original = open_url('http://localhost:8001/')
+        original = open_url('/', application=self.app)
         dataset = original.functions.mean(original.SimpleGrid, 0)
         self.assertIsNone(dataset.dataset)
         dataset['SimpleGrid']
@@ -191,7 +169,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_lazy_evaluation_getattr(self):
         """Test that the dataset is only loaded when accessed."""
-        original = open_url('http://localhost:8001/')
+        original = open_url('/', application=self.app)
         dataset = original.functions.mean(original.SimpleGrid, 0)
         self.assertIsNone(dataset.dataset)
         dataset.SimpleGrid
@@ -199,7 +177,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_nested_call(self):
         """Test nested calls."""
-        original = open_url('http://localhost:8001/')
+        original = open_url('/', application=self.app)
         dataset = original.functions.mean(
             original.functions.mean(original.SimpleGrid, 0), 0)
         self.assertEqual(dataset['SimpleGrid']['SimpleGrid'].shape, ())
@@ -209,7 +187,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_axis_mean(self):
         """Test the mean over an axis, returning a scalar."""
-        original = open_url('http://localhost:8001/')
+        original = open_url('/', application=self.app)
         dataset = original.functions.mean(original.SimpleGrid.x)
         self.assertEqual(dataset.x.shape, ())
         np.testing.assert_array_equal(
@@ -229,21 +207,15 @@ class Test16Bits(unittest.TestCase):
 
     def setUp(self):
         """Load a dataset with 16-bit types."""
-        app = TestApp(BaseHandler(SimpleStructure))
-        self.requests_get = requests.get
-        requests.get = requests_intercept(app, "http://localhost:8001/")
-
-    def tearDown(self):
-        """Return method to its original version."""
-        requests.get = self.requests_get
+        self.app = BaseHandler(SimpleStructure)
 
     def test_int16(self):
         """Load an int16."""
-        dataset = open_url("http://localhost:8001/")
+        dataset = open_url("http://localhost:8001/", self.app)
         self.assertEqual(dataset.types.i16.dtype, np.dtype(">i2"))
 
     def test_uint16(self):
         """Load an uint16."""
-        dataset = open_url("http://localhost:8001/")
+        dataset = open_url("http://localhost:8001/", self.app)
         self.assertEqual(dataset.types.ui16.dtype, np.dtype(">u2"))
 

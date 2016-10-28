@@ -7,6 +7,7 @@ if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
+from six import text_type
 
 from pkg_resources import EntryPoint
 from webtest import TestApp, AppError
@@ -62,7 +63,7 @@ class TestBaseHandler(unittest.TestCase):
     def test_unconstrained_das(self):
         """DAS responses are always unconstrained."""
         res = self.app.get("/.dds")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Byte byte[byte = 5];
     String string[string = 2];
     Int16 short;
@@ -70,13 +71,13 @@ class TestBaseHandler(unittest.TestCase):
 """)
         
         res = self.app.get("/.dds?byte")
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Byte byte[byte = 5];
 } SimpleArray;
 """)
 
         res = self.app.get("/.das")
-        das = res.body
+        das = res.text
         self.assertEqual(das, """Attributes {
     byte {
     }
@@ -89,7 +90,7 @@ class TestBaseHandler(unittest.TestCase):
 
         # check that DAS is unmodifed with constraint expression
         res = self.app.get("/.das?byte")
-        self.assertEqual(res.body, das)
+        self.assertEqual(res.text, das)
 
     def test_exception(self):
         """Test exception handling.
@@ -241,7 +242,7 @@ class TestConstraintExpression(unittest.TestCase):
     def test_unicode(self):
         """Test unicode representation."""
         ce = ConstraintExpression("a>1")
-        self.assertEqual(unicode(ce), u"a>1")
+        self.assertEqual(text_type(ce), "a>1")
 
     def test_and(self):
         """Test CE addition."""
@@ -281,6 +282,9 @@ class TestIterData(unittest.TestCase):
             (4, 5, 6),
         ], names=["b", "c", "d"]))
 
+    def assertIteratorEqual(self, it1, it2):
+        self.assertEqual(list(it1), list(it2))
+
     def test_repr(self):
         """Test the object representation."""
         self.assertEqual(
@@ -293,33 +297,33 @@ class TestIterData(unittest.TestCase):
 
     def test_iteration(self):
         """Test iteration over data."""
-        self.assertEqual(map(tuple, self.data), map(tuple, self.array))
-        self.assertEqual(list(self.data["b"]), list(self.array["b"]))
+        self.assertIteratorEqual(map(tuple, self.data), map(tuple, self.array))
+        self.assertIteratorEqual(self.data["b"], self.array["b"])
 
     def test_filter(self):
         """Test filtering the object."""
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] == 1]),
             map(tuple, self.array[self.array["b"] == 1]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] != 1]),
             map(tuple, self.array[self.array["b"] != 1]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] >= 1]),
             map(tuple, self.array[self.array["b"] >= 1]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] <= 1]),
             map(tuple, self.array[self.array["b"] <= 1]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] > 1]),
             map(tuple, self.array[self.array["b"] > 1]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] < 1]),
             map(tuple, self.array[self.array["b"] < 1]))
 
     def test_slice(self):
         """Test slicing the object."""
-        self.assertEqual(map(tuple, self.data[1:]), map(tuple, self.array[1:]))
+        self.assertIteratorEqual(map(tuple, self.data[1:]), map(tuple, self.array[1:]))
 
     def test_integer_slice(self):
         """Test slicing with an integer.
@@ -329,8 +333,8 @@ class TestIterData(unittest.TestCase):
         access.
 
         """
-        self.assertEqual(list(self.data[0:1]), self.array[0:1].tolist())
-        self.assertEqual(list(self.data[0]), self.array[0:1].tolist())
+        self.assertIteratorEqual(self.data[0:1], self.array[0:1].tolist())
+        self.assertIteratorEqual(self.data[0], self.array[0:1].tolist())
 
     def test_invalid_child(self):
         """Test accessing a non-existing child."""
@@ -344,7 +348,7 @@ class TestIterData(unittest.TestCase):
 
     def test_selecting_children(self):
         """Test that we can select children."""
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[["d", "b"]]),
             map(tuple, self.array[["d", "b"]]))
 
@@ -362,22 +366,22 @@ class TestIterData(unittest.TestCase):
 
     def test_intercomparison_selection(self):
         """Test comparing children in the selection."""
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] == self.data["c"]]),
             map(tuple, self.array[self.array["b"] == self.array["c"]]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] != self.data["c"]]),
             map(tuple, self.array[self.array["b"] != self.array["c"]]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] >= self.data["c"]]),
             map(tuple, self.array[self.array["b"] >= self.array["c"]]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] <= self.data["c"]]),
             map(tuple, self.array[self.array["b"] <= self.array["c"]]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] > self.data["c"]]),
             map(tuple, self.array[self.array["b"] > self.array["c"]]))
-        self.assertEqual(
+        self.assertIteratorEqual(
             map(tuple, self.data[self.data["b"] < self.data["c"]]),
             map(tuple, self.array[self.array["b"] < self.array["c"]]))
 

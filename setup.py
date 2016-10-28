@@ -5,15 +5,13 @@ import sys, os
 __version__ = '3.2'
 
 install_requires = [
-    'Numpy',
-    'requests',
+    'numpy',
     'singledispatch',
     'Webob',
     'Jinja2',
     'docopt',
     'gunicorn',
-    'PasteDeploy',
-    'six',
+    'six >= 1.4.0',
 ]
 
 if sys.version_info < (2, 7):
@@ -34,16 +32,16 @@ docs_extras = [
 tests_require = functions_extras + [
     'WebTest',
     'beautifulsoup4',
+    'scipy'
 ]
 
 testing_extras = tests_require + [
     'nose',
     'coverage',
-    'virtualenv', # for scaffolding tests
 ]
 
 if sys.version_info < (2, 7):
-    testing_extras.append('unittest2')
+    tests_require.append('unittest2')
 
 
 setup(name='Pydap',
@@ -51,6 +49,11 @@ setup(name='Pydap',
     description="An implementation of the Data Access Protocol.",
     long_description="",
     classifiers=[
+        "Programming Language :: Python :: 2.6",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5"
       # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
     ],
     keywords='opendap dods dap science data',
@@ -68,8 +71,8 @@ setup(name='Pydap',
         'functions': functions_extras,
         'testing': testing_extras,
         'docs': docs_extras,
+        'tests': tests_require
     },
-    tests_require = tests_require,
     test_suite="pydap.tests",
     entry_points="""
         [pydap.response]

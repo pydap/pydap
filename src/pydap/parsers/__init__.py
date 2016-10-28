@@ -98,12 +98,12 @@ def parse_ce(query_string):
     DAP specification:
 
         >>> ce = 'time&bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'
-        >>> print parse_ce(ce)  # doctest: +NORMALIZE_WHITESPACE
+        >>> print(parse_ce(ce))  # doctest: +NORMALIZE_WHITESPACE
         ([[('time', ())]],
                 ['bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'])
 
         >>> ce = 'time,bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'
-        >>> print parse_ce(ce)  # doctest: +NORMALIZE_WHITESPACE
+        >>> print(parse_ce(ce))  # doctest: +NORMALIZE_WHITESPACE
         ([[('time', ())],
             'bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'], [])
         >>> parse_ce('mean(g,0)')

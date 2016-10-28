@@ -6,9 +6,12 @@ dataset to the internal model.
 
 """
 
+import io
 import sys
 import pprint
 import copy
+import re
+from itertools import chain
 
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
@@ -18,11 +21,11 @@ if sys.version_info >= (2, 7):  # pragma: no cover
     logger.addHandler(logging.NullHandler())
 
 import numpy as np
-import requests
 from six.moves.urllib.parse import urlsplit, urlunsplit, quote
-from six import string_types, next
+from six import text_type, string_types, next
 
 from pydap.model import *
+from pydap.net import GET, raise_for_status
 from pydap.lib import (
     encode, combine_slices, fix_slice, hyperslab,
     START_OF_SEQUENCE, END_OF_SEQUENCE, walk)
@@ -39,19 +42,20 @@ class DAPHandler(BaseHandler):
 
     """Build a dataset from a DAP base URL."""
 
-    def __init__(self, url):
+    def __init__(self, url, application=None):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
         ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-        r = requests.get(ddsurl)
-        r.raise_for_status()
-        dds = r.text.encode('utf-8')
+        r = GET(ddsurl, application)
+        raise_for_status(r)
+        dds = r.text
+
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-        r = requests.get(dasurl)
-        r.raise_for_status()
-        das = r.text.encode('utf-8')
+        r = GET(dasurl, application)
+        raise_for_status(r)
+        das = r.text
 
         # build the dataset from the DDS and add attributes from the DAS
         self.dataset = build_dataset(dds)
@@ -63,10 +67,10 @@ class DAPHandler(BaseHandler):
 
         # now add data proxies
         for var in walk(self.dataset, BaseType):
-            var.data = BaseProxy(url, var.id, var.dtype, var.shape)
+            var.data = BaseProxy(url, var.id, var.dtype, var.shape, application=application)
         for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
-            var.data = SequenceProxy(url, template)
+            var.data = SequenceProxy(url, template, application=application)
 
         # apply projections
         for var in projection:
@@ -94,12 +98,13 @@ class BaseProxy(object):
 
     """
 
-    def __init__(self, baseurl, id, dtype, shape, slice_=None):
+    def __init__(self, baseurl, id, dtype, shape, slice_=None, application=None):
         self.baseurl = baseurl
         self.id = id
         self.dtype = dtype
         self.shape = shape
         self.slice = slice_ or tuple(slice(None) for s in self.shape)
+        self.application = application
 
     def __repr__(self):
         return 'BaseProxy(%s)' % ', '.join(
@@ -117,13 +122,14 @@ class BaseProxy(object):
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
-        r = requests.get(url)
-        r.raise_for_status()
-        dds, data = r.content.split(b'\nData:\n', 1)
+        r = GET(url, self.application)
+        raise_for_status(r)
+        dds, data = r.body.split(b'\nData:\n', 1)
+        dds = dds.decode(r.content_encoding or 'ascii')
 
         if self.shape:
             # skip size packing
-            if self.dtype.char == 'S':
+            if self.dtype.char in 'SU':
                 data = data[4:]
             else:
                 data = data[8:]
@@ -135,14 +141,14 @@ class BaseProxy(object):
 
         if self.dtype == np.byte:
             return np.fromstring(data[:size], 'B')
-        elif self.dtype.char == 'S':
+        elif self.dtype.char in 'SU':
             out = []
             for word in range(size):
                 n = np.fromstring(data[:4], '>I')  # read length
                 data = data[4:]
                 out.append(data[:n])
                 data = data[n + (-n % 4):]
-            return np.array(out, 'S')
+            return np.array([ text_type(x.decode('ascii')) for x in out ], 'S')
         else:
             return np.fromstring(data, self.dtype).reshape(shape)
 
@@ -185,11 +191,12 @@ class SequenceProxy(object):
 
     shape = ()
 
-    def __init__(self, baseurl, template, selection=None, slice_=None):
+    def __init__(self, baseurl, template, selection=None, slice_=None, application=None):
         self.baseurl = baseurl
         self.template = template
         self.selection = selection or []
         self.slice = slice_ or (slice(None),)
+        self.application = application
 
         # this variable is true when only a subset of the children are selected
         self.sub_children = False
@@ -206,7 +213,7 @@ class SequenceProxy(object):
     def __copy__(self):
         """Return a lightweight copy of the object."""
         return self.__class__(
-            self.baseurl, self.template, self.selection[:], self.slice[:])
+            self.baseurl, self.template, self.selection[:], self.slice[:], self.application)
 
     def __getitem__(self, key):
         """Return a new object representing a subset of the data."""
@@ -256,17 +263,35 @@ class SequenceProxy(object):
 
     def __iter__(self):
         # download and unpack data
-        r = requests.get(self.url, stream=True)
-        r.raise_for_status()
-        stream = StreamReader(r.iter_content(BLOCKSIZE))
+        r = GET(self.url, self.application)
+        raise_for_status(r)
 
-        # strip dds response
-        marker = b'\nData:\n'
-        buf = []
-        while ''.join(buf) != marker:
-            chunk = stream.read(1)
-            buf.append(chunk)
-            buf = buf[-len(marker):]
+        i = r.app_iter
+        if not hasattr(i, '__next__'):
+            i = iter(i)
+
+        # Fast forward past the DDS header
+        # the pattern could span chunk boundaries though so make sure to check
+        previous_chunk = b''
+        this_chunk = b''
+        pattern = b'Data:\n'
+        for this_chunk in i:
+           m = re.search(pattern, previous_chunk + this_chunk)
+           if m:
+               break
+        if not m:
+            raise ValueError(
+                    "Could not find data segment in response from {}"\
+                    .format(self.url))
+
+        last_chunk = (previous_chunk + this_chunk)[m.end():]
+
+        # Then construct a stream consisting of everything from
+        # 'Data:\n' to the end of the chunk + the rest of the stream
+        def stream_start():
+            yield last_chunk
+
+        stream = StreamReader(chain(stream_start(), i))
 
         return unpack_sequence(stream, self.template)
 
@@ -295,18 +320,20 @@ class StreamReader(object):
 
     def __init__(self, stream):
         self.stream = stream
-        self.buf = ''
+        self.buf = bytearray()
 
     def read(self, n):
         """Read and return `n` bytes."""
         while len(self.buf) < n:
-            self.buf += next(self.stream)
-        out = self.buf[:n]
+            bytes_read = next(self.stream)
+            self.buf.extend(bytes_read)
+
+        out = bytes(self.buf[:n])
         self.buf = self.buf[n:]
         return out
 
 
-def unpack_sequence(buf, template):
+def unpack_sequence(stream, template):
     """Unpack data from a sequence, yielding records."""
     # is this a sequence or a base type?
     sequence = isinstance(template, SequenceType)
@@ -316,30 +343,30 @@ def unpack_sequence(buf, template):
 
     # if there are no strings and no nested sequences we can unpack record by
     # record easily
-    simple = all(isinstance(c, BaseType) and c.dtype.char != "S" for c in cols)
+    simple = all(isinstance(c, BaseType) and c.dtype.char not in "SU" for c in cols)
 
     if simple:
         dtype = np.dtype([("", c.dtype, c.shape) for c in cols])
-        marker = buf.read(4)
+        marker = stream.read(4)
         while marker == START_OF_SEQUENCE:
-            rec = np.fromstring(buf.read(dtype.itemsize), dtype=dtype)[0]
+            rec = np.fromstring(stream.read(dtype.itemsize), dtype=dtype)[0]
             if not sequence:
                 rec = rec[0]
             yield rec
-            marker = buf.read(4)
+            marker = stream.read(4)
     else:
-        marker = buf.read(4)
+        marker = stream.read(4)
         while marker == START_OF_SEQUENCE:
-            rec = unpack_children(buf, template)
+            rec = unpack_children(stream, template)
             if not sequence:
                 rec = rec[0]
             else:
                 rec = tuple(rec)
             yield rec
-            marker = buf.read(4)
+            marker = stream.read(4)
 
 
-def unpack_children(buf, template):
+def unpack_children(stream, template):
     """Unpack children from a structure, returning their data."""
     cols = list(template.children()) or [template]
 
@@ -347,53 +374,54 @@ def unpack_children(buf, template):
     for col in cols:
         # sequences and other structures
         if isinstance(col, SequenceType):
-            out.append(IterData(list(unpack_sequence(buf, col)), col))
+            out.append(IterData(list(unpack_sequence(stream, col)), col))
         elif isinstance(col, StructureType):
-            out.append(tuple(unpack_children(buf, col)))
+            out.append(tuple(unpack_children(stream, col)))
 
         # unpack arrays
         elif col.shape:
-            n = np.fromstring(buf.read(4), ">I")[0]
+            n = np.fromstring(stream.read(4), ">I")[0]
             count = col.dtype.itemsize * n
-            if col.dtype.char != "S":
-                buf.read(4)  # read additional length
-                out.append(
-                    np.fromstring(
-                        buf.read(count), col.dtype).reshape(col.shape))
-                if col.dtype.char == "B":
-                    buf.read(-n % 4)
-            else:
+            if col.dtype.char in "SU":
                 data = []
                 for _ in range(n):
-                    k = np.fromstring(buf.read(4), ">I")[0]
-                    data.append(buf.read(k))
-                    buf.read(-k % 4)
-                out.append(np.array(data))
+                    k = np.fromstring(stream.read(4), ">I")[0]
+                    data.append(stream.read(k))
+                    stream.read(-k % 4)
+                out.append(np.array(text_type(data), dtype='S'))
+
+            else:
+                stream.read(4)  # read additional length
+                out.append(
+                    np.fromstring(
+                        stream.read(count), col.dtype).reshape(col.shape))
+                if col.dtype.char == "B":
+                    stream.read(-n % 4)
 
         # special types: strings and bytes
-        elif col.dtype.char == 'S':
-            n = np.fromstring(buf.read(4), '>I')[0]
-            out.append(buf.read(n))
-            buf.read(-n % 4)
+        elif col.dtype.char in 'SU':
+            n = np.fromstring(stream.read(4), '>I')[0]
+            out.append(stream.read(n).decode('ascii'))
+            stream.read(-n % 4)
         elif col.dtype.char == 'B':
-            data = np.fromstring(buf.read(1), col.dtype)[0]
-            buf.read(3)
+            data = np.fromstring(stream.read(1), col.dtype)[0]
+            stream.read(3)
             out.append(data)
 
         # usual data
         else:
             out.append(
-                np.fromstring(buf.read(col.dtype.itemsize), col.dtype)[0])
+                np.fromstring(stream.read(col.dtype.itemsize), col.dtype)[0])
 
     return out
 
 
-def unpack_data(xdrdata, dataset):
+def unpack_data(xdr_stream, dataset):
     """Unpack a string of encoded data, returning data as lists."""
-    return unpack_children(StreamReader(iter(xdrdata)), dataset)
+    return unpack_children(xdr_stream, dataset)
 
 
-def dump():
+def dump(): # pragma: no cover
     """Unpack dods response into lists.
 
     Return pretty-printed data.
@@ -401,7 +429,9 @@ def dump():
     """
     dods = sys.stdin.read()
     dds, xdrdata = dods.split(b'\nData:\n', 1)
+    xdr_stream = io.BytesIO(xdrdata)
+    dds = dds.decode('ascii')
     dataset = build_dataset(dds)
-    data = unpack_data(xdrdata, dataset)
+    data = unpack_data(xdr_stream, dataset)
 
     pprint.pprint(data)

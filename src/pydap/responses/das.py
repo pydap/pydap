@@ -35,12 +35,12 @@ class DASResponse(BaseResponse):
         BaseResponse.__init__(self, dataset)
         self.headers.extend([
             ('Content-description', 'dods_das'),
-            ('Content-type', 'text/plain; charset=utf-8'),
+            ('Content-type', 'text/plain; charset=ascii'),
         ])
 
     def __iter__(self):
         for line in das(self.dataset):
-            yield line
+            yield line.encode('ascii')
 
 
 @singledispatch
@@ -53,7 +53,8 @@ def das(var, level=0):
 def _(var, level=0):
     yield '{indent}Attributes {{\n'.format(indent=level*INDENT)
 
-    for attr, values in var.attributes.items():
+    for attr in sorted(var.attributes.keys()):
+        values = var.attributes[attr]
         for line in build_attributes(attr, values, level+1):
             yield line
 
@@ -67,7 +68,8 @@ def _(var, level=0):
 def _(var, level=0):
     yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
 
-    for attr, values in var.attributes.items():
+    for attr in sorted(var.attributes.keys()):
+        values = var.attributes[attr]
         for line in build_attributes(attr, values, level+1):
             yield line
 
@@ -82,7 +84,8 @@ def _(var, level=0):
 def _(var, level=0):
     yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
 
-    for attr, values in var.attributes.items():
+    for attr in sorted(var.attributes.keys()):
+        values = var.attributes[attr]
         for line in build_attributes(attr, values, level+1):
             yield line
     yield '{indent}}}\n'.format(indent=level*INDENT)

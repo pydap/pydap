@@ -1,7 +1,10 @@
 language: python
 python:
-  - "2.6"
-  - "2.7"
+    - 2.6
+    - 2.7
+    - 3.3
+    - 3.4
+    - 3.5
 addons:
   apt:
     packages:
@@ -10,5 +13,8 @@ addons:
       - liblapack-dev
       - cython
 install:
-  - "pip install -e .[testing]"
-script: nosetests
+    - travis_wait 30 pip install scipy
+    - pip install -e .[testing,functions,tests]
+
+script:
+    - python setup.py nosetests

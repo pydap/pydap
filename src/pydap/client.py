@@ -38,27 +38,27 @@ lazy mechanism for function call, supporting any function. Eg, to call the
     >>> dataset = open_url(
     ...     'http://test.opendap.org/dap/data/nc/coads_climatology.nc')
     >>> new_dataset = dataset.functions.geogrid(dataset.SST, 10, 20, -10, 60)
-    >>> print new_dataset.SST.SST.shape
+    >>> print(new_dataset.SST.SST.shape)
     (12, 12, 21)
 
 """
 
-import requests
+from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from pydap.model import DapType
 from pydap.lib import encode
-from pydap.handlers.dap import DAPHandler, unpack_data
+from pydap.net import GET
+from pydap.handlers.dap import DAPHandler, unpack_data, StreamReader
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 
-
-def open_url(url):
+def open_url(url, application=None):
     """Open a remote URL, returning a dataset."""
-    dataset = DAPHandler(url).dataset
+    dataset = DAPHandler(url, application).dataset
 
     # attach server-side functions
-    dataset.functions = Functions(url)
+    dataset.functions = Functions(url, application)
 
     return dataset
 
@@ -70,10 +70,22 @@ def open_file(dods, das=None):
     dataset.
 
     """
+    dds = ''
+    # This file contains both ascii _and_ binary data
+    # Let's handle them separately in sequence
+    # Without ignoring errors, the IO library will actually read past the ascii part of the
+    # file (despite our break from iteration) and will error out on the binary data
+    with open(dods, "rt", buffering=1, encoding='ascii', newline='\n', errors='ignore') as f:
+        for line in f:
+            if line.strip() == 'Data:':
+                break
+            dds += line
+    dataset = build_dataset(dds)
+    pos = len(dds) + len('Data:\n')
+
     with open(dods, "rb") as f:
-        dds, data = f.read().split(b'\nData:\n', 1)
-        dataset = build_dataset(dds)
-        dataset.data = unpack_data(data, dataset)
+        f.seek(pos)
+        dataset.data = unpack_data(f, dataset)
 
     if das is not None:
         with open(das) as f:
@@ -82,18 +94,20 @@ def open_file(dods, das=None):
     return dataset
 
 
-def open_dods(url, metadata=False):
+def open_dods(url, metadata=False, application=None):
     """Open a `.dods` response directly, returning a dataset."""
-    r = requests.get(url)
-    dds, data = r.content.split(b'\nData:\n', 1)
+    r = GET(url, application)
+    dds, data = r.body.split(b'\nData:\n', 1)
+    dds = dds.decode(r.content_encoding or 'ascii')
     dataset = build_dataset(dds)
-    dataset.data = unpack_data(data, dataset)
+    stream = StreamReader(BytesIO(data))
+    dataset.data = unpack_data(stream, dataset)
 
     if metadata:
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
             (scheme, netloc, path[:-4] + 'das', query, fragment))
-        das = requests.get(dasurl).text.encode('utf-8')
+        das = GET(dasurl, application).text
         add_attributes(dataset, parse_das(das))
 
     return dataset
@@ -103,11 +117,12 @@ class Functions(object):
 
     """Proxy for server-side functions."""
 
-    def __init__(self, baseurl):
+    def __init__(self, baseurl, application=None):
         self.baseurl = baseurl
+        self.application = application
 
     def __getattr__(self, attr):
-        return ServerFunction(self.baseurl, attr)
+        return ServerFunction(self.baseurl, attr, self.application)
 
 
 class ServerFunction(object):
@@ -119,9 +134,10 @@ class ServerFunction(object):
 
     """
 
-    def __init__(self, baseurl, name):
+    def __init__(self, baseurl, name, application=None):
         self.baseurl = baseurl
         self.name = name
+        self.application = application
 
     def __call__(self, *args):
         params = []
@@ -131,23 +147,24 @@ class ServerFunction(object):
             else:
                 params.append(encode(arg))
         id_ = self.name + '(' + ','.join(params) + ')'
-        return ServerFunctionResult(self.baseurl, id_)
+        return ServerFunctionResult(self.baseurl, id_, self.application)
 
 
 class ServerFunctionResult(object):
 
     """A proxy for the result from a server-side function call."""
 
-    def __init__(self, baseurl, id_):
+    def __init__(self, baseurl, id_, application=None):
         self.id = id_
         self.dataset = None
+        self.application = application
 
         scheme, netloc, path, query, fragment = urlsplit(baseurl)
         self.url = urlunsplit((scheme, netloc, path + '.dods', id_, None))
 
     def __getitem__(self, key):
         if self.dataset is None:
-            self.dataset = open_dods(self.url, True)
+            self.dataset = open_dods(self.url, True, self.application)
         return self.dataset[key]
 
     def __getattr__(self, name):

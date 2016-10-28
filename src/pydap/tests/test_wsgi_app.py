@@ -60,12 +60,12 @@ class TestDapServer(unittest.TestCase):
     def test_app_file(self):
         """Test that we can download a file."""
         res = self.app.get("/README.txt")
-        self.assertEqual(res.body, "Hello, world!")
+        self.assertEqual(res.text, "Hello, world!")
 
     def test_dap_request(self):
         """Test that DAP requests work."""
         res = self.app.get("/data.foo.dds")
-        self.assertEqual(res.body, "Success!")
+        self.assertEqual(res.text, "Success!")
 
     def test_invalid_dap_request(self):
         """Test invalid DAP requests."""

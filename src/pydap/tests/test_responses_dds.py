@@ -38,7 +38,7 @@ class TestDDSResponseSequence(unittest.TestCase):
 
     def test_charset(self):
         """Test the charset."""
-        self.assertEqual(self.res.charset, "utf-8")
+        self.assertEqual(self.res.charset, "ascii")
 
     def test_headers(self):
         """Test the headers from the response."""
@@ -47,7 +47,7 @@ class TestDDSResponseSequence(unittest.TestCase):
             ResponseHeaders([
                 ('XDODS-Server', 'pydap/3.2'),
                 ('Content-description', 'dods_dds'),
-                ('Content-type', 'text/plain; charset=utf-8'),
+                ('Content-type', 'text/plain; charset=ascii'),
                 ('Access-Control-Allow-Origin', '*'),
                 ('Access-Control-Allow-Headers',
                     'Origin, X-Requested-With, Content-Type'),
@@ -55,7 +55,7 @@ class TestDDSResponseSequence(unittest.TestCase):
 
     def test_body(self):
         """Test the generated DDS response."""
-        self.assertEqual(self.res.body, """Dataset {
+        self.assertEqual(self.res.text, """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -78,7 +78,7 @@ class TestDDSResponseGrid(unittest.TestCase):
         """Test the generated DDS response."""
         app = TestApp(BaseHandler(SimpleGrid))
         res = app.get('/.dds')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Grid {
         Array:
             Int32 SimpleGrid[y = 2][x = 3];
@@ -100,7 +100,7 @@ class TestDDSResponseStructure(unittest.TestCase):
         """Test the generated DDS response."""
         app = TestApp(BaseHandler(SimpleStructure))
         res = app.get('/.dds')
-        self.assertEqual(res.body, """Dataset {
+        self.assertEqual(res.text, """Dataset {
     Structure {
         Byte b;
         Int32 i32;

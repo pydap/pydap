@@ -7,14 +7,14 @@ Here's a simple example of a `BaseType` variable::
 
     >>> import numpy as np
     >>> foo = BaseType('foo', np.arange(4, dtype='i'))
-    >>> print foo[-2:]
+    >>> print(foo[-2:])
     [2 3]
-    >>> print foo.dtype
+    >>> print(foo.dtype)
     int32
-    >>> print foo.shape
+    >>> print(foo.shape)
     (4,)
     >>> for record in foo:
-    ...     print record
+    ...     print(record)
     0
     1
     2
@@ -26,13 +26,13 @@ not use Numpy arrays directly then? First, `BaseType` can have additional
 metadata added to them; this include names for its dimensions and also
 arbitrary attributes::
 
-    >>> print foo.attributes
+    >>> print(foo.attributes)
     {}
     >>> foo.attributes['units'] = 'm/s'
-    >>> print foo.units
+    >>> print(foo.units)
     m/s
 
-    >>> print foo.dimensions
+    >>> print(foo.dimensions)
     ()
     >>> foo.dimensions = ('time',)
 
@@ -50,7 +50,7 @@ Now that we have some data, we can organize it using containers::
 `DatasetType` should be used as the root container for a dataset. They behave
 like ordered Python dictionaries::
 
-    >>> print dataset.s.keys()
+    >>> print(dataset.s.keys())
     ['foo']
 
 A `GridType` is a special container where the first child should be an
@@ -63,10 +63,10 @@ variable::
     ...     'rain', np.arange(6).reshape(2, 3), dimensions=('y', 'x'))
     >>> rain['x'] = BaseType('x', np.arange(3), units='degrees_east')
     >>> rain['y'] = BaseType('y', np.arange(2), units='degrees_north')
-    >>> print rain.array  #doctest: +ELLIPSIS
+    >>> print(rain.array)  #doctest: +ELLIPSIS
     <BaseType with data array([[0, 1, 2],
            [3, 4, 5]])>
-    >>> print rain.maps
+    >>> print(rain.maps)
     OrderedDict([('x', <BaseType with data array([0, 1, 2])>), ('y', <BaseType with data array([0, 1])>)])
 
 There a last special container called `SequenceType`. This data structure is
@@ -87,27 +87,27 @@ composed of a series of values for each of the children.  Pydap `SequenceType`
 obects are very flexible. Data can be accessed by iterating over the object::
 
     >>> for record in cast:
-    ...     print record
+    ...     print(record)
     (10.0, 17.0, 35.0, '1')
     (20.0, 15.0, 35.0, '2')
 
 It is possible to select only a few variables::
 
     >>> for record in cast['salinity', 'depth']:
-    ...     print record
+    ...     print(record)
     (35.0, 10.0)
     (35.0, 20.0)
 
-    >>> print cast['temperature'].dtype
+    >>> print(cast['temperature'].dtype)
     float32
-    >>> print cast['temperature'].shape
+    >>> print(cast['temperature'].shape)
     (2,)
     >>> for record in cast['temperature'][-1:]:
-    ...     print record
+    ...     print(record)
     15.0
 
     >>> for record in cast[ cast['temperature'] < 16 ]:
-    ...     print record
+    ...     print(record)
     (20.0, 15.0, 35.0, '2')
 
 """
@@ -120,10 +120,11 @@ if sys.version_info < (2, 7):  # pragma: no cover
 else:
     from collections import OrderedDict
 
-from six.moves import reduce
-from six import string_types
+from six.moves import reduce, map
+from six import string_types, binary_type
+import numpy as np
 
-from pydap.lib import quote
+from pydap.lib import quote, decode_np_strings
 
 
 __all__ = [
@@ -173,7 +174,7 @@ class DapType(object):
 
             >>> var = DapType('var')
             >>> var.attributes['foo'] = 'bar'
-            >>> print var.foo
+            >>> print(var.foo)
             bar
 
         This will return the value stored under `attributes`.
@@ -198,7 +199,7 @@ class BaseType(DapType):
     def __init__(self, name, data=None, dimensions=None, attributes=None,
                  **kwargs):
         DapType.__init__(self, name, attributes, **kwargs)
-        self.data = data
+        self._data = data
         self.dimensions = dimensions or ()
 
         # these are set when not data is present (eg, when parsing a DDS)
@@ -251,14 +252,28 @@ class BaseType(DapType):
 
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
-        return self.data[index]
+        if hasattr(self.data, 'dtype') and self.data.dtype.char == 'S':
+            return np.vectorize(decode_np_strings)(self.data[index])
+        else:
+            return self.data[index]
 
     def __len__(self):
         return len(self.data)
 
     def __iter__(self):
-        return iter(self.data)
+        if hasattr(self._data, 'dtype') and self._data.dtype.char == 'S':
+            for item in self._data:
+                yield decode_np_strings(item)
+        else:
+            for item in self._data:
+                yield item
 
+    def _get_data(self):
+        return self._data
+
+    def _set_data(self, data):
+        self._data = data
+    data = property(_get_data, _set_data)
 
 class StructureType(DapType):
 
@@ -287,7 +302,12 @@ class StructureType(DapType):
 
     def __iter__(self):
         for key in self._keys:
-            yield self._dict[key]
+            x = self._dict[key]
+            if isinstance(x, binary_type):
+                yield x.tostring().decode('utf-8')
+            else:
+                yield x
+
     children = __iter__
 
     def __setitem__(self, key, item):
@@ -350,7 +370,7 @@ class DatasetType(StructureType):
 
         >>> dataset = DatasetType("A")
         >>> dataset["B"] = BaseType("B")
-        >>> print dataset["B"].id
+        >>> print(dataset["B"].id)
         B
 
     """
@@ -394,7 +414,7 @@ class SequenceType(StructureType):
     Iteraring over the sequence returns data:
 
         >>> for line in seq:
-        ...     print line
+        ...     print(line)
         (10, 15.199999809265137, 'Diamond_St')
         (11, 13.100000381469727, 'Blacktail_Loop')
         (12, 13.300000190734863, 'Platinum_St')
@@ -403,7 +423,7 @@ class SequenceType(StructureType):
     The order of the variables can be changed:
 
         >>> for line in seq['temperature', 'site', 'index']:
-        ...     print line
+        ...     print(line)
         (15.199999809265137, 'Diamond_St', 10)
         (13.100000381469727, 'Blacktail_Loop', 11)
         (13.300000190734863, 'Platinum_St', 12)
@@ -412,7 +432,7 @@ class SequenceType(StructureType):
     We can iterate over children:
 
         >>> for line in seq['temperature']:
-        ...     print line
+        ...     print(line)
         15.2
         13.1
         13.3
@@ -421,19 +441,19 @@ class SequenceType(StructureType):
     We can filter the data:
 
         >>> for line in seq[ seq.index > 10 ]:
-        ...     print line
+        ...     print(line)
         (11, 13.100000381469727, 'Blacktail_Loop')
         (12, 13.300000190734863, 'Platinum_St')
         (13, 12.100000381469727, 'Kodiak_Trail')
 
         >>> for line in seq[ seq.index > 10 ]['site']:
-        ...     print line
+        ...     print(line)
         Blacktail_Loop
         Platinum_St
         Kodiak_Trail
 
         >>> for line in seq['site', 'temperature'][ seq.index > 10 ]:
-        ...     print line
+        ...     print(line)
         ('Blacktail_Loop', 13.100000381469727)
         ('Platinum_St', 13.300000190734863)
         ('Kodiak_Trail', 12.100000381469727)
@@ -441,17 +461,17 @@ class SequenceType(StructureType):
     Or slice it:
 
         >>> for line in seq[::2]:
-        ...     print line
+        ...     print(line)
         (10, 15.199999809265137, 'Diamond_St')
         (12, 13.300000190734863, 'Platinum_St')
 
         >>> for line in seq[ seq.index > 10 ][::2]['site']:
-        ...     print line
+        ...     print(line)
         Blacktail_Loop
         Kodiak_Trail
 
         >>> for line in seq[ seq.index > 10 ]['site'][::2]:
-        ...     print line
+        ...     print(line)
         Blacktail_Loop
         Kodiak_Trail
 
@@ -476,7 +496,8 @@ class SequenceType(StructureType):
         return len(self.data)
 
     def __iter__(self):
-        return iter(self.data)
+        for line in self.data:
+            yield tuple(map(decode_np_strings, line))
 
     def __getitem__(self, key):
         # If key is a string, return child with the corresponding data.

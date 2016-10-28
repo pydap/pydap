@@ -31,6 +31,7 @@ typemap = {
     'b': 'B',
     'I': '>I', 'L': '>I', 'Q': '>I', 'H': '>I',
     'B': 'B',
+    'U': 'S' # Map unicode to string type b/c DAP doesn't explicitly support it
 }
 
 
@@ -54,7 +55,7 @@ class DODSResponse(BaseResponse):
     def __iter__(self):
         # generate DDS
         for line in dds(self.dataset):
-            yield line
+            yield line.encode('ascii')
 
         yield b'Data:\n'
         for block in dods(self.dataset):
@@ -141,7 +142,7 @@ def _(var):
     if data.shape:
         # pack length for arrays
         length = np.prod(data.shape).astype('I')
-        if data.dtype.char == 'S':
+        if data.dtype.char in 'SU':
             yield length.newbyteorder('>').tostring()
         else:
             yield length.newbyteorder('>').tostring() * 2
@@ -151,7 +152,7 @@ def _(var):
         length = np.prod(data.shape)
         for block in data:
             yield block.tostring()
-        yield (-length % 4) * '\0'
+        yield (-length % 4) * b'\0'
 
     # regular data
     else:
@@ -162,13 +163,18 @@ def _(var):
             data = data.reshape(1, -1)
 
         # strings are also zero padded and preceeded by their length
-        if data.dtype.char == 'S':
+        if data.dtype.char in 'SU':
             for block in data:
                 for word in block.flat:
                     length = len(word)
                     yield np.array(length).astype('>I').tostring()
-                    yield word
-                    yield (-length % 4) * '\0'
+                    if hasattr(word, 'encode'):
+                        yield word.encode('ascii')
+                    elif hasattr(word, 'tostring'):
+                        yield word.tostring()
+                    else:
+                        raise TypeError("Could not convert word '{0}' to bytes".format(word))
+                    yield (-length % 4) * b'\0'
         else:
             for block in data:
                 yield block.astype(typemap[data.dtype.char]).tostring()
@@ -184,7 +190,7 @@ def calculate_size(dataset):
         # individually, so it's not possible to get their size unless we read
         # everything.
         if (isinstance(var, SequenceType) or
-                (isinstance(var, BaseType) and var.data.dtype.char == 'S')):
+                (isinstance(var, BaseType) and var.dtype.char in 'SU')):
             return None
         elif isinstance(var, BaseType):
             if var.shape:

@@ -61,7 +61,7 @@ class TestEncode(unittest.TestCase):
 
     def test_string_with_quotation(self):
         """Test encoding a string with a quotation mark."""
-        self.assertEqual(encode('this is a "test"'), r'"this is a \"test\""')
+        self.assertEqual(encode('this is a "test"'), '"this is a \"test\""')
 
     def test_unicode(self):
         """Unicode objects are encoded just like strings."""
