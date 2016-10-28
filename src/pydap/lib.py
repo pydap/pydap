@@ -183,7 +183,7 @@ def get_var(dataset, id_):
 
 def decode_np_strings(numpy_var):
     """Given a fixed-width numpy string, decode it to a unicode type"""
-    if isinstance(numpy_var, binary_type):
+    if isinstance(numpy_var, binary_type) and hasattr(numpy_var, 'tostring'):
         return numpy_var.tostring().decode('utf-8')
     else:
         return numpy_var

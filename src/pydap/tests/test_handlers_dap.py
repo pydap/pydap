@@ -217,7 +217,6 @@ class TestBaseProxyString(unittest.TestCase):
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
-        #from nose.tools import set_trace; set_trace()
         np.testing.assert_array_equal(
             self.data[:], np.array(["one", "two", "three"], dtype='S'))
 

@@ -190,7 +190,7 @@ def calculate_size(dataset):
         # individually, so it's not possible to get their size unless we read
         # everything.
         if (isinstance(var, SequenceType) or
-                (isinstance(var, BaseType) and var.data.dtype.char in 'SU')):
+                (isinstance(var, BaseType) and var.dtype.char in 'SU')):
             return None
         elif isinstance(var, BaseType):
             if var.shape:

@@ -122,6 +122,7 @@ else:
 
 from six.moves import reduce, map
 from six import string_types, binary_type
+import numpy as np
 
 from pydap.lib import quote, decode_np_strings
 
@@ -252,7 +253,7 @@ class BaseType(DapType):
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
         if hasattr(self.data, 'dtype') and self.data.dtype.char == 'S':
-            return map(decode_np_strings, self.data[index])
+            return np.vectorize(decode_np_strings)(self.data[index])
         else:
             return self.data[index]
 
@@ -261,9 +262,11 @@ class BaseType(DapType):
 
     def __iter__(self):
         if hasattr(self._data, 'dtype') and self._data.dtype.char == 'S':
-            return map(decode_np_strings, self._data)
+            for item in self._data:
+                yield decode_np_strings(item)
         else:
-            return iter(self.data)
+            for item in self._data:
+                yield item
 
     def _get_data(self):
         return self._data
