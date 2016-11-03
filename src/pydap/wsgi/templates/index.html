@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Index of {{ location }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul>
+    {% for crumb in breadcrumbs[:-1] %}
+    <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a itemprop="url" href="{{ crumb.url }}/"><span itemprop="title">{{ crumb.title }}</span></a>
+    </li>
+    <li><i class="icon-angle-right"></i></li>                                             
+    {% endfor %}
+    {% if breadcrumbs %}
+    <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="pure-menu-selected">
+    <a itemprop="url" href="{{ breadcrumbs[-1].url }}/"><span itemprop="title">{{ breadcrumbs[-1].title }}</span></a>
+    </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+{% block content %}
+<table class="pure-table pydap-listing">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Last modified</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for directory in directories %}
+        <tr>
+            <td><i class="icon-folder-close icon-fixed-width"></i> <a href="{{ directory.name }}/">{{ directory.name }}/</a></td>
+            <td>&ndash;</td>
+            <td>{{ directory.last_modified|datetimeformat }}</td>
+        </tr>
+        {% endfor %}
+        {% for file in files %}
+        <tr>
+            {% if file.supported %}
+            <td><i class="icon-globe icon-fixed-width"></i>
+            <a title="Inspect and filter data" href="{{ file.name }}.html">{{ file.name }}</a>
+            <span class="dap">
+            <a title="View the DDS response" href="{{ file.name }}.dds">dds</a> |
+            <a title="View the DAS response" href="{{ file.name }}.das">das</a>
+            </span>
+            </td>
+            {% elif file.name.endswith(".html") %}
+            <td><i class="icon-file icon-fixed-width"></i>
+            <a href="{{ file.name }}">{{ file.name }}</a>
+            </td>
+            {% else %}
+            <td><i class="icon-file icon-fixed-width"></i>
+            {{ file.name }}
+            </td>
+            {% endif %}
+            <td><a title="Download file" href="{{ file.name }}">{{ file.size|filesizeformat}}</a></td>
+            <td>{{ file.last_modified|datetimeformat }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

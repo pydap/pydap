@@ -1,0 +1,106 @@
+{% macro dispatch(var) %}
+<h2>{{ var.id|unquote }}</h2>
+
+{% if var.__class__.__name__ == "GridType" %}
+<label for="{{ var.id }}" class="pure-checkbox">
+    <input name="{{ var.id }}" id="{{ var.id }}" type="checkbox" value="on">
+    Download this variable
+</label>
+
+{{ attributes(var.attributes) }}
+
+<fieldset>
+    {% for name in var.maps %}
+    <div class="pure-control-group">
+        <label for="{{ var.id }}[{{ loop.index0 }}]">{{ name }}</label>
+        <input
+            id="{{ var.id }}[{{ loop.index0 }}]"
+            type="text"
+            placeholder="0:1:{{ var[name].shape[0]-1 }}">
+    </div>
+    {% endfor %}
+</fieldset>
+
+{% elif var.__class__.__name__ == "BaseType" %}
+<label for="{{ var.id }}" class="pure-checkbox">
+    <input name="{{ var.id }}" id="{{ var.id }}" type="checkbox" value="on">
+    Download this variable
+</label>
+
+{{ attributes(var.attributes) }}
+
+{% if var.shape %}
+<fieldset>
+    <div class="pure-control-group">
+        {% for shp in var.shape %}
+        <label for="{{ var.id }}[{{ loop.index0 }}]">{{ var.name }}[{{ loop.index0 }}]</label>
+        {% if shp > 0 %}
+        <input
+            id="{{ var.id }}[{{ loop.index0 }}]"
+            type="text"
+            placeholder="0:1:{{ shp - 1 }}">
+        {% else %}
+        <input id="{{ var.id }}[{{ loop.index0 }}]" type="text" value="0" readonly>
+        {% endif %}
+        {% endfor %}
+    </div>
+</fieldset>
+{% endif %}
+
+{% elif var.__class__.__name__ == "SequenceType" %}
+{{ attributes(var.attributes) }}
+
+<fieldset>
+    Filter where
+    <select name="var1_{{ var.id }}" id="var1_{{ var.id }}">
+        <option value="--" selected>--</option>
+        {% for child in var.children() %}
+        <option value="{{ child.id }}">{{ child.name }}</option>
+        {% endfor %}
+    </select>
+    <select name="op_{{ var.id }}" id="op_{{ var.id }}">
+        <option value="%3D" selected>=</option>
+        <option value="%21%3D">≠</option>
+        <option value="%3C">&lt;</option>
+        <option value="%3C%3D">≤</option>
+        <option value="%3E">&gt;</option>
+        <option value="%3E%3D">≥</option>
+        <option value="%3D%7E">≈</option>
+    </select>
+    <input type="text" name="var2_{{ var.id }}" id="var2_{{ var.id }}" value="">
+<fieldset>
+
+{% for child in var.children() %}
+{{ dispatch(child) }}
+{% endfor %}
+
+{% else %}
+{{ attributes(var.attributes) }}
+
+<fieldset>
+{% for child in var.children() %}
+{{ dispatch(child) }}
+{% endfor %}
+</fieldset>
+{% endif %}
+
+{% endmacro %}
+
+{% macro attributes(d) %}
+<dl>
+    {% for k, v in d.items() %}
+    <dt>{{ k }}</dt>
+    {% if v is mapping %}
+    <dd>
+    <div class="nested">
+    {{ attributes(v) }}
+    </div>
+    </dd>
+    {% elif v is sequence and not v is string %}
+    <dd class="value">{{ v|join(", ") }}</dd>
+    {% else %}
+    <dd class="value">{{ v }}</dd>
+    {% endif %}
+    {% endfor %}
+</dl>
+{% endmacro %}

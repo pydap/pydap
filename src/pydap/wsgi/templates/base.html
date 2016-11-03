@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{% endblock %}</title>
+
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/pure-min.css">
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.0/base-min.css">
+        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.0/css/font-awesome.css" rel="stylesheet">
+        <link rel="stylesheet" href="/static/style.css">
+    </head>
+    <body>
+        <div class="content pure-g-r">
+            <div class="header pure-u-1">
+                <div class="pure-menu pure-menu-open pure-menu-fixed pure-menu-horizontal">
+                    <a class="pure-menu-heading" href="{{ root }}">Home</a>
+                    {% block breadcrumbs %}{% endblock %}
+                </div>
+            </div>
+            <div class="content pure-u-1">
+                {% block content %}{% endblock %}
+            </div>
+            <div class="footer pure-u-1">
+                {% block footer %}                                                              
+                <p itemscope itemtype="http://schema.org/WebApplication">                       
+                <a itemprop="url" href="http://pydap.org/"><span itemprop="name">Pydap</span> <span itemprop="softwareVersion">{{ version }}</span></a>, released under the <a href="http://opensource.org/licenses/MIT">MIT license</a> (c) 2003&ndash;2013 <a href="https://www.gittip.com/robertodealmeida/">Roberto De Almeida</a>.
+                </p>                                                                            
+                {% endblock %}
+            </div>
+        </div>
+        <script src="http://yui.yahooapis.com/3.10.1/build/yui/yui-min.js"></script>
+        <script>
+            YUI().use('node-base', 'node-event-delegate', function (Y) {
+                // This just makes sure that the href="#" attached to the anchor elements
+                // don't scroll you back up the page.
+                Y.one('.content').delegate('click', function (e) {
+                    e.preventDefault();
+                }, 'a[href="#"]');
+            });
+        </script>
+    </body>
+</html>

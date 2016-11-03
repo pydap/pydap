@@ -1,0 +1,116 @@
+body {
+    font-size: 86%;
+    margin: 0 auto;
+    line-height: 1.7em;
+}
+
+a, .pure-menu a {
+    color: #15c;
+}
+
+.header {
+    margin: 0 0;
+}
+
+    .header .pure-menu {
+        padding: 0.5em;
+    }
+
+        .header .pure-menu li a:hover,
+        .header .pure-menu li a:focus {
+            background: none;
+            border: none;
+        }
+
+.content {
+    margin-top: 3.5em;
+}
+
+.footer {
+    background: #111;
+    color: #666;
+    text-align: center;
+    padding: 0.5em;
+    font-size: 80%;
+}
+
+    .footer a {
+        color: #888;
+    }
+
+.icon-fixed-width {
+    width: 1.28571429em;
+    display: inline-block;
+    text-align: center;
+}
+
+.pydap-listing {
+    margin: 0;
+    width: 100%;
+}
+
+.dap, .dap a {
+    color: #aaa;
+    font-size: 90%;
+    visibility: hidden;
+}
+
+tbody tr {
+    border-left: 4px solid #fff;
+}
+tbody tr:hover {
+    border-left: 4px solid #15c;
+}
+tbody tr:hover td {
+    background-color: #fafafa;
+}
+tbody tr:hover td .dap,
+tbody tr:hover td .dap a {
+    visibility: visible;
+}
+
+div.attributes {
+    font-size: 90%;
+}
+
+dl {
+    padding-top: 1.65em;
+}
+
+dt {
+    width: 9em;
+    text-align: right;
+    color: #999;
+    overflow: hidden;
+}
+dd {
+    position: relative;
+    margin: -1.65em 0 0 10em;
+}
+
+dd.value {
+    white-space: pre;
+}
+
+div.form {
+    padding: 1.0em;
+}
+
+div.nested {
+    margin-left: -8em;
+    clear: left;
+}
+
+fieldset {
+    clear: left;
+}
+
+.pure-button-submit {
+    color: white;
+    border-radius: 4px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.pure-button-submit {
+    background: rgb(28, 184, 65); /* this is a green */
+}

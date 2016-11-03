@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% from "macros.html" import dispatch %}
+
+{% block title %}Dataset {{ location }}{% endblock %}
+
+{% block breadcrumbs %}
+<ul>
+    {% for crumb in breadcrumbs[:-1] %}
+    <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+    <a itemprop="url" href="{{ crumb.url }}/"><span itemprop="title">{{ crumb.title }}</span></a>
+    </li>
+    <li><i class="icon-angle-right"></i></li>                                              
+    {% endfor %}
+    {% if breadcrumbs %}
+    <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="pure-menu-selected">
+    <a itemprop="url" href="{{ breadcrumbs[-1].url }}"><span itemprop="title">{{ breadcrumbs[-1].title[:-5] }}</span></a>
+    </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+{% block content %}
+<div class="form">
+    <form class="pure-form pure-form-aligned" action="{{ location }}" method="POST">
+        <button type="submit" class="pure-button pure-button-submit">
+            <i class="icon-download-alt"></i>
+            Download data
+        </button>
+        {{ dispatch(dataset) }}
+        <button type="submit" class="pure-button pure-button-submit">
+            <i class="icon-download-alt"></i>
+            Download data
+        </button>
+    </form>
+</div>
+{% endblock %}
