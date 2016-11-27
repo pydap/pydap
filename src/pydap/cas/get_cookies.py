@@ -5,6 +5,19 @@ import copy
 import pydap.lib
 import pydap.net
 
+ssl_verify_msg = [("Unverified HTTPS request is "
+                   "being made. "
+                   "Adding certificate verification "
+                   "is strongly advised. "
+                   "See: https://urllib3.readthedocs.io/"
+                   "en/latest/security.html"),
+                  ("Unverified HTTPS request is "
+                   "being made. "
+                   "Adding certificate verification "
+                   "is strongly advised. "
+                   "See: https://urllib3.readthedocs.io/"
+                   "en/latest/advanced-usage.html#ssl-warnings")]
+
 
 def setup_session(uri, username, password, check_url=None,
                   session=None, verify=True,
@@ -47,13 +60,11 @@ def setup_session(uri, username, password, check_url=None,
         url = full_url[0]
 
     with warnings.catch_warnings():
-        warnings.filterwarnings("ignore",
-                                message=("Unverified HTTPS request is "
-                                         "being made. "
-                                         "Adding certificate verification "
-                                         "is strongly advised. "
-                                         "See: https://urllib3.readthedocs.io/"
-                                         "en/latest/security.html"))
+        if not verify:
+            for message in ssl_verify_msg:
+                warnings.filterwarnings("ignore",
+                                        message=message,
+                                        append=True)
 
         response = mechanicalsoup_login(br, url, username, password,
                                         username_field=username_field,
