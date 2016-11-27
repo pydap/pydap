@@ -10,8 +10,12 @@ ssl_verify_categories = [InsecureRequestWarning,
                          InsecurePlatformWarning]
 
 
-def setup_session(uri, username, password, check_url=None,
-                  session=None, verify=True,
+def setup_session(uri,
+                  username=None,
+                  password=None,
+                  check_url=None,
+                  session=None,
+                  verify=True,
                   username_field='username',
                   password_field='password'):
     '''
@@ -80,7 +84,7 @@ def setup_session(uri, username, password, check_url=None,
             res = session.get(check_url, auth=(username, password))
             if res.status_code == 401:
                 res = session.get(res.url, auth=(username, password))
-        res.close()
+            res.close()
     if not verify:
         session.verify = verify_flag
     return session

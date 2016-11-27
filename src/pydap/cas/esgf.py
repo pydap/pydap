@@ -2,15 +2,20 @@ from six.moves.urllib.parse import quote_plus
 from . import get_cookies
 
 
-def setup_session(openid, password, username=None, check_url=None):
+def setup_session(openid, password, username=None,
+                  check_url=None,
+                  session=None):
     """
     A special call to get_cookies.setup_session that is tailored for
     ESGF credentials.
 
     username should only be necessary for a CEDA openid.
     """
-    return get_cookies.setup_session(_uri(openid), username, password,
+    return get_cookies.setup_session(_uri(openid),
+                                     username=username,
+                                     password=password,
                                      check_url=check_url,
+                                     session=session,
                                      verify=False)
 
 
