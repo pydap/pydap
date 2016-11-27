@@ -45,7 +45,8 @@ class TestESGF(unittest.TestCase):
                                   16837.5, 16838.5, 16839.5, 16840.5, 16841.5])
         assert(np.isclose(data, expected_data).all())
 
-    @unittest.skip("This test should work but does not. Issue raised.")
+    @unittest.skip("This test should work but does not. "
+                   "An issue should be raised.")
     def test_variable_esgf_query(self):
         session = esgf.setup_session(os.environ['OPENID_ESGF'],
                                      os.environ['PASSWORD_ESGF'],
