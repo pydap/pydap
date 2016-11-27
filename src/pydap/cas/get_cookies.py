@@ -1,22 +1,33 @@
 import mechanicalsoup
 import warnings
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning, InsecurePlatformWarning
 import copy
 import pydap.lib
 import pydap.net
 
-ssl_verify_msg = [("Unverified HTTPS request is "
-                   "being made. "
-                   "Adding certificate verification "
-                   "is strongly advised. "
-                   "See: https://urllib3.readthedocs.io/"
-                   "en/latest/security.html"),
-                  ("Unverified HTTPS request is "
-                   "being made. "
-                   "Adding certificate verification "
-                   "is strongly advised. "
-                   "See: https://urllib3.readthedocs.io/"
-                   "en/latest/advanced-usage.html#ssl-warnings")]
+#ssl_verify_msg = [("Unverified HTTPS request is "
+#                   "being made. "
+#                   "Adding certificate verification "
+#                   "is strongly advised. "
+#                   "See: https://urllib3.readthedocs.io/"
+#                   "en/latest/security.html"),
+#                  ("Unverified HTTPS request is "
+#                   "being made. "
+#                   "Adding certificate verification "
+#                   "is strongly advised. "
+#                   "See: https://urllib3.readthedocs.io/"
+#                   "en/latest/advanced-usage.html#ssl-warnings"),
+#                   ("A true SSLContext object is not available. "
+#                    "This prevents urllib3 from configuring SSL "
+#                    "appropriately and may cause certain SSL "
+#                    "connections to fail. You can upgrade to a "
+#                    "newer version of Python to solve this. "
+#                    "For more information, see https://"
+#                    "urllib3.readthedocs.io/en/latest/"
+#                    "advanced-usage.html#ssl-warnings")]
+
+ssl_verify_category = [InsecureRequestWarning, InsecurePlatformWarning] 
 
 
 def setup_session(uri, username, password, check_url=None,
@@ -61,10 +72,13 @@ def setup_session(uri, username, password, check_url=None,
 
     with warnings.catch_warnings():
         if not verify:
-            for message in ssl_verify_msg:
-                warnings.filterwarnings("ignore",
-                                        message=message,
-                                        append=True)
+            #for message in ssl_verify_msg:
+            #    warnings.filterwarnings("ignore",
+            #                            message=message,
+            #                            append=True)
+            for category in ssl_verify_category:
+               warnings.filterwarnings("ignore",
+                                       category=category)
 
         response = mechanicalsoup_login(br, url, username, password,
                                         username_field=username_field,
