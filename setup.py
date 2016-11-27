@@ -11,6 +11,8 @@ install_requires = [
     'Jinja2',
     'docopt',
     'gunicorn',
+    'mechanicalsoup',
+    'requests',
     'six >= 1.4.0',
 ]
 
