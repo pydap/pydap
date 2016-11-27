@@ -5,10 +5,9 @@ from requests.packages.urllib3.exceptions import (InsecureRequestWarning,
                                                   InsecurePlatformWarning)
 import copy
 import pydap.lib
-import pydap.net
 
 ssl_verify_categories = [InsecureRequestWarning,
-                         InsecurePlatformWarning] 
+                         InsecurePlatformWarning]
 
 
 def setup_session(uri, username, password, check_url=None,
@@ -61,8 +60,8 @@ def setup_session(uri, username, password, check_url=None,
             # This error will usually occur with
             # ESGF authentication.
             for category in ssl_verify_categories:
-               warnings.filterwarnings("ignore",
-                                       category=category)
+                warnings.filterwarnings("ignore",
+                                        category=category)
 
         response = mechanicalsoup_login(br, url, username, password,
                                         username_field=username_field,
