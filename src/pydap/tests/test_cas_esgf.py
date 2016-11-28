@@ -4,17 +4,16 @@ from pydap.cas import esgf
 import requests
 import numpy as np
 import os
-import logging
-
+from nose.plugins.attrib import attr
 import sys
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
 
-logging.basicConfig(filename='cas_esgf_test.log', level=logging.DEBUG)
 
-
+@attr('auth')
+@attr('prod_url')
 class TestESGF(unittest.TestCase):
     url = ('http://cordexesg.dmi.dk/thredds/dodsC/cordex_general/'
            'cordex/output/EUR-11/DMI/ICHEC-EC-EARTH/historical/r3i1p1/'

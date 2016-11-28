@@ -7,6 +7,10 @@ from six.moves.urllib.parse import urlsplit, urlunsplit
 def GET(url, application=None, session=None):
     """Open a remote URL returning a webob.response.Response object
 
+    Optional parameters:
+    session: a requests.Session() object (potentially) containing
+             authentication cookies.
+
     Optionally open a URL to a local WSGI application
     """
     if application:

@@ -11,8 +11,6 @@ install_requires = [
     'Jinja2',
     'docopt',
     'gunicorn',
-    'mechanicalsoup',
-    'requests',
     'six >= 1.4.0',
 ]
 
@@ -31,7 +29,12 @@ docs_extras = [
     'sphinx_rtd_theme',
 ]
 
-tests_require = functions_extras + [
+cas_extras = [
+    'mechanicalsoup',
+    'requests'
+    ]
+    
+tests_require = functions_extras + cas_extras + [
     'WebTest',
     'beautifulsoup4',
     'scipy'

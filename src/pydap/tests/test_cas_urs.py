@@ -4,15 +4,15 @@ import pydap.net
 import requests
 import os
 import sys
-import logging
+from nose.plugins.attrib import attr
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
 
-logging.basicConfig(filename='cas_urs_test.log', level=logging.DEBUG)
 
-
+@attr('auth')
+@attr('prod_url')
 class TestUrs(unittest.TestCase):
     url = ('https://goldsmr3.gesdisc.eosdis.nasa.gov/opendap/'
            'MERRA_MONTHLY/MAIMCPASM.5.2.0/1979/'
