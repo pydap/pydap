@@ -95,6 +95,9 @@ def mechanicalsoup_login(br, url, username, password,
                          password_field='password'):
     login_page = br.get(url)
 
+    if not hasattr(login_page, 'soup'):
+        return login_page
+
     login_form = login_page.soup.select('form')[0]
 
     try:
