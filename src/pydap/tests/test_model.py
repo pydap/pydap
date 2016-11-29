@@ -2,15 +2,15 @@
 
 import sys
 import copy
+import numpy as np
+from pydap.model import (DatasetType, BaseType,
+                         SequenceType, StructureType,
+                         GridType, DapType)
+
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
-
-import numpy as np
-
-from pydap.model import *
-from pydap.model import DapType
 
 
 class TestDapType(unittest.TestCase):
@@ -210,7 +210,7 @@ class TestStructureType(unittest.TestCase):
     def test_delitem(self):
         """Test item deletion."""
         var = StructureType("var")
-        child = var["one"] = BaseType("one")
+        var["one"] = BaseType("one")
 
         self.assertEqual(var.keys(), ['one'])
 

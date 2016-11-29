@@ -10,19 +10,20 @@ uses Numpy directly since it's faster.
 """
 
 import copy
-try:
-    from functools import singledispatch
-except ImportError:
-    from singledispatch import singledispatch
 
 import numpy as np
 from six import string_types
 
-from pydap.model import *
+from pydap.model import (BaseType,
+                         SequenceType, StructureType)
 from pydap.lib import walk, START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
 from pydap.responses.lib import BaseResponse
 from pydap.responses.dds import dds
 
+try:
+    from functools import singledispatch
+except ImportError:
+    from singledispatch import singledispatch
 
 typemap = {
     'd': '>d',
@@ -31,7 +32,8 @@ typemap = {
     'b': 'B',
     'I': '>I', 'L': '>I', 'Q': '>I', 'H': '>I',
     'B': 'B',
-    'U': 'S' # Map unicode to string type b/c DAP doesn't explicitly support it
+    'U': 'S'  # Map unicode to string type b/c
+              # DAP doesn't explicitly support it
 }
 
 
@@ -43,10 +45,8 @@ class DODSResponse(BaseResponse):
 
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
-        self.headers.extend([
-            ('Content-description', 'dods_data'),
-            ('Content-type', 'application/octet-stream'),
-        ])
+        self.headers.extend([('Content-description', 'dods_data'),
+                             ('Content-type', 'application/octet-stream')])
 
         length = calculate_size(dataset)
         if length is not None:
@@ -173,7 +173,8 @@ def _(var):
                     elif hasattr(word, 'tostring'):
                         yield word.tostring()
                     else:
-                        raise TypeError("Could not convert word '{0}' to bytes".format(word))
+                        raise TypeError("Could not convert word '{0}' to bytes"
+                                        .format(word))
                     yield (-length % 4) * b'\0'
         else:
             for block in data:

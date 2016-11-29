@@ -1,12 +1,11 @@
 """Test Pydap namespace."""
 
 import sys
+import pydap
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
-
-import pydap
 
 
 class TestNamespace(unittest.TestCase):

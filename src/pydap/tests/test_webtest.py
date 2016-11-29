@@ -1,5 +1,10 @@
-import unittest
 from webtest import TestApp
+import sys
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
+
 
 def MyApp(environ, start_response):
     start_response('200 OK', [('content-type', 'text/plain; charset=utf-8')])
@@ -7,13 +12,11 @@ def MyApp(environ, start_response):
     yield 'bar\n'.encode('utf-8')
     yield 'baz\n'.encode('utf-8')
 
+
 class MyTest(unittest.TestCase):
     def setUp(self):
         self.app = TestApp(MyApp)
 
     def test_webtest(self):
-        expected = '''foo
-bar
-baz
-'''
+        expected = 'foo\nbar\nbaz\n'
         self.assertEqual(self.app.get('/').text, expected)

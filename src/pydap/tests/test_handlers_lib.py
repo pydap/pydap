@@ -2,14 +2,8 @@
 
 import sys
 import copy
-import re
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
 from six import text_type
 
-from pkg_resources import EntryPoint
 from webtest import TestApp, AppError
 import numpy as np
 
@@ -18,12 +12,16 @@ from pydap.lib import walk
 from pydap.exceptions import ConstraintExpressionError
 from pydap.handlers.lib import (
     load_handlers, get_handler, BaseHandler, ExtensionNotSupportedError,
-    apply_selection, apply_projection, parse_selection, ConstraintExpression,
+    apply_selection, apply_projection, ConstraintExpression,
     IterData)
 from pydap.parsers import parse_projection
 from pydap.tests.datasets import (
     SimpleArray, SimpleSequence, SimpleGrid, VerySimpleSequence,
     NestedSequence, SimpleStructure)
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 
 class TestHandlersLib(unittest.TestCase):
@@ -69,7 +67,7 @@ class TestBaseHandler(unittest.TestCase):
     Int16 short;
 } SimpleArray;
 """)
-        
+
         res = self.app.get("/.dds?byte")
         self.assertEqual(res.text, """Dataset {
     Byte byte[byte = 5];
@@ -93,28 +91,29 @@ class TestBaseHandler(unittest.TestCase):
         self.assertEqual(res.text, das)
 
     def test_exception(self):
-        """Test exception handling.
-        
+        """
+        Test exception handling.
+
         By default Pydap will capture all exceptions and return a formatted
         error response.
 
         """
         with self.assertRaises(AppError):
-            res = self.app.get("/.foo")
+            self.app.get("/.foo")
 
     def test_exception_non_captured(self):
         """Test exception handling when not captured."""
         app = TestApp(MockHandler(SimpleArray), extra_environ={
             "x-wsgiorg.throw_errors": True})
         with self.assertRaises(KeyError):
-            res = app.get("/.foo")
+            app.get("/.foo")
 
     def test_missing_dataset(self):
         """Test exception when dataset is not set."""
         app = TestApp(MockHandler(), extra_environ={
             "x-wsgiorg.throw_errors": True})
         with self.assertRaises(NotImplementedError):
-            res = app.get("/.dds")
+            app.get("/.dds")
 
 
 class TestApplySelection(unittest.TestCase):
@@ -260,9 +259,9 @@ class TestConstraintExpression(unittest.TestCase):
 
 
 class TestIterData(unittest.TestCase):
+    """
+    Test the ``IterData`` class, used to store flat/nested sequence data.
 
-    """Test the ``IterData`` class, used to store flat/nested sequence data.
-    
     A flat ``IterData`` should behave like a Numpy structured array, except
     all operations are stored to be lazily evaluated when the object is
     iterated over.
@@ -323,7 +322,8 @@ class TestIterData(unittest.TestCase):
 
     def test_slice(self):
         """Test slicing the object."""
-        self.assertIteratorEqual(map(tuple, self.data[1:]), map(tuple, self.array[1:]))
+        self.assertIteratorEqual(map(tuple, self.data[1:]),
+                                 map(tuple, self.array[1:]))
 
     def test_integer_slice(self):
         """Test slicing with an integer.
@@ -344,7 +344,7 @@ class TestIterData(unittest.TestCase):
     def test_invalid_key(self):
         """Test accessing using an invalid key."""
         with self.assertRaises(KeyError):
-            self.data[(1,2)]
+            self.data[(1, 2)]
 
     def test_selecting_children(self):
         """Test that we can select children."""
@@ -357,7 +357,7 @@ class TestIterData(unittest.TestCase):
 
         In theory this should never happen, since ``ConstraintExpression``
         object are constructly directly from existing children.
-        
+
         """
         with self.assertRaises(ConstraintExpressionError):
             self.data[ConstraintExpression("a.e<1")]
@@ -387,7 +387,7 @@ class TestIterData(unittest.TestCase):
 
     def test_selection_not_in_projection(self):
         """Test selection with variables that are not in the projection."""
-        subset = self.data[["d", "b"]]
+        self.data[["d", "b"]]
         filtered = self.data[["d", "b"]][self.data["c"] > 3]
         self.assertEqual(filtered, self.array[["d", "b"]][self.array["c"] > 3])
 
@@ -417,14 +417,12 @@ class TestNestedIterData(unittest.TestCase):
 
     def test_iteration(self):
         """Test basic iteration."""
-        self.assertEqual(
-            list(self.data), [
-            (1, 1, 1, [(10, 11, 12), (21, 22, 23)]),
-            (2, 4, 4, [(15, 16, 17)]),
-            (3, 6, 9, []),
-            (4, 8, 16, [
-                (31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)])
-        ])
+        self.assertEqual(list(self.data),
+                         [(1, 1, 1, [(10, 11, 12), (21, 22, 23)]),
+                          (2, 4, 4, [(15, 16, 17)]),
+                          (3, 6, 9, []),
+                          (4, 8, 16, [(31, 32, 33), (41, 42, 43),
+                                      (51, 52, 53), (61, 62, 63)])])
 
     def test_children_data(self):
         """Test getting data from a simple child."""
@@ -432,39 +430,33 @@ class TestNestedIterData(unittest.TestCase):
 
     def test_sequence_children_data(self):
         """Test getting data from a sequence child."""
-        self.assertEqual(
-            list(self.data["time_series"]), [
-            [(10, 11, 12), (21, 22, 23)],
-            [(15, 16, 17)],
-            [],
-            [(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)]
-        ])
+        self.assertEqual(list(self.data["time_series"]),
+                         [[(10, 11, 12), (21, 22, 23)],
+                          [(15, 16, 17)],
+                          [],
+                          [(31, 32, 33), (41, 42, 43),
+                           (51, 52, 53), (61, 62, 63)]])
 
     def test_deep_children_data(self):
         """Test getting data from a sequence child."""
-        self.assertEqual(
-            list(self.data["time_series"]["time"]), [
-            [10, 21], [15], [], [31, 41, 51, 61]
-        ])
+        self.assertEqual(list(self.data["time_series"]["time"]),
+                         [[10, 21], [15], [], [31, 41, 51, 61]])
 
     def test_selecting_children(self):
         """Test that we can select children."""
-        self.assertEqual(
-            list(self.data[["time_series", "elev"]]), [
-            ([(10, 11, 12), (21, 22, 23)], 1),
-            ([(15, 16, 17)], 4),
-            ([], 9),
-            ([(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)], 16)
-        ])
+        self.assertEqual(list(self.data[["time_series", "elev"]]),
+                         [([(10, 11, 12), (21, 22, 23)], 1),
+                          ([(15, 16, 17)], 4),
+                          ([], 9),
+                          ([(31, 32, 33), (41, 42, 43),
+                            (51, 52, 53), (61, 62, 63)], 16)])
 
     def test_slice(self):
         """Test slicing the object."""
-        self.assertEqual(
-            list(self.data[1::2]), [
-            (2, 4, 4, [(15, 16, 17)]),
-            (4, 8, 16, [
-                (31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)])
-        ])
+        self.assertEqual(list(self.data[1::2]),
+                         [(2, 4, 4, [(15, 16, 17)]),
+                          (4, 8, 16, [(31, 32, 33), (41, 42, 43),
+                                      (51, 52, 53), (61, 62, 63)])])
 
     def test_children_data_from_slice(self):
         """Test getting children data from a sliced sequence."""
@@ -472,19 +464,14 @@ class TestNestedIterData(unittest.TestCase):
 
     def test_sequence_children_data_from_slice(self):
         """Test getting children data from a sliced sequence."""
-        self.assertEqual(
-            list(self.data[1::2]["time_series"]), [
-            [(15, 16, 17)],
-            [(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)]
-        ])
+        self.assertEqual(list(self.data[1::2]["time_series"]),
+                         [[(15, 16, 17)], [(31, 32, 33), (41, 42, 43),
+                                           (51, 52, 53), (61, 62, 63)]])
 
     def test_deep_slice(self):
         """Test slicing the inner sequence."""
-        self.assertEqual(
-            list(self.data["time_series"][::2]), [
-            [(10, 11, 12), (21, 22, 23)],
-            [],
-        ])
+        self.assertEqual(list(self.data["time_series"][::2]),
+                         [[(10, 11, 12), (21, 22, 23)], []])
 
     def test_integer_slice(self):
         """Test slicing with an integer."""
@@ -492,21 +479,20 @@ class TestNestedIterData(unittest.TestCase):
 
     def test_filter_data(self):
         """Test filtering the data."""
-        self.assertEqual(
-            list(self.data[self.data["lat"] > 2]), [
-                (3, 6, 9, []),                                                              
-                (4, 8, 16, [(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)]),
-            ])
+        self.assertEqual(list(self.data[self.data["lat"] > 2]),
+                         [(3, 6, 9, []), (4, 8, 16, [(31, 32, 33),
+                                                     (41, 42, 43),
+                                                     (51, 52, 53),
+                                                     (61, 62, 63)])])
 
     def test_deep_filter(self):
         """Test deep filtering the data."""
-        self.assertEqual(
-            list(self.data[self.data["time_series"]["slp"] > 11]), [
-                (1, 1, 1, [(21, 22, 23)]),                                    
-                (2, 4, 4, [(15, 16, 17)]),                                                  
-                (3, 6, 9, []),                                                              
-                (4, 8, 16, [(31, 32, 33), (41, 42, 43), (51, 52, 53), (61, 62, 63)]), 
-            ])
+        self.assertEqual(list(self.data[self.data["time_series"]["slp"] > 11]),
+                         [(1, 1, 1, [(21, 22, 23)]),
+                          (2, 4, 4, [(15, 16, 17)]),
+                          (3, 6, 9, []),
+                          (4, 8, 16, [(31, 32, 33), (41, 42, 43),
+                                      (51, 52, 53), (61, 62, 63)])])
 
 
 class MockWorkingSet(object):

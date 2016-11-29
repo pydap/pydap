@@ -14,7 +14,8 @@ import copy
 import numpy as np
 from six.moves import zip
 
-from pydap.model import *
+from pydap.model import (BaseType,
+                         SequenceType, StructureType)
 from pydap.lib import encode, __version__
 from pydap.responses.lib import BaseResponse
 from pydap.responses.dds import dds
