@@ -17,23 +17,24 @@ import warnings
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 import logging
-logger = logging.getLogger('pydap')
-if sys.version_info >= (2, 7):  # pragma: no cover
-    logger.addHandler(logging.NullHandler())
-
 import numpy as np
 from six.moves.urllib.parse import urlsplit, urlunsplit, quote
 from six import text_type, string_types, next
 
-from pydap.model import *
+from pydap.model import (BaseType,
+                         SequenceType, StructureType,
+                         GridType)
 from pydap.net import GET, raise_for_status
 from pydap.lib import (
     encode, combine_slices, fix_slice, hyperslab,
-    START_OF_SEQUENCE, END_OF_SEQUENCE, walk)
+    START_OF_SEQUENCE, walk)
 from pydap.handlers.lib import ConstraintExpression, BaseHandler, IterData
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 from pydap.parsers import parse_ce
+logger = logging.getLogger('pydap')
+if sys.version_info >= (2, 7):  # pragma: no cover
+    logger.addHandler(logging.NullHandler())
 
 
 BLOCKSIZE = 512
@@ -152,11 +153,11 @@ class BaseProxy(object):
         elif self.dtype.char in 'SU':
             out = []
             for word in range(size):
-                n = np.fromstring(data[:4], '>I')  # read length
+                n = np.asscalar(np.fromstring(data[:4], '>I'))  # read length
                 data = data[4:]
                 out.append(data[:n])
                 data = data[n + (-n % 4):]
-            return np.array([ text_type(x.decode('ascii')) for x in out ], 'S')
+            return np.array([text_type(x.decode('ascii')) for x in out], 'S')
         else:
             try:
                 return np.fromstring(data, self.dtype).reshape(shape)
@@ -202,7 +203,7 @@ class SequenceProxy(object):
     """A proxy for remote sequences.
 
     This class behaves like a Numpy structured array, proxying the data from a
-    sequence on a remote dataset. The data is streamed from the dataset, 
+    sequence on a remote dataset. The data is streamed from the dataset,
     meaning it can be treated one record at a time before the whole data is
     downloaded.
 
@@ -211,7 +212,11 @@ class SequenceProxy(object):
     shape = ()
 
     def __init__(self, baseurl, template, selection=None, slice_=None,
+<<<<<<< ff61ed07f82ef89be6ed8cbb8cb59a6d27e46f1b
                  application=None, session=None):
+=======
+                 application=None):
+>>>>>>> Future stability with numpy
         self.baseurl = baseurl
         self.template = template
         self.selection = selection or []
@@ -233,8 +238,8 @@ class SequenceProxy(object):
 
     def __copy__(self):
         """Return a lightweight copy of the object."""
-        return self.__class__(
-            self.baseurl, self.template, self.selection[:], self.slice[:], self.application)
+        return self.__class__(self.baseurl, self.template, self.selection[:],
+                              self.slice[:], self.application)
 
     def __getitem__(self, key):
         """Return a new object representing a subset of the data."""
@@ -297,13 +302,12 @@ class SequenceProxy(object):
         this_chunk = b''
         pattern = b'Data:\n'
         for this_chunk in i:
-           m = re.search(pattern, previous_chunk + this_chunk)
-           if m:
-               break
+            m = re.search(pattern, previous_chunk + this_chunk)
+            if m:
+                break
         if not m:
-            raise ValueError(
-                    "Could not find data segment in response from {}"\
-                    .format(self.url))
+            raise ValueError("Could not find data segment in response from {}"
+                             .format(self.url))
 
         last_chunk = (previous_chunk + this_chunk)[m.end():]
 
@@ -364,7 +368,8 @@ def unpack_sequence(stream, template):
 
     # if there are no strings and no nested sequences we can unpack record by
     # record easily
-    simple = all(isinstance(c, BaseType) and c.dtype.char not in "SU" for c in cols)
+    simple = all(isinstance(c, BaseType) and c.dtype.char not in "SU"
+                 for c in cols)
 
     if simple:
         dtype = np.dtype([("", c.dtype, c.shape) for c in cols])
@@ -442,7 +447,7 @@ def unpack_data(xdr_stream, dataset):
     return unpack_children(xdr_stream, dataset)
 
 
-def dump(): # pragma: no cover
+def dump():  # pragma: no cover
     """Unpack dods response into lists.
 
     Return pretty-printed data.
