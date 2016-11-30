@@ -1,4 +1,4 @@
-from pydap.client import open_url
+from pydap.client import open_url, raise_for_ssl_error
 import pydap.net
 from pydap.cas import esgf
 import requests
@@ -6,6 +6,7 @@ import numpy as np
 import os
 from nose.plugins.attrib import attr
 import sys
+from requests.exceptions import SSLError
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
@@ -33,7 +34,10 @@ class TestESGF(unittest.TestCase):
                                      os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
         test_url = self.url + '.dods?pr[0:1:0][0:1:5][0:1:5]'
-        res = requests.get(test_url, cookies=session.cookies)
+        try:
+            res = requests.get(test_url, cookies=session.cookies)
+        except SSLError:
+            raise_for_ssl_error(test_url, session=session) 
         assert(res.status_code == 200)
         res.close()
 

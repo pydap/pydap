@@ -12,6 +12,7 @@ install_requires = [
     'docopt',
     'gunicorn',
     'six >= 1.4.0',
+    'mechanicalsoup',
 ]
 
 if sys.version_info < (2, 7):
@@ -30,7 +31,6 @@ docs_extras = [
 ]
 
 cas_extras = [
-    'mechanicalsoup',
     'requests'
     ]
     

@@ -26,8 +26,8 @@ class TestUrs(unittest.TestCase):
         open and url if and only if requests is able to
         open the same url.
         """
-        session = urs.setup_session(os.environ['USERNAME_URS'],
-                                    os.environ['PASSWORD_URS'],
+        session = urs.setup_session(os.environ.get('USERNAME_URS'),
+                                    os.environ.get('PASSWORD_URS'),
                                     check_url=self.url)
 
         test_url = self.url + '.dods?SLP[0:1:0][0:1:10][0:1:10]'
@@ -39,8 +39,8 @@ class TestUrs(unittest.TestCase):
         assert(res.status_code == 200)
 
     def test_basic_urs_query(self):
-        session = urs.setup_session(os.environ['USERNAME_URS'],
-                                    os.environ['PASSWORD_URS'],
+        session = urs.setup_session(os.environ.get('USERNAME_URS'),
+                                    os.environ.get('PASSWORD_URS'),
                                     check_url=self.url)
         dataset = open_url(self.url, session=session)
         expected_data = [[[99066.15625, 99066.15625, 99066.15625,
