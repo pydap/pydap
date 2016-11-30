@@ -70,14 +70,17 @@ def setup_session(uri,
         response = mechanicalsoup_login(br, url, username, password,
                                         username_field=username_field,
                                         password_field=password_field)
+
+        # If there are further security levels.
+        # At the moment only used for CEDA OPENID:
         if (isinstance(full_url, list) and
            len(full_url) > 1):
-            # If there are further security levels:
             for url in full_url[1:]:
                 response = mechanicalsoup_login(br, response.url,
                                                 username, password,
                                                 username_field=username_field,
-                                                password_field=password_field)
+                                                password_field=password_field,
+                                                notify=(url is not None))
         response.close()
 
         if check_url:
@@ -92,34 +95,45 @@ def setup_session(uri,
 
 def mechanicalsoup_login(br, url, username, password,
                          username_field='username',
-                         password_field='password'):
+                         password_field='password',
+                         notify=True):
     login_page = br.get(url)
 
     if not hasattr(login_page, 'soup'):
         return login_page
 
-    login_form = login_page.soup.select('form')[0]
+    try:
+        login_form = login_page.soup.select('form')[0]
+    except IndexError:
+        # There are no login form.
+        # Assume that we are logged-in
+        return login_page
 
     try:
         login_form.select('#' + username_field)[0]['value'] = username
     except IndexError:
+        # There might not need a username (e.g. ESGF)
         pass
 
     try:
         login_form.select('#' + password_field)[0]['value'] = password
     except IndexError:
-        pass
-    #    if url is not None:
-    #        br.close()
-        raise Exception('Navigate to {0}. '
-                        'If you are unable to '
-                        'login, you must either '
-                        'wait or use authentication '
-                        'from another service.'
-                        .format(url))
-    #    else:
-    #        pass
+        if notify:
+            # If there is no password_field, it might be because
+            # something should be handled in the browser
+            # for the first attempt. This is common when using
+            # pydap with the ESGF for the first time.
+            br.close()
+            raise Exception('Navigate to {0}. '
+                            'If you are unable to '
+                            'login, you must either '
+                            'wait or use authentication '
+                            'from another service.'
+                            .format(url))
+        else:
+            pass
 
+    # This is specific for CEDA OPENID:
     try:
         login_form.find("remember").items[0].selected = True
     except AttributeError:
