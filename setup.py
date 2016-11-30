@@ -43,6 +43,7 @@ tests_require = functions_extras + cas_extras + [
 testing_extras = tests_require + [
     'nose',
     'coverage',
+    'requests'
 ]
 
 if sys.version_info < (2, 7):

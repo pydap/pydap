@@ -19,7 +19,13 @@ class TestUrs(unittest.TestCase):
            'MERRA100.prod.assim.instM_3d_asm_Cp.197901.hdf')
 
     def test_basic_urs_auth(self):
-        """Set up PyDAP to use the URS request() function"""
+        """
+        Set up PyDAP to use the URS request() function.
+
+        The intent here is to ensure that pydap.net is able to
+        open and url if and only if requests is able to
+        open the same url.
+        """
         session = urs.setup_session(os.environ['USERNAME_URS'],
                                     os.environ['PASSWORD_URS'],
                                     check_url=self.url)

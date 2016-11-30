@@ -22,7 +22,13 @@ class TestESGF(unittest.TestCase):
            'DMI-HIRHAM5_v1_day_19960101-20001231.nc')
 
     def test_basic_esgf_auth(self):
-        """Set up PyDAP to use the URS request() function"""
+        """
+        Set up PyDAP to use the URS request() function.
+
+        The intent here is to ensure that pydap.net is able to
+        open and url if and only if requests is able to
+        open the same url.
+        """
         session = esgf.setup_session(os.environ['OPENID_ESGF'],
                                      os.environ['PASSWORD_ESGF'],
                                      check_url=self.url)
