@@ -1,12 +1,12 @@
-from pydap.client import open_url, raise_for_ssl_error
+from pydap.client import open_url
 import pydap.net
 from pydap.cas import esgf
+from pydap.cas.get_cookies import raise_if_form_exists
 import requests
 import numpy as np
 import os
 from nose.plugins.attrib import attr
 import sys
-from requests.exceptions import SSLError
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
@@ -22,7 +22,7 @@ class TestESGF(unittest.TestCase):
            'pr_EUR-11_ICHEC-EC-EARTH_historical_r3i1p1_'
            'DMI-HIRHAM5_v1_day_19960101-20001231.nc')
 
-    def test_resgistration_esgf_auth(self):
+    def test_registration_esgf_auth(self):
         """
         Attempt to access a ESGF OPENDAP link for which
         the user has not yet selected a registration group.
@@ -33,11 +33,10 @@ class TestESGF(unittest.TestCase):
         environment variables. These must be associated with credentials
         where no group was selected.
         """
-        session = esgf.setup_session(os.environ.get('OPENID_ESGF_NO_REG'),
-                                     os.environ.get('PASSWORD_ESGF_NO_REG'),
-                                     check_url=self.url)
         with self.assertRaises(UserWarning):
-            open_url(self.url, session=session)
+            session = esgf.setup_session(os.environ.get('OPENID_ESGF_NO_REG'),
+                                         os.environ.get('PASSWORD_ESGF_NO_REG'),
+                                         check_url=self.url)
 
     def test_basic_esgf_auth(self):
         """
@@ -51,11 +50,8 @@ class TestESGF(unittest.TestCase):
                                      os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
         test_url = self.url + '.dods?pr[0:1:0][0:1:5][0:1:5]'
-        try:
-            res = requests.get(test_url, cookies=session.cookies,
-                               verify=False)
-        except SSLError:
-            raise_for_ssl_error(test_url, session=session) 
+        res = requests.get(test_url, cookies=session.cookies,
+                           verify=False)
         assert(res.status_code == 200)
         res.close()
 

@@ -84,13 +84,30 @@ def setup_session(uri,
         response.close()
 
         if check_url:
-            res = session.get(check_url, auth=(username, password))
-            if res.status_code == 401:
-                res = session.get(res.url, auth=(username, password))
-            res.close()
+            if (username is not None and
+               password is not None):
+                res = session.get(check_url, auth=(username, password))
+                if res.status_code == 401:
+                    res = session.get(res.url, auth=(username, password))
+                res.close()
+            raise_if_form_exists(check_url, session)
+
     if not verify:
         session.verify = verify_flag
     return session
+
+
+def raise_if_form_exists(url, session):
+    """
+    This function raises a UserWarning if the link has forms
+    """
+    br = mechanicalsoup.Browser(session=session)
+    login_page = br.get(url)
+    if (hasattr(login_page, 'soup') and
+       len(login_page.soup.select('form')) > 0):
+        raise UserWarning('Navigate to {0}, login and follow instructions. '.format(url) +
+                          'It is likely that you have to perform some one-time'
+                          'registration steps before acessing this data.')
 
 
 def mechanicalsoup_login(br, url, username, password,
