@@ -29,8 +29,8 @@ class TestESGF(unittest.TestCase):
         open and url if and only if requests is able to
         open the same url.
         """
-        session = esgf.setup_session(os.environ['OPENID_ESGF'],
-                                     os.environ['PASSWORD_ESGF'],
+        session = esgf.setup_session(os.environ.get('OPENID_ESGF'),
+                                     os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
         test_url = self.url + '.dods?pr[0:1:0][0:1:5][0:1:5]'
         res = requests.get(test_url, cookies=session.cookies)
@@ -41,8 +41,8 @@ class TestESGF(unittest.TestCase):
         assert(res.status_code == 200)
 
     def test_dimension_esgf_query(self):
-        session = esgf.setup_session(os.environ['OPENID_ESGF'],
-                                     os.environ['PASSWORD_ESGF'],
+        session = esgf.setup_session(os.environ.get('OPENID_ESGF'),
+                                     os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
         dataset = open_url(self.url, session=session)
         data = dataset['time'][:10]
@@ -53,8 +53,8 @@ class TestESGF(unittest.TestCase):
     @unittest.skip("This test should work but does not. "
                    "An issue should be raised.")
     def test_variable_esgf_query(self):
-        session = esgf.setup_session(os.environ['OPENID_ESGF'],
-                                     os.environ['PASSWORD_ESGF'],
+        session = esgf.setup_session(os.environ.get('OPENID_ESGF'),
+                                     os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
         dataset = open_url(self.url, session=session)
         data = dataset['pr'][0, 200:205, 100:105]
