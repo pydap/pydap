@@ -22,6 +22,23 @@ class TestESGF(unittest.TestCase):
            'pr_EUR-11_ICHEC-EC-EARTH_historical_r3i1p1_'
            'DMI-HIRHAM5_v1_day_19960101-20001231.nc')
 
+    def test_resgistration_esgf_auth(self):
+        """
+        Attempt to access a ESGF OPENDAP link for which
+        the user has not yet selected a registration group.
+        This procedure has to be completed only once per project
+        over the lifetime of an ESGF OPENID
+
+        Requires OPENID_ESGF_NO_REG and PASSWORD_ESGF_NO_REG
+        environment variables. These must be associated with credentials
+        where no group was selected.
+        """
+        session = esgf.setup_session(os.environ.get('OPENID_ESGF_NO_REG'),
+                                     os.environ.get('PASSWORD_ESGF_NO_REG'),
+                                     check_url=self.url)
+        with self.assertRaises(UserWarning):
+            open_url(self.url, session=session)
+
     def test_basic_esgf_auth(self):
         """
         Set up PyDAP to use the URS request() function.
@@ -35,7 +52,8 @@ class TestESGF(unittest.TestCase):
                                      check_url=self.url)
         test_url = self.url + '.dods?pr[0:1:0][0:1:5][0:1:5]'
         try:
-            res = requests.get(test_url, cookies=session.cookies)
+            res = requests.get(test_url, cookies=session.cookies,
+                               verify=False)
         except SSLError:
             raise_for_ssl_error(test_url, session=session) 
         assert(res.status_code == 200)

@@ -28,10 +28,13 @@ def _uri(openid):
     def generate_url(dest_url):
         dest_node = _get_node(dest_url)
 
-        url = (dest_node +
-               '/esg-orp/j_spring_openid_security_check.htm?'
-               'openid_identifier=' +
-               quote_plus(openid))
+        try:
+            url = (dest_node +
+                   '/esg-orp/j_spring_openid_security_check.htm?'
+                   'openid_identifier=' +
+                   quote_plus(openid))
+        except TypeError:
+            raise UserWarning('OPENID was not set. ESGF connection cannot succeed.')
         if _get_node(openid) == 'https://ceda.ac.uk':
             return [url, None]
         else:

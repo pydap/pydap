@@ -77,10 +77,7 @@ def raise_for_ssl_error(url, session=None):
     br = mechanicalsoup.Browser(session=session)
     login_page = br.get(url)
     if len(login_page.soup.select('form')) > 0:
-        import warnings
-        with warnings.catch_warnings():
-            warnings.filterwarnings('error')
-            warnings.warn('Navigate to {0}, login and follow instructions. '.format(url) +
+        raise UserWarning('Navigate to {0}, login and follow instructions. '.format(url) +
                           'It is likely that you have to perform some one-time'
                           'registration steps before acessing this data.')
     else:
