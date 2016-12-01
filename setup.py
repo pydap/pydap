@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import sys, os
 
 
-__version__ = '3.2'
+__version__ = '3.2.0'
 
 install_requires = [
     'numpy',
@@ -65,6 +65,8 @@ setup(name='Pydap',
     keywords='opendap dods dap science data',
     author='Roberto De Almeida',
     author_email='roberto@dealmeida.net',
+    maintainer='James Hiebert',
+    maintainer_email='james@hiebert.name',
     url='http://pydap.org/',
     license='MIT',
     packages=find_packages('src'),

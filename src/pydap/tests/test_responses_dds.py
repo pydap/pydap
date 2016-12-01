@@ -9,13 +9,13 @@ else:
 from webtest import TestApp
 from webob.headers import ResponseHeaders
 
+from pydap.lib import __version__
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 from pydap.responses.dds import dds
 
 
 class TestDDSResponseSequence(unittest.TestCase):
-
     """Test DDS response from sequences."""
 
     def setUp(self):
@@ -45,7 +45,7 @@ class TestDDSResponseSequence(unittest.TestCase):
         self.assertEqual(
             self.res.headers,
             ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'),
+                ('XDODS-Server', 'pydap/' + __version__),
                 ('Content-description', 'dods_dds'),
                 ('Content-type', 'text/plain; charset=ascii'),
                 ('Access-Control-Allow-Origin', '*'),
