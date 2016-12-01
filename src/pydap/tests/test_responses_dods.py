@@ -11,7 +11,7 @@ import numpy as np
 from webtest import TestApp
 from webob.headers import ResponseHeaders
 
-from pydap.lib import START_OF_SEQUENCE, END_OF_SEQUENCE
+from pydap.lib import START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import (
     VerySimpleSequence, SimpleSequence, SimpleGrid,
@@ -50,7 +50,7 @@ class TestDODSResponse(unittest.TestCase):
         self.assertEqual(
             self.res.headers,
             ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'),
+                ('XDODS-Server', 'pydap/' + __version__),
                 ('Content-description', 'dods_data'),
                 ('Content-type', 'application/octet-stream'),
                 ('Access-Control-Allow-Origin', '*'),

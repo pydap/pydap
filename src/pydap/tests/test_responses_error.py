@@ -8,6 +8,7 @@ from webob import Request
 from webob.headers import ResponseHeaders
 
 from pydap.responses.error import ErrorResponse
+from pydap.lib import __version__
 
 
 class TestErrorResponse(unittest.TestCase):
@@ -34,7 +35,7 @@ class TestErrorResponse(unittest.TestCase):
         self.assertEqual(self.res.headers['Content-Type'],
                 'text/plain; charset=utf-8')
         self.assertEqual(self.res.headers['Content-description'], 'dods_error')
-        self.assertEqual(self.res.headers['XDODS-Server'], 'pydap/3.2')
+        self.assertEqual(self.res.headers['XDODS-Server'], 'pydap/' + __version__)
 
     def test_body(self):
         self.assertRegexpMatches(self.res.text, """Error {

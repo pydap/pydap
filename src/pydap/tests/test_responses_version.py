@@ -4,6 +4,7 @@ import unittest
 
 from webtest import TestApp
 
+from pydap.lib import __version__
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import VerySimpleSequence
 
@@ -40,4 +41,4 @@ class TestVersionResponse(unittest.TestCase):
             'application/json; charset=utf-8')
         self.assertEqual(self.res.headers['Content-description'],
             'dods_version')
-        self.assertEqual(self.res.headers['XDODS-Server'], 'pydap/3.2')
+        self.assertEqual(self.res.headers['XDODS-Server'], 'pydap/' + __version__)

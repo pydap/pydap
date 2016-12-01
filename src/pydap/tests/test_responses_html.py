@@ -8,14 +8,13 @@ else:
     import unittest
     from collections import OrderedDict
 
-
 from webtest import TestApp
 from webob import Request
 from webob.headers import ResponseHeaders
 from bs4 import BeautifulSoup
 from jinja2 import Environment, DictLoader
 
-from pydap.lib import walk
+from pydap.lib import walk, __version__
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import VerySimpleSequence, SimpleGrid
 
@@ -48,10 +47,10 @@ class TestHTMLResponseSequence(unittest.TestCase):
         res = self.app.get('/.html')
         self.assertEqual(
             res.headers, ResponseHeaders([
-                ('XDODS-Server', 'pydap/3.2'),
+                ('XDODS-Server', 'pydap/' + __version__),
                 ('Content-description', 'dods_form'),
                 ('Content-type', 'text/html; charset=utf-8'),
-                ('Content-Length', '5213')]))
+                ('Content-Length', '5215')]))
 
     def test_body(self):
         """Test the HTML response.
