@@ -53,12 +53,13 @@ from pydap.handlers.dap import DAPHandler, unpack_data, StreamReader
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 
-def open_url(url, application=None):
+
+def open_url(url, application=None, session=None):
     """Open a remote URL, returning a dataset."""
-    dataset = DAPHandler(url, application).dataset
+    dataset = DAPHandler(url, application, session).dataset
 
     # attach server-side functions
-    dataset.functions = Functions(url, application)
+    dataset.functions = Functions(url, application, session)
 
     return dataset
 
@@ -73,9 +74,12 @@ def open_file(dods, das=None):
     dds = ''
     # This file contains both ascii _and_ binary data
     # Let's handle them separately in sequence
-    # Without ignoring errors, the IO library will actually read past the ascii part of the
-    # file (despite our break from iteration) and will error out on the binary data
-    with open(dods, "rt", buffering=1, encoding='ascii', newline='\n', errors='ignore') as f:
+    # Without ignoring errors, the IO library will actually
+    # read past the ascii part of the
+    # file (despite our break from iteration) and will error
+    # out on the binary data
+    with open(dods, "rt", buffering=1, encoding='ascii', newline='\n',
+              errors='ignore') as f:
         for line in f:
             if line.strip() == 'Data:':
                 break
@@ -94,9 +98,9 @@ def open_file(dods, das=None):
     return dataset
 
 
-def open_dods(url, metadata=False, application=None):
+def open_dods(url, metadata=False, application=None, session=None):
     """Open a `.dods` response directly, returning a dataset."""
-    r = GET(url, application)
+    r = GET(url, application, session)
     dds, data = r.body.split(b'\nData:\n', 1)
     dds = dds.decode(r.content_encoding or 'ascii')
     dataset = build_dataset(dds)
@@ -107,7 +111,7 @@ def open_dods(url, metadata=False, application=None):
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
             (scheme, netloc, path[:-4] + 'das', query, fragment))
-        das = GET(dasurl, application).text
+        das = GET(dasurl, application, session).text
         add_attributes(dataset, parse_das(das))
 
     return dataset
@@ -117,12 +121,14 @@ class Functions(object):
 
     """Proxy for server-side functions."""
 
-    def __init__(self, baseurl, application=None):
+    def __init__(self, baseurl, application=None, session=None):
         self.baseurl = baseurl
         self.application = application
+        self.session = session
 
     def __getattr__(self, attr):
-        return ServerFunction(self.baseurl, attr, self.application)
+        return ServerFunction(self.baseurl, attr, self.application,
+                              self.session)
 
 
 class ServerFunction(object):
@@ -134,10 +140,11 @@ class ServerFunction(object):
 
     """
 
-    def __init__(self, baseurl, name, application=None):
+    def __init__(self, baseurl, name, application=None, session=None):
         self.baseurl = baseurl
         self.name = name
         self.application = application
+        self.session = None
 
     def __call__(self, *args):
         params = []
@@ -147,24 +154,27 @@ class ServerFunction(object):
             else:
                 params.append(encode(arg))
         id_ = self.name + '(' + ','.join(params) + ')'
-        return ServerFunctionResult(self.baseurl, id_, self.application)
+        return ServerFunctionResult(self.baseurl, id_, self.application,
+                                    self.session)
 
 
 class ServerFunctionResult(object):
 
     """A proxy for the result from a server-side function call."""
 
-    def __init__(self, baseurl, id_, application=None):
+    def __init__(self, baseurl, id_, application=None, session=None):
         self.id = id_
         self.dataset = None
         self.application = application
+        self.session = session
 
         scheme, netloc, path, query, fragment = urlsplit(baseurl)
         self.url = urlunsplit((scheme, netloc, path + '.dods', id_, None))
 
     def __getitem__(self, key):
         if self.dataset is None:
-            self.dataset = open_dods(self.url, True, self.application)
+            self.dataset = open_dods(self.url, True, self.application,
+                                     self.session)
         return self.dataset[key]
 
     def __getattr__(self, name):

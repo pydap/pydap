@@ -12,6 +12,7 @@ install_requires = [
     'docopt',
     'gunicorn',
     'six >= 1.4.0',
+    'mechanicalsoup',
 ]
 
 if sys.version_info < (2, 7):
@@ -29,7 +30,11 @@ docs_extras = [
     'sphinx_rtd_theme',
 ]
 
-tests_require = functions_extras + [
+cas_extras = [
+    'requests'
+    ]
+    
+tests_require = functions_extras + cas_extras + [
     'WebTest',
     'beautifulsoup4',
     'scipy'
@@ -38,6 +43,7 @@ tests_require = functions_extras + [
 testing_extras = tests_require + [
     'nose',
     'coverage',
+    'requests'
 ]
 
 if sys.version_info < (2, 7):
@@ -71,7 +77,8 @@ setup(name='Pydap',
         'functions': functions_extras,
         'testing': testing_extras,
         'docs': docs_extras,
-        'tests': tests_require
+        'tests': tests_require,
+        'cas': cas_extras
     },
     test_suite="pydap.tests",
     entry_points="""
