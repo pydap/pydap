@@ -1,5 +1,6 @@
 recursive-include docs *
 recursive-include src/pydap/wsgi/templates *
 recursive-include src/pydap/responses/html/templates *
+include CONTRIBUTORS.md
 include README.md
 include NEWS.md
