@@ -1,7 +1,6 @@
 from pydap.client import open_url
 import pydap.net
 from pydap.cas import esgf
-from pydap.cas.get_cookies import raise_if_form_exists
 import requests
 import numpy as np
 import os
