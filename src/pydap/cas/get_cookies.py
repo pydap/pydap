@@ -101,25 +101,31 @@ def raise_if_form_exists(url, session):
     """
     This function raises a UserWarning if the link has forms
     """
+
+    user_warning = ('Navigate to {0}, login and follow instructions. '.format(url) +
+                    'It is likely that you have to perform some one-time'
+                    'registration steps before acessing this data.')
+
     # This is important for the python 2.6 build:
     try:
-        from html.parser import HTMLParseError
+        from six.moves.html_parser import HTMLParseError
     except ImportError as e:
         # HTMLParseError is removed in Python 3.5. Since it can never be
         # thrown in 3.5, we can just define our own class as a placeholder.
+        # *from bs4/builder/_htmlparser.py
         class HTMLParseError(Exception):
             pass
 
     br = mechanicalsoup.Browser(session=session)
     try:
         login_page = br.get(url)
-        if (hasattr(login_page, 'soup') and
-           len(login_page.soup.select('form')) > 0):
-            raise UserWarning()
-    except (HTMLParseError, UserWarning):
-        raise UserWarning('Navigate to {0}, login and follow instructions. '.format(url) +
-                          'It is likely that you have to perform some one-time'
-                          'registration steps before acessing this data.')
+    except HTMLParseError:
+        # This is important for the python 2.6 build:
+        raise UserWarning(user_warning)
+
+    if ((hasattr(login_page, 'soup') and
+       len(login_page.soup.select('form')) > 0)):
+        raise UserWarning(user_warning)
 
 
 def mechanicalsoup_login(br, url, username, password,
