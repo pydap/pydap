@@ -212,11 +212,7 @@ class SequenceProxy(object):
     shape = ()
 
     def __init__(self, baseurl, template, selection=None, slice_=None,
-<<<<<<< ff61ed07f82ef89be6ed8cbb8cb59a6d27e46f1b
                  application=None, session=None):
-=======
-                 application=None):
->>>>>>> Future stability with numpy
         self.baseurl = baseurl
         self.template = template
         self.selection = selection or []

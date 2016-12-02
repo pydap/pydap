@@ -44,6 +44,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
     def test_headers(self):
         """Test the response headers."""
         res = self.app.get('/.html')
+        print(res)
         self.assertEqual(
             res.headers, ResponseHeaders([
                 ('XDODS-Server', 'pydap/' + __version__),
