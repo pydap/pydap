@@ -50,7 +50,7 @@ def ascii(var, printname=True):
 
 
 @ascii.register(SequenceType)
-def _(var, printname=True):
+def _sequenctype(var, printname=True):
     yield ', '.join([child.id for child in var.children()])
     yield '\n'
     for rec in var:
@@ -66,7 +66,7 @@ def _(var, printname=True):
 
 
 @ascii.register(StructureType)
-def _(var, printname=True):
+def _structuretype(var, printname=True):
     for child in var.children():
         for line in ascii(child, printname):
             yield line
@@ -74,7 +74,7 @@ def _(var, printname=True):
 
 
 @ascii.register(BaseType)
-def _(var, printname=True):
+def _basetype(var, printname=True):
     if printname:
         yield var.id
         yield '\n'

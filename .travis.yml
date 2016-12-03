@@ -18,3 +18,4 @@ install:
 
 script:
     - python setup.py nosetests -a '!auth'
+    - flake8

@@ -52,7 +52,7 @@ def das(var, level=0):
 
 
 @das.register(DatasetType)
-def _(var, level=0):
+def _datasettype(var, level=0):
     yield '{indent}Attributes {{\n'.format(indent=level*INDENT)
 
     for attr in sorted(var.attributes.keys()):
@@ -67,7 +67,7 @@ def _(var, level=0):
 
 
 @das.register(StructureType)
-def _(var, level=0):
+def _structuretype(var, level=0):
     yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
 
     for attr in sorted(var.attributes.keys()):
@@ -83,7 +83,7 @@ def _(var, level=0):
 
 @das.register(BaseType)
 @das.register(GridType)
-def _(var, level=0):
+def _basetypegridtype(var, level=0):
     yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
 
     for attr in sorted(var.attributes.keys()):

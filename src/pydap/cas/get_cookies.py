@@ -102,7 +102,8 @@ def raise_if_form_exists(url, session):
     This function raises a UserWarning if the link has forms
     """
 
-    user_warning = ('Navigate to {0}, login and follow instructions. '.format(url) +
+    user_warning = ('Navigate to {0}, '.format(url) +
+                    'login and follow instructions. '
                     'It is likely that you have to perform some one-time'
                     'registration steps before acessing this data.')
 

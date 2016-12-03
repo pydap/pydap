@@ -33,9 +33,9 @@ class TestESGF(unittest.TestCase):
         where no group was selected.
         """
         with self.assertRaises(UserWarning):
-            session = esgf.setup_session(os.environ.get('OPENID_ESGF_NO_REG'),
-                                         os.environ.get('PASSWORD_ESGF_NO_REG'),
-                                         check_url=self.url)
+            esgf.setup_session(os.environ.get('OPENID_ESGF_NO_REG'),
+                               os.environ.get('PASSWORD_ESGF_NO_REG'),
+                               check_url=self.url)
 
     def test_basic_esgf_auth(self):
         """

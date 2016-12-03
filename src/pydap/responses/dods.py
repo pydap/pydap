@@ -69,14 +69,14 @@ def dods(var):
 
 
 @dods.register(StructureType)
-def _(var):
+def _structuretype(var):
     for child in var.children():
         for block in dods(child):
             yield block
 
 
 @dods.register(SequenceType)
-def _(var):
+def _sequencetype(var):
     # a flat array can be processed one record (or more?) at a time
     if all(isinstance(child, BaseType) for child in var.children()):
         types = []
@@ -133,7 +133,7 @@ def _(var):
 
 
 @dods.register(BaseType)
-def _(var):
+def _basetype(var):
     data = var.data
 
     if not hasattr(data, "shape"):
