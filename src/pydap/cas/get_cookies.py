@@ -110,7 +110,7 @@ def raise_if_form_exists(url, session):
     # This is important for the python 2.6 build:
     try:
         from six.moves.html_parser import HTMLParseError
-    except ImportError as e:
+    except ImportError:
         # HTMLParseError is removed in Python 3.5. Since it can never be
         # thrown in 3.5, we can just define our own class as a placeholder.
         # *from bs4/builder/_htmlparser.py
