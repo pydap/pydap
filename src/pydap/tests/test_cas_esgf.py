@@ -20,6 +20,7 @@ class TestESGF(unittest.TestCase):
            'DMI-HIRHAM5/v1/day/pr/v20131119/'
            'pr_EUR-11_ICHEC-EC-EARTH_historical_r3i1p1_'
            'DMI-HIRHAM5_v1_day_19960101-20001231.nc')
+    test_url = url + '.dods?pr[0:1:0][0:1:5][0:1:5]'
 
     def test_registration_esgf_auth(self):
         """
@@ -48,19 +49,23 @@ class TestESGF(unittest.TestCase):
         session = esgf.setup_session(os.environ.get('OPENID_ESGF'),
                                      os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
-        test_url = self.url + '.dods?pr[0:1:0][0:1:5][0:1:5]'
-        res = requests.get(test_url, cookies=session.cookies,
+        res = requests.get(self.test_url, cookies=session.cookies,
                            verify=False)
         assert(res.status_code == 200)
         res.close()
 
-        res = pydap.net.follow_redirect(test_url, session=session)
+        res = pydap.net.follow_redirect(self.test_url, session=session)
         assert(res.status_code == 200)
 
     def test_dimension_esgf_query(self):
         session = esgf.setup_session(os.environ.get('OPENID_ESGF'),
                                      os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
+
+        # Ensure authentication:
+        res = pydap.net.follow_redirect(self.test_url, session=session)
+        assert(res.status_code == 200)
+
         dataset = open_url(self.url, session=session)
         data = dataset['time'][:10]
         expected_data = np.array([16832.5, 16833.5, 16834.5, 16835.5, 16836.5,
@@ -71,10 +76,10 @@ class TestESGF(unittest.TestCase):
         session = esgf.setup_session(os.environ.get('OPENID_ESGF'),
                                      os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
-        # This server does not access retrieval of grid coordinates.
-        # The option output_grid disables this, reverting to
-        # pydap 3.1.1 behavior. For older OPeNDAP servers (i.e. ESGF),
-        # this appears necessary.
+        # Ensure authentication:
+        res = pydap.net.follow_redirect(self.test_url, session=session)
+        assert(res.status_code == 200)
+
         dataset = open_url(self.url, session=session, output_grid=False)
         data = dataset['pr'][0, 200:205, 100:105]
         expected_data = [[[5.23546005e-05,  5.48864300e-05,
