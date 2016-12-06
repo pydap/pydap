@@ -23,7 +23,7 @@ def GET(url, application=None, session=None):
 def raise_for_status(response):
     if response.status_code >= 400:
         raise HTTPError(
-            detail=response.status,
+            detail=response.status+'\n'+response.text,
             headers=response.headers,
             comment=response.body
         )
