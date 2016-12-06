@@ -3,16 +3,12 @@
 import sys
 from netCDF4 import Dataset
 import tempfile
-import multiprocessing
 import os
-import time
 import numpy as np
 
 from pydap.handlers.netcdf import NetCDFHandler
 from pydap.handlers.dap import DAPHandler
-from werkzeug.serving import run_simple
 from pydap.wsgi.ssf import ServerSideFunctions
-from pydap.client import open_url
 
 
 if sys.version_info < (2, 7):
@@ -89,16 +85,6 @@ class TestNetCDFHandlerServer(unittest.TestCase):
             for item_id, item in enumerate(next(split_data)):
                 temp[item_id] = item
 
-        #def run_simple_server(test_file):
-        #    application = NetCDFHandler(test_file)
-        #    application = ServerSideFunctions(application)
-        #    run_simple('localhost', 8001, application,
-        #               use_reloader=True)
-        #self.server_process = multiprocessing.Process(target=run_simple_server,
-        #                                              args=(self.test_file,))
-        #self.server_process.start()
-        #time.sleep(1000)
-
     def test_open(self):
         """Test that NetCDFHandler can be read through open_url."""
         handler = NetCDFHandler(self.test_file)
@@ -114,7 +100,4 @@ class TestNetCDFHandlerServer(unittest.TestCase):
                                       np.array(self.data, dtype=dtype))
 
     def tearDown(self):
-        #self.server_process.terminate()
-        #self.server_process.join()
-        #del(self.server_process)
         os.remove(self.test_file)
