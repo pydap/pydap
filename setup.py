@@ -33,12 +33,18 @@ docs_extras = [
 cas_extras = [
     'requests'
     ]
+
+hdl_netcdf_extras = [
+    'scipy',
+    'netCDF4'
+    ]
     
-tests_require = functions_extras + cas_extras + [
+tests_require = (functions_extras + cas_extras + 
+                hdl_netcdf_extras +[
     'WebTest',
     'beautifulsoup4',
     'scipy'
-]
+])
 
 testing_extras = tests_require + [
     'nose',
@@ -80,7 +86,8 @@ setup(name='Pydap',
         'testing': testing_extras,
         'docs': docs_extras,
         'tests': tests_require,
-        'cas': cas_extras
+        'cas': cas_extras,
+        'handlers.netcdf': hdl_netcdf_extras
     },
     test_suite="pydap.tests",
     entry_points="""

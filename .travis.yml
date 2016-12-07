@@ -12,6 +12,8 @@ addons:
       - libblas-dev
       - liblapack-dev
       - cython
+      - libhdf5-dev
+      - libnetcdf-dev
 install:
     - travis_wait 30 pip install scipy
     - pip install -e .[testing,functions,tests]
