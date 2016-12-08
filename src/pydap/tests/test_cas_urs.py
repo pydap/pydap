@@ -42,7 +42,7 @@ class TestUrs(unittest.TestCase):
         session = urs.setup_session(os.environ.get('USERNAME_URS'),
                                     os.environ.get('PASSWORD_URS'),
                                     check_url=self.url)
-        #Ensure authentication:
+        # Ensure authentication:
         res = pydap.net.follow_redirect(self.test_url, session=session)
         assert(res.status_code == 200)
         dataset = open_url(self.url, session=session)

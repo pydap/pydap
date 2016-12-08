@@ -555,6 +555,9 @@ class GridType(StructureType):
 
         # Return a new `GridType` with part of the data.
         else:
+            if not self.output_grid:
+                return self.array[key]
+
             if not isinstance(key, tuple):
                 key = (key,)
 
@@ -562,6 +565,16 @@ class GridType(StructureType):
             for var, slice_ in zip(out.children(), [key] + list(key)):
                 var.data = self[var.name].data[slice_]
             return out
+
+    @property
+    def output_grid(self):
+        if hasattr(self, '_output_grid'):
+            return self._output_grid
+        else:
+            return True
+
+    def set_output_grid(self, key):
+        self._output_grid = bool(key)
 
     @property
     def array(self):
