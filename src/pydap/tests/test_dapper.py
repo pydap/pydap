@@ -2,8 +2,7 @@
 This is an example of a Dapper-compliant dataset.
 
 """
-import unittest                                                                 
-                                                                                
+import unittest
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 
@@ -145,13 +144,13 @@ DAS = """Attributes {
     }
 }"""
 
-                                                                                
-class TestDapper(unittest.TestCase):                                            
+
+class TestDapper(unittest.TestCase):
     def setUp(self):
         dataset = build_dataset(DDS)
         attributes = parse_das(DAS)
         self.dataset = add_attributes(dataset, attributes)
 
     def test_parse(self):
-        self.assertEqual(self.dataset.keys(), 
-                ['location', 'constrained_ranges'])
+        self.assertEqual(self.dataset.keys(),
+                         ['location', 'constrained_ranges'])

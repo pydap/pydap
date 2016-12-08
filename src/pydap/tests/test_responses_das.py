@@ -1,18 +1,17 @@
 """Test the DAS response."""
 
 import sys
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
-
 from webtest import TestApp
 from webob.headers import ResponseHeaders
-
 from pydap.lib import __version__
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 from pydap.responses.das import das
+
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 
 class TestDASResponseSequence(unittest.TestCase):

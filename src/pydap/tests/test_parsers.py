@@ -2,15 +2,15 @@
 
 import sys
 import operator
+
+from pydap.parsers import (parse_projection, parse_selection,
+                           parse_ce, parse_hyperslab, SimpleParser)
+from pydap.exceptions import ConstraintExpressionError
+from pydap.tests.datasets import VerySimpleSequence
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
-
-from pydap.parsers import (
-    parse_projection, parse_selection, parse_ce, parse_hyperslab, SimpleParser)
-from pydap.exceptions import ConstraintExpressionError
-from pydap.tests.datasets import VerySimpleSequence
 
 
 class TestParseProjection(unittest.TestCase):
