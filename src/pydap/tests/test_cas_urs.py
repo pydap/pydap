@@ -17,6 +17,7 @@ class TestUrs(unittest.TestCase):
     url = ('https://goldsmr3.gesdisc.eosdis.nasa.gov/opendap/'
            'MERRA_MONTHLY/MAIMCPASM.5.2.0/1979/'
            'MERRA100.prod.assim.instM_3d_asm_Cp.197901.hdf')
+    test_url = url + '.dods?SLP[0:1:0][0:1:10][0:1:10]'
 
     def test_basic_urs_auth(self):
         """
@@ -30,19 +31,20 @@ class TestUrs(unittest.TestCase):
                                     os.environ.get('PASSWORD_URS'),
                                     check_url=self.url)
 
-        test_url = self.url + '.dods?SLP[0:1:0][0:1:10][0:1:10]'
-        res = requests.get(test_url, cookies=session.cookies)
+        res = requests.get(self.test_url, cookies=session.cookies)
         assert(res.status_code == 200)
         res.close()
 
-        res = pydap.net.follow_redirect(test_url, session=session)
+        res = pydap.net.follow_redirect(self.test_url, session=session)
         assert(res.status_code == 200)
 
     def test_basic_urs_query(self):
         session = urs.setup_session(os.environ.get('USERNAME_URS'),
                                     os.environ.get('PASSWORD_URS'),
                                     check_url=self.url)
-        assert session.auth
+        #Ensure authentication:
+        res = pydap.net.follow_redirect(self.test_url, session=session)
+        assert(res.status_code == 200)
         dataset = open_url(self.url, session=session)
         expected_data = [[[99066.15625, 99066.15625, 99066.15625,
                            99066.15625, 99066.15625],
