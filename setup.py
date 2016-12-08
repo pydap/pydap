@@ -33,11 +33,12 @@ docs_extras = [
 cas_extras = [
     'requests'
     ]
-    
+   
 tests_require = functions_extras + cas_extras + [
     'WebTest',
     'beautifulsoup4',
-    'scipy'
+    'scipy',
+    'werkzeug'
 ]
 
 testing_extras = tests_require + [
