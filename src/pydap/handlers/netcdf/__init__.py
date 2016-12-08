@@ -108,8 +108,8 @@ class LazyVariable:
         self.scale = True
         self.name = name
         self.size = np.prod(self.shape)
-        self._attributes = {attr: var.getncattr(attr)
-                            for attr in var.ncattrs()}
+        self._attributes = dict((attr, var.getncattr(attr))
+                                for attr in var.ncattrs())
         return
 
     def chunking(self):
