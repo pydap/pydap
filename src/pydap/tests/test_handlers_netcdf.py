@@ -5,16 +5,11 @@ from netCDF4 import Dataset
 import tempfile
 import os
 import numpy as np
+from six.moves import zip
 
 from pydap.handlers.netcdf import NetCDFHandler
 from pydap.handlers.dap import DAPHandler
 from pydap.wsgi.ssf import ServerSideFunctions
-
-# Python 2 and 3: option 2
-try:
-    import itertools.izip as zip
-except ImportError:
-    pass
 
 if sys.version_info < (2, 7):
     import unittest2 as unittest
