@@ -13,6 +13,7 @@ addons:
       - liblapack-dev
       - cython
       - libhdf5-serial-dev
+      - netcdf-bin
       - libnetcdf-dev
 install:
     - travis_wait 30 pip install scipy
