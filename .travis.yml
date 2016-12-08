@@ -16,8 +16,8 @@ addons:
       - netcdf-bin
       - libnetcdf-dev
 install:
-    - export USE_NCONFIG=1
-    - pip install netCDF4
+    - nc-config --all
+    - export USE_NCONFIG=1; pip install netcdf4
     - travis_wait 30 pip install scipy
     - pip install -e .[testing,functions,tests]
 
