@@ -18,7 +18,7 @@ try:
     from netCDF4 import Dataset as netcdf_file
 
     def attrs(var):
-        return {k: getattr(var, k) for k in var.ncattrs()}
+        return dict((k, getattr(var, k)) for k in var.ncattrs())
 except ImportError:
     from scipy.io.netcdf import netcdf_file
 
