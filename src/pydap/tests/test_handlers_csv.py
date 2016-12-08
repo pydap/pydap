@@ -10,6 +10,7 @@ import numpy as np
 
 from pydap.handlers.csv import CSVHandler
 from werkzeug.serving import run_simple
+from webob.request import Request
 from pydap.wsgi.ssf import ServerSideFunctions
 from pydap.client import open_url
 
@@ -23,8 +24,21 @@ else:
 def run_simple_server(test_file):
     application = CSVHandler(test_file)
     application = ServerSideFunctions(application)
-    run_simple('localhost', 8001, application,
+    run_simple('localhost', 8001,
+               lambda x, y: application(check_for_shutdown(x), y),
                use_reloader=True)
+
+
+def check_for_shutdown(environ):
+    if environ['PATH_INFO'] == '/shutdown':
+        shutdown_server(environ)
+    return environ
+
+
+def shutdown_server(environ):
+    if 'werkzeug.server.shutdown' not in environ:
+        raise RuntimeError('Not running the development server')
+    environ['werkzeug.server.shutdown']()
 
 
 class TestCSVHandler(unittest.TestCase):
@@ -64,11 +78,15 @@ class TestCSVHandler(unittest.TestCase):
                  ('temperature', '<f8'),
                  ('station', 'S40')]
         retrieved_data = [line for line in seq]
+
         np.testing.assert_array_equal(np.array(retrieved_data, dtype=dtype),
                                       np.array(self.data, dtype=dtype))
 
     def tearDown(self):
         # Shutdown the server:
+        (Request
+         .blank("http://localhost:8001/shutdown")
+         .get_response())
         self.server_process.terminate()
         self.server_process.join()
         del(self.server_process)
