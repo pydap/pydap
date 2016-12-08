@@ -5,7 +5,6 @@ import re
 import time
 from stat import ST_MTIME
 from email.utils import formatdate
-from collections import OrderedDict
 import numpy as np
 
 from pkg_resources import get_distribution
@@ -14,6 +13,13 @@ from pydap.model import DatasetType, GridType, BaseType
 from pydap.handlers.lib import BaseHandler
 from pydap.exceptions import OpenFileError
 
+# Python 2.6 compatibility:
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
+
+# Check for netCDF4 presence:
 try:
     from netCDF4 import Dataset as netcdf_file
 

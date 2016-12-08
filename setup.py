@@ -36,7 +36,8 @@ cas_extras = [
 
 hdl_netcdf_extras = [
     'scipy',
-    'netCDF4'
+    'netCDF4',
+    'ordereddict'
     ]
     
 tests_require = (functions_extras + cas_extras + 
