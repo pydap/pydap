@@ -31,20 +31,25 @@ else:
 
 def run_subprocess_server(test_file):
     import subprocess
+    process_script = ['python', os.path.realpath(__file__),
+                      test_file]
     try:
-        output = subprocess.check_output('python ' +
-                                         os.path.realpath(__file__) +
-                                         ' ' + test_file,
-                                         shell=True,
-                                         stderr=subprocess.STDOUT)
-        # Capture subprocess errors to print output:
-        for line in iter(output.splitlines()):
-            print(line)
-    except subprocess.CalledProcessError as e:
-        # Capture subprocess errors to print output:
-        for line in iter(e.output.splitlines()):
-            print(line)
-        raise
+        from subprocess import check_output
+        try:
+            output = check_output(' '.join(process_script),
+                                  shell=True,
+                                  stderr=subprocess.STDOUT)
+            # Capture subprocess errors to print output:
+            for line in iter(output.splitlines()):
+                print(line)
+        except subprocess.CalledProcessError as e:
+            # Capture subprocess errors to print output:
+            for line in iter(e.output.splitlines()):
+                print(line)
+            raise
+    except ImportError:
+        # Python 2.6 use a simple Popen
+        subprocess.Popen(process_script, shell=True)
 
 
 def run_simple_server(test_file):
