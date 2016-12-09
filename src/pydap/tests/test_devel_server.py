@@ -48,8 +48,9 @@ def run_subprocess_server(test_file):
                 print(line)
             raise
     except ImportError:
-        # Python 2.6 use a simple Popen
-        subprocess.Popen(process_script, shell=True)
+        # Python 2.6 use a simpler check_call
+        subprocess.check_call(' '.join(process_script),
+                              shell=True)
 
 
 def run_simple_server(test_file):
