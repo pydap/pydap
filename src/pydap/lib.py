@@ -16,6 +16,7 @@ __version__ = get_distribution("Pydap").version
 START_OF_SEQUENCE = b'\x5a\x00\x00\x00'
 END_OF_SEQUENCE = b'\xa5\x00\x00\x00'
 STRING = '|S128'
+DEFAULT_TIMEOUT = 120  # 120s
 
 
 def quote(name):
