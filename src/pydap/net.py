@@ -1,4 +1,6 @@
 from pydap.lib import DEFAULT_TIMEOUT
+import sys
+import warnings
 
 from webob.request import Request
 from webob.exc import HTTPError
