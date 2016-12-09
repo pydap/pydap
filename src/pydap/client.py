@@ -54,7 +54,8 @@ from .parsers.dds import build_dataset
 from .parsers.das import parse_das, add_attributes
 
 
-def open_url(url, application=None, session=None, output_grid=True):
+def open_url(url, application=None, session=None, output_grid=True,
+             timeout=DEFAULT_TIMEOUT):
     """
     Open a remote URL, returning a dataset.
 

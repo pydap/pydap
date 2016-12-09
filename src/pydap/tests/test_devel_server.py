@@ -61,6 +61,12 @@ class TestCSVserver(unittest.TestCase):
         np.testing.assert_array_equal(np.array(retrieved_data, dtype=dtype),
                                       np.array(self.data, dtype=dtype))
 
+    def test_timeout(self):
+        """Test that timeout raises the correct HTTPError"""
+        url = "http://0.0.0.0:8000/" + os.path.basename(self.test_file)
+        with self.assertRaises(HTTPError):
+            open_url(url, timeout=1e-4)
+
     def tearDown(self):
         # Remove test file:
         os.remove(self.test_file)
