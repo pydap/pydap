@@ -29,6 +29,27 @@ else:
     import unittest
 
 
+def run_subprocess_server(test_file):
+    import subprocess
+    try:
+        #print('python ' +
+        #      os.path.realpath(__file__) +
+        #      ' ' + test_file)
+        output = subprocess.check_output('python ' +
+                                         os.path.realpath(__file__) +
+                                         ' ' + test_file,
+                                         shell=True,
+                                         stderr=subprocess.STDOUT)
+        # Capture subprocess errors to print output:
+        for line in iter(output.splitlines()):
+            print(line)
+    except subprocess.CalledProcessError as e:
+        # Capture subprocess errors to print output:
+        for line in iter(e.output.splitlines()):
+            print(line)
+        raise
+
+
 def run_simple_server(test_file):
     application = CSVHandler(test_file)
     application = ServerSideFunctions(application)
@@ -72,7 +93,7 @@ class TestCSVserver(unittest.TestCase):
                 writer.writerow(row)
 
         # Start a simple WSGI server:
-        self.server_process = multiprocessing.Process(target=run_simple_server,
+        self.server_process = multiprocessing.Process(target=run_subprocess_server,
                                                       args=(self.test_file,))
         self.server_process.start()
         # Wait a little while for the server to start:
@@ -101,3 +122,6 @@ class TestCSVserver(unittest.TestCase):
         del(self.server_process)
         # Remove test file:
         os.remove(self.test_file)
+
+if __name__ == '__main__':
+    run_simple_server(sys.argv[1])
