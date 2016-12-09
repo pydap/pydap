@@ -14,6 +14,7 @@ import multiprocessing
 import os
 import time
 import numpy as np
+from nose.plugins.attrib import attr
 
 from pydap.handlers.csv import CSVHandler
 from werkzeug.serving import run_simple
@@ -48,6 +49,7 @@ def shutdown_server(environ):
     environ['werkzeug.server.shutdown']()
 
 
+@attr('server')
 class TestCSVserver(unittest.TestCase):
 
     """Test that the handler creates the correct dataset from a URL."""
