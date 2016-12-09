@@ -45,7 +45,6 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
-
 from .model import DapType
 from .lib import encode
 from .net import GET
@@ -62,7 +61,8 @@ def open_url(url, application=None, session=None, output_grid=True,
     set output_grid to False to retrieve only main arrays and
     never retrieve coordinate axes.
     """
-    dataset = DAPHandler(url, application, session, output_grid).dataset
+    dataset = DAPHandler(url, application, session, output_grid,
+                         timeout).dataset
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session)
