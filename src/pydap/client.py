@@ -47,16 +47,18 @@ from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from pydap.model import DapType
-from pydap.lib import encode
+from pydap.lib import encode, DEFAULT_TIMEOUT
 from pydap.net import GET
 from pydap.handlers.dap import DAPHandler, unpack_data, StreamReader
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 
 
-def open_url(url, application=None, session=None):
+def open_url(url, application=None, session=None,
+             timeout=DEFAULT_TIMEOUT):
     """Open a remote URL, returning a dataset."""
-    dataset = DAPHandler(url, application, session).dataset
+    dataset = DAPHandler(url, application, session,
+                         timeout).dataset
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session)
