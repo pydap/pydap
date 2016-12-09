@@ -32,7 +32,7 @@ else:
 def run_simple_server(test_file):
     application = CSVHandler(test_file)
     application = ServerSideFunctions(application)
-    run_simple('localhost', 8001,
+    run_simple('0.0.0.0', 8000,
                lambda x, y: application(check_for_shutdown(x), y),
                use_reloader=True)
 
@@ -80,7 +80,7 @@ class TestCSVserver(unittest.TestCase):
 
     def test_open(self):
         """Test that dataset has the correct data proxies for grids."""
-        url = "http://0.0.0.0:8001/" + os.path.basename(self.test_file)
+        url = "http://0.0.0.0:8000/" + os.path.basename(self.test_file)
         dataset = open_url(url)
         seq = dataset['sequence']
         dtype = [('index', '<i4'),
@@ -94,7 +94,7 @@ class TestCSVserver(unittest.TestCase):
     def tearDown(self):
         # Shutdown the server:
         (Request
-         .blank("http://0.0.0.0:8001/shutdown")
+         .blank("http://0.0.0.0:8000/shutdown")
          .get_response())
         self.server_process.terminate()
         self.server_process.join()
