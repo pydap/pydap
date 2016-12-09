@@ -32,9 +32,6 @@ else:
 def run_subprocess_server(test_file):
     import subprocess
     try:
-        #print('python ' +
-        #      os.path.realpath(__file__) +
-        #      ' ' + test_file)
         output = subprocess.check_output('python ' +
                                          os.path.realpath(__file__) +
                                          ' ' + test_file,
@@ -93,7 +90,8 @@ class TestCSVserver(unittest.TestCase):
                 writer.writerow(row)
 
         # Start a simple WSGI server:
-        self.server_process = multiprocessing.Process(target=run_subprocess_server,
+        #self.server_process = multiprocessing.Process(target=run_subprocess_server,
+        self.server_process = multiprocessing.Process(target=run_simple_server,
                                                       args=(self.test_file,))
         self.server_process.start()
         # Wait a little while for the server to start:
