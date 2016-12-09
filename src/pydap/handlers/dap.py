@@ -44,7 +44,7 @@ class DAPHandler(BaseHandler):
 
     """Build a dataset from a DAP base URL."""
 
-    def __init__(self, url, application=None, session=None, output_grid=True):
+    def __init__(self, url, application=None, session=None, output_grid=True,
                  timeout=DEFAULT_TIMEOUT):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
