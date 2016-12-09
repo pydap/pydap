@@ -26,7 +26,7 @@ from pydap.model import (BaseType,
 from pydap.net import GET, raise_for_status
 from pydap.lib import (
     encode, combine_slices, fix_slice, hyperslab,
-    START_OF_SEQUENCE, END_OF_SEQUENCE, walk,
+    START_OF_SEQUENCE, walk,
     DEFAULT_TIMEOUT)
 from pydap.handlers.lib import ConstraintExpression, BaseHandler, IterData
 from pydap.parsers.dds import build_dataset
@@ -110,7 +110,7 @@ class BaseProxy(object):
     """
 
     def __init__(self, baseurl, id, dtype, shape, slice_=None,
-                 application=None, session=None, 
+                 application=None, session=None,
                  timeout=DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.id = id
