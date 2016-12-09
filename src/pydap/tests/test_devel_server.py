@@ -129,6 +129,7 @@ class TestCSVserver(unittest.TestCase):
         """Test that timeout raises the correct HTTPError"""
         url = "http://0.0.0.0:8000/" + os.path.basename(self.test_file)
         with self.assertRaises(HTTPError):
+<<<<<<< HEAD
             with warnings.catch_warnings():
                 # This is for python 2.6
                 warnings.filterwarnings('error',
@@ -141,6 +142,9 @@ class TestCSVserver(unittest.TestCase):
                     open_url(url, timeout=1e-8)
                 except DeprecationWarning:
                     raise HTTPError
+=======
+            open_url(url, timeout=1e-4)
+>>>>>>> 23c787f823d8137ad6973180958b5627fb7247b6
 
     def tearDown(self):
         # Shutdown the server:
