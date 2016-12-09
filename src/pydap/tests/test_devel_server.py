@@ -44,7 +44,10 @@ class TestCSVserver(unittest.TestCase):
                 writer.writerow(row)
 
     def test_open(self):
-        """Test that LocalTestServer works properly"""
+        """Test that dataset has the correct data proxies for grids."""
+        url = "http://0.0.0.0:8000/" + os.path.basename(self.test_file)
+        dataset = open_url(url)
+        seq = dataset['sequence']
         dtype = [('index', '<i4'),
                  ('temperature', '<f8'),
                  ('station', 'S40')]
