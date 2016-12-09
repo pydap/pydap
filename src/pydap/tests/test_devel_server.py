@@ -31,7 +31,7 @@ else:
 def run_simple_server(test_file):
     application = CSVHandler(test_file)
     application = ServerSideFunctions(application)
-    run_simple('0.0.0.0', 8001,
+    run_simple('localhost', 8001,
                lambda x, y: application(check_for_shutdown(x), y),
                use_reloader=True)
 
