@@ -17,4 +17,4 @@ install:
     - pip install -e .[testing,functions,tests]
 
 script:
-    - python setup.py nosetests -a '!auth','!server'
+    - python setup.py nosetests -a '!auth'
