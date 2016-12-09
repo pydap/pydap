@@ -58,7 +58,7 @@ def follow_redirect(url, application=None, session=None,
 
     if res.status_code == 302:
         # Follow redirect:
-        new_cookies = dict([item.split(';')[0].split('=')
+        new_cookies = dict([item.split(';')[0].split('=')[:2]
                             for name, item in res.headerlist
                             if name == 'Set-Cookie'])
         if len(new_cookies) > 0:
