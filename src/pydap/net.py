@@ -1,4 +1,6 @@
 from pydap.lib import DEFAULT_TIMEOUT
+import sys
+import warnings
 
 from webob.request import Request
 from webob.exc import HTTPError
@@ -59,6 +61,11 @@ def follow_redirect(url, application=None, session=None,
         for item in session.headers:
             req.headers[item] = session.headers[item]
 
+    if (timeout != DEFAULT_TIMEOUT and
+       sys.version_info < (2, 7)):
+        warnings.warn('Currently pydap does not support '
+                      'user-specified timeouts in python 2.6',
+                      DeprecationWarning)
     req.environ['webob.client.timeout'] = timeout
     res = req.get_response(application)
 
