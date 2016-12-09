@@ -56,21 +56,28 @@ def run_subprocess_server(test_file):
 def run_simple_server(test_file):
     application = CSVHandler(test_file)
     application = ServerSideFunctions(application)
+
+    def app_check_for_shutdown(environ, start_response):
+        if environ['PATH_INFO'].endswith('shutdown'):
+            shutdown_server(environ)
+            return shutdown_application(environ, start_response)
+        else:
+            return application(environ, start_response)
+
     run_simple('0.0.0.0', 8000,
-               lambda x, y: application(check_for_shutdown(x), y),
+               app_check_for_shutdown,
                use_reloader=True)
-
-
-def check_for_shutdown(environ):
-    if environ['PATH_INFO'] == '/shutdown':
-        shutdown_server(environ)
-    return environ
 
 
 def shutdown_server(environ):
     if 'werkzeug.server.shutdown' not in environ:
         raise RuntimeError('Not running the development server')
     environ['werkzeug.server.shutdown']()
+
+
+def shutdown_application(environ, start_response):
+    start_response('200 OK', [('Content-Type', 'text/plain')])
+    return ['Server is shutting down.']
 
 
 @attr('server')
@@ -130,3 +137,6 @@ class TestCSVserver(unittest.TestCase):
 
 if __name__ == '__main__':
     run_simple_server(sys.argv[1])
+    # if len(sys.argv) == 2:
+    # else:
+    #     run_subprocess_server(sys.argv[2])
