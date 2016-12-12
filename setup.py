@@ -9,7 +9,7 @@ install_requires = [
     'Jinja2',
     'docopt',
     'six >= 1.4.0',
-    'mechanicalsoup',
+    'mechanicalsoup'
 ]
 
 if sys.version_info < (3, 5):
@@ -35,12 +35,15 @@ cas_extras = [
     'requests'
     ]
 
-tests_require = functions_extras + cas_extras + server_extras + [
-    'WebTest',
-    'beautifulsoup4',
-    'scipy',
-    'flake8',
+server_extras = [
     'werkzeug'
+    ]
+
+tests_require = (functions_extras + cas_extras +
+                 server_extras +
+                 ['WebTest',
+                  'beautifulsoup4',
+                  'scipy'])
 
 testing_extras = tests_require + [
     'pytest-cov',
