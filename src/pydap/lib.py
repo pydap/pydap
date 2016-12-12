@@ -86,7 +86,7 @@ def fix_slice(slice_, shape):
                 j = n
             elif j < 0:
                 j += n
-            j = min(j, n)
+            j = min(j, n + 1)
 
             out.append(slice(i, j, k))
 
