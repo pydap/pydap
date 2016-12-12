@@ -62,22 +62,43 @@ class TestCSVserver(unittest.TestCase):
         np.testing.assert_array_equal(np.array(retrieved_data, dtype=dtype),
                                       np.array(self.data, dtype=dtype))
 
-    def test_timeout(self):
-        """Test that timeout raises the correct HTTPError"""
-        url = "http://0.0.0.0:8000/" + os.path.basename(self.test_file)
-        with self.assertRaises(HTTPError):
-            with warnings.catch_warnings():
-                # This is for python 2.6
-                warnings.filterwarnings('error',
-                                        category=DeprecationWarning,
-                                        message='Currently pydap does not '
-                                                'support '
-                                                'user-specified timeouts in '
-                                                'python 2.6')
-                try:
-                    open_url(url, timeout=1e-8)
-                except DeprecationWarning:
-                    raise HTTPError
+    def test_timeout_open_url(self):
+        """Test that timeout on open_url  raises the correct HTTPError"""
+        with LocalTestServer(self.test_file, handler=CSVHandler) as server:
+            url = ("http://0.0.0.0:%s/" % server.port +
+                   os.path.basename(self.test_file))
+            with self.assertRaises(HTTPError):
+                with warnings.catch_warnings():
+                    # This is for python 2.6
+                    warnings.filterwarnings('error',
+                                            category=DeprecationWarning,
+                                            message='Currently pydap does not '
+                                                    'support '
+                                                    'user-specified timeouts '
+                                                    'in python 2.6')
+                    try:
+                        open_url(url, timeout=1e-8)
+                    except DeprecationWarning:
+                        raise HTTPError
+
+    def test_timeout_open_dods(self):
+        """Test that timeout on open_dods  raises the correct HTTPError"""
+        with LocalTestServer(self.test_file, handler=CSVHandler) as server:
+            url = ("http://0.0.0.0:%s/.dods" % server.port +
+                   os.path.basename(self.test_file))
+            with self.assertRaises(HTTPError):
+                with warnings.catch_warnings():
+                    # This is for python 2.6
+                    warnings.filterwarnings('error',
+                                            category=DeprecationWarning,
+                                            message='Currently pydap does not '
+                                                    'support '
+                                                    'user-specified timeouts '
+                                                    'in python 2.6')
+                    try:
+                        open_url(url, timeout=1e-8)
+                    except DeprecationWarning:
+                        raise HTTPError
 
     def tearDown(self):
         # Remove test file:

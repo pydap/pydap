@@ -104,9 +104,11 @@ def open_file(dods, das=None):
     return dataset
 
 
-def open_dods(url, metadata=False, application=None, session=None):
+def open_dods(url, metadata=False, application=None, session=None,
+              timeout=DEFAULT_TIMEOUT):
     """Open a `.dods` response directly, returning a dataset."""
-    r = GET(url, application, session)
+    r = GET(url, application, session,
+            timeout=timeout)
     dds, data = r.body.split(b'\nData:\n', 1)
     dds = dds.decode(r.content_encoding or 'ascii')
     dataset = build_dataset(dds)
@@ -117,7 +119,8 @@ def open_dods(url, metadata=False, application=None, session=None):
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
             (scheme, netloc, path[:-4] + 'das', query, fragment))
-        das = GET(dasurl, application, session).text
+        das = GET(dasurl, application, session,
+                  timeout=timeout).text
         add_attributes(dataset, parse_das(das))
 
     return dataset
