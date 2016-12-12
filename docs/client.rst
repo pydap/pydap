@@ -453,25 +453,16 @@ This function allows you to access raw data from any URL, including appending ex
     FERRET V4.30 (debug/no GUI) 15-Aug-96
 
 
-Using a cache
-~~~~~~~~~~~~~
-
-You can specify a cache directory in the ``pydap.lib.CACHE`` global variable. If this value is different than ``None``, the client will try (if the server headers don't prohibit) to cache the result, so repeated requests will be read from disk instead of the network:
-
-.. code-block:: python
-
-    >>> import pydap.lib
-    >>> pydap.lib.CACHE = "/tmp/pydap-cache/"
-
 Timeout
 ~~~~~~~
 
-To specify a timeout for the client, just set the global variable ``pydap.lib.TIMEOUT`` to the desired number of seconds; after this time trying to connect the client will give up. The default is ``None`` (never timeout).
+To specify a timeout for the client, just set the number of seconds using
+the ``timeout`` option to ``open_url(...)``:
 
 .. code-block:: python
 
-    >>> import pydap.lib
-    >>> pydap.lib.TIMEOUT = 60
+    >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc, timeout=30)
+
 
 Configuring a proxy
 ~~~~~~~~~~~~~~~~~~~
