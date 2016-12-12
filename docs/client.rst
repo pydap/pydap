@@ -444,11 +444,14 @@ Timeout
 ~~~~~~~
 
 To specify a timeout for the client, just set the number of seconds using
-the ``timeout`` option to ``open_url(...)``:
+the ``timeout`` option to ``open_url(...)`` or ``open_dods(...)``. For example,
+the following commands would timeout after 30 seconds without receiving a response
+from the server:
 
 .. code-block:: python
 
     >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc, timeout=30)
+    >>> dataset = open_dods('http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods, timeout=30)
 
 
 Configuring a proxy
