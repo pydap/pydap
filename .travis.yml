@@ -19,9 +19,11 @@ addons:
 install:
     # Install netcdf4-python from github. pip install does not
     # appear to be working:
-    - pip install ordereddict
+    - if [ "${TRAVIS_PYTHON_VERSION}" == 2.6 ]; then pip install ordereddict; 
     - git clone https://github.com/Unidata/netcdf4-python.git
     - cd netcdf4-python
+    # Use the last python 2.6-compatible commit:
+    - if [ "${TRAVIS_PYTHON_VERSION}" == 2.6 ]; then git checkout 02870031d9b783ba153406f046d24890468db85f; fi
     - python setup.py build
     - python setup.py install
     - cd ..
