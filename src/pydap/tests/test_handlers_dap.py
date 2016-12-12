@@ -164,6 +164,14 @@ class TestBaseProxy(unittest.TestCase):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:], np.arange(5))
 
+    def test_getitem_out_of_bound(self):
+        """
+        Test the ``__getitem__`` method with out of bounds
+        slices.
+        The same result as numpy is expected.
+        """
+        np.testing.assert_array_equal(self.data[:10], np.arange(5)[:10])
+
     def test_inexact_division(self):
         """Test data retrieval when step > 1 and division inexact."""
         np.testing.assert_array_equal(self.data[0:3:2], np.arange(5)[0:3:2])
