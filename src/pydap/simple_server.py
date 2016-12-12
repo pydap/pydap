@@ -5,9 +5,21 @@ import time
 from werkzeug.serving import run_simple
 from .handlers.csv import CSVHandler
 from .wsgi.ssf import ServerSideFunctions
+import socket
 
 
-def run_simple_server(test_file, port=8000, handler=CSVHandler):
+def get_open_port():
+    # http://stackoverflow.com/questions/2838244/
+    # get-open-tcp-port-in-python/2838309#2838309
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("", 0))
+    s.listen(1)
+    port = s.getsockname()[1]
+    s.close()
+    return port
+
+
+def run_simple_server(test_file, port, handler=CSVHandler):
     application = handler(test_file)
     application = ServerSideFunctions(application)
 
@@ -52,11 +64,11 @@ class LocalTestServer:
     >>>     dataset = open_url("http://localhost:%s" % server.port)
     """
 
-    def __init__(self, file_name, port=8000,
+    def __init__(self, file_name, port=None,
                  handler=CSVHandler,
                  wait=1):
         self.file_name = file_name
-        self._port = port
+        self._port = port or get_open_port()
         self.handler = handler
         self._wait = wait
 
@@ -84,9 +96,8 @@ class LocalTestServer:
         (Request
          .blank("http://0.0.0.0:%s/shutdown" % self.port)
          .get_response())
-        time.sleep(self._wait)
         self.server_process.join()
-        del(self.server_process)
+        del self.server_process
 
     def __exit__(self, *_):
         self.disconnect()
