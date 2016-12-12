@@ -44,7 +44,8 @@ tests_require = (functions_extras + cas_extras +
                  hdl_netcdf_extras +
                  ['WebTest',
                   'beautifulsoup4',
-                  'scipy'])
+                  'scipy',
+                  'werkzeug'])
 
 testing_extras = tests_require + [
     'nose',
