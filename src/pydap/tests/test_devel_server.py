@@ -108,6 +108,7 @@ class TestCSVserver(unittest.TestCase):
         self.server_process = (multiprocessing
                                .Process(target=run_subprocess_server,
                                         args=(self.test_file,)))
+        time.sleep(3)
         self.server_process.start()
         # Wait a little while for the server to start:
         time.sleep(3)
@@ -156,6 +157,3 @@ class TestCSVserver(unittest.TestCase):
 
 if __name__ == '__main__':
     run_simple_server(sys.argv[1])
-    # if len(sys.argv) == 2:
-    # else:
-    #     run_subprocess_server(sys.argv[2])

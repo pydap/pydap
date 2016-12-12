@@ -100,6 +100,7 @@ setup(name='Pydap',
             html = pydap.responses.html:HTMLResponse
             asc = pydap.responses.ascii:ASCIIResponse
             ascii = pydap.responses.ascii:ASCIIResponse
+            ver = pydap.responses.version:VersionResponse
 
             [pydap.function]
             bounds = pydap.wsgi.functions:bounds
