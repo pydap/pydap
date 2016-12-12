@@ -41,11 +41,23 @@ hdl_netcdf_extras = [
     'ordereddict'
     ]
 
+<<<<<<< 6b0b5be45334c81e42661300d28ba6a9deaca6ca
 tests_require = (functions_extras + cas_extras + server_extras +
                  hdl_netcdf_extras +
                  ['WebTest',
                   'beautifulsoup4',
                   'flake8'])
+=======
+server_extras = [
+    'werkzeug'
+    ]
+
+tests_require = (functions_extras + cas_extras +
+                 server_extras +
+                 ['WebTest',
+                  'beautifulsoup4',
+                  'scipy'])
+>>>>>>> Reorganize requirements
 
 testing_extras = tests_require + [
     'pytest>=2.8',
