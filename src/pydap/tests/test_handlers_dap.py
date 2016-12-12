@@ -76,7 +76,7 @@ class TestDapHandler(unittest.TestCase):
         dataset = DAPHandler("http://localhost:8001/?x[1:1:2]", self.app1).dataset
 
         self.assertEqual(dataset.x.data.shape, (2,))
-        self.assertEqual(dataset.x.data.slice, (slice(1, 3, 1),))
+        self.assertEqual(dataset.x.data.slice, (slice(1, 2, 1),))
 
     def test_grid_array_with_projection(self):
         """Test that a grid array can be properly pre sliced."""
