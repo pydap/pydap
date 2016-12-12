@@ -29,7 +29,6 @@ from ..exceptions import ServerError
 from ..client import open_url
 from ..lib import DEFAULT_TIMEOUT
 
-python3 = six.PY3
 default_encoding = 'utf-8'
 
 
@@ -76,10 +75,10 @@ class Dataset:
         return self._url
 
     def __repr__(self):
-        if python3:
+        if six.PY3:
             return self.__unicode__()
         else:
-            return unicode(self).encode(default_encoding)
+            return six.text_type(self).encode(default_encoding)
 
     def __unicode__(self):
         # taken directly from netcdf4-python netCDF4.pyx
@@ -292,10 +291,10 @@ class Variable:
         return self[...]
 
     def __repr__(self):
-        if python3:
+        if six.PY3:
             return self.__unicode__()
         else:
-            return unicode(self).encode(default_encoding)
+            return six.text_type(self).encode(default_encoding)
 
     def __getitem__(self, getitem_tuple):
         try:
@@ -377,10 +376,10 @@ class Dimension:
         return self._grp
 
     def __repr__(self):
-        if python3:
+        if six.PY3:
             return self.__unicode__()
         else:
-            return unicode(self).encode(default_encoding)
+            return six.text_type(self).encode(default_encoding)
 
     def __unicode__(self):
         # taken directly from netcdf4-python: netCDF4.pyx
