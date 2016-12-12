@@ -20,8 +20,7 @@ def run_simple_server(test_file, port=8000, handler=CSVHandler):
             return application(environ, start_response)
 
     run_simple('0.0.0.0', port,
-               app_check_for_shutdown,
-               passthrough_errors=True)
+               app_check_for_shutdown)
 
 
 def shutdown_server(environ):
