@@ -251,7 +251,8 @@ class BaseType(DapType):
 
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
-        if hasattr(self.data, 'dtype') and self.data.dtype.char == 'S':
+        if (hasattr(self.data, 'dtype') and
+           np.dtype(self.data.dtype).char == 'S'):
             return np.vectorize(decode_np_strings)(self.data[index])
         else:
             return self.data[index]

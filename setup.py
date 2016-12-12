@@ -34,13 +34,17 @@ cas_extras = [
     'requests'
     ]
 
-tests_require = functions_extras + cas_extras + [
-    'WebTest',
-    'beautifulsoup4',
+hdl_netcdf_extras = [
     'scipy',
-    'flake8',
-    'werkzeug'
-]
+    'netCDF4',
+    'ordereddict'
+    ]
+
+tests_require = (functions_extras + cas_extras +
+                 hdl_netcdf_extras +
+                 ['WebTest',
+                  'beautifulsoup4',
+                  'scipy'])
 
 testing_extras = tests_require + [
     'nose',
@@ -84,7 +88,8 @@ setup(name='Pydap',
             'testing': testing_extras,
             'docs': docs_extras,
             'tests': tests_require,
-            'cas': cas_extras
+            'cas': cas_extras,
+            'handlers.netcdf': hdl_netcdf_extras
       },
       test_suite="pydap.tests",
       entry_points="""
@@ -95,7 +100,6 @@ setup(name='Pydap',
             html = pydap.responses.html:HTMLResponse
             asc = pydap.responses.ascii:ASCIIResponse
             ascii = pydap.responses.ascii:ASCIIResponse
-            ver = pydap.responses.version:VersionResponse
 
             [pydap.function]
             bounds = pydap.wsgi.functions:bounds
