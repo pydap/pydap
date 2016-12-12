@@ -48,6 +48,7 @@ tests_require = (functions_extras + cas_extras +
                   'werkzeug'])
 
 testing_extras = tests_require + [
+    'flake8',
     'nose',
     'coverage',
     'requests'
