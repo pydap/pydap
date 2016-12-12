@@ -17,7 +17,7 @@ addons:
       - netcdf-bin
       - libnetcdf-dev
 install:
-    - USE_SETUPCFG=0 HDF5_INCDIR=/usr/include/hdf5/serial HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial pip install netcdf4-python
+    - USE_SETUPCFG=0 HDF5_INCDIR=/usr/include/hdf5/serial HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial pip install netcdf4
     # Continue typical install:
     - travis_wait 30 pip install scipy
     - pip install -e .[testing,functions,tests]
