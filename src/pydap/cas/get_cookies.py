@@ -158,7 +158,6 @@ def mechanicalsoup_login(br, url, username, password,
             # something should be handled in the browser
             # for the first attempt. This is common when using
             # pydap with the ESGF for the first time.
-            br.close()
             raise Exception('Navigate to {0}. '
                             'If you are unable to '
                             'login, you must either '
