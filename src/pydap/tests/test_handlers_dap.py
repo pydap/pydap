@@ -76,7 +76,7 @@ class TestDapHandler(unittest.TestCase):
         dataset = DAPHandler("http://localhost:8001/?x[1:1:2]", self.app1).dataset
 
         self.assertEqual(dataset.x.data.shape, (2,))
-        self.assertEqual(dataset.x.data.slice, (slice(1, 3, 1),))
+        self.assertEqual(dataset.x.data.slice, (slice(1, 2, 1),))
 
     def test_grid_array_with_projection(self):
         """Test that a grid array can be properly pre sliced."""
@@ -163,6 +163,14 @@ class TestBaseProxy(unittest.TestCase):
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:], np.arange(5))
+
+    def test_getitem_out_of_bound(self):
+        """
+        Test the ``__getitem__`` method with out of bounds
+        slices.
+        The same result as numpy is expected.
+        """
+        np.testing.assert_array_equal(self.data[:10], np.arange(5)[:10])
 
     def test_inexact_division(self):
         """Test data retrieval when step > 1 and division inexact."""

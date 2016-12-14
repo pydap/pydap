@@ -83,7 +83,8 @@ def fix_slice(slice_, shape):
                 i += n
 
             j = s.stop
-            if j is None:
+            if (j is None or
+                j > n):
                 j = n
             elif j < 0:
                 j += n
