@@ -66,7 +66,7 @@ class LocalTestServer:
 
     def __init__(self, file_name, port=None,
                  handler=CSVHandler,
-                 wait=1):
+                 wait=1e-2):
         self.file_name = file_name
         self._port = port or get_open_port()
         self.handler = handler
