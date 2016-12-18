@@ -1,15 +1,14 @@
 """Test DDS parsing functions."""
 
 import sys
+import numpy as np
+from pydap.parsers.dds import build_dataset
+from pydap.model import (BaseType,
+                         StructureType)
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
-
-import numpy as np
-
-from pydap.parsers.dds import build_dataset
-from pydap.model import *
 
 
 DDS = """Dataset {

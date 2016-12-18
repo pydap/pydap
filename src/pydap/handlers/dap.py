@@ -16,23 +16,25 @@ from itertools import chain
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 import logging
-logger = logging.getLogger('pydap')
-if sys.version_info >= (2, 7):  # pragma: no cover
-    logger.addHandler(logging.NullHandler())
-
 import numpy as np
 from six.moves.urllib.parse import urlsplit, urlunsplit, quote
 from six import text_type, string_types, next
 
-from pydap.model import *
+from pydap.model import (BaseType,
+                         SequenceType, StructureType,
+                         GridType)
 from pydap.net import GET, raise_for_status
 from pydap.lib import (
     encode, combine_slices, fix_slice, hyperslab,
-    START_OF_SEQUENCE, END_OF_SEQUENCE, walk)
+    START_OF_SEQUENCE, walk,
+    DEFAULT_TIMEOUT)
 from pydap.handlers.lib import ConstraintExpression, BaseHandler, IterData
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 from pydap.parsers import parse_ce
+logger = logging.getLogger('pydap')
+if sys.version_info >= (2, 7):  # pragma: no cover
+    logger.addHandler(logging.NullHandler())
 
 
 BLOCKSIZE = 512
@@ -42,17 +44,18 @@ class DAPHandler(BaseHandler):
 
     """Build a dataset from a DAP base URL."""
 
-    def __init__(self, url, application=None, session=None):
+    def __init__(self, url, application=None, session=None, output_grid=True,
+                 timeout=DEFAULT_TIMEOUT):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
         ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-        r = GET(ddsurl, application, session)
+        r = GET(ddsurl, application, session, timeout)
         raise_for_status(r)
         dds = r.text
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-        r = GET(dasurl, application, session)
+        r = GET(dasurl, application, session, timeout)
         raise_for_status(r)
         das = r.text
 
@@ -68,11 +71,13 @@ class DAPHandler(BaseHandler):
         for var in walk(self.dataset, BaseType):
             var.data = BaseProxy(url, var.id, var.dtype, var.shape,
                                  application=application,
-                                 session=session)
+                                 session=session,
+                                 timeout=DEFAULT_TIMEOUT)
         for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
             var.data = SequenceProxy(url, template, application=application,
-                                     session=session)
+                                     session=session,
+                                     timeout=DEFAULT_TIMEOUT)
 
         # apply projections
         for var in projection:
@@ -90,6 +95,10 @@ class DAPHandler(BaseHandler):
                 elif isinstance(target, SequenceType):
                     target.data.slice = index
 
+        # retrieve only main variable for grid types:
+        for var in walk(self.dataset, GridType):
+            var.set_output_grid(output_grid)
+
 
 class BaseProxy(object):
 
@@ -101,7 +110,8 @@ class BaseProxy(object):
     """
 
     def __init__(self, baseurl, id, dtype, shape, slice_=None,
-                 application=None, session=None):
+                 application=None, session=None,
+                 timeout=DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.id = id
         self.dtype = dtype
@@ -109,6 +119,7 @@ class BaseProxy(object):
         self.slice = slice_ or tuple(slice(None) for s in self.shape)
         self.application = application
         self.session = session
+        self.timeout = timeout
 
     def __repr__(self):
         return 'BaseProxy(%s)' % ', '.join(
@@ -126,7 +137,7 @@ class BaseProxy(object):
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
-        r = GET(url, self.application, self.session)
+        r = GET(url, self.application, self.session, self.timeout)
         raise_for_status(r)
         dds, data = r.body.split(b'\nData:\n', 1)
         dds = dds.decode(r.content_encoding or 'ascii')
@@ -143,18 +154,33 @@ class BaseProxy(object):
             int(np.ceil((s.stop-s.start)/float(s.step))) for s in index)
         size = int(np.prod(shape))
 
-        if self.dtype == np.byte:
-            return np.fromstring(data[:size], 'B')
-        elif self.dtype.char in 'SU':
-            out = []
-            for word in range(size):
-                n = np.fromstring(data[:4], '>I')  # read length
-                data = data[4:]
-                out.append(data[:n])
-                data = data[n + (-n % 4):]
-            return np.array([ text_type(x.decode('ascii')) for x in out ], 'S')
-        else:
-            return np.fromstring(data, self.dtype).reshape(shape)
+        try:
+            if self.dtype == np.byte:
+                return np.fromstring(data[:size], 'B')
+            elif self.dtype.char in 'SU':
+                out = []
+                for word in range(size):
+                    # read length:
+                    n = np.asscalar(np.fromstring(data[:4], '>I'))
+                    data = data[4:]
+                    out.append(data[:n])
+                    data = data[n + (-n % 4):]
+                return np.array([text_type(x.decode('ascii')) for x in out],
+                                'S')
+            else:
+                return np.fromstring(data, self.dtype).reshape(shape)
+        except ValueError as e:
+            if str(e) == 'total size of new array must be unchanged':
+                # server-side failure. do not fail. instead, return NaNs
+                # it is expected that the user should be mindful of this:
+                raise RuntimeError('variable {0} could '
+                                   'not be properly '.format(quote(self.id)) +
+                                   'retrieved. '
+                                   'To avoid this '
+                                   'error consider using '
+                                   'open_url(..., output_grid=False).')
+            else:
+                raise
 
     def __len__(self):
         return self.shape[0]
@@ -187,7 +213,7 @@ class SequenceProxy(object):
     """A proxy for remote sequences.
 
     This class behaves like a Numpy structured array, proxying the data from a
-    sequence on a remote dataset. The data is streamed from the dataset, 
+    sequence on a remote dataset. The data is streamed from the dataset,
     meaning it can be treated one record at a time before the whole data is
     downloaded.
 
@@ -196,13 +222,14 @@ class SequenceProxy(object):
     shape = ()
 
     def __init__(self, baseurl, template, selection=None, slice_=None,
-                 application=None, session=None):
+                 application=None, session=None, timeout=DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.template = template
         self.selection = selection or []
         self.slice = slice_ or (slice(None),)
         self.application = application
         self.session = session
+        self.timeout = timeout
 
         # this variable is true when only a subset of the children are selected
         self.sub_children = False
@@ -218,8 +245,8 @@ class SequenceProxy(object):
 
     def __copy__(self):
         """Return a lightweight copy of the object."""
-        return self.__class__(
-            self.baseurl, self.template, self.selection[:], self.slice[:], self.application)
+        return self.__class__(self.baseurl, self.template, self.selection[:],
+                              self.slice[:], self.application)
 
     def __getitem__(self, key):
         """Return a new object representing a subset of the data."""
@@ -269,7 +296,7 @@ class SequenceProxy(object):
 
     def __iter__(self):
         # download and unpack data
-        r = GET(self.url, self.application, self.session)
+        r = GET(self.url, self.application, self.session, self.timeout)
         raise_for_status(r)
 
         i = r.app_iter
@@ -282,13 +309,12 @@ class SequenceProxy(object):
         this_chunk = b''
         pattern = b'Data:\n'
         for this_chunk in i:
-           m = re.search(pattern, previous_chunk + this_chunk)
-           if m:
-               break
+            m = re.search(pattern, previous_chunk + this_chunk)
+            if m:
+                break
         if not m:
-            raise ValueError(
-                    "Could not find data segment in response from {}"\
-                    .format(self.url))
+            raise ValueError("Could not find data segment in response from {}"
+                             .format(self.url))
 
         last_chunk = (previous_chunk + this_chunk)[m.end():]
 
@@ -349,7 +375,8 @@ def unpack_sequence(stream, template):
 
     # if there are no strings and no nested sequences we can unpack record by
     # record easily
-    simple = all(isinstance(c, BaseType) and c.dtype.char not in "SU" for c in cols)
+    simple = all(isinstance(c, BaseType) and c.dtype.char not in "SU"
+                 for c in cols)
 
     if simple:
         dtype = np.dtype([("", c.dtype, c.shape) for c in cols])
@@ -427,7 +454,7 @@ def unpack_data(xdr_stream, dataset):
     return unpack_children(xdr_stream, dataset)
 
 
-def dump(): # pragma: no cover
+def dump():  # pragma: no cover
     """Unpack dods response into lists.
 
     Return pretty-printed data.

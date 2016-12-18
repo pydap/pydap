@@ -15,7 +15,9 @@ except ImportError:
 
 from six.moves import map, zip
 
-from pydap.model import *
+from pydap.model import (DatasetType, BaseType,
+                         SequenceType, StructureType,
+                         GridType)
 from pydap.responses.lib import BaseResponse
 from pydap.lib import __version__
 
@@ -70,7 +72,7 @@ def _(var, level=0, sequence=0):
 
 
 @dds.register(SequenceType)
-def _(var, level=0, sequence=0):
+def _sequencetype(var, level=0, sequence=0):
     yield "{indent}Sequence {{\n".format(indent=level*INDENT)
     for child in var.children():
         for line in dds(child, level+1, sequence+1):
@@ -79,7 +81,7 @@ def _(var, level=0, sequence=0):
 
 
 @dds.register(StructureType)
-def _(var, level=0, sequence=0):
+def _structuretype(var, level=0, sequence=0):
     yield "{indent}Structure {{\n".format(indent=level*INDENT)
     for child in var.children():
         for line in dds(child, level+1, sequence):
@@ -88,7 +90,7 @@ def _(var, level=0, sequence=0):
 
 
 @dds.register(GridType)
-def _(var, level=0, sequence=0):
+def _gridtype(var, level=0, sequence=0):
     yield '{indent}Grid {{\n'.format(indent=level*INDENT)
 
     yield '{indent}Array:\n'.format(indent=(level+1)*INDENT)
@@ -104,7 +106,7 @@ def _(var, level=0, sequence=0):
 
 
 @dds.register(BaseType)
-def _(var, level=0, sequence=0):
+def _basetype(var, level=0, sequence=0):
     shape = var.shape[sequence:]
 
     if var.dimensions:

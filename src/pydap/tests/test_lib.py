@@ -1,18 +1,17 @@
 """Test the basic DAP functions."""
 
 import sys
+import numpy as np
+from six import MAXSIZE
+from pydap.model import (DatasetType, BaseType,
+                         StructureType)
+from pydap.exceptions import ConstraintExpressionError
+from pydap.lib import (quote, encode, fix_slice, combine_slices, hyperslab,
+                       walk, fix_shorthand, get_var)
 if sys.version_info < (2, 7):  # pragma: no cover
     import unittest2 as unittest
 else:
     import unittest
-
-import numpy as np
-from six import MAXSIZE
-
-from pydap.model import *
-from pydap.exceptions import ConstraintExpressionError
-from pydap.lib import (quote, encode, fix_slice, combine_slices, hyperslab,
-                       walk, fix_shorthand, get_var)
 
 
 class TestQuote(unittest.TestCase):
@@ -142,13 +141,12 @@ class TestCombineSlices(unittest.TestCase):
         slice1 = 0
         slice2 = (0,)
         with self.assertRaises(TypeError):
-            combined = combine_slices(slice1, slice2)
+            combine_slices(slice1, slice2)
         with self.assertRaises(TypeError):
-            combined = combine_slices(slice2, slice1)
+            combine_slices(slice2, slice1)
 
     def test_integer(self):
         """Test slices that are just integers."""
-        x = np.arange(10)
         slice1 = (0,)
         slice2 = (1,)
         combined = combine_slices(slice1, slice2)

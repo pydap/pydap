@@ -2,10 +2,6 @@
 
 import sys
 import copy
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
 
 import numpy as np
 from webtest import TestApp
@@ -17,6 +13,11 @@ from pydap.tests.datasets import (
     VerySimpleSequence, SimpleSequence, SimpleGrid,
     SimpleArray, NestedSequence)
 from pydap.responses.dods import dods, DODSResponse
+
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 
 class TestDODSResponse(unittest.TestCase):
@@ -73,7 +74,7 @@ class TestDODSResponse(unittest.TestCase):
 
         self.assertEqual(
             xdrdata,
-            START_OF_SEQUENCE + 
+            START_OF_SEQUENCE +
             b"\x00" b"\x00\x00\x00\x01" b"A \x00\x00" +
             START_OF_SEQUENCE +
             b"\x01" b"\x00\x00\x00\x02" b"A\xa0\x00\x00" +
@@ -164,19 +165,20 @@ class TestDODSResponseSequence(unittest.TestCase):
         """Test response body."""
         dds, xdrdata = self.res.body.split(b'\nData:\n', 1)
         dds = dds.decode('ascii')
-        self.assertEqual(dds, """Dataset {
-    Sequence {
-        String id;
-        Int32 lon;
-    } cast;
-} SimpleSequence;""")
+        self.assertEqual(dds,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        String id;\n'
+                         '        Int32 lon;\n'
+                         '    } cast;\n'
+                         '} SimpleSequence;')
 
         self.assertEqual(
             xdrdata,
             START_OF_SEQUENCE +
             b"\x00\x00\x00\x01"   # length of the string (=1)
             b"1\x00\x00\x00"      # string zero-paddded to 4 bytes
-            b"\x00\x00\x00d" + # lon
+            b"\x00\x00\x00d" +    # lon
             START_OF_SEQUENCE +
             b"\x00\x00\x00\x01"
             b"2\x00\x00\x00"
@@ -197,11 +199,12 @@ class TestDODSResponseArray(unittest.TestCase):
         res = self.app.get("/.dods")
         dds, xdrdata = res.body.split(b'\nData:\n', 1)
         dds = dds.decode('ascii')
-        self.assertEqual(dds, """Dataset {
-    Byte byte[byte = 5];
-    String string[string = 2];
-    Int16 short;
-} SimpleArray;""")
+        self.assertEqual(dds,
+                         'Dataset {\n'
+                         '    Byte byte[byte = 5];\n'
+                         '    String string[string = 2];\n'
+                         '    Int16 short;\n'
+                         '} SimpleArray;')
 
         self.assertEqual(
             xdrdata,
@@ -246,21 +249,21 @@ class TestDODSResponseArrayterator(unittest.TestCase):
 
         app = TestApp(BaseHandler(modified))
         res = app.get("/.dods?SimpleGrid.SimpleGrid")
-        self.assertEqual(res.body, b"""Dataset {
-    Structure {
-        Int32 SimpleGrid[y = 2][x = 3];
-    } SimpleGrid;
-} SimpleGrid;
-Data:
-"""
-            b"\x00\x00\x00\x06"
-            b"\x00\x00\x00\x06"
-            b"\x00\x00\x00\x00"
-            b"\x00\x00\x00\x01"
-            b"\x00\x00\x00\x02"
-            b"\x00\x00\x00\x03"
-            b"\x00\x00\x00\x04"
-            b"\x00\x00\x00\x05")
+        self.assertEqual(res.body,
+                         b'Dataset {\n'
+                         b'    Structure {\n'
+                         b'        Int32 SimpleGrid[y = 2][x = 3];\n'
+                         b'    } SimpleGrid;\n'
+                         b'} SimpleGrid;\n'
+                         b'Data:\n'
+                         b"\x00\x00\x00\x06"
+                         b"\x00\x00\x00\x06"
+                         b"\x00\x00\x00\x00"
+                         b"\x00\x00\x00\x01"
+                         b"\x00\x00\x00\x02"
+                         b"\x00\x00\x00\x03"
+                         b"\x00\x00\x00\x04"
+                         b"\x00\x00\x00\x05")
 
 
 class TestDODSResponseNestedSequence(unittest.TestCase):
@@ -271,69 +274,68 @@ class TestDODSResponseNestedSequence(unittest.TestCase):
         """Test direct iteration over data."""
         response = DODSResponse(NestedSequence)
         output = b"".join(response)
-        self.assertEqual(
-            output,b"""Dataset {
-    Sequence {
-        Int32 lat;
-        Int32 lon;
-        Int32 elev;
-        Sequence {
-            Int32 time;
-            Int32 slp;
-            Int32 wind;
-        } time_series;
-    } location;
-} NestedSequence;
-Data:
-""" +
-            START_OF_SEQUENCE +
-                b"\x00\x00\x00\x01"
-                b"\x00\x00\x00\x01"
-                b"\x00\x00\x00\x01" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00\n"
-                    b"\x00\x00\x00\x0b"
-                    b"\x00\x00\x00\x0c" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00\x15"
-                    b"\x00\x00\x00\x16"
-                    b"\x00\x00\x00\x17" +
-            END_OF_SEQUENCE +
-            START_OF_SEQUENCE +
-                b"\x00\x00\x00\x02"
-                b"\x00\x00\x00\x04"
-                b"\x00\x00\x00\x04" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00\x0f"
-                    b"\x00\x00\x00\x10"
-                    b"\x00\x00\x00\x11" +
-            END_OF_SEQUENCE +
-            START_OF_SEQUENCE +
-                b"\x00\x00\x00\x03"
-                b"\x00\x00\x00\x06"
-                b"\x00\x00\x00\t" +
-            START_OF_SEQUENCE +
-                b"\x00\x00\x00\x04"
-                b"\x00\x00\x00\x08"
-                b"\x00\x00\x00\x10" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00\x1f"
-                    b"\x00\x00\x00 "
-                    b"\x00\x00\x00!" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00)"
-                    b"\x00\x00\x00*"
-                    b"\x00\x00\x00+" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x003"
-                    b"\x00\x00\x004"
-                    b"\x00\x00\x005" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00="
-                    b"\x00\x00\x00>"
-                    b"\x00\x00\x00?" +
-                END_OF_SEQUENCE +
-            END_OF_SEQUENCE)
+        self.assertEqual(output,
+                         b'Dataset {\n'
+                         b'    Sequence {\n'
+                         b'        Int32 lat;\n'
+                         b'        Int32 lon;\n'
+                         b'        Int32 elev;\n'
+                         b'        Sequence {\n'
+                         b'            Int32 time;\n'
+                         b'            Int32 slp;\n'
+                         b'            Int32 wind;\n'
+                         b'        } time_series;\n'
+                         b'    } location;\n'
+                         b'} NestedSequence;\n'
+                         b'Data:\n' +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x01"
+                         b"\x00\x00\x00\x01"
+                         b"\x00\x00\x00\x01" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\n"
+                         b"\x00\x00\x00\x0b"
+                         b"\x00\x00\x00\x0c" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x15"
+                         b"\x00\x00\x00\x16"
+                         b"\x00\x00\x00\x17" +
+                         END_OF_SEQUENCE +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x02"
+                         b"\x00\x00\x00\x04"
+                         b"\x00\x00\x00\x04" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x0f"
+                         b"\x00\x00\x00\x10"
+                         b"\x00\x00\x00\x11" +
+                         END_OF_SEQUENCE +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x03"
+                         b"\x00\x00\x00\x06"
+                         b"\x00\x00\x00\t" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x04"
+                         b"\x00\x00\x00\x08"
+                         b"\x00\x00\x00\x10" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x1f"
+                         b"\x00\x00\x00 "
+                         b"\x00\x00\x00!" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00)"
+                         b"\x00\x00\x00*"
+                         b"\x00\x00\x00+" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x003"
+                         b"\x00\x00\x004"
+                         b"\x00\x00\x005" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00="
+                         b"\x00\x00\x00>"
+                         b"\x00\x00\x00?" +
+                         END_OF_SEQUENCE +
+                         END_OF_SEQUENCE)
 
     def test_body(self):
         """Test response body."""
@@ -341,66 +343,66 @@ Data:
         res = app.get("/.dods")
         dds, xdrdata = res.body.split(b'\nData:\n', 1)
         dds = dds.decode('ascii')
-        self.assertEqual(dds, """Dataset {
-    Sequence {
-        Int32 lat;
-        Int32 lon;
-        Int32 elev;
-        Sequence {
-            Int32 time;
-            Int32 slp;
-            Int32 wind;
-        } time_series;
-    } location;
-} NestedSequence;""")
+        self.assertEqual(dds,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        Int32 lat;\n'
+                         '        Int32 lon;\n'
+                         '        Int32 elev;\n'
+                         '        Sequence {\n'
+                         '            Int32 time;\n'
+                         '            Int32 slp;\n'
+                         '            Int32 wind;\n'
+                         '        } time_series;\n'
+                         '    } location;\n'
+                         '} NestedSequence;')
 
-        self.assertEqual(
-            xdrdata,
-            START_OF_SEQUENCE +
-                b"\x00\x00\x00\x01"
-                b"\x00\x00\x00\x01"
-                b"\x00\x00\x00\x01" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00\n"
-                    b"\x00\x00\x00\x0b"
-                    b"\x00\x00\x00\x0c" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00\x15"
-                    b"\x00\x00\x00\x16"
-                    b"\x00\x00\x00\x17" +
-            END_OF_SEQUENCE +
-            START_OF_SEQUENCE +
-                b"\x00\x00\x00\x02"
-                b"\x00\x00\x00\x04"
-                b"\x00\x00\x00\x04" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00\x0f"
-                    b"\x00\x00\x00\x10"
-                    b"\x00\x00\x00\x11" +
-            END_OF_SEQUENCE +
-            START_OF_SEQUENCE +
-                b"\x00\x00\x00\x03"
-                b"\x00\x00\x00\x06"
-                b"\x00\x00\x00\t" +
-            START_OF_SEQUENCE +
-                b"\x00\x00\x00\x04"
-                b"\x00\x00\x00\x08"
-                b"\x00\x00\x00\x10" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00\x1f"
-                    b"\x00\x00\x00 "
-                    b"\x00\x00\x00!" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00)"
-                    b"\x00\x00\x00*"
-                    b"\x00\x00\x00+" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x003"
-                    b"\x00\x00\x004"
-                    b"\x00\x00\x005" +
-                START_OF_SEQUENCE +
-                    b"\x00\x00\x00="
-                    b"\x00\x00\x00>"
-                    b"\x00\x00\x00?" +
-                END_OF_SEQUENCE +
-            END_OF_SEQUENCE)
+        self.assertEqual(xdrdata,
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x01"
+                         b"\x00\x00\x00\x01"
+                         b"\x00\x00\x00\x01" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\n"
+                         b"\x00\x00\x00\x0b"
+                         b"\x00\x00\x00\x0c" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x15"
+                         b"\x00\x00\x00\x16"
+                         b"\x00\x00\x00\x17" +
+                         END_OF_SEQUENCE +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x02"
+                         b"\x00\x00\x00\x04"
+                         b"\x00\x00\x00\x04" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x0f"
+                         b"\x00\x00\x00\x10"
+                         b"\x00\x00\x00\x11" +
+                         END_OF_SEQUENCE +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x03"
+                         b"\x00\x00\x00\x06"
+                         b"\x00\x00\x00\t" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x04"
+                         b"\x00\x00\x00\x08"
+                         b"\x00\x00\x00\x10" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00\x1f"
+                         b"\x00\x00\x00 "
+                         b"\x00\x00\x00!" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00)"
+                         b"\x00\x00\x00*"
+                         b"\x00\x00\x00+" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x003"
+                         b"\x00\x00\x004"
+                         b"\x00\x00\x005" +
+                         START_OF_SEQUENCE +
+                         b"\x00\x00\x00="
+                         b"\x00\x00\x00>"
+                         b"\x00\x00\x00?" +
+                         END_OF_SEQUENCE +
+                         END_OF_SEQUENCE)
