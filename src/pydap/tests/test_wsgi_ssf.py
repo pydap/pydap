@@ -1,21 +1,20 @@
 """Tests for the server-side function WSGI middleware."""
 
 import sys
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
 from six import next
 
 from webtest import TestApp
 import numpy as np
 
 from pydap.model import SequenceType, BaseType
-from pydap.lib import walk
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import SimpleSequence, SimpleGrid
 from pydap.wsgi.ssf import ServerSideFunctions
 from pydap.exceptions import ServerError
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+else:
+    import unittest
 
 
 class TestMiddleware(unittest.TestCase):
@@ -57,100 +56,100 @@ class TestMiddleware(unittest.TestCase):
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
         res = app.get(
             "/.asc?density(cast.salinity,cast.temperature,cast.pressure)>1025")
-        self.assertEqual(res.text, """Dataset {
-    Sequence {
-        String id;
-        Int32 lon;
-        Int32 lat;
-        Int32 depth;
-        Int32 time;
-        Int32 temperature;
-        Int32 salinity;
-        Int32 pressure;
-    } cast;
-} SimpleSequence;
----------------------------------------------
-cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salinity, cast.pressure
-"2", 200, 10, 500, 1, 15, 35, 100
-
-""")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        String id;\n'
+                         '        Int32 lon;\n'
+                         '        Int32 lat;\n'
+                         '        Int32 depth;\n'
+                         '        Int32 time;\n'
+                         '        Int32 temperature;\n'
+                         '        Int32 salinity;\n'
+                         '        Int32 pressure;\n'
+                         '    } cast;\n'
+                         '} SimpleSequence;\n'
+                         '---------------------------------------------\n'
+                         'cast.id, cast.lon, cast.lat, cast.depth, cast.time, '
+                         'cast.temperature, cast.salinity, cast.pressure\n'
+                         '"2", 200, 10, 500, 1, 15, 35, 100\n'
+                         '\n')
 
     def test_operators(self):
         """Test different operators on selection using a dummy function."""
         app = TestApp(
             ServerSideFunctions(BaseHandler(SimpleSequence), double=double))
         res = app.get("/.asc?cast.lat&double(cast.lat)>10")
-        self.assertEqual(res.text, """Dataset {
-    Sequence {
-        Int32 lat;
-    } cast;
-} SimpleSequence;
----------------------------------------------
-cast.lat
-10
-
-""")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        Int32 lat;\n'
+                         '    } cast;\n'
+                         '} SimpleSequence;\n'
+                         '---------------------------------------------\n'
+                         'cast.lat\n'
+                         '10\n'
+                         '\n')
 
         res = app.get("/.asc?cast.lat&double(cast.lat)>=20")
-        self.assertEqual(res.text, """Dataset {
-    Sequence {
-        Int32 lat;
-    } cast;
-} SimpleSequence;
----------------------------------------------
-cast.lat
-10
-
-""")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        Int32 lat;\n'
+                         '    } cast;\n'
+                         '} SimpleSequence;\n'
+                         '---------------------------------------------\n'
+                         'cast.lat\n'
+                         '10\n'
+                         '\n')
 
         res = app.get("/.asc?cast.lat&double(cast.lat)<10")
-        self.assertEqual(res.text, """Dataset {
-    Sequence {
-        Int32 lat;
-    } cast;
-} SimpleSequence;
----------------------------------------------
-cast.lat
--10
-
-""")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        Int32 lat;\n'
+                         '    } cast;\n'
+                         '} SimpleSequence;\n'
+                         '---------------------------------------------\n'
+                         'cast.lat\n'
+                         '-10\n'
+                         '\n')
 
         res = app.get("/.asc?cast.lat&double(cast.lat)<=-20")
-        self.assertEqual(res.text, """Dataset {
-    Sequence {
-        Int32 lat;
-    } cast;
-} SimpleSequence;
----------------------------------------------
-cast.lat
--10
-
-""")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        Int32 lat;\n'
+                         '    } cast;\n'
+                         '} SimpleSequence;\n'
+                         '---------------------------------------------\n'
+                         'cast.lat\n'
+                         '-10\n'
+                         '\n')
 
         res = app.get("/.asc?cast.lat&double(cast.lat)=20")
-        self.assertEqual(res.text, """Dataset {
-    Sequence {
-        Int32 lat;
-    } cast;
-} SimpleSequence;
----------------------------------------------
-cast.lat
-10
-
-""")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        Int32 lat;\n'
+                         '    } cast;\n'
+                         '} SimpleSequence;\n'
+                         '---------------------------------------------\n'
+                         'cast.lat\n'
+                         '10\n'
+                         '\n')
 
         res = app.get("/.asc?cast.lat&double(cast.lat)!=20")
-        self.assertEqual(res.text, """Dataset {
-    Sequence {
-        Int32 lat;
-    } cast;
-} SimpleSequence;
----------------------------------------------
-cast.lat
--10
-
-""")
-
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        Int32 lat;\n'
+                         '    } cast;\n'
+                         '} SimpleSequence;\n'
+                         '---------------------------------------------\n'
+                         'cast.lat\n'
+                         '-10\n'
+                         '\n')
 
     def test_selection_no_comparison(self):
         """Test function calls in the selection without comparison.
@@ -160,63 +159,61 @@ cast.lat
 
         """
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
-        res = app.get(
-            "/.asc?cast.lat,cast.lon&"
-            "bounds(0,360,-90,0,0,500,00Z01JAN1900,00Z01JAN2000)")
-        self.assertEqual(res.text, """Dataset {
-    Sequence {
-        Int32 lat;
-        Int32 lon;
-    } cast;
-} SimpleSequence;
----------------------------------------------
-cast.lat, cast.lon
--10, 100
-
-""")
+        res = app.get("/.asc?cast.lat,cast.lon&"
+                      "bounds(0,360,-90,0,0,500,00Z01JAN1900,00Z01JAN2000)")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Sequence {\n'
+                         '        Int32 lat;\n'
+                         '        Int32 lon;\n'
+                         '    } cast;\n'
+                         '} SimpleSequence;\n'
+                         '---------------------------------------------\n'
+                         'cast.lat, cast.lon\n'
+                         '-10, 100\n'
+                         '\n')
 
     def test_projection(self):
         """Test a simple function call on a projection."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x)")
-        self.assertEqual(res.text, """Dataset {
-    Float64 x;
-} SimpleGrid;
----------------------------------------------
-x
-1
-""")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Float64 x;\n'
+                         '} SimpleGrid;\n'
+                         '---------------------------------------------\n'
+                         'x\n'
+                         '1\n')
 
     def test_projection_clash(self):
         """Test a function call creating a variable with a conflicting name."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x),x")
-        self.assertEqual(res.text, """Dataset {
-    Int32 x[x = 3];
-} SimpleGrid;
----------------------------------------------
-x
-[0] 0
-[1] 1
-[2] 2
-
-""")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Int32 x[x = 3];\n'
+                         '} SimpleGrid;\n'
+                         '---------------------------------------------\n'
+                         'x\n'
+                         '[0] 0\n'
+                         '[1] 1\n'
+                         '[2] 2\n'
+                         '\n')
 
     def test_nested_projection(self):
         """Test a nested function call."""
         app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(mean(SimpleGrid.SimpleGrid,0),0)")
-        self.assertEqual(res.text, """Dataset {
-    Float64 SimpleGrid;
-} SimpleGrid;
----------------------------------------------
-SimpleGrid
-2.5
-""")
+        self.assertEqual(res.text,
+                         'Dataset {\n'
+                         '    Float64 SimpleGrid;\n'
+                         '} SimpleGrid;\n'
+                         '---------------------------------------------\n'
+                         'SimpleGrid\n'
+                         '2.5\n')
 
 
 class Accumulator(object):
-
     """A WSGI middleware that breaks streaming."""
 
     def __init__(self, app):

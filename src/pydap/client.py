@@ -47,16 +47,23 @@ from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from pydap.model import DapType
-from pydap.lib import encode
+from pydap.lib import encode, DEFAULT_TIMEOUT
 from pydap.net import GET
 from pydap.handlers.dap import DAPHandler, unpack_data, StreamReader
 from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 
 
-def open_url(url, application=None, session=None):
-    """Open a remote URL, returning a dataset."""
-    dataset = DAPHandler(url, application, session).dataset
+def open_url(url, application=None, session=None, output_grid=True,
+             timeout=DEFAULT_TIMEOUT):
+    """
+    Open a remote URL, returning a dataset.
+
+    set output_grid to False to retrieve only main arrays and
+    never retrieve coordinate axes.
+    """
+    dataset = DAPHandler(url, application, session, output_grid,
+                         timeout).dataset
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session)
@@ -74,12 +81,12 @@ def open_file(dods, das=None):
     dds = ''
     # This file contains both ascii _and_ binary data
     # Let's handle them separately in sequence
-    # Without ignoring errors, the IO library will actually
-    # read past the ascii part of the
-    # file (despite our break from iteration) and will error
-    # out on the binary data
-    with open(dods, "rt", buffering=1, encoding='ascii', newline='\n',
-              errors='ignore') as f:
+    # Without ignoring errors, the IO library will
+    # actually read past the ascii part of the
+    # file (despite our break from iteration) and
+    # will error out on the binary data
+    with open(dods, "rt", buffering=1, encoding='ascii',
+              newline='\n', errors='ignore') as f:
         for line in f:
             if line.strip() == 'Data:':
                 break
@@ -98,9 +105,11 @@ def open_file(dods, das=None):
     return dataset
 
 
-def open_dods(url, metadata=False, application=None, session=None):
+def open_dods(url, metadata=False, application=None, session=None,
+              timeout=DEFAULT_TIMEOUT):
     """Open a `.dods` response directly, returning a dataset."""
-    r = GET(url, application, session)
+    r = GET(url, application, session,
+            timeout=timeout)
     dds, data = r.body.split(b'\nData:\n', 1)
     dds = dds.decode(r.content_encoding or 'ascii')
     dataset = build_dataset(dds)
@@ -111,7 +120,8 @@ def open_dods(url, metadata=False, application=None, session=None):
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
             (scheme, netloc, path[:-4] + 'das', query, fragment))
-        das = GET(dasurl, application, session).text
+        das = GET(dasurl, application, session,
+                  timeout=timeout).text
         add_attributes(dataset, parse_das(das))
 
     return dataset

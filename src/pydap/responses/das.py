@@ -16,7 +16,9 @@ from collections import Iterable
 from six import string_types, integer_types
 from six.moves import map
 
-from pydap.model import *
+from pydap.model import (DatasetType, BaseType,
+                         StructureType,
+                         GridType)
 from pydap.lib import encode, quote, __version__
 from pydap.responses.lib import BaseResponse
 from pydap.responses.dds import typemap
@@ -50,7 +52,7 @@ def das(var, level=0):
 
 
 @das.register(DatasetType)
-def _(var, level=0):
+def _datasettype(var, level=0):
     yield '{indent}Attributes {{\n'.format(indent=level*INDENT)
 
     for attr in sorted(var.attributes.keys()):
@@ -65,7 +67,7 @@ def _(var, level=0):
 
 
 @das.register(StructureType)
-def _(var, level=0):
+def _structuretype(var, level=0):
     yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
 
     for attr in sorted(var.attributes.keys()):
@@ -81,7 +83,7 @@ def _(var, level=0):
 
 @das.register(BaseType)
 @das.register(GridType)
-def _(var, level=0):
+def _basetypegridtype(var, level=0):
     yield '{indent}{name} {{\n'.format(indent=level*INDENT, name=var.name)
 
     for attr in sorted(var.attributes.keys()):
@@ -105,8 +107,9 @@ def build_attributes(attr, values, level=0):
         type = get_type(values)
 
         # encode values
-        if (isinstance(values, string_types) or not isinstance(values, Iterable)
-                or getattr(values, 'shape', None) == ()):
+        if (isinstance(values, string_types) or
+           not isinstance(values, Iterable) or
+           getattr(values, 'shape', None) == ()):
             values = [encode(values)]
         else:
             values = map(encode, values)

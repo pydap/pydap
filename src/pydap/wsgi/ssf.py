@@ -104,7 +104,7 @@ class ServerSideFunctions(object):
                 data = np.fromiter(child.data, child.dtype)
                 if data.dtype.char == "S":
                     valid = np.array(
-                        list(map(lambda v: op(str(v), str(other)), data)), 
+                        list(map(lambda v: op(str(v), str(other)), data)),
                         bool)
                 else:
                     valid = op(data, other)

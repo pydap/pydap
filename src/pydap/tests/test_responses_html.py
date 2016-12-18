@@ -1,13 +1,6 @@
 """Test the HTML response from Pydap."""
 
 import sys
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-    from ordereddict import OrderedDict
-else:
-    import unittest
-    from collections import OrderedDict
-
 from webtest import TestApp
 from webob import Request
 from webob.headers import ResponseHeaders
@@ -17,6 +10,12 @@ from jinja2 import Environment, DictLoader
 from pydap.lib import walk, __version__
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import VerySimpleSequence, SimpleGrid
+if sys.version_info < (2, 7):
+    import unittest2 as unittest
+    from ordereddict import OrderedDict
+else:
+    import unittest
+    from collections import OrderedDict
 
 
 class TestHTMLResponseSequence(unittest.TestCase):
@@ -60,7 +59,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
 
         """
         res = self.app.get('/.html')
-        soup = BeautifulSoup(res.text)
+        soup = BeautifulSoup(res.text, "html.parser")
 
         self.assertEqual(soup.title.string, "Dataset http://localhost/.html")
         self.assertEqual(soup.form["action"], "http://localhost/.html")
@@ -84,9 +83,10 @@ class TestHTMLResponseSequence(unittest.TestCase):
 
     def test_post_multiple_selection(self):
         """Test that the data redirect works with a subset request."""
-        #from nose.tools import set_trace; set_trace()
-        res = self.app.post(
-            '/.html', OrderedDict([("sequence.byte", "on"), ("sequence.int", "on")]))
+        # from nose.tools import set_trace; set_trace()
+        res = self.app.post('/.html',
+                            OrderedDict([("sequence.byte", "on"),
+                                         ("sequence.int", "on")]))
         self.assertEqual(
             res.location, "http://localhost/.ascii?sequence.byte,sequence.int")
 

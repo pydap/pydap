@@ -2,22 +2,20 @@
 
 import os
 import sys
+import numpy as np
+from pydap.handlers.lib import BaseHandler
+from pydap.client import open_url, open_dods, open_file
+from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
+from pydap.wsgi.ssf import ServerSideFunctions
 if sys.version_info < (2, 7):
     import unittest2 as unittest
 else:
     import unittest
 
-import numpy as np
-
-from pydap.model import *
-from pydap.handlers.lib import BaseHandler
-from pydap.client import open_url, open_dods, open_file
-from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
-from pydap.wsgi.ssf import ServerSideFunctions
-
 
 DODS = os.path.join(os.path.dirname(__file__), 'test.01.dods')
 DAS = os.path.join(os.path.dirname(__file__), 'test.01.das')
+
 
 class TestOpenUrl(unittest.TestCase):
 
@@ -218,4 +216,3 @@ class Test16Bits(unittest.TestCase):
         """Load an uint16."""
         dataset = open_url("http://localhost:8001/", self.app)
         self.assertEqual(dataset.types.ui16.dtype, np.dtype(">u2"))
-

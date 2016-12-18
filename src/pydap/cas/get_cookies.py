@@ -79,8 +79,7 @@ def setup_session(uri,
                 response = mechanicalsoup_login(br, response.url,
                                                 username, password,
                                                 username_field=username_field,
-                                                password_field=password_field,
-                                                notify=(url is not None))
+                                                password_field=password_field)
         response.close()
 
         if check_url:
@@ -102,14 +101,15 @@ def raise_if_form_exists(url, session):
     This function raises a UserWarning if the link has forms
     """
 
-    user_warning = ('Navigate to {0}, login and follow instructions. '.format(url) +
+    user_warning = ('Navigate to {0}, '.format(url) +
+                    'login and follow instructions. '
                     'It is likely that you have to perform some one-time'
                     'registration steps before acessing this data.')
 
     # This is important for the python 2.6 build:
     try:
         from six.moves.html_parser import HTMLParseError
-    except ImportError as e:
+    except ImportError:
         # HTMLParseError is removed in Python 3.5. Since it can never be
         # thrown in 3.5, we can just define our own class as a placeholder.
         # *from bs4/builder/_htmlparser.py
@@ -130,8 +130,7 @@ def raise_if_form_exists(url, session):
 
 def mechanicalsoup_login(br, url, username, password,
                          username_field='username',
-                         password_field='password',
-                         notify=True):
+                         password_field='password'):
     login_page = br.get(url)
 
     if not hasattr(login_page, 'soup'):
@@ -153,20 +152,7 @@ def mechanicalsoup_login(br, url, username, password,
     try:
         login_form.select('#' + password_field)[0]['value'] = password
     except IndexError:
-        if notify:
-            # If there is no password_field, it might be because
-            # something should be handled in the browser
-            # for the first attempt. This is common when using
-            # pydap with the ESGF for the first time.
-            br.close()
-            raise Exception('Navigate to {0}. '
-                            'If you are unable to '
-                            'login, you must either '
-                            'wait or use authentication '
-                            'from another service.'
-                            .format(url))
-        else:
-            pass
+        pass
 
     # This is specific for CEDA OPENID:
     try:
