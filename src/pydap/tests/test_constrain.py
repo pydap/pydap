@@ -1,14 +1,12 @@
-import unittest                                                                 
+import unittest
 
 import numpy as np
-                                                                                
-from pydap.model import *                                                       
 from pydap.parsers import parse_ce
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import D1
 
 
-class TestConstrain(unittest.TestCase):                                            
+class TestConstrain(unittest.TestCase):
     def test_no_ce(self):
         data = np.rec.fromrecords(
                 D1.Drifters.data.tolist(), names=D1.Drifters.keys())
@@ -20,7 +18,7 @@ class TestConstrain(unittest.TestCase):
     def test_filtering(self):
         data = np.rec.fromrecords(
                 D1.Drifters.data.tolist(), names=D1.Drifters.keys())
-        filtered = data[ data['longitude'] < 999 ]
+        filtered = data[data['longitude'] < 999]
 
         projection, selection = parse_ce('Drifters.longitude<999')
         dataset = BaseHandler(D1).parse(projection, selection)

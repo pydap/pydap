@@ -33,9 +33,9 @@ class TestESGF(unittest.TestCase):
         where no group was selected.
         """
         with self.assertRaises(UserWarning):
-            session = esgf.setup_session(os.environ.get('OPENID_ESGF_NO_REG'),
-                                         os.environ.get('PASSWORD_ESGF_NO_REG'),
-                                         check_url=self.url)
+            esgf.setup_session(os.environ.get('OPENID_ESGF_NO_REG'),
+                               os.environ.get('PASSWORD_ESGF_NO_REG'),
+                               check_url=self.url)
 
     def test_basic_esgf_auth(self):
         """
@@ -72,9 +72,9 @@ class TestESGF(unittest.TestCase):
                                      os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
         # This server does not access retrieval of grid coordinates.
-        # The option output_grid disables this, reverting to 
+        # The option output_grid disables this, reverting to
         # pydap 3.1.1 behavior. For older OPeNDAP servers (i.e. ESGF),
-        # this appears necessary. 
+        # this appears necessary.
         dataset = open_url(self.url, session=session, output_grid=False)
         data = dataset['pr'][0, 200:205, 100:105]
         expected_data = [[[5.23546005e-05,  5.48864300e-05,

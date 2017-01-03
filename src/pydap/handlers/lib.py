@@ -28,7 +28,9 @@ from pydap.parsers import parse_ce, parse_selection
 from pydap.exceptions import (
     ConstraintExpressionError, ExtensionNotSupportedError)
 from pydap.lib import walk, fix_shorthand, get_var, encode
-from pydap.model import *
+from pydap.model import (DatasetType, BaseType,
+                         SequenceType, StructureType,
+                         GridType)
 
 
 # buffer size in bytes, for streaming data
@@ -272,7 +274,7 @@ class IterData(object):
     shape = ()
 
     def __init__(self, stream, template, ifilter=None, imap=None, islice=None,
-            level=0):
+                 level=0):
         self.stream = stream
         self.template = template
         self.level = level
@@ -287,7 +289,7 @@ class IterData(object):
         """Return Numpy dtype of the object."""
         peek = next(iter(self))
         return np.array(peek).dtype
-        
+
     def __iter__(self):
         data = iter(self.stream)
 
@@ -302,8 +304,8 @@ class IterData(object):
 
     def __copy__(self):
         """Return a lightweight copy of the object."""
-        return IterData(self.stream, copy.copy(self.template), self.ifilter[:], 
-            self.imap[:], self.islice[:], self.level)
+        return IterData(self.stream, copy.copy(self.template), self.ifilter[:],
+                        self.imap[:], self.islice[:], self.level)
 
     def __repr__(self):
         return "<IterData to stream %r>" % self.stream
@@ -443,6 +445,7 @@ def build_filter(expression, template):
     else:
         try:
             value = ast.literal_eval(id2)
+
             def b(row):
                 return value
         except:
@@ -464,8 +467,11 @@ def build_filter(expression, template):
     # if the filtering is applied in the outermost sequence we can simply pass
     # a filter, and ignore the map
     if level == 0:
-        f = lambda row: op(a(row), b(row))
-        m = lambda row: row
+        def f(row):
+            return op(a(row), b(row))
+
+        def m(row):
+            return row
 
     # if the filtering is applied to a nested sequence we actually need to map
     # the outer data so that the inner data is filtered
@@ -493,4 +499,3 @@ def build_filter(expression, template):
             return recurse(row, tokens, template)
 
     return f, m
-

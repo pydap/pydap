@@ -4,18 +4,17 @@ This is a simple example from the DODS Test Server.
     http://test.opendap.org:8080/dods/dts/D1
 
 """
-import unittest                                                                 
+import unittest
 
 import numpy as np
 from webob.request import Request
 
-from pydap.model import *                                                       
 from pydap.handlers.lib import BaseHandler
 from pydap.client import open_url
 from pydap.tests.datasets import D1
 
 
-class TestD1(unittest.TestCase):                                            
+class TestD1(unittest.TestCase):
     def setUp(self):
         # create WSGI app
         self.app = BaseHandler(D1)
@@ -63,11 +62,11 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
         dataset = open_url('http://localhost:8001/', application=self.app)
         drifters = dataset.Drifters
         selection = np.rec.fromrecords(
-            list(drifters[ drifters.longitude < 999 ]), names=drifters.keys())
+            list(drifters[drifters.longitude < 999]), names=drifters.keys())
 
         data = np.rec.fromrecords(
                 D1.Drifters.data.tolist(), names=drifters.keys())
-        filtered = data[ data['longitude'] < 999 ]
+        filtered = data[data['longitude'] < 999]
 
         np.testing.assert_array_equal(filtered, selection)
 
@@ -75,11 +74,10 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
         dataset = open_url('http://localhost:8001/', application=self.app)
         drifters = dataset.Drifters
         selection = np.array(
-            list(drifters[ drifters.longitude < 999 ]['location']))
+            list(drifters[drifters.longitude < 999]['location']))
 
         data = np.rec.fromrecords(
                 D1.Drifters.data.tolist(), names=drifters.keys())
-        filtered = data[ data['longitude'] < 999 ]['location']
+        filtered = data[data['longitude'] < 999]['location']
 
         np.testing.assert_array_equal(filtered, selection)
-

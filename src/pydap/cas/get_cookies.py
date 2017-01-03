@@ -102,14 +102,15 @@ def raise_if_form_exists(url, session):
     This function raises a UserWarning if the link has forms
     """
 
-    user_warning = ('Navigate to {0}, login and follow instructions. '.format(url) +
+    user_warning = ('Navigate to {0}, '.format(url) +
+                    'login and follow instructions. '
                     'It is likely that you have to perform some one-time'
                     'registration steps before acessing this data.')
 
     # This is important for the python 2.6 build:
     try:
         from six.moves.html_parser import HTMLParseError
-    except ImportError as e:
+    except ImportError:
         # HTMLParseError is removed in Python 3.5. Since it can never be
         # thrown in 3.5, we can just define our own class as a placeholder.
         # *from bs4/builder/_htmlparser.py
