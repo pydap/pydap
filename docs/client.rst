@@ -54,12 +54,12 @@ The axes are all of type ``BaseType``. This is the OPeNDAP equivalent of a multi
 
     >>> print sst.shape
     (12, 90, 180)
-    >>> print sst.type
-    <class 'pydap.model.Float32'>
+    >>> print sst.dtype
+    float32
     >>> print sst.TIME.shape
     (12,)
-    >>> print sst.TIME.type
-    <class 'pydap.model.Float64'>
+    >>> print sst.TIME.dtype
+    float64
 
 We can also introspect the variable attributes; they are stored in an attribute appropriately called ``attributes``, and they can also be accessed with a "lazy" syntax:
 
