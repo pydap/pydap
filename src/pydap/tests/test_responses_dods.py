@@ -1,6 +1,5 @@
 """Test the DODS response."""
 
-import sys
 import copy
 
 import numpy as np
@@ -13,10 +12,7 @@ from pydap.tests.datasets import (
     VerySimpleSequence, SimpleSequence, SimpleGrid,
     SimpleArray, NestedSequence)
 from pydap.responses.dods import dods, DODSResponse
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestDODSResponse(unittest.TestCase):

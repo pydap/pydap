@@ -1,5 +1,4 @@
 from setuptools import setup, find_packages
-import sys
 
 
 __version__ = '3.2.0'
@@ -14,9 +13,6 @@ install_requires = [
     'six >= 1.4.0',
     'mechanicalsoup',
 ]
-
-if sys.version_info < (2, 7):
-    install_requires.append('ordereddict')
 
 functions_extras = [
     'gsw',
@@ -47,16 +43,12 @@ testing_extras = tests_require + [
     'requests'
 ]
 
-if sys.version_info < (2, 7):
-    tests_require.append('unittest2')
-
 
 setup(name='Pydap',
       version=__version__,
       description="An implementation of the Data Access Protocol.",
       long_description="",
       classifiers=[
-            "Programming Language :: Python :: 2.6",
             "Programming Language :: Python :: 2.7",
             "Programming Language :: Python :: 3.3",
             "Programming Language :: Python :: 3.4",

@@ -1,6 +1,5 @@
 """Test the basic DAP functions."""
 
-import sys
 import numpy as np
 from six import MAXSIZE
 from pydap.model import (DatasetType, BaseType,
@@ -8,10 +7,7 @@ from pydap.model import (DatasetType, BaseType,
 from pydap.exceptions import ConstraintExpressionError
 from pydap.lib import (quote, encode, fix_slice, combine_slices, hyperslab,
                        walk, fix_shorthand, get_var)
-if sys.version_info < (2, 7):  # pragma: no cover
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestQuote(unittest.TestCase):

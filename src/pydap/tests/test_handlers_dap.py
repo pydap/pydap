@@ -1,6 +1,5 @@
 """Test the DAP handler, which forms the core of the client."""
 
-import sys
 import numpy as np
 from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
@@ -8,10 +7,7 @@ from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy
 from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestDapHandler(unittest.TestCase):

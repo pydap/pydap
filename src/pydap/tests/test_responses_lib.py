@@ -1,15 +1,11 @@
 """Test the base functions for handlers."""
 
-import sys
 from webob import Request
 from pydap.model import DatasetType
 import pydap.responses
 from pydap.responses.lib import BaseResponse, load_responses
 from pydap.tests.datasets import VerySimpleSequence
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestLoadResponse(unittest.TestCase):

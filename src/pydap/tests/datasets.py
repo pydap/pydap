@@ -5,7 +5,6 @@ model.
 
 """
 import os
-import sys
 
 import numpy as np
 
@@ -14,10 +13,7 @@ from pydap.model import (DatasetType, BaseType,
 from pydap.handlers.lib import IterData
 from pydap.client import open_file
 
-if sys.version_info < (2, 7):  # pragma: no cover
-    from ordereddict import OrderedDict
-else:
-    from collections import OrderedDict
+from collections import OrderedDict
 
 
 # A very simple sequence: flat and with no strings. This sequence can be mapped

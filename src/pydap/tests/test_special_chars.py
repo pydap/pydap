@@ -1,14 +1,9 @@
-import sys
-
 import numpy as np
 from webob.request import Request
 from pydap.model import DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler
 from pydap.client import open_url
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestQuote(unittest.TestCase):

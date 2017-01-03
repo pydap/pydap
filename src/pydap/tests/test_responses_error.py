@@ -3,10 +3,7 @@ from webob import Request
 
 from pydap.responses.error import ErrorResponse
 from pydap.lib import __version__
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestErrorResponse(unittest.TestCase):
