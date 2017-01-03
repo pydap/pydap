@@ -149,7 +149,7 @@ class BaseProxy(object):
         size = int(np.prod(shape))
 
         if self.dtype == np.byte:
-            return np.fromstring(data[:size], 'B')
+            return np.fromstring(data[:size], 'B').reshape(shape)
         elif self.dtype.char in 'SU':
             out = []
             for word in range(size):
