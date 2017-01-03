@@ -33,6 +33,8 @@ class TestESGF(unittest.TestCase):
         environment variables. These must be associated with credentials
         where no group was selected.
         """
+        assert(os.environ.get('OPENID_ESGF_NO_REG') is not None)
+        assert(os.environ.get('PASSWORD_ESGF_NO_REG') is not None)
         with self.assertRaises(UserWarning):
             esgf.setup_session(os.environ.get('OPENID_ESGF_NO_REG'),
                                os.environ.get('PASSWORD_ESGF_NO_REG'),
@@ -40,15 +42,18 @@ class TestESGF(unittest.TestCase):
 
     def test_basic_esgf_auth(self):
         """
-        Set up PyDAP to use the URS request() function.
+        Set up PyDAP to use the ESGF request() function.
 
         The intent here is to ensure that pydap.net is able to
         open and url if and only if requests is able to
         open the same url.
         """
+        assert(os.environ.get('OPENID_ESGF') is not None)
+        assert(os.environ.get('PASSWORD_ESGF') is not None)
         session = esgf.setup_session(os.environ.get('OPENID_ESGF'),
                                      os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
+
         res = requests.get(self.test_url, cookies=session.cookies,
                            verify=False)
         assert(res.status_code == 200)
@@ -58,6 +63,8 @@ class TestESGF(unittest.TestCase):
         assert(res.status_code == 200)
 
     def test_dimension_esgf_query(self):
+        assert(os.environ.get('OPENID_ESGF') is not None)
+        assert(os.environ.get('PASSWORD_ESGF') is not None)
         session = esgf.setup_session(os.environ.get('OPENID_ESGF'),
                                      os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
@@ -73,6 +80,8 @@ class TestESGF(unittest.TestCase):
         assert(np.isclose(data, expected_data).all())
 
     def test_variable_esgf_query(self):
+        assert(os.environ.get('OPENID_ESGF') is not None)
+        assert(os.environ.get('PASSWORD_ESGF') is not None)
         session = esgf.setup_session(os.environ.get('OPENID_ESGF'),
                                      os.environ.get('PASSWORD_ESGF'),
                                      check_url=self.url)
