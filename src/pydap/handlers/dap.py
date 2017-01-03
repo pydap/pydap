@@ -12,7 +12,6 @@ import pprint
 import copy
 import re
 from itertools import chain
-import warnings
 
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
@@ -96,6 +95,7 @@ class DAPHandler(BaseHandler):
         for var in walk(self.dataset, GridType):
             var.set_output_grid(output_grid)
 
+
 class BaseProxy(object):
 
     """A proxy for remote base types.
@@ -165,10 +165,11 @@ class BaseProxy(object):
                 if str(e) == 'total size of new array must be unchanged':
                     # server-side failure.
                     # it is expected that the user should be mindful of this:
-                    raise RuntimeError('varirable {0} could not be properly '.format(quote(self.id)) +
-                                       'retrieved. '
-                                       'To avoid this '
-                                       'error consider using open_url(..., output_grid=False).')
+                    raise RuntimeError(
+                                ('variable {0} could not be properly '
+                                 'retrieved. To avoid this '
+                                 'error consider using open_url(..., '
+                                 'output_grid=False).').format(quote(self.id)))
                 else:
                     raise
 

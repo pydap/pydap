@@ -57,7 +57,7 @@ from pydap.parsers.das import parse_das, add_attributes
 def open_url(url, application=None, session=None, output_grid=True):
     """
     Open a remote URL, returning a dataset.
-   
+
     set output_grid to False to retrieve only main arrays and
     never retrieve coordinate axes.
     """
