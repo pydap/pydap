@@ -157,7 +157,8 @@ class BaseProxy(object):
                 data = data[4:]
                 out.append(data[:n])
                 data = data[n + (-n % 4):]
-            return np.array([text_type(x.decode('ascii')) for x in out], 'S')
+            return np.array([text_type(x.decode('ascii'))
+                             for x in out], 'S').reshape(shape)
         else:
             try:
                 return np.fromstring(data, self.dtype).reshape(shape)
