@@ -27,7 +27,7 @@ class TestUrs(unittest.TestCase):
         open and url if and only if requests is able to
         open the same url.
         """
-        assert(os.environ.get('OPENID_URS'))
+        assert(os.environ.get('USERNAME_URS'))
         assert(os.environ.get('PASSWORD_URS'))
         session = urs.setup_session(os.environ.get('USERNAME_URS'),
                                     os.environ.get('PASSWORD_URS'),
@@ -41,7 +41,7 @@ class TestUrs(unittest.TestCase):
         assert(res.status_code == 200)
 
     def test_basic_urs_query(self):
-        assert(os.environ.get('OPENID_URS'))
+        assert(os.environ.get('USERNAME_URS'))
         assert(os.environ.get('PASSWORD_URS'))
         session = urs.setup_session(os.environ.get('USERNAME_URS'),
                                     os.environ.get('PASSWORD_URS'),
