@@ -79,7 +79,7 @@ def setup_session(uri,
                 response = mechanicalsoup_login(br, response.url,
                                                 username, password,
                                                 username_field=username_field,
-                                                password_field=password_field))
+                                                password_field=password_field)
         response.close()
 
         if check_url:
@@ -152,18 +152,16 @@ def mechanicalsoup_login(br, url, username, password,
     try:
         login_form.select('#' + password_field)[0]['value'] = password
     except IndexError:
-            # If there is no password_field, it might be because
-            # something should be handled in the browser
-            # for the first attempt. This is common when using
-            # pydap with the ESGF for the first time.
-            raise Exception('Navigate to {0}. '
-                            'If you are unable to '
-                            'login, you must either '
-                            'wait or use authentication '
-                            'from another service.'
-                            .format(url))
-        else:
-            pass
+        # If there is no password_field, it might be because
+        # something should be handled in the browser
+        # for the first attempt. This is common when using
+        # pydap with the ESGF for the first time.
+        raise Exception('Navigate to {0}. '
+                        'If you are unable to '
+                        'login, you must either '
+                        'wait or use authentication '
+                        'from another service.'
+                        .format(url))
 
     # This is specific for CEDA OPENID:
     try:
