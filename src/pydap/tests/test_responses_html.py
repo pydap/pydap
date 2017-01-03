@@ -1,6 +1,5 @@
 """Test the HTML response from Pydap."""
 
-import sys
 from webtest import TestApp
 from webob import Request
 from webob.headers import ResponseHeaders

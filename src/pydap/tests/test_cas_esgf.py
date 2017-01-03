@@ -5,7 +5,6 @@ import requests
 import numpy as np
 import os
 from nose.plugins.attrib import attr
-import sys
 import unittest
 
 

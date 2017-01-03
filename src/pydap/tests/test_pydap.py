@@ -1,6 +1,5 @@
 """Test Pydap namespace."""
 
-import sys
 import pydap
 import unittest
 

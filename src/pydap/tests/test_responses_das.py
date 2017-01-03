@@ -1,6 +1,5 @@
 """Test the DAS response."""
 
-import sys
 from webtest import TestApp
 from webob.headers import ResponseHeaders
 from pydap.lib import __version__

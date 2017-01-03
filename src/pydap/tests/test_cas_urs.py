@@ -3,7 +3,6 @@ from pydap.cas import urs
 import pydap.net
 import requests
 import os
-import sys
 from nose.plugins.attrib import attr
 import unittest
 

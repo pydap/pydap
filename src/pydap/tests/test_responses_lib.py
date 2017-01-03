@@ -1,6 +1,5 @@
 """Test the base functions for handlers."""
 
-import sys
 from webob import Request
 from pydap.model import DatasetType
 import pydap.responses

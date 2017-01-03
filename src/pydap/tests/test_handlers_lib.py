@@ -1,6 +1,5 @@
 """Test basic handler functions."""
 
-import sys
 import copy
 from six import text_type
 

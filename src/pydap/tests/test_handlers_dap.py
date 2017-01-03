@@ -1,6 +1,5 @@
 """Test the DAP handler, which forms the core of the client."""
 
-import sys
 import numpy as np
 from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression

@@ -1,6 +1,5 @@
 """Test DDS parsing functions."""
 
-import sys
 import numpy as np
 from pydap.parsers.dds import build_dataset
 from pydap.model import (BaseType,

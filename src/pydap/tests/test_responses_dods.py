@@ -1,6 +1,5 @@
 """Test the DODS response."""
 
-import sys
 import copy
 
 import numpy as np

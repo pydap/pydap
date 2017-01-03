@@ -114,7 +114,6 @@ It is possible to select only a few variables::
 """
 
 import operator
-import sys
 import copy
 from six.moves import reduce, map
 from six import string_types, binary_type

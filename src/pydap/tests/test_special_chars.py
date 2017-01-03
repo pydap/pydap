@@ -1,5 +1,3 @@
-import sys
-
 import numpy as np
 from webob.request import Request
 from pydap.model import DatasetType, BaseType

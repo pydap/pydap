@@ -1,6 +1,5 @@
 """Test the data model."""
 
-import sys
 import copy
 import numpy as np
 from pydap.model import (DatasetType, BaseType,

@@ -1,6 +1,5 @@
 """Test IterData, which makes iterables behave like Numpy structured arrays."""
 
-import sys
 import numpy as np
 from pydap.handlers.lib import IterData
 

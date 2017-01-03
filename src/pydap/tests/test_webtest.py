@@ -1,5 +1,4 @@
 from webtest import TestApp
-import sys
 import unittest
 
 

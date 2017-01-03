@@ -1,7 +1,6 @@
 """Test the Pydap client."""
 
 import os
-import sys
 import numpy as np
 from pydap.handlers.lib import BaseHandler
 from pydap.client import open_url, open_dods, open_file

@@ -1,6 +1,5 @@
 """Test the basic DAP functions."""
 
-import sys
 import numpy as np
 from six import MAXSIZE
 from pydap.model import (DatasetType, BaseType,

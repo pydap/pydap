@@ -1,6 +1,5 @@
 """Test DAS parsing functions."""
 
-import sys
 import numpy as np
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import build_dataset

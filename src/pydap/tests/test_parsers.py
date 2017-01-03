@@ -1,6 +1,5 @@
 """Test parsing functions."""
 
-import sys
 import operator
 
 from pydap.parsers import (parse_projection, parse_selection,

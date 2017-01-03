@@ -1,6 +1,5 @@
 """Test Pydap base exception."""
 
-import sys
 from pydap.exceptions import DapError
 import unittest
 

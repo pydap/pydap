@@ -1,6 +1,5 @@
 """Tests for the Pydap server."""
 
-import sys
 import os
 import tempfile
 import shutil
