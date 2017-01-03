@@ -21,42 +21,37 @@ class TestD1(unittest.TestCase):
 
     def test_dds(self):
         self.assertEqual(Request.blank('/.dds').get_response(self.app).text,
-                         'Dataset {\n'
-                         '    Sequence {\n'
-                         '        String instrument_id;\n'
-                         '        String location;\n'
-                         '        Float64 latitude;\n'
-                         '        Float64 longitude;\n'
-                         '    } Drifters;\n'
-                         '} EOSDB%2EDBO;\n')
+            '''Dataset {
+    Sequence {
+        String instrument_id;
+        String location;
+        Float64 latitude;
+        Float64 longitude;
+    } Drifters;
+} EOSDB%2EDBO;
+''')
 
     def test_ascii(self):
         resp = Request.blank('/.asc').get_response(self.app)
         content = resp.text
         self.assertEqual(content,
-                         'Dataset {\n'
-                         '    Sequence {\n'
-                         '        String instrument_id;\n'
-                         '        String location;\n'
-                         '        Float64 latitude;\n'
-                         '        Float64 longitude;\n'
-                         '    } Drifters;\n'
-                         '} EOSDB%2EDBO;\n'
-                         '---------------------------------------------\n'
-                         'Drifters.instrument_id, Drifters.location, '
-                         'Drifters.latitude, '
-                         'Drifters.longitude\n'
-                         '"This is a data test string (pass 1).", "This is a '
-                         'data test string (pass 0).", 1000, 999.95\n'
-                         '"This is a data test string (pass 3).", "This is a '
-                         'data test string (pass 2).", 999.95, 999.55\n'
-                         '"This is a data test string (pass 5).", "This is a '
-                         'data test string (pass 4).", 999.8, 998.75\n'
-                         '"This is a data test string (pass 7).", "This is a '
-                         'data test string (pass 6).", 999.55, 997.55\n'
-                         '"This is a data test string (pass 9).", "This is a '
-                         'data test string (pass 8).", 999.2, 995.95\n'
-                         '\n')
+            '''Dataset {
+    Sequence {
+        String instrument_id;
+        String location;
+        Float64 latitude;
+        Float64 longitude;
+    } Drifters;
+} EOSDB%2EDBO;
+---------------------------------------------
+Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
+"This is a data test string (pass 1).", "This is a data test string (pass 0).", 1000, 999.95
+"This is a data test string (pass 3).", "This is a data test string (pass 2).", 999.95, 999.55
+"This is a data test string (pass 5).", "This is a data test string (pass 4).", 999.8, 998.75
+"This is a data test string (pass 7).", "This is a data test string (pass 6).", 999.55, 997.55
+"This is a data test string (pass 9).", "This is a data test string (pass 8).", 999.2, 995.95
+
+''')
 
     def test_data(self):
         dataset = open_url('http://localhost:8001/', application=self.app)
