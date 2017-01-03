@@ -42,7 +42,6 @@ class TestUrs(unittest.TestCase):
         session = urs.setup_session(os.environ.get('USERNAME_URS'),
                                     os.environ.get('PASSWORD_URS'),
                                     check_url=self.url)
-        assert session.auth
         dataset = open_url(self.url, session=session)
         expected_data = [[[99066.15625, 99066.15625, 99066.15625,
                            99066.15625, 99066.15625],

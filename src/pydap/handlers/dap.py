@@ -12,6 +12,7 @@ import pprint
 import copy
 import re
 from itertools import chain
+import warnings
 
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
@@ -42,7 +43,7 @@ class DAPHandler(BaseHandler):
 
     """Build a dataset from a DAP base URL."""
 
-    def __init__(self, url, application=None, session=None):
+    def __init__(self, url, application=None, session=None, output_grid=True):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
@@ -90,6 +91,9 @@ class DAPHandler(BaseHandler):
                 elif isinstance(target, SequenceType):
                     target.data.slice = index
 
+        # retrieve only main variable for grid types:
+        for var in walk(self.dataset, GridType):
+            var.set_output_grid(output_grid)
 
 class BaseProxy(object):
 
@@ -154,7 +158,18 @@ class BaseProxy(object):
                 data = data[n + (-n % 4):]
             return np.array([ text_type(x.decode('ascii')) for x in out ], 'S')
         else:
-            return np.fromstring(data, self.dtype).reshape(shape)
+            try:
+                return np.fromstring(data, self.dtype).reshape(shape)
+            except ValueError as e:
+                if str(e) == 'total size of new array must be unchanged':
+                    # server-side failure.
+                    # it is expected that the user should be mindful of this:
+                    raise RuntimeError('varirable {0} could not be properly '.format(quote(self.id)) +
+                                       'retrieved. '
+                                       'To avoid this '
+                                       'error consider using open_url(..., output_grid=False).')
+                else:
+                    raise
 
     def __len__(self):
         return self.shape[0]
