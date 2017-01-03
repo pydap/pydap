@@ -414,3 +414,22 @@ class TestStringBaseType(unittest.TestCase):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:],
                                       np.array("This is a test", dtype='S'))
+
+
+class TestArrayStringBaseType(unittest.TestCase):
+
+    """Regression test for an array of unicode base type."""
+
+    def setUp(self):
+        """Create a WSGI app with array data"""
+        dataset = DatasetType("test")
+        self.original_data = np.array([["This ", "is "], ["a ", "test"]],
+                                      dtype='<U5')
+        dataset["s"] = BaseType("s", self.original_data)
+        self.app = BaseHandler(dataset)
+
+        self.data = DAPHandler("http://localhost:8001/",  self.app).dataset.s
+
+    def test_getitem(self):
+        """Test the ``__getitem__`` method."""
+        np.testing.assert_array_equal(self.data[:], self.original_data)
