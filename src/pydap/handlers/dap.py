@@ -147,29 +147,29 @@ class BaseProxy(object):
             int(np.ceil((s.stop-s.start)/float(s.step))) for s in index)
         size = int(np.prod(shape))
 
-        try:
-            if self.dtype == np.byte:
-                return np.fromstring(data[:size], 'B')
-            elif self.dtype.char in 'SU':
-                out = []
-                for word in range(size):
-                    n = np.fromstring(data[:4], '>I')  # read length
-                    data = data[4:]
-                    out.append(data[:n])
-                    data = data[n + (-n % 4):]
-                return np.array([ text_type(x.decode('ascii')) for x in out ], 'S')
-            else:
+        if self.dtype == np.byte:
+            return np.fromstring(data[:size], 'B')
+        elif self.dtype.char in 'SU':
+            out = []
+            for word in range(size):
+                n = np.fromstring(data[:4], '>I')  # read length
+                data = data[4:]
+                out.append(data[:n])
+                data = data[n + (-n % 4):]
+            return np.array([ text_type(x.decode('ascii')) for x in out ], 'S')
+        else:
+            try:
                 return np.fromstring(data, self.dtype).reshape(shape)
-        except ValueError as e:
-            if str(e) == 'total size of new array must be unchanged':
-                # server-side failure. do not fail. instead, return NaNs
-                # it is expected that the user should be mindful of this:
-                raise RuntimeError('varirable {0} could not be properly '.format(quote(self.id)) +
-                                   'retrieved. '
-                                   'To avoid this '
-                                   'error consider using open_url(..., output_grid=False).')
-            else:
-                raise
+            except ValueError as e:
+                if str(e) == 'total size of new array must be unchanged':
+                    # server-side failure.
+                    # it is expected that the user should be mindful of this:
+                    raise RuntimeError('varirable {0} could not be properly '.format(quote(self.id)) +
+                                       'retrieved. '
+                                       'To avoid this '
+                                       'error consider using open_url(..., output_grid=False).')
+                else:
+                    raise
 
     def __len__(self):
         return self.shape[0]

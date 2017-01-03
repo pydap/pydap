@@ -543,6 +543,10 @@ class GridType(StructureType):
 
     """
 
+    def __init__(self, name, attributes=None, **kwargs):
+        StructureType.__init__(self, name, attributes, **kwargs)
+        self._output_grid = True
+
     def __repr__(self):
         return '<%s with array %s and maps %s>' % (
             self.__class__.__name__,
@@ -568,10 +572,7 @@ class GridType(StructureType):
 
     @property
     def output_grid(self):
-        if hasattr(self, '_output_grid'):
-            return self._output_grid
-        else:
-            return True
+        return self._output_grid
 
     def set_output_grid(self, key):
         self._output_grid = bool(key)
