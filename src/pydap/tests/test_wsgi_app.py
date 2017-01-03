@@ -12,10 +12,7 @@ from webob.dec import wsgify
 from pydap.wsgi.app import init, DapServer, StaticMiddleware
 from pydap.exceptions import ExtensionNotSupportedError
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestDapServer(unittest.TestCase):

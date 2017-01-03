@@ -10,10 +10,7 @@ from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import SimpleSequence, SimpleGrid
 from pydap.responses.ascii import ascii
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestASCIIResponseSequence(unittest.TestCase):

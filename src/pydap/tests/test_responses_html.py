@@ -10,12 +10,8 @@ from jinja2 import Environment, DictLoader
 from pydap.lib import walk, __version__
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import VerySimpleSequence, SimpleGrid
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-    from ordereddict import OrderedDict
-else:
-    import unittest
-    from collections import OrderedDict
+import unittest
+from collections import OrderedDict
 
 
 class TestHTMLResponseSequence(unittest.TestCase):

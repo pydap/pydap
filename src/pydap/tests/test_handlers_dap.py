@@ -8,10 +8,7 @@ from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy
 from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestDapHandler(unittest.TestCase):

@@ -7,10 +7,7 @@ from pydap.model import (DatasetType, BaseType,
                          SequenceType, StructureType,
                          GridType, DapType)
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestDapType(unittest.TestCase):

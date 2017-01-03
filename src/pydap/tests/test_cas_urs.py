@@ -5,10 +5,7 @@ import requests
 import os
 import sys
 from nose.plugins.attrib import attr
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 @attr('auth')

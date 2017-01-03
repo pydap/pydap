@@ -18,10 +18,7 @@ from pydap.parsers import parse_projection
 from pydap.tests.datasets import (
     SimpleArray, SimpleSequence, SimpleGrid, VerySimpleSequence,
     NestedSequence, SimpleStructure)
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestHandlersLib(unittest.TestCase):

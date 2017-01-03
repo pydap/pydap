@@ -32,8 +32,7 @@ from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 from pydap.parsers import parse_ce
 logger = logging.getLogger('pydap')
-if sys.version_info >= (2, 7):  # pragma: no cover
-    logger.addHandler(logging.NullHandler())
+logger.addHandler(logging.NullHandler())
 
 
 BLOCKSIZE = 512

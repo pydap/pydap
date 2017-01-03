@@ -4,10 +4,7 @@ import sys
 import numpy as np
 from pydap.handlers.lib import IterData
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 @unittest.skip("This test is not fully implemented")

@@ -120,10 +120,7 @@ from six.moves import reduce, map
 from six import string_types, binary_type
 import numpy as np
 from pydap.lib import quote, decode_np_strings
-if sys.version_info < (2, 7):  # pragma: no cover
-    from ordereddict import OrderedDict
-else:
-    from collections import OrderedDict
+from collections import OrderedDict
 
 
 __all__ = [

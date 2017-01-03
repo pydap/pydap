@@ -10,10 +10,7 @@ from pydap.tests.datasets import SimpleSequence, SimpleGrid
 from pydap.wsgi.ssf import ServerSideFunctions
 from pydap.exceptions import ConstraintExpressionError, ServerError
 
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 class TestDensity(unittest.TestCase):
