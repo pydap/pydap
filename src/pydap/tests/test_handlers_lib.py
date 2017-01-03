@@ -480,10 +480,9 @@ class TestNestedIterData(unittest.TestCase):
     def test_filter_data(self):
         """Test filtering the data."""
         self.assertEqual(list(self.data[self.data["lat"] > 2]),
-                         [(3, 6, 9, []), (4, 8, 16, [(31, 32, 33),
-                                                     (41, 42, 43),
-                                                     (51, 52, 53),
-                                                     (61, 62, 63)])])
+                         [(3, 6, 9, []), (4, 8, 16,
+                                          [(31, 32, 33), (41, 42, 43),
+                                           (51, 52, 53), (61, 62, 63)])])
 
     def test_deep_filter(self):
         """Test deep filtering the data."""
