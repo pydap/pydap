@@ -343,6 +343,9 @@ class StructureType(DapType):
         """Method to emulate a dictionary, returning keys."""
         return self._keys[:]
 
+    def __len__(self):
+        return len(self._keys)
+
     def _get_data(self):
         return [var.data for var in self.children()]
 
@@ -577,6 +580,20 @@ class GridType(StructureType):
             for var, slice_ in zip(out.children(), [key] + list(key)):
                 var.data = self[var.name].data[slice_]
             return out
+
+    def __len__(self):
+        """Return the first children length."""
+        return len(self.array)
+
+    @property
+    def dtype(self):
+        """Return the first children dtype."""
+        return self.array.dtype
+
+    @property
+    def shape(self):
+        """Return the first children shape."""
+        return self.array.shape
 
     @property
     def output_grid(self):

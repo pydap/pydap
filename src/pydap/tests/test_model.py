@@ -156,6 +156,13 @@ class TestStructureType(unittest.TestCase):
         self.assertEqual(
             repr(var), "<StructureType with children 'one', 'two'>")
 
+    def test_len(self):
+        """Test ``__len__`` method."""
+        var = StructureType("var")
+        var["one"] = BaseType("one")
+        var["two"] = BaseType("two")
+        self.assertEqual(len(var), 2)
+
     def test_contains(self):
         """Test container behavior."""
         var = StructureType("var")
@@ -358,6 +365,18 @@ class TestGridType(unittest.TestCase):
         """Test ``__repr__`` of grids."""
         self.assertEqual(
             repr(self.example), "<GridType with array 'a' and maps 'x', 'y'>")
+
+    def test_dtype(self):
+        """Test ``dtype`` of grids."""
+        self.assertEqual(self.example.dtype, np.dtype('l'))
+
+    def test_shape(self):
+        """Test ``shape`` of grids."""
+        self.assertEqual(self.example.shape, (30, 50))
+
+    def test_len(self):
+        """Test ``__len__`` of grids."""
+        self.assertEqual(len(self.example), 30)
 
     def test_getitem(self):
         """Test item retrieval.
