@@ -43,7 +43,8 @@ tests_require = (functions_extras + cas_extras +
                  server_extras +
                  ['WebTest',
                   'beautifulsoup4',
-                  'scipy'])
+                  'scipy',
+                  'flake8'])
 
 testing_extras = tests_require + [
     'pytest-cov',
