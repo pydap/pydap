@@ -12,8 +12,8 @@ import operator
 
 from six.moves import reduce
 
-from pydap.parsers import SimpleParser
-from pydap.lib import walk
+from . import SimpleParser
+from ..lib import walk
 
 
 atomic = ('byte', 'int', 'uint', 'int16', 'uint16', 'int32', 'uint32',

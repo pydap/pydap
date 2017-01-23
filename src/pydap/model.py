@@ -118,8 +118,9 @@ import copy
 from six.moves import reduce, map
 from six import string_types, binary_type
 import numpy as np
-from pydap.lib import quote, decode_np_strings
 from collections import OrderedDict
+
+from .lib import quote, decode_np_strings
 
 
 __all__ = [

@@ -12,8 +12,8 @@ KML, WMS, JSON, etc., installed as third-party Python packages that declare the
 
 from pkg_resources import iter_entry_points
 
-from pydap.model import DatasetType
-from pydap.lib import __version__
+from ..model import DatasetType
+from ..lib import __version__
 
 
 def load_responses():

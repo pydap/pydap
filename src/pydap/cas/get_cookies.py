@@ -4,7 +4,7 @@ import requests
 from requests.packages.urllib3.exceptions import (InsecureRequestWarning,
                                                   InsecurePlatformWarning)
 import copy
-import pydap.lib
+from .. import lib
 
 ssl_verify_categories = [InsecureRequestWarning,
                          InsecurePlatformWarning]

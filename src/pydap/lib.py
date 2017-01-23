@@ -6,7 +6,7 @@ from six.moves.urllib.parse import quote as quote_
 from six.moves import reduce, zip_longest
 from six import binary_type, MAXSIZE
 
-from pydap.exceptions import ConstraintExpressionError
+from .exceptions import ConstraintExpressionError
 
 
 __dap__ = '2.15'
