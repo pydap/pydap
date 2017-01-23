@@ -15,7 +15,7 @@ import numpy as np
 from six import string_types
 
 from ..model import (BaseType,
-                         SequenceType, StructureType)
+                     SequenceType, StructureType)
 from ..lib import walk, START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
 from .lib import BaseResponse
 from .dds import dds
