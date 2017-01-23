@@ -7,7 +7,7 @@ from webob import Response
 from json import dumps
 from pkg_resources import iter_entry_points
 
-from pydap.lib import __version__, __dap__
+from ..lib import __version__, __dap__
 
 
 class VersionResponse(object):

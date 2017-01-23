@@ -22,15 +22,15 @@ from numpy.lib.arrayterator import Arrayterator
 from six.moves import filter, map
 from six import string_types, next
 
-from pydap.responses.lib import load_responses
-from pydap.responses.error import ErrorResponse
-from pydap.parsers import parse_ce, parse_selection
-from pydap.exceptions import (
+from ..responses.lib import load_responses
+from ..responses.error import ErrorResponse
+from ..parsers import parse_ce, parse_selection
+from ..exceptions import (
     ConstraintExpressionError, ExtensionNotSupportedError)
-from pydap.lib import walk, fix_shorthand, get_var, encode
-from pydap.model import (DatasetType, BaseType,
-                         SequenceType, StructureType,
-                         GridType)
+from ..lib import walk, fix_shorthand, get_var, encode
+from ..model import (DatasetType, BaseType,
+                     SequenceType, StructureType,
+                     GridType)
 
 
 # buffer size in bytes, for streaming data

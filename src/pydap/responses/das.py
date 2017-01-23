@@ -16,12 +16,12 @@ from collections import Iterable
 from six import string_types, integer_types
 from six.moves import map
 
-from pydap.model import (DatasetType, BaseType,
-                         StructureType,
-                         GridType)
-from pydap.lib import encode, quote, __version__
-from pydap.responses.lib import BaseResponse
-from pydap.responses.dds import typemap
+from ..model import (DatasetType, BaseType,
+                     StructureType,
+                     GridType)
+from ..lib import encode, quote, __version__
+from .lib import BaseResponse
+from .dds import typemap
 
 
 INDENT = ' ' * 4

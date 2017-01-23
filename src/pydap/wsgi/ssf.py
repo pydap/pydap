@@ -16,11 +16,11 @@ import numpy as np
 from six.moves import reduce, map
 from six import string_types
 
-from pydap.model import DatasetType, SequenceType
-from pydap.parsers import parse_ce
-from pydap.lib import walk, fix_shorthand
-from pydap.handlers.lib import BaseHandler, apply_projection
-from pydap.exceptions import ServerError
+from ..model import DatasetType, SequenceType
+from ..parsers import parse_ce
+from ..lib import walk, fix_shorthand
+from ..handlers.lib import BaseHandler, apply_projection
+from ..exceptions import ServerError
 
 
 FUNCTION = re.compile(r'([^(]*)\((.*)\)')
