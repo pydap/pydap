@@ -24,7 +24,7 @@ def setup_session(uri,
     '''
 
     if session is None:
-        headers = [('User-agent', pydap.lib.__version__)]
+        headers = [('User-agent', lib.__version__)]
         session = requests.Session()
         session.headers.update(headers)
 
