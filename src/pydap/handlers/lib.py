@@ -27,7 +27,8 @@ from ..responses.error import ErrorResponse
 from ..parsers import parse_ce, parse_selection
 from ..exceptions import (
     ConstraintExpressionError, ExtensionNotSupportedError)
-from ..lib import walk, fix_shorthand, get_var, encode
+from ..lib import (walk, fix_shorthand, get_var, encode,
+                   load_from_entry_point_relative)
 from ..model import (DatasetType, BaseType,
                      SequenceType, StructureType,
                      GridType)
@@ -49,7 +50,17 @@ def load_handlers(working_set=pkg_resources.working_set):
                 distutils-programmatically-adding-entry-points
 
     """
-    return [ep.load() for ep in working_set.iter_entry_points("pydap.handler")]
+    # Relative import of handlers:
+    subpackage = 'pydap.handlers'
+    entry_points = 'pydap.handler'
+    base_dict = dict(load_from_entry_point_relative(r, subpackage)
+                     for r in working_set.iter_entry_points(entry_points)
+                     if r.module_name.startswith(subpackage))
+    opts_dict = dict((r.name, r.load())
+                     for r in working_set.iter_entry_points(entry_points)
+                     if not r.module_name.startswith(subpackage))
+    base_dict.update(opts_dict)
+    return base_dict.values()
 
 
 def get_handler(filepath, handlers=None):

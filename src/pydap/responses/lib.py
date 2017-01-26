@@ -13,13 +13,22 @@ KML, WMS, JSON, etc., installed as third-party Python packages that declare the
 from pkg_resources import iter_entry_points
 
 from ..model import DatasetType
-from ..lib import __version__
+from ..lib import __version__, load_from_entry_point_relative
 
 
 def load_responses():
     """Load all available responses from the system, returning a dictionary."""
-    return dict(
-        (r.name, r.load()) for r in iter_entry_points('pydap.response'))
+    # Relative import of responses:
+    subpackage = 'pydap.responses'
+    entry_points = 'pydap.response'
+    base_dict = dict(load_from_entry_point_relative(r, subpackage)
+                     for r in iter_entry_points(entry_points)
+                     if r.module_name.startswith(subpackage))
+    opts_dict = dict((r.name, r.load())
+                     for r in iter_entry_points(entry_points)
+                     if not r.module_name.startswith(subpackage))
+    base_dict.update(opts_dict)
+    return base_dict
 
 
 class BaseResponse(object):

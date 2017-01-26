@@ -187,3 +187,16 @@ def decode_np_strings(numpy_var):
         return numpy_var.tostring().decode('utf-8')
     else:
         return numpy_var
+
+
+def load_from_entry_point_relative(r, subpackage):
+    try:
+        loaded = getattr(__import__(r.module_name
+                                    .replace(subpackage + '.', '', 1),
+                                    globals(), None, [r.attrs[0]], 1),
+                         r.attrs[0])
+        return r.name, loaded
+    except ImportError:
+        # This is only used in handlers testing:
+        return r.name, r.load()
+        

@@ -518,6 +518,9 @@ class MockEntryPoint(object):
 
     def __init__(self, handler):
         self.handler = handler
+        self.name = 'test'
+        self.module_name = 'pydap.handlers.test'
+        self.attrs = ('TestHandler', )
 
     def load(self):
         """Return the wrapped handler."""
