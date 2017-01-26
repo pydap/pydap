@@ -10,7 +10,7 @@ import unittest
 @attr('auth')
 @attr('prod_url')
 class TestUrs(unittest.TestCase):
-    url = ('https://goldsmr3.gesdisc.eosdis.nasa.gov/opendap/'
+    url = ('https://goldsmr3.gesdisc.eosdis.nasa.gov:443/opendap/'
            'MERRA_MONTHLY/MAIMCPASM.5.2.0/1979/'
            'MERRA100.prod.assim.instM_3d_asm_Cp.197901.hdf')
     test_url = url + '.dods?SLP[0:1:0][0:1:10][0:1:10]'
@@ -27,8 +27,7 @@ class TestUrs(unittest.TestCase):
         assert(os.environ.get('PASSWORD_URS'))
         session = urs.setup_session(os.environ.get('USERNAME_URS'),
                                     os.environ.get('PASSWORD_URS'),
-                                    check_url=self.url,
-                                    verify=False)
+                                    check_url=self.url)
 
         res = requests.get(self.test_url, cookies=session.cookies)
         assert(res.status_code == 200)
@@ -42,8 +41,7 @@ class TestUrs(unittest.TestCase):
         assert(os.environ.get('PASSWORD_URS'))
         session = urs.setup_session(os.environ.get('USERNAME_URS'),
                                     os.environ.get('PASSWORD_URS'),
-                                    check_url=self.url,
-                                    verify=False)
+                                    check_url=self.url)
         # Ensure authentication:
         res = pydap.net.follow_redirect(self.test_url, session=session)
         assert(res.status_code == 200)

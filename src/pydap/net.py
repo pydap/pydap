@@ -38,7 +38,7 @@ def follow_redirect(url, application=None, session=None,
     It however makes sure that the request possesses the same cookies and
     headers as the passed session.
 
-    It recursively follows 302 redirects.
+    It recursively follows 300s redirects.
     """
     req = Request.blank(url)
 

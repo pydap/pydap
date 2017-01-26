@@ -4,7 +4,7 @@ from . import get_cookies
 
 def setup_session(openid, password, username=None,
                   check_url=None,
-                  session=None):
+                  session=None, verify=False):
     """
     A special call to get_cookies.setup_session that is tailored for
     ESGF credentials.
@@ -16,7 +16,7 @@ def setup_session(openid, password, username=None,
                                      password=password,
                                      check_url=check_url,
                                      session=session,
-                                     verify=False)
+                                     verify=verify)
 
 
 def _uri(openid):
