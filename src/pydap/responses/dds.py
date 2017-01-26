@@ -15,11 +15,11 @@ except ImportError:
 
 from six.moves import map, zip
 
-from pydap.model import (DatasetType, BaseType,
-                         SequenceType, StructureType,
-                         GridType)
-from pydap.responses.lib import BaseResponse
-from pydap.lib import __version__
+from ..model import (DatasetType, BaseType,
+                     SequenceType, StructureType,
+                     GridType)
+from .lib import BaseResponse
+from ..lib import __version__
 
 
 INDENT = ' ' * 4
