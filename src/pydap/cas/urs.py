@@ -2,7 +2,7 @@ from . import get_cookies
 
 
 def setup_session(username, password, check_url=None,
-                  session=None):
+                  session=None, verify=True):
     """
     A special call to get_cookies.setup_session that is tailored for
     URS EARTHDATA at NASA credentials.
@@ -12,4 +12,5 @@ def setup_session(username, password, check_url=None,
                                      username=username,
                                      password=password,
                                      session=session,
-                                     check_url=check_url)
+                                     check_url=check_url,
+                                     verify=verify)

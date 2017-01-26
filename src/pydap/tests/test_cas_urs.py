@@ -27,7 +27,8 @@ class TestUrs(unittest.TestCase):
         assert(os.environ.get('PASSWORD_URS'))
         session = urs.setup_session(os.environ.get('USERNAME_URS'),
                                     os.environ.get('PASSWORD_URS'),
-                                    check_url=self.url)
+                                    check_url=self.url,
+                                    verify=False)
 
         res = requests.get(self.test_url, cookies=session.cookies)
         assert(res.status_code == 200)
@@ -41,7 +42,8 @@ class TestUrs(unittest.TestCase):
         assert(os.environ.get('PASSWORD_URS'))
         session = urs.setup_session(os.environ.get('USERNAME_URS'),
                                     os.environ.get('PASSWORD_URS'),
-                                    check_url=self.url)
+                                    check_url=self.url,
+                                    verify=False)
         # Ensure authentication:
         res = pydap.net.follow_redirect(self.test_url, session=session)
         assert(res.status_code == 200)
