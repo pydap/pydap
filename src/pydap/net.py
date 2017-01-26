@@ -56,7 +56,7 @@ def follow_redirect(url, application=None, session=None,
 
     res = req.get_response(application)
 
-    if 301 <= res.status_code < 400:
+    if res.status_code in [301, 302, 303]:
         # Follow redirect:
         new_cookies = dict([item.split(';')[0].split('=')[:2]
                             for name, item in res.headerlist
