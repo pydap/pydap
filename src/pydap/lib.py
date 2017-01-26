@@ -199,4 +199,3 @@ def load_from_entry_point_relative(r, subpackage):
     except ImportError:
         # This is only used in handlers testing:
         return r.name, r.load()
-        
