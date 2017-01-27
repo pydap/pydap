@@ -1,18 +1,16 @@
 language: python
+
+sudo: false
+
 python:
     - 2.7
     - 3.3
     - 3.4
     - 3.5
-addons:
-  apt:
-    packages:
-      - gfortran
-      - libblas-dev
-      - liblapack-dev
-      - cython
+    - 3.6
+
 install:
-    - travis_wait 30 pip install scipy
+    - pip install scipy
     - pip install -e .[testing,functions,tests]
 
 script:
