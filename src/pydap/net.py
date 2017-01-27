@@ -1,5 +1,6 @@
 from webob.request import Request
 from webob.exc import HTTPError
+from contextlib import closing
 
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
@@ -37,36 +38,25 @@ def follow_redirect(url, application=None, session=None,
 
     It however makes sure that the request possesses the same cookies and
     headers as the passed session.
-
-    It recursively follows 300s redirects.
     """
-    req = Request.blank(url)
 
     if session is not None:
-        # Get cookies from session:
-        if cookies_dict is None:
-            cookies_dict = session.cookies.get_dict()
+        # Use session to follow redirects:
+        with closing(session.head(url)) as head:
+            req = Request.blank(head.url)
 
-        # Set request cookies to the session cookies:
-        req.headers['Cookie'] = ','.join(name + '=' + cookies_dict[name]
-                                         for name in cookies_dict)
-        # Set the headers to the session headers:
-        for item in session.headers:
-            req.headers[item] = session.headers[item]
+            # Get cookies from head:
+            if cookies_dict is None:
+                cookies_dict = head.cookies.get_dict()
 
-    res = req.get_response(application)
-
-    if res.status_code in [301, 302, 303]:
-        # Follow redirect:
-        new_cookies = dict([item.split(';')[0].split('=')[:2]
-                            for name, item in res.headerlist
-                            if name == 'Set-Cookie'])
-        if len(new_cookies) > 0:
-            # If new cookies, keep only these ones:
-            cookies_dict = new_cookies
-        return follow_redirect(res.location,
-                               application=application,
-                               session=session,
-                               cookies_dict=cookies_dict)
+            # Set request cookies to the head cookies:
+            req.headers['Cookie'] = ','.join(name + '=' + cookies_dict[name]
+                                             for name in cookies_dict)
+            # Set the headers to the session headers:
+            for item in head.request.headers:
+                req.headers[item] = head.request.headers[item]
     else:
-        return res
+        # Use session to follow redirects:
+        req = Request.blank(url)
+
+    return req.get_response(application)

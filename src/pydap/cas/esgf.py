@@ -11,12 +11,15 @@ def setup_session(openid, password, username=None,
 
     username should only be necessary for a CEDA openid.
     """
-    return get_cookies.setup_session(_uri(openid),
-                                     username=username,
-                                     password=password,
-                                     check_url=check_url,
-                                     session=session,
-                                     verify=verify)
+    session = get_cookies.setup_session(_uri(openid),
+                                        username=username,
+                                        password=password,
+                                        check_url=check_url,
+                                        session=session,
+                                        verify=verify)
+    # Connections can be lept alive on the ESGF:
+    session.headers.update([('Connection', 'keep-alive')])
+    return session
 
 
 def _uri(openid):
