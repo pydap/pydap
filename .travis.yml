@@ -11,7 +11,7 @@ python:
 
 install:
     - pip install scipy
-    - pip install -e .[testing,functions,tests]
+    - pip install -e .[testing,functions,server,tests]
 
 script:
     - python setup.py nosetests -a '!auth'
