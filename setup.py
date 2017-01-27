@@ -33,7 +33,7 @@ cas_extras = [
     'requests'
     ]
 
-tests_require = functions_extras + cas_extras + server_extras +[
+tests_require = functions_extras + cas_extras + server_extras + [
     'WebTest',
     'beautifulsoup4',
     'scipy',
