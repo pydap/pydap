@@ -51,14 +51,14 @@ def load_handlers(working_set=pkg_resources.working_set):
 
     """
     # Relative import of handlers:
-    subpackage = 'pydap.handlers'
+    package = 'pydap'
     entry_points = 'pydap.handler'
-    base_dict = dict(load_from_entry_point_relative(r, subpackage)
+    base_dict = dict(load_from_entry_point_relative(r, package)
                      for r in working_set.iter_entry_points(entry_points)
-                     if r.module_name.startswith(subpackage))
+                     if r.module_name.startswith(package))
     opts_dict = dict((r.name, r.load())
                      for r in working_set.iter_entry_points(entry_points)
-                     if not r.module_name.startswith(subpackage))
+                     if not r.module_name.startswith(package))
     base_dict.update(opts_dict)
     return base_dict.values()
 

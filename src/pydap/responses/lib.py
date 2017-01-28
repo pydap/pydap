@@ -19,14 +19,14 @@ from ..lib import __version__, load_from_entry_point_relative
 def load_responses():
     """Load all available responses from the system, returning a dictionary."""
     # Relative import of responses:
-    subpackage = 'pydap.responses'
+    package = 'pydap'
     entry_points = 'pydap.response'
-    base_dict = dict(load_from_entry_point_relative(r, subpackage)
+    base_dict = dict(load_from_entry_point_relative(r, package)
                      for r in iter_entry_points(entry_points)
-                     if r.module_name.startswith(subpackage))
+                     if r.module_name.startswith(package))
     opts_dict = dict((r.name, r.load())
                      for r in iter_entry_points(entry_points)
-                     if not r.module_name.startswith(subpackage))
+                     if not r.module_name.startswith(package))
     base_dict.update(opts_dict)
     return base_dict
 
