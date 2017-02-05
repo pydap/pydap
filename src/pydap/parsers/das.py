@@ -83,7 +83,7 @@ class DASParser(SimpleParser):
 
             if type.lower() in ['string', 'url']:
                 value = str(value).strip('"')
-            elif value.lower() in ['nan', 'nan.']:
+            elif value.lower() in ['nan', 'nan.', '-nan']:
                 value = float('nan')
             else:
                 value = ast.literal_eval(value)
