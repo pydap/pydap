@@ -54,9 +54,14 @@ from pydap.parsers.dds import build_dataset
 from pydap.parsers.das import parse_das, add_attributes
 
 
-def open_url(url, application=None, session=None):
-    """Open a remote URL, returning a dataset."""
-    dataset = DAPHandler(url, application, session).dataset
+def open_url(url, application=None, session=None, output_grid=True):
+    """
+    Open a remote URL, returning a dataset.
+
+    set output_grid to False to retrieve only main arrays and
+    never retrieve coordinate axes.
+    """
+    dataset = DAPHandler(url, application, session, output_grid).dataset
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session)
@@ -74,12 +79,12 @@ def open_file(dods, das=None):
     dds = ''
     # This file contains both ascii _and_ binary data
     # Let's handle them separately in sequence
-    # Without ignoring errors, the IO library will actually
-    # read past the ascii part of the
-    # file (despite our break from iteration) and will error
-    # out on the binary data
-    with open(dods, "rt", buffering=1, encoding='ascii', newline='\n',
-              errors='ignore') as f:
+    # Without ignoring errors, the IO library will
+    # actually read past the ascii part of the
+    # file (despite our break from iteration) and
+    # will error out on the binary data
+    with open(dods, "rt", buffering=1, encoding='ascii',
+              newline='\n', errors='ignore') as f:
         for line in f:
             if line.strip() == 'Data:':
                 break

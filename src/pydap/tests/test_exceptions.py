@@ -1,12 +1,7 @@
 """Test Pydap base exception."""
 
-import sys
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
-
 from pydap.exceptions import DapError
+import unittest
 
 
 class TestExceptions(unittest.TestCase):

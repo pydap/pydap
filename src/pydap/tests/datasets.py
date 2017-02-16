@@ -4,18 +4,16 @@ This module defines a few datasets for testing, covering the whole DAP data
 model.
 
 """
-import os, sys
-if sys.version_info < (2, 7):  # pragma: no cover
-    from ordereddict import OrderedDict
-else:
-    from collections import OrderedDict
+import os
 
 import numpy as np
 
-from pydap.model import (
-    DatasetType, BaseType, SequenceType, GridType, StructureType)
+from pydap.model import (DatasetType, BaseType,
+                         SequenceType, GridType, StructureType)
 from pydap.handlers.lib import IterData
 from pydap.client import open_file
+
+from collections import OrderedDict
 
 
 # A very simple sequence: flat and with no strings. This sequence can be mapped
@@ -77,8 +75,9 @@ D1['Drifters']['instrument_id'] = BaseType('instrument_id')
 D1['Drifters']['location'] = BaseType('location')
 D1['Drifters']['latitude'] = BaseType('latitude')
 D1['Drifters']['longitude'] = BaseType('longitude')
-D1.Drifters.data = np.array(np.rec.fromrecords( list(zip(
-    [u"This is a data test string (pass {0}).".format(1+i*2) for i in range(5)],
+D1.Drifters.data = np.array(np.rec.fromrecords(list(zip(
+    [u"This is a data test string (pass {0}).".format(1+i*2)
+     for i in range(5)],
     [u"This is a data test string (pass {0}).".format(i*2) for i in range(5)],
     [1000.0, 999.95, 999.80, 999.55, 999.20],
     [999.95, 999.55, 998.75, 997.55, 995.95])),
@@ -143,7 +142,6 @@ ctd.cast.data = np.array(np.rec.fromrecords([
     (15, 35, 100),
 ], names=ctd.cast.keys()))
 
-
 # a simple sequence, simulating a CTD profile
 SimpleSequence = DatasetType(
     "SimpleSequence", description="A simple sequence for testing.",
@@ -162,10 +160,10 @@ SimpleSequence["cast"].data = np.array(np.rec.fromrecords([
     ("1", 100, -10,   0, -1, 21, 35,   0),
     ("2", 200,  10, 500,  1, 15, 35, 100),
 ], names=SimpleSequence['cast'].keys()))
-#SimpleSequence["cast"].data = IterData([
-#    ("1", 100, -10,   0, -1, 21, 35,   0),
-#    ("2", 200,  10, 500,  1, 15, 35, 100),
-#], SimpleSequence.cast)
+# SimpleSequence["cast"].data = IterData([
+#     ("1", 100, -10,   0, -1, 21, 35,   0),
+#     ("2", 200,  10, 500,  1, 15, 35, 100),
+# ], SimpleSequence.cast)
 
 # a simple grid
 SimpleGrid = DatasetType(
@@ -177,4 +175,3 @@ SimpleGrid["x"] = SimpleGrid["SimpleGrid"]["x"] = BaseType(
     "x", np.arange(3), axis="X", units="degrees_east")
 SimpleGrid["y"] = SimpleGrid["SimpleGrid"]["y"] = BaseType(
     "y", np.arange(2), axis="Y", units="degrees_north")
-

@@ -1,12 +1,7 @@
 """Test Pydap namespace."""
 
-import sys
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
-
 import pydap
+import unittest
 
 
 class TestNamespace(unittest.TestCase):
@@ -16,5 +11,3 @@ class TestNamespace(unittest.TestCase):
     def test_namespace(self):
         """Test the namespace."""
         self.assertEqual(pydap.__name__, "pydap")
-        self.assertEqual(
-            pydap.__doc__, "Declare the namespace ``pydap`` here.")

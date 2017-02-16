@@ -1,21 +1,18 @@
 """Tests for the server-side function WSGI middleware."""
 
 import sys
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
 from six import next
 
 from webtest import TestApp
 import numpy as np
 
 from pydap.model import SequenceType, BaseType
-from pydap.lib import walk
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import SimpleSequence, SimpleGrid
 from pydap.wsgi.ssf import ServerSideFunctions
 from pydap.exceptions import ServerError
+
+import unittest
 
 
 class TestMiddleware(unittest.TestCase):
@@ -150,7 +147,6 @@ cast.lat
 -10
 
 """)
-
 
     def test_selection_no_comparison(self):
         """Test function calls in the selection without comparison.

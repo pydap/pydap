@@ -58,6 +58,7 @@ def density(dataset, salinity, temperature, pressure):
     out.data = np.rec.fromrecords(rho.reshape(-1, 1), names=['rho'])
     return out
 
+
 density.__version__ = "0.1"
 
 
@@ -120,6 +121,7 @@ def bounds(dataset, xmin, xmax, ymin, ymax, zmin, zmax, tmin, tmax):
 
     return sequence
 
+
 bounds.__version__ = "1.0"
 
 
@@ -170,5 +172,6 @@ def mean(dataset, var, axis=0):
             name=dim, data=var[dim].data[:], dimensions=(dim,),
             attributes=var[dim].attributes)
     return out
+
 
 mean.__version__ = "1.0"

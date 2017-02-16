@@ -38,7 +38,8 @@ class TestVersionResponse(unittest.TestCase):
     def test_headers(self):
         """Test that all headers are present."""
         self.assertEqual(self.res.headers['Content-Type'],
-            'application/json; charset=utf-8')
+                         'application/json; charset=utf-8')
         self.assertEqual(self.res.headers['Content-description'],
-            'dods_version')
-        self.assertEqual(self.res.headers['XDODS-Server'], 'pydap/' + __version__)
+                         'dods_version')
+        self.assertEqual(self.res.headers['XDODS-Server'],
+                         'pydap/' + __version__)

@@ -4,19 +4,22 @@ from . import get_cookies
 
 def setup_session(openid, password, username=None,
                   check_url=None,
-                  session=None):
+                  session=None, verify=False):
     """
     A special call to get_cookies.setup_session that is tailored for
     ESGF credentials.
 
     username should only be necessary for a CEDA openid.
     """
-    return get_cookies.setup_session(_uri(openid),
-                                     username=username,
-                                     password=password,
-                                     check_url=check_url,
-                                     session=session,
-                                     verify=False)
+    session = get_cookies.setup_session(_uri(openid),
+                                        username=username,
+                                        password=password,
+                                        check_url=check_url,
+                                        session=session,
+                                        verify=verify)
+    # Connections can be kept alive on the ESGF:
+    session.headers.update([('Connection', 'keep-alive')])
+    return session
 
 
 def _uri(openid):
@@ -34,7 +37,8 @@ def _uri(openid):
                    'openid_identifier=' +
                    quote_plus(openid))
         except TypeError:
-            raise UserWarning('OPENID was not set. ESGF connection cannot succeed.')
+            raise UserWarning('OPENID was not set. '
+                              'ESGF connection cannot succeed.')
         if _get_node(openid) == 'https://ceda.ac.uk':
             return [url, None]
         else:

@@ -1,20 +1,13 @@
 """Test the DAP handler, which forms the core of the client."""
 
-import sys
-import pprint
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
-
 import numpy as np
-from six import StringIO
-
 from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
-from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy, dump
+from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy
 from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
+
+import unittest
 
 
 class TestDapHandler(unittest.TestCase):
@@ -60,7 +53,8 @@ class TestDapHandler(unittest.TestCase):
 
     def test_grid_with_projection(self):
         """Test that a sliced proxy can be created for grids."""
-        dataset = DAPHandler("http://localhost:8001/?SimpleGrid[0]", self.app1).dataset
+        dataset = DAPHandler("http://localhost:8001/?SimpleGrid[0]",
+                             self.app1).dataset
 
         self.assertEqual(dataset.SimpleGrid.x.data.shape, (1,))
         self.assertEqual(dataset.SimpleGrid.x.data.slice, (slice(0, 1, 1),))
@@ -73,15 +67,17 @@ class TestDapHandler(unittest.TestCase):
 
     def test_base_type_with_projection(self):
         """Test that a sliced proxy can be created for a base type."""
-        dataset = DAPHandler("http://localhost:8001/?x[1:1:2]", self.app1).dataset
+        dataset = DAPHandler("http://localhost:8001/?x[1:1:2]",
+                             self.app1).dataset
 
         self.assertEqual(dataset.x.data.shape, (2,))
-        self.assertEqual(dataset.x.data.slice, (slice(1, 3, 1),))
+        self.assertEqual(dataset.x.data.slice, (slice(1, 2, 1),))
 
     def test_grid_array_with_projection(self):
         """Test that a grid array can be properly pre sliced."""
         dataset = DAPHandler(
-            "http://localhost:8001/?SimpleGrid.SimpleGrid[0]", self.app1).dataset
+                             "http://localhost:8001/?SimpleGrid.SimpleGrid[0]",
+                             self.app1).dataset
 
         # object should be a structure, not a grid
         self.assertEqual(dataset.keys(), ["SimpleGrid"])
@@ -95,7 +91,8 @@ class TestDapHandler(unittest.TestCase):
 
     def test_grid_map_with_projection(self):
         """Test that a grid map can be properly pre sliced."""
-        dataset = DAPHandler("http://localhost:8001/?SimpleGrid.x[0]", self.app1).dataset
+        dataset = DAPHandler("http://localhost:8001/?SimpleGrid.x[0]",
+                             self.app1).dataset
 
         self.assertEqual(dataset.SimpleGrid.x.data.shape, (1,))
         self.assertEqual(
@@ -151,18 +148,29 @@ class TestBaseProxy(unittest.TestCase):
         self.app = BaseHandler(SimpleArray)
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "byte", np.dtype("b"), (5,), application=self.app)
+                              "http://localhost:8001/", "byte",
+                              np.dtype("b"), (5,),
+                              application=self.app)
 
     def test_repr(self):
         """Test the object representation."""
         self.assertEqual(
-            repr(self.data), 
-            "BaseProxy('http://localhost:8001/', 'byte', dtype('int8'), (5,), "
-            "(slice(None, None, None),))")
+                         repr(self.data),
+                         "BaseProxy('http://localhost:8001/', 'byte', "
+                         "dtype('int8'), (5,), "
+                         "(slice(None, None, None),))")
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:], np.arange(5))
+
+    def test_getitem_out_of_bound(self):
+        """
+        Test the ``__getitem__`` method with out of bounds
+        slices.
+        The same result as numpy is expected.
+        """
+        np.testing.assert_array_equal(self.data[:10], np.arange(5)[:10])
 
     def test_inexact_division(self):
         """Test data retrieval when step > 1 and division inexact."""
@@ -195,7 +203,9 @@ class TestBaseProxyShort(unittest.TestCase):
         self.app = BaseHandler(SimpleArray)
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "short", np.dtype(">i"), (), application=self.app)
+                              "http://localhost:8001/", "short",
+                              np.dtype(">i"), (),
+                              application=self.app)
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
@@ -213,7 +223,8 @@ class TestBaseProxyString(unittest.TestCase):
         self.app = BaseHandler(dataset)
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "s", np.dtype("|S5"), (3,), application=self.app)
+                              "http://localhost:8001/", "s",
+                              np.dtype("|S5"), (3,), application=self.app)
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
@@ -236,7 +247,7 @@ class TestSequenceProxy(unittest.TestCase):
     def test_repr(self):
         """Test the object representation."""
         self.assertEqual(
-            repr(self.remote), 
+            repr(self.remote),
             "SequenceProxy('http://localhost:8001/', "
             "<SequenceType with children 'byte', 'int', 'float'>, [], "
             "(slice(None, None, None),))")
@@ -338,11 +349,11 @@ class TestSequenceWithString(unittest.TestCase):
         self.assertEqual(
             [tuple(row) for row in self.local], [
                 ('1', 100, -10, 0, -1, 21, 35, 0),
-                ('2', 200, 10, 500, 1, 15, 35, 100)]) 
+                ('2', 200, 10, 500, 1, 15, 35, 100)])
 
         self.assertEqual(
             [tuple(row) for row in self.remote], [
-                ('1', 100, -10, 0, -1, 21, 35, 0), 
+                ('1', 100, -10, 0, -1, 21, 35, 0),
                 ('2', 200, 10, 500, 1, 15, 35, 100)])
 
     def test_projection(self):
@@ -368,16 +379,17 @@ class TestSequenceWithString(unittest.TestCase):
         filtered = self.local[self.local["lon"] > 100]
         self.assertEqual(
             [tuple(row) for row in filtered], [
-                ('2', 200, 10, 500, 1, 15, 35, 100)]) 
+                ('2', 200, 10, 500, 1, 15, 35, 100)])
 
         filtered = self.remote[self.remote["lon"] > 100]
         self.assertEqual(
             [tuple(row) for row in filtered], [
-                ('2', 200, 10, 500, 1, 15, 35, 100)]) 
+                ('2', 200, 10, 500, 1, 15, 35, 100)])
 
         # filtering works because we store comparisons as lazy objects
         self.assertIsInstance(self.remote["lon"] > 100, ConstraintExpression)
         self.assertEqual(filtered.selection, ['cast.lon>100'])
+
 
 class TestStringBaseType(unittest.TestCase):
 
@@ -391,8 +403,29 @@ class TestStringBaseType(unittest.TestCase):
         self.app = BaseHandler(dataset)
 
         self.data = BaseProxy(
-            "http://localhost:8001/", "s", np.dtype("|S14"), (), application=self.app)
+                              "http://localhost:8001/", "s",
+                              np.dtype("|S14"), (), application=self.app)
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
-        np.testing.assert_array_equal(self.data[:], np.array("This is a test", dtype='S'))
+        np.testing.assert_array_equal(self.data[:],
+                                      np.array("This is a test", dtype='S'))
+
+
+class TestArrayStringBaseType(unittest.TestCase):
+
+    """Regression test for an array of unicode base type."""
+
+    def setUp(self):
+        """Create a WSGI app with array data"""
+        dataset = DatasetType("test")
+        self.original_data = np.array([["This ", "is "], ["a ", "test"]],
+                                      dtype='<U5')
+        dataset["s"] = BaseType("s", self.original_data)
+        self.app = BaseHandler(dataset)
+
+        self.data = DAPHandler("http://localhost:8001/",  self.app).dataset.s
+
+    def test_getitem(self):
+        """Test the ``__getitem__`` method."""
+        np.testing.assert_array_equal(self.data[:], self.original_data)

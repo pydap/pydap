@@ -1,17 +1,10 @@
 """Test DAS parsing functions."""
 
-import sys
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
-
 import numpy as np
-
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import build_dataset
 from pydap.tests.test_parsers_dds import DDS
-
+import unittest
 
 DAS = """Attributes {
     structure {

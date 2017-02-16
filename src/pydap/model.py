@@ -67,7 +67,8 @@ variable::
     <BaseType with data array([[0, 1, 2],
            [3, 4, 5]])>
     >>> print(rain.maps)
-    OrderedDict([('x', <BaseType with data array([0, 1, 2])>), ('y', <BaseType with data array([0, 1])>)])
+    OrderedDict([('x', <BaseType with data array([0, 1, 2])>),
+                 ('y', <BaseType with data array([0, 1])>)])
 
 There a last special container called `SequenceType`. This data structure is
 analogous to a series of records (or rows), with one column for each of its
@@ -113,18 +114,12 @@ It is possible to select only a few variables::
 """
 
 import operator
-import sys
 import copy
-if sys.version_info < (2, 7):  # pragma: no cover
-    from ordereddict import OrderedDict
-else:
-    from collections import OrderedDict
-
 from six.moves import reduce, map
 from six import string_types, binary_type
 import numpy as np
-
 from pydap.lib import quote, decode_np_strings
+from collections import OrderedDict
 
 
 __all__ = [
@@ -276,8 +271,8 @@ class BaseType(DapType):
         self._data = data
     data = property(_get_data, _set_data)
 
-class StructureType(DapType):
 
+class StructureType(DapType):
     """A dict-like object holding other variables."""
 
     def __init__(self, name, attributes=None, **kwargs):
@@ -510,7 +505,9 @@ class SequenceType(StructureType):
             out = SequenceType(self.name, self.data, self.attributes.copy())
             for name in key:
                 out[name] = copy.copy(StructureType.__getitem__(self, name))
-            out.data = self.data[list(key)]
+            # copy.copy() is necessary here because a view will be returned in
+            # the future:
+            out.data = copy.copy(self.data[list(key)])
             return out
 
         # Else return a new `SequenceType` with the data sliced.
@@ -544,6 +541,10 @@ class GridType(StructureType):
 
     """
 
+    def __init__(self, name, attributes=None, **kwargs):
+        StructureType.__init__(self, name, attributes, **kwargs)
+        self._output_grid = True
+
     def __repr__(self):
         return '<%s with array %s and maps %s>' % (
             self.__class__.__name__,
@@ -556,6 +557,9 @@ class GridType(StructureType):
 
         # Return a new `GridType` with part of the data.
         else:
+            if not self.output_grid:
+                return self.array[key]
+
             if not isinstance(key, tuple):
                 key = (key,)
 
@@ -563,6 +567,13 @@ class GridType(StructureType):
             for var, slice_ in zip(out.children(), [key] + list(key)):
                 var.data = self[var.name].data[slice_]
             return out
+
+    @property
+    def output_grid(self):
+        return self._output_grid
+
+    def set_output_grid(self, key):
+        self._output_grid = bool(key)
 
     @property
     def array(self):

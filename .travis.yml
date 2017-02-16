@@ -1,10 +1,12 @@
 language: python
+
 python:
-    - 2.6
     - 2.7
     - 3.3
     - 3.4
     - 3.5
+    - 3.6
+
 addons:
   apt:
     packages:
@@ -12,7 +14,7 @@ addons:
       - libblas-dev
       - liblapack-dev
       - cython
-      # The following as required for netcdf files:
+      # The following is required for netcdf files:
       - libhdf5-serial-dev
       - netcdf-bin
       - libnetcdf-dev
@@ -30,7 +32,8 @@ install:
     - rm -rf netcdf4-python
     # Continue typical install:
     - travis_wait 30 pip install scipy
-    - pip install -e .[testing,functions,tests]
+    - pip install -e .[testing,functions,server,tests]
 
 script:
     - python setup.py nosetests -a '!auth'
+    - if [ "${TRAVIS_PYTHON_VERSION}" == 3.5 ]; then flake8; fi
