@@ -504,7 +504,9 @@ class SequenceType(StructureType):
             out = SequenceType(self.name, self.data, self.attributes.copy())
             for name in key:
                 out[name] = copy.copy(StructureType.__getitem__(self, name))
-            out.data = self.data[list(key)]
+            # copy.copy() is necessary here because a view will be returned in
+            # the future:
+            out.data = copy.copy(self.data[list(key)])
             return out
 
         # Else return a new `SequenceType` with the data sliced.

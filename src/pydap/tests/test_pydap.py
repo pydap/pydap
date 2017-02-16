@@ -11,5 +11,3 @@ class TestNamespace(unittest.TestCase):
     def test_namespace(self):
         """Test the namespace."""
         self.assertEqual(pydap.__name__, "pydap")
-        self.assertEqual(
-            pydap.__doc__, "Declare the namespace ``pydap`` here.")
