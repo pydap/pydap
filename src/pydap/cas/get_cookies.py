@@ -24,7 +24,10 @@ def setup_session(uri,
     '''
 
     if session is None:
-        headers = [('User-agent', lib.__version__)]
+        # Connections must be closed since some CAS
+        # will cough when connections are kept alive:
+        headers = [('User-agent', 'Pydap/{}'.format(lib.__version__)),
+                   ('Connection', 'close')]
         session = requests.Session()
         session.headers.update(headers)
 

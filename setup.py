@@ -9,7 +9,6 @@ install_requires = [
     'Webob',
     'Jinja2',
     'docopt',
-    'gunicorn',
     'six >= 1.4.0',
     'mechanicalsoup',
 ]
@@ -18,6 +17,10 @@ functions_extras = [
     'gsw',
     'coards',
     'scipy',
+]
+
+server_extras = [
+    'gunicorn',
 ]
 
 docs_extras = [
@@ -30,7 +33,7 @@ cas_extras = [
     'requests'
     ]
 
-tests_require = functions_extras + cas_extras + [
+tests_require = functions_extras + cas_extras + server_extras + [
     'WebTest',
     'beautifulsoup4',
     'scipy',
@@ -52,7 +55,8 @@ setup(name='Pydap',
             "Programming Language :: Python :: 2.7",
             "Programming Language :: Python :: 3.3",
             "Programming Language :: Python :: 3.4",
-            "Programming Language :: Python :: 3.5"
+            "Programming Language :: Python :: 3.5",
+            "Programming Language :: Python :: 3.6"
             # Get strings from
             # http://pypi.python.org/pypi?%3Aaction=list_classifiers
             ],
@@ -75,7 +79,8 @@ setup(name='Pydap',
             'testing': testing_extras,
             'docs': docs_extras,
             'tests': tests_require,
-            'cas': cas_extras
+            'cas': cas_extras,
+            'server': server_extras
       },
       test_suite="pydap.tests",
       entry_points="""

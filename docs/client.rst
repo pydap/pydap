@@ -363,8 +363,9 @@ Authentication is done through a ``username`` and a ``password``:
 
     >>> from pydap.client import open_url  
     >>> from pydap.cas.urs import setup_session 
-    >>> session = setup_session(username, password)
-    >>> dataset = open_url('http://server.example.com/path/to/dataset', session=session)
+    >>> dataset_url = 'http://server.example.com/path/to/dataset'
+    >>> session = setup_session(username, password, check_url=dataset_url)
+    >>> dataset = open_url(dataset_url, session=session)
 
 Earth System Grid Federation (ESGF)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

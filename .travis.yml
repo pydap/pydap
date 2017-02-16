@@ -1,9 +1,12 @@
 language: python
+
 python:
     - 2.7
     - 3.3
     - 3.4
     - 3.5
+    - 3.6
+
 addons:
   apt:
     packages:
@@ -11,9 +14,10 @@ addons:
       - libblas-dev
       - liblapack-dev
       - cython
+
 install:
     - travis_wait 30 pip install scipy
-    - pip install -e .[testing,functions,tests]
+    - pip install -e .[testing,functions,server,tests]
 
 script:
     - python setup.py nosetests -a '!auth'
