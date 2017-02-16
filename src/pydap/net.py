@@ -1,5 +1,7 @@
 from webob.request import Request
 from webob.exc import HTTPError
+from contextlib import closing
+from requests.exceptions import MissingSchema
 
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
@@ -29,44 +31,49 @@ def raise_for_status(response):
         )
 
 
-def follow_redirect(url, application=None, session=None,
-                    cookies_dict=None):
+def follow_redirect(url, application=None, session=None):
     """
     This function essentially performs the following command:
     >>> Request.blank(url).get_response(application)
 
     It however makes sure that the request possesses the same cookies and
     headers as the passed session.
-
-    It recursively follows 302 redirects.
     """
-    req = Request.blank(url)
 
+    req = create_request(url, session=session)
+    return req.get_response(application)
+
+
+def create_request(url, session=None):
     if session is not None:
-        # Get cookies from session:
-        if cookies_dict is None:
-            cookies_dict = session.cookies.get_dict()
+        # If session is set and cookies were loaded using pydap.cas.get_cookies
+        # using the check_url option, then we can legitimately expect that
+        # the connection will go through seamlessly. However, there might be
+        # redirects that might want to modify the cookies. Webob is not
+        # really up to the task here. The approach used here is to
+        # piggy back on the requests library and use it to fetch the
+        # head of the requested url. Requests will follow redirects and
+        # adjust the cookies as needed. We can then use the final url and
+        # the final cookies to set up a webob Request object that will
+        # be guaranteed to have all the needed credentials:
+        try:
+            # Use session to follow redirects:
+            with closing(session.head(url)) as head:
+                req = Request.blank(head.url)
 
-        # Set request cookies to the session cookies:
-        req.headers['Cookie'] = ','.join(name + '=' + cookies_dict[name]
-                                         for name in cookies_dict)
-        # Set the headers to the session headers:
-        for item in session.headers:
-            req.headers[item] = session.headers[item]
+                # Get cookies from head:
+                cookies_dict = head.cookies.get_dict()
 
-    res = req.get_response(application)
-
-    if res.status_code == 302:
-        # Follow redirect:
-        new_cookies = dict([item.split(';')[0].split('=')[:2]
-                            for name, item in res.headerlist
-                            if name == 'Set-Cookie'])
-        if len(new_cookies) > 0:
-            # If new cookies, keep only these ones:
-            cookies_dict = new_cookies
-        return follow_redirect(res.location,
-                               application=application,
-                               session=session,
-                               cookies_dict=cookies_dict)
-    else:
-        return res
+                # Set request cookies to the head cookies:
+                req.headers['Cookie'] = ','.join(name + '=' +
+                                                 cookies_dict[name]
+                                                 for name in cookies_dict)
+                # Set the headers to the session headers:
+                for item in head.request.headers:
+                    req.headers[item] = head.request.headers[item]
+                return req
+        except MissingSchema:
+            # Missing schema can occur in tests when the url
+            # is not pointing to any resource. Simply pass.
+            pass
+    return Request.blank(url)

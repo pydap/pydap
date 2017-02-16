@@ -11,12 +11,11 @@ import unittest
 @attr('auth')
 @attr('prod_url')
 class TestESGF(unittest.TestCase):
-    url = ('http://cordexesg.dmi.dk/thredds/dodsC/cordex_general/'
-           'cordex/output/EUR-11/DMI/ICHEC-EC-EARTH/historical/r3i1p1/'
-           'DMI-HIRHAM5/v1/day/pr/v20131119/'
-           'pr_EUR-11_ICHEC-EC-EARTH_historical_r3i1p1_'
-           'DMI-HIRHAM5_v1_day_19960101-20001231.nc')
-    test_url = url + '.dods?pr[0:1:0][0:1:5][0:1:5]'
+    url = ('http://aims3.llnl.gov/thredds/dodsC/'
+           'cmip5_css02_data/cmip5/output1/CCCma/CanCM4/'
+           'decadal1995/fx/atmos/fx/r0i0p0/orog/1/'
+           'orog_fx_CanCM4_decadal1995_r0i0p0.nc')
+    test_url = url + '.dods?orog[0:1:4][0:1:4]'
 
     def test_registration_esgf_auth(self):
         """
@@ -70,9 +69,8 @@ class TestESGF(unittest.TestCase):
         assert(res.status_code == 200)
 
         dataset = open_url(self.url, session=session)
-        data = dataset['time'][:10]
-        expected_data = np.array([16832.5, 16833.5, 16834.5, 16835.5, 16836.5,
-                                  16837.5, 16838.5, 16839.5, 16840.5, 16841.5])
+        data = dataset['lon'][:5]
+        expected_data = np.array([0.0, 2.8125, 5.625, 8.4375, 11.25])
         assert(np.isclose(data, expected_data).all())
 
     def test_variable_esgf_query(self):
@@ -86,20 +84,10 @@ class TestESGF(unittest.TestCase):
         assert(res.status_code == 200)
 
         dataset = open_url(self.url, session=session, output_grid=False)
-        data = dataset['pr'][0, 200:205, 100:105]
-        expected_data = [[[5.23546005e-05,  5.48864300e-05,
-                           5.23546005e-05,  6.23914966e-05,
-                           6.26627589e-05],
-                          [5.45247385e-05,  5.67853021e-05,
-                           5.90458621e-05,  6.51041701e-05,
-                           6.23914966e-05],
-                          [5.57906533e-05,  5.84129048e-05,
-                           6.37478297e-05,  5.99500854e-05,
-                           5.85033267e-05],
-                          [5.44343166e-05,  5.45247385e-05,
-                           5.60619228e-05,  5.58810752e-05,
-                           4.91898136e-05],
-                          [5.09982638e-05,  4.77430549e-05,
-                           4.97323490e-05,  5.43438946e-05,
-                           5.26258664e-05]]]
+        data = dataset['orog'][50:55, 50:55]
+        expected_data = [[197.70425, 16.319595, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0],
+                         [677.014, 628.29675, 551.06, 455.5758, 343.7354],
+                         [1268.3304, 1287.9553, 1161.0402, 978.3153, 809.143]]
         assert(np.isclose(data, expected_data).all())
