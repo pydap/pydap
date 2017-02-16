@@ -17,7 +17,7 @@ def setup_session(openid, password, username=None,
                                         check_url=check_url,
                                         session=session,
                                         verify=verify)
-    # Connections can be lept alive on the ESGF:
+    # Connections can be kept alive on the ESGF:
     session.headers.update([('Connection', 'keep-alive')])
     return session
 

@@ -46,6 +46,16 @@ def follow_redirect(url, application=None, session=None):
 
 def create_request(url, session=None):
     if session is not None:
+        # If session is set and cookies were loaded using pydap.cas.get_cookies
+        # using the check_url option, then we can legitimately expect that
+        # the connection will go through seamlessly. However, there might be
+        # redirects that might want to modify the cookies. Webob is not
+        # really up to the task here. The approach used here is to
+        # piggy back on the requests library and use it to fetch the
+        # head of the requested url. Requests will follow redirects and
+        # adjust the cookies as needed. We can then use the final url and
+        # the final cookies to set up a webob Request object that will
+        # be guaranteed to have all the needed credentials:
         try:
             # Use session to follow redirects:
             with closing(session.head(url)) as head:

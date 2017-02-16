@@ -26,7 +26,7 @@ def setup_session(uri,
     if session is None:
         # Connections must be closed since some CAS
         # will cough when connections are kept alive:
-        headers = [('User-agent', pydap__version__),
+        headers = [('User-agent', 'Pydap/{}'.format(pydap__version__)),
                    ('Connection', 'close')]
         session = requests.Session()
         session.headers.update(headers)
