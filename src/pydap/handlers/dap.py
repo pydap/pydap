@@ -50,14 +50,14 @@ class DAPHandler(BaseHandler):
         r = GET(ddsurl, application, session)
         raise_for_status(r)
         if not r.charset:
-            r.charset = 'utf8'
+            r.charset = 'ascii'
         dds = r.text
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
         r = GET(dasurl, application, session)
         raise_for_status(r)
         if not r.charset:
-            r.charset = 'utf8'
+            r.charset = 'ascii'
         das = r.text
 
         # build the dataset from the DDS and add attributes from the DAS
