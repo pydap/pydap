@@ -5,13 +5,15 @@ __version__ = '3.2.0'
 
 install_requires = [
     'numpy',
-    'singledispatch',
     'Webob',
     'Jinja2',
     'docopt',
     'six >= 1.4.0',
     'mechanicalsoup',
 ]
+
+if sys.version_info < (3, 5):
+    install_requires.append('singledispatch')
 
 functions_extras = [
     'gsw',
