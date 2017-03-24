@@ -129,7 +129,7 @@ def add_attributes(dataset, attributes):
         except (TypeError, ValueError):
             # This attribute should be given to the parent.
             # Keep around:
-            nested.update({k: value}) 
+            nested.update({k: value})
         except KeyError:
             pass
 
