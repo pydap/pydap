@@ -125,7 +125,7 @@ def add_attributes(dataset, attributes):
                 operator.getitem, [attributes] + var.id.split('.')[:-1])
             k = var.id.split('.')[-1]
             var.attributes.update(nested.pop(k))
-        except KeyError:
+        except (KeyError, TypeError, ValueError):
             pass
 
     # add attributes that don't belong to any child

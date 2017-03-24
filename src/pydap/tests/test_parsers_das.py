@@ -20,7 +20,16 @@ DAS = """Attributes {
     meta {
         String debug 1;
     }
+    SPEH {
+        Int TIME 0;
+        Float32 COADSX 1e20;
+        String COADSY "zero";
+    }
 }"""
+
+# It is important to add attributes that have the same
+# name as the dimensions of SPEH. This is an edge
+# case that can break the das parser.
 
 
 class TestParseDAS(unittest.TestCase):
