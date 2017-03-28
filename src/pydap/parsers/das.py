@@ -124,9 +124,16 @@ def add_attributes(dataset, attributes):
             nested = reduce(
                 operator.getitem, [attributes] + var.id.split('.')[:-1])
             k = var.id.split('.')[-1]
-            var.attributes.update(nested.pop(k))
+            value = nested.pop(k)
         except KeyError:
             pass
+        else:
+            try:
+                var.attributes.update(value)
+            except (TypeError, ValueError):
+                # This attribute should be given to the parent.
+                # Keep around:
+                nested.update({k: value})
 
     # add attributes that don't belong to any child
     for k, v in attributes.items():
