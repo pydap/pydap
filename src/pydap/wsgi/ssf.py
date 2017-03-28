@@ -16,15 +16,30 @@ import numpy as np
 from six.moves import reduce, map
 from six import string_types
 
-from pydap.model import DatasetType, SequenceType
-from pydap.parsers import parse_ce
-from pydap.lib import walk, fix_shorthand
-from pydap.handlers.lib import BaseHandler, apply_projection
-from pydap.exceptions import ServerError
+from ..model import DatasetType, SequenceType
+from ..parsers import parse_ce
+from ..lib import walk, fix_shorthand, load_from_entry_point_relative
+from ..handlers.lib import BaseHandler, apply_projection
+from ..exceptions import ServerError
 
 
 FUNCTION = re.compile(r'([^(]*)\((.*)\)')
 RELOP = re.compile(r'(<=|<|>=|>|=~|=|!=)')
+
+
+def load_functions():
+    """Load all available functions from the system, returning a dictionary."""
+    # Relative import of functions:
+    package = 'pydap'
+    entry_points = 'pydap.function'
+    base_dict = dict(load_from_entry_point_relative(r, package)
+                     for r in iter_entry_points(entry_points)
+                     if r.module_name.startswith(package))
+    opts_dict = dict((r.name, r.load())
+                     for r in iter_entry_points(entry_points)
+                     if not r.module_name.startswith(package))
+    base_dict.update(opts_dict)
+    return base_dict
 
 
 class ServerSideFunctions(object):
@@ -40,9 +55,7 @@ class ServerSideFunctions(object):
     def __init__(self, app, **kwargs):
         self.app = app
 
-        self.functions = {}
-        for r in iter_entry_points("pydap.function"):
-            self.functions[r.name] = r.load()
+        self.functions = load_functions()
         self.functions.update(kwargs)
 
     def __call__(self, environ, start_response):

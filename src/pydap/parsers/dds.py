@@ -4,11 +4,11 @@ import re
 
 import numpy as np
 
-from pydap.parsers import SimpleParser
-from pydap.model import (DatasetType, BaseType,
-                         SequenceType, StructureType,
-                         GridType)
-from pydap.lib import quote, STRING
+from . import SimpleParser
+from ..model import (DatasetType, BaseType,
+                     SequenceType, StructureType,
+                     GridType)
+from ..lib import quote, STRING
 
 
 typemap = {

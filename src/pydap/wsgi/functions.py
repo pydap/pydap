@@ -27,9 +27,9 @@ import numpy as np
 import coards
 import gsw
 
-from pydap.model import SequenceType, GridType, BaseType
-from pydap.lib import walk
-from pydap.exceptions import ConstraintExpressionError, ServerError
+from ..model import SequenceType, GridType, BaseType
+from ..lib import walk
+from ..exceptions import ConstraintExpressionError, ServerError
 
 
 def density(dataset, salinity, temperature, pressure):

@@ -12,8 +12,8 @@ import ast
 from six.moves.urllib.parse import unquote
 from six.moves import map
 
-from pydap.exceptions import ConstraintExpressionError
-from pydap.lib import get_var
+from ..exceptions import ConstraintExpressionError
+from ..lib import get_var
 
 
 def parse_projection(input):

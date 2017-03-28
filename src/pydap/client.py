@@ -46,12 +46,12 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
-from pydap.model import DapType
-from pydap.lib import encode
-from pydap.net import GET
-from pydap.handlers.dap import DAPHandler, unpack_data, StreamReader
-from pydap.parsers.dds import build_dataset
-from pydap.parsers.das import parse_das, add_attributes
+from .model import DapType
+from .lib import encode
+from .net import GET
+from .handlers.dap import DAPHandler, unpack_data, StreamReader
+from .parsers.dds import build_dataset
+from .parsers.das import parse_das, add_attributes
 
 
 def open_url(url, application=None, session=None, output_grid=True):

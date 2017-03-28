@@ -23,14 +23,14 @@ from six import text_type, string_types, next
 from pydap.model import (BaseType,
                          SequenceType, StructureType,
                          GridType)
-from pydap.net import GET, raise_for_status
-from pydap.lib import (
+from ..net import GET, raise_for_status
+from ..lib import (
     encode, combine_slices, fix_slice, hyperslab,
     START_OF_SEQUENCE, walk)
-from pydap.handlers.lib import ConstraintExpression, BaseHandler, IterData
-from pydap.parsers.dds import build_dataset
-from pydap.parsers.das import parse_das, add_attributes
-from pydap.parsers import parse_ce
+from .lib import ConstraintExpression, BaseHandler, IterData
+from ..parsers.dds import build_dataset
+from ..parsers.das import parse_das, add_attributes
+from ..parsers import parse_ce
 logger = logging.getLogger('pydap')
 logger.addHandler(logging.NullHandler())
 

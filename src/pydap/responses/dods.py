@@ -14,11 +14,11 @@ import copy
 import numpy as np
 from six import string_types
 
-from pydap.model import (BaseType,
-                         SequenceType, StructureType)
-from pydap.lib import walk, START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
-from pydap.responses.lib import BaseResponse
-from pydap.responses.dds import dds
+from ..model import (BaseType,
+                     SequenceType, StructureType)
+from ..lib import walk, START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
+from .lib import BaseResponse
+from .dds import dds
 
 try:
     from functools import singledispatch

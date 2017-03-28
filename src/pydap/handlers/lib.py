@@ -22,15 +22,16 @@ from numpy.lib.arrayterator import Arrayterator
 from six.moves import filter, map
 from six import string_types, next
 
-from pydap.responses.lib import load_responses
-from pydap.responses.error import ErrorResponse
-from pydap.parsers import parse_ce, parse_selection
-from pydap.exceptions import (
+from ..responses.lib import load_responses
+from ..responses.error import ErrorResponse
+from ..parsers import parse_ce, parse_selection
+from ..exceptions import (
     ConstraintExpressionError, ExtensionNotSupportedError)
-from pydap.lib import walk, fix_shorthand, get_var, encode
-from pydap.model import (DatasetType, BaseType,
-                         SequenceType, StructureType,
-                         GridType)
+from ..lib import (walk, fix_shorthand, get_var, encode,
+                   load_from_entry_point_relative)
+from ..model import (DatasetType, BaseType,
+                     SequenceType, StructureType,
+                     GridType)
 
 
 # buffer size in bytes, for streaming data
@@ -49,7 +50,17 @@ def load_handlers(working_set=pkg_resources.working_set):
                 distutils-programmatically-adding-entry-points
 
     """
-    return [ep.load() for ep in working_set.iter_entry_points("pydap.handler")]
+    # Relative import of handlers:
+    package = 'pydap'
+    entry_points = 'pydap.handler'
+    base_dict = dict(load_from_entry_point_relative(r, package)
+                     for r in working_set.iter_entry_points(entry_points)
+                     if r.module_name.startswith(package))
+    opts_dict = dict((r.name, r.load())
+                     for r in working_set.iter_entry_points(entry_points)
+                     if not r.module_name.startswith(package))
+    base_dict.update(opts_dict)
+    return base_dict.values()
 
 
 def get_handler(filepath, handlers=None):
