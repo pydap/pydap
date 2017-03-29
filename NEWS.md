@@ -1,6 +1,31 @@
 News
 ====
 
+3.2.1
+-----
+
+*Release date: 2017-Mar-28*
+
+* PyDAP client fixes
+  * Adds workaround to the client when making requests to older ESGF OPENDAP servers
+  * Fixes a bug where mechanicalsoup wouldn't its browser
+  * Adds handling for values of -NaN
+  * Overhauls URS authentication to use the requests library
+  * Sets a default charset when connecting to servers that do not
+* Packaging fixes
+  * Moves gunicorn in to server_extras dependency list
+  * Adds test data to the release tarball
+* Code base improvements
+  * Adds flake8 linting/checking to the code base
+  * Improves testing for client authentication
+  * Drops support for Python < 2.7
+  * Converts internal imports to be explicit relative
+* Miscellaneous bug fixes
+  * Fixes bug in fix_slices() when `stop` > len
+  * Fixes unexpected flattening of sliced arrays (#41)
+  * Fixes bug where attributes were not propagated to nested structures (#75)
+
+
 3.2.0
 -----
 

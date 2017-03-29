@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys
 
-__version__ = '3.2.0'
+__version__ = '3.2.1'
 
 install_requires = [
     'numpy',
