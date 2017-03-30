@@ -272,6 +272,7 @@ class SequenceProxy(object):
             m = re.search(pattern, previous_chunk + this_chunk)
             if m:
                 break
+            previous_chunk = this_chunk
         if not m:
             raise ValueError("Could not find data segment in response from {}"
                              .format(self.url))
