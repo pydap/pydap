@@ -322,8 +322,18 @@ class StructureType(DapType):
         item.id = '%s.%s' % (self.id, item.name)
 
     def __getitem__(self, key):
-        key = quote(key)
-        return self._dict[key]
+        try:
+            return self._dict[quote(key)]
+        except KeyError:
+            splitted = key.split('.')
+            if len(splitted) > 1:
+                try:
+                    return (self
+                            .__getitem__(splitted[0])['.'.join(splitted[1:])])
+                except KeyError:
+                    return self.__getitem__('.'.join(splitted[1:]))
+            else:
+                raise
 
     def __delitem__(self, key):
         self._dict.__delitem__(key)
