@@ -46,6 +46,7 @@ def follow_redirect(url, application=None, session=None,
     """
 
     req = create_request(url, session=session)
+    req.environ['webob.client.timeout'] = timeout
     return req.get_response(application)
 
 

@@ -77,17 +77,7 @@ class TestCSVserver(unittest.TestCase):
                    os.path.basename(self.test_file))
             with self.assertRaises(HTTPError):
                 with warnings.catch_warnings():
-                    # This is for python 2.6
-                    warnings.filterwarnings('error',
-                                            category=DeprecationWarning,
-                                            message='Currently pydap does not '
-                                                    'support '
-                                                    'user-specified timeouts '
-                                                    'in python 2.6')
-                    try:
-                        open_url(url, timeout=1e-8)
-                    except DeprecationWarning:
-                        raise HTTPError
+                    open_url(url, timeout=1e-8)
 
     def tearDown(self):
         # Remove test file:
