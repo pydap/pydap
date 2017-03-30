@@ -18,11 +18,7 @@ from pydap.handlers.csv import CSVHandler
 from pydap.client import open_url
 from pydap.simple_server import LocalTestServer
 
-
-if sys.version_info < (2, 7):
-    import unittest2 as unittest
-else:
-    import unittest
+import unittest
 
 
 @attr('server')
