@@ -79,7 +79,6 @@ setup(name='Pydap',
             'testing': testing_extras,
             'docs': docs_extras,
             'tests': tests_require,
-            'cas': cas_extras,
             'server': server_extras
       },
       test_suite="pydap.tests",
