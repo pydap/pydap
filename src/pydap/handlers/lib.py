@@ -196,12 +196,18 @@ def apply_selection(selection, dataset):
     return dataset
 
 
+def degenerate_grid_to_structure(candidate):
+    if isinstance(candidate, GridType):
+        candidate = StructureType(
+            candidate.name, candidate.attributes)
+    return candidate
+
+
 def apply_projection(projection, dataset):
     """Apply a given projection to a dataset.
 
     This function builds and returns a new dataset by adding those variables
     that were requested on the projection.
-
     """
     out = DatasetType(name=dataset.name, attributes=dataset.attributes)
 
@@ -218,9 +224,7 @@ def apply_projection(projection, dataset):
                         # if there are more children to add we need to clear
                         # the candidate so it has only explicitly added
                         # children; also, Grids are degenerated into Structures
-                        if isinstance(candidate, GridType):
-                            candidate = StructureType(
-                                candidate.name, candidate.attributes)
+                        candidate = degenerate_grid_to_structure(candidate)
                         candidate._keys = []
                     target[name] = candidate
                 target, template = target[name], template[name]

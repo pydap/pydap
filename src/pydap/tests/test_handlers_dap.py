@@ -8,6 +8,7 @@ from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
 
 import unittest
+from unittest.mock import patch
 
 
 class TestDapHandler(unittest.TestCase):
@@ -50,6 +51,65 @@ class TestDapHandler(unittest.TestCase):
         self.assertEqual(
             dataset.SimpleGrid.SimpleGrid.data.slice,
             (slice(None), slice(None)))
+        self.assertEqual(repr(dataset.SimpleGrid[:]),
+                         "<GridType with array 'SimpleGrid' and maps 'x', 'y'>")
+
+    def test_grid_erddap(self):
+        """Test that dataset has the correct data proxies for grids
+           with the ERDDAP behavior."""
+        with patch('pydap.handlers.lib.degenerate_grid_to_structure',
+                   side_effect=(lambda x: x)) as mock_degenerate:
+            dataset = DAPHandler("http://localhost:8001/", self.app1).dataset
+            self.assertEqual(repr(dataset.SimpleGrid[:]),
+                             "<GridType with array 'SimpleGrid' and maps 'x', 'y'>")
+            mock_degenerate.assert_called()
+
+    def test_grid_output_grid_false(self):
+        """Test that dataset has the correct data proxies for grids with
+           option output_grid set to False."""
+        dataset = DAPHandler("http://localhost:8001/", self.app1,
+                             output_grid=False).dataset
+
+        self.assertEqual(dataset.keys(), ["SimpleGrid", "x", "y"])
+        self.assertEqual(
+            dataset.SimpleGrid.keys(), ["SimpleGrid", "x", "y"])
+
+        # test one of the axis
+        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
+        self.assertEqual(
+            dataset.SimpleGrid.x.data.baseurl, "http://localhost:8001/")
+        self.assertEqual(dataset.SimpleGrid.x.data.id, "SimpleGrid.x")
+        self.assertEqual(dataset.SimpleGrid.x.data.dtype, np.dtype('>i4'))
+        self.assertEqual(dataset.SimpleGrid.x.data.shape, (3,))
+        self.assertEqual(
+            dataset.SimpleGrid.x.data.slice, (slice(None),))
+
+        # test the grid
+        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxy)
+        self.assertEqual(
+            dataset.SimpleGrid.SimpleGrid.data.baseurl,
+            "http://localhost:8001/")
+        self.assertEqual(
+            dataset.SimpleGrid.SimpleGrid.data.id, "SimpleGrid.SimpleGrid")
+        self.assertEqual(
+            dataset.SimpleGrid.SimpleGrid.data.dtype, np.dtype('>i4'))
+        self.assertEqual(dataset.SimpleGrid.SimpleGrid.data.shape, (2, 3))
+        self.assertEqual(
+            dataset.SimpleGrid.SimpleGrid.data.slice,
+            (slice(None), slice(None)))
+        np.testing.assert_array_equal(dataset.SimpleGrid[:],
+                                      [[0, 1, 2], [3, 4, 5]])
+
+    def test_grid_erddap_output_grid_false(self):
+        """Test that dataset has the correct data proxies for grids with
+           option output_grid set to False and with the ERDDAP behavior."""
+        with patch('pydap.handlers.lib.degenerate_grid_to_structure',
+                   side_effect=(lambda x: x)) as mock_degenerate:
+            dataset = DAPHandler("http://localhost:8001/", self.app1,
+                                 output_grid=False).dataset
+            np.testing.assert_array_equal(dataset.SimpleGrid[:],
+                                          [[0, 1, 2], [3, 4, 5]])
+            mock_degenerate.assert_called()
 
     def test_grid_with_projection(self):
         """Test that a sliced proxy can be created for grids."""
