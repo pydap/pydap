@@ -49,16 +49,16 @@ class DAPHandler(BaseHandler):
         ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
         r = GET(ddsurl, application, session)
         raise_for_status(r)
-        if not r.charset:
-            r.charset = 'ascii'
-        dds = r.body
+        if not r.encoding:
+            r.encoding = 'ascii'
+        dds = r.text
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
         r = GET(dasurl, application, session)
         raise_for_status(r)
-        if not r.charset:
-            r.charset = 'ascii'
-        das = r.body
+        if not r.encoding:
+            r.encoding = 'ascii'
+        das = r.text
 
         # build the dataset from the DDS and add attributes from the DAS
         self.dataset = build_dataset(dds)
@@ -136,8 +136,8 @@ class BaseProxy(object):
         logger.info("Fetching URL: %s" % url)
         r = GET(url, self.application, self.session)
         raise_for_status(r)
-        dds, data = r.body.split(b'\nData:\n', 1)
-        dds = dds.decode(r.content_encoding or 'ascii')
+        dds, data = r.content.split(b'\nData:\n', 1)
+        dds = dds.decode(r.encoding or 'ascii')
 
         # Parse received dataset:
         dataset = build_dataset(dds, data=data)
@@ -259,7 +259,7 @@ class SequenceProxy(object):
         r = GET(self.url, self.application, self.session)
         raise_for_status(r)
 
-        i = r.app_iter
+        i = r.iter_content(chunk_size=128)
         if not hasattr(i, '__next__'):
             i = iter(i)
 
@@ -272,6 +272,7 @@ class SequenceProxy(object):
             m = re.search(pattern, previous_chunk + this_chunk)
             if m:
                 break
+            previous_chunk = this_chunk
         if not m:
             raise ValueError("Could not find data segment in response from {}"
                              .format(self.url))

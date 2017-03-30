@@ -106,8 +106,8 @@ def open_file(dods, das=None):
 def open_dods(url, metadata=False, application=None, session=None):
     """Open a `.dods` response directly, returning a dataset."""
     r = GET(url, application, session)
-    dds, data = r.body.split(b'\nData:\n', 1)
-    dds = dds.decode(r.content_encoding or 'ascii')
+    dds, data = r.content.split(b'\nData:\n', 1)
+    dds = dds.decode(r.encoding or 'ascii')
     dataset = build_dataset(dds)
     stream = StreamReader(BytesIO(data))
     dataset.data = unpack_data(stream, dataset)

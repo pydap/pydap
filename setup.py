@@ -10,6 +10,8 @@ install_requires = [
     'docopt',
     'six >= 1.4.0',
     'mechanicalsoup',
+    'requests',
+    'requests_wsgi_adapter'
 ]
 
 if sys.version_info < (3, 5):
@@ -31,10 +33,6 @@ docs_extras = [
     'sphinx_rtd_theme',
 ]
 
-cas_extras = [
-    'requests'
-    ]
-
 tests_require = functions_extras + cas_extras + server_extras + [
     'WebTest',
     'beautifulsoup4',
@@ -45,8 +43,7 @@ tests_require = functions_extras + cas_extras + server_extras + [
 testing_extras = tests_require + [
     'pytest-cov',
     'pytest-attrib',
-    'mock',
-    'requests'
+    'mock'
 ]
 
 
