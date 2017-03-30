@@ -3,7 +3,8 @@
 import copy
 from six import text_type
 
-from webtest import TestApp, AppError
+from webtest import AppError
+from webtest import TestApp as App
 import numpy as np
 
 from pydap.model import BaseType, StructureType, SequenceType
@@ -52,7 +53,7 @@ class TestBaseHandler(unittest.TestCase):
 
     def setUp(self):
         """Create a basic WSGI app."""
-        self.app = TestApp(MockHandler(SimpleArray))
+        self.app = App(MockHandler(SimpleArray))
 
     def test_unconstrained_das(self):
         """DAS responses are always unconstrained."""
@@ -99,14 +100,14 @@ class TestBaseHandler(unittest.TestCase):
 
     def test_exception_non_captured(self):
         """Test exception handling when not captured."""
-        app = TestApp(MockHandler(SimpleArray), extra_environ={
+        app = App(MockHandler(SimpleArray), extra_environ={
             "x-wsgiorg.throw_errors": True})
         with self.assertRaises(KeyError):
             app.get("/.foo")
 
     def test_missing_dataset(self):
         """Test exception when dataset is not set."""
-        app = TestApp(MockHandler(), extra_environ={
+        app = App(MockHandler(), extra_environ={
             "x-wsgiorg.throw_errors": True})
         with self.assertRaises(NotImplementedError):
             app.get("/.dds")

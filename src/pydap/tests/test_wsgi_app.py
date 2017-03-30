@@ -4,7 +4,8 @@ import os
 import tempfile
 import shutil
 
-from webtest import TestApp, AppError
+from webtest import AppError
+from webtest import TestApp as App
 from webob import Response
 from webob.dec import wsgify
 
@@ -38,7 +39,7 @@ class TestDapServer(unittest.TestCase):
         app = DapServer(data, templates)
         app.handlers = [DummyHandler]
         app = StaticMiddleware(app, os.path.join(templates, "static"))
-        self.app = TestApp(app)
+        self.app = App(app)
 
     def tearDown(self):
         """Remove the installation."""
@@ -98,7 +99,7 @@ class TestPackageAssets(unittest.TestCase):
 
         app = DapServer(data)
         app = StaticMiddleware(app, ("pydap.wsgi", "templates/static"))
-        self.app = TestApp(app)
+        self.app = App(app)
 
     def tearDown(self):
         """Remove the installation."""

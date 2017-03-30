@@ -43,8 +43,8 @@ tests_require = functions_extras + cas_extras + server_extras + [
 ]
 
 testing_extras = tests_require + [
-    'nose',
-    'coverage',
+    'pytest-cov',
+    'pytest-attrib',
     'requests'
 ]
 

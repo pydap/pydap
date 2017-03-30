@@ -3,7 +3,7 @@
 import sys
 from six import next
 
-from webtest import TestApp
+from webtest import TestApp as App
 import numpy as np
 
 from pydap.model import SequenceType, BaseType
@@ -22,7 +22,7 @@ class TestMiddleware(unittest.TestCase):
     def test_das(self):
         """Test that DAS requests are ignored."""
         # create a simple app
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
+        app = App(ServerSideFunctions(BaseHandler(SimpleSequence)))
 
         # test a DAS response with a non-existing function
         app.get("/.das?non_existing_function(sequence)")
@@ -38,7 +38,7 @@ class TestMiddleware(unittest.TestCase):
         can be manipulated by middleware.
 
         """
-        app = TestApp(
+        app = App(
             ServerSideFunctions(Accumulator(BaseHandler(SimpleGrid))))
 
         # a normal request should work, even though server-side functions are
@@ -51,7 +51,7 @@ class TestMiddleware(unittest.TestCase):
 
     def test_selection(self):
         """Test a selection server-side function."""
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
+        app = App(ServerSideFunctions(BaseHandler(SimpleSequence)))
         res = app.get(
             "/.asc?density(cast.salinity,cast.temperature,cast.pressure)>1025")
         self.assertEqual(res.text, """Dataset {
@@ -74,7 +74,7 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
 
     def test_operators(self):
         """Test different operators on selection using a dummy function."""
-        app = TestApp(
+        app = App(
             ServerSideFunctions(BaseHandler(SimpleSequence), double=double))
         res = app.get("/.asc?cast.lat&double(cast.lat)>10")
         self.assertEqual(res.text, """Dataset {
@@ -155,7 +155,7 @@ cast.lat
         selection is implicitely applied by comparing the result to 1.
 
         """
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
+        app = App(ServerSideFunctions(BaseHandler(SimpleSequence)))
         res = app.get(
             "/.asc?cast.lat,cast.lon&"
             "bounds(0,360,-90,0,0,500,00Z01JAN1900,00Z01JAN2000)")
@@ -173,7 +173,7 @@ cast.lat, cast.lon
 
     def test_projection(self):
         """Test a simple function call on a projection."""
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
+        app = App(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x)")
         self.assertEqual(res.text, """Dataset {
     Float64 x;
@@ -185,7 +185,7 @@ x
 
     def test_projection_clash(self):
         """Test a function call creating a variable with a conflicting name."""
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
+        app = App(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x),x")
         self.assertEqual(res.text, """Dataset {
     Int32 x[x = 3];
@@ -200,7 +200,7 @@ x
 
     def test_nested_projection(self):
         """Test a nested function call."""
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
+        app = App(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(mean(SimpleGrid.SimpleGrid,0),0)")
         self.assertEqual(res.text, """Dataset {
     Float64 SimpleGrid;

@@ -1,6 +1,6 @@
 """Test the DAS response."""
 
-from webtest import TestApp
+from webtest import TestApp as App
 from webob.headers import ResponseHeaders
 from pydap.lib import __version__
 from pydap.handlers.lib import BaseHandler
@@ -16,7 +16,7 @@ class TestDASResponseSequence(unittest.TestCase):
 
     def setUp(self):
         """Create a simple WSGI app."""
-        app = TestApp(BaseHandler(SimpleSequence))
+        app = App(BaseHandler(SimpleSequence))
         self.res = app.get('/.das')
 
     def test_dispatcher(self):
@@ -89,7 +89,7 @@ class TestDASResponseGrid(unittest.TestCase):
 
     def test_body(self):
         """Test the generated DAS response."""
-        app = TestApp(BaseHandler(SimpleGrid))
+        app = App(BaseHandler(SimpleGrid))
         res = app.get('/.das')
         self.assertEqual(res.text, """Attributes {
     String description "A simple grid for testing.";
@@ -113,7 +113,7 @@ class TestDASResponseStructure(unittest.TestCase):
 
     def test_body(self):
         """Test the generated DAS response."""
-        app = TestApp(BaseHandler(SimpleStructure))
+        app = App(BaseHandler(SimpleStructure))
         res = app.get('/.das')
         self.assertEqual(res.text, """Attributes {
     types {
