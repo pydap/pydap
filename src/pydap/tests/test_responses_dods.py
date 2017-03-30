@@ -3,7 +3,7 @@
 import copy
 
 import numpy as np
-from webtest import TestApp
+from webtest import TestApp as App
 from webob.headers import ResponseHeaders
 
 from pydap.lib import START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
@@ -21,7 +21,7 @@ class TestDODSResponse(unittest.TestCase):
 
     def setUp(self):
         """Create a simple WSGI app."""
-        app = TestApp(BaseHandler(VerySimpleSequence))
+        app = App(BaseHandler(VerySimpleSequence))
         self.res = app.get('/.dods')
 
     def test_dispatcher(self):
@@ -94,7 +94,7 @@ class TestDODSResponseGrid(unittest.TestCase):
 
     def setUp(self):
         """Create a simple WSGI app."""
-        app = TestApp(BaseHandler(SimpleGrid))
+        app = App(BaseHandler(SimpleGrid))
         self.res = app.get('/.dods')
 
     def test_body(self):
@@ -153,7 +153,7 @@ class TestDODSResponseSequence(unittest.TestCase):
 
     def setUp(self):
         """Create a simple WSGI app."""
-        app = TestApp(BaseHandler(SimpleSequence))
+        app = App(BaseHandler(SimpleSequence))
         self.res = app.get('/.dods?cast.id,cast.lon')
 
     def test_body(self):
@@ -186,7 +186,7 @@ class TestDODSResponseArray(unittest.TestCase):
 
     def setUp(self):
         """Create a simple WSGI app."""
-        self.app = TestApp(BaseHandler(SimpleArray))
+        self.app = App(BaseHandler(SimpleArray))
 
     def test_body(self):
         """Test response body."""
@@ -240,7 +240,7 @@ class TestDODSResponseArrayterator(unittest.TestCase):
         modified.SimpleGrid.SimpleGrid.data = np.lib.arrayterator.Arrayterator(
             modified.SimpleGrid.SimpleGrid.data, 2)
 
-        app = TestApp(BaseHandler(modified))
+        app = App(BaseHandler(modified))
         res = app.get("/.dods?SimpleGrid.SimpleGrid")
         header_string = b"""Dataset {
     Structure {
@@ -334,7 +334,7 @@ Data:
 
     def test_body(self):
         """Test response body."""
-        app = TestApp(BaseHandler(NestedSequence))
+        app = App(BaseHandler(NestedSequence))
         res = app.get("/.dods")
         dds, xdrdata = res.body.split(b'\nData:\n', 1)
         dds = dds.decode('ascii')

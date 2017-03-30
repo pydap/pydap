@@ -2,7 +2,7 @@
 
 import copy
 
-from webtest import TestApp
+from webtest import TestApp as App
 
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import SimpleSequence, SimpleGrid
@@ -18,11 +18,11 @@ class TestDensity(unittest.TestCase):
 
     def setUp(self):
         """Create simple WSGI app."""
-        self.app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
+        self.app = App(ServerSideFunctions(BaseHandler(SimpleSequence)))
 
     def test_wrong_type(self):
         """Test passing the wrong type."""
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
+        app = App(ServerSideFunctions(BaseHandler(SimpleGrid)))
         with self.assertRaises(ConstraintExpressionError):
             app.get('/.dds?density(SimpleGrid,SimpleGrid,SimpleGrid)')
 
@@ -88,11 +88,11 @@ class TestBounds(unittest.TestCase):
 
     def setUp(self):
         """Create a simple WSGI app."""
-        self.app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
+        self.app = App(ServerSideFunctions(BaseHandler(SimpleSequence)))
 
     def test_wrong_type(self):
         """Test passing a wrong type to the function."""
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
+        app = App(ServerSideFunctions(BaseHandler(SimpleGrid)))
         with self.assertRaises(ConstraintExpressionError):
             app.get('/.dds?SimpleGrid'
                     '&bounds(0,360,-90,90,500,500,00Z01JAN1970,00Z01JAN1970)')
@@ -231,7 +231,7 @@ class TestBounds(unittest.TestCase):
         """Test different GrADS time steps."""
         modified = copy.copy(SimpleSequence)
         modified.cast.time.attributes['grads_step'] = '1mn'
-        app = TestApp(ServerSideFunctions(BaseHandler(modified)))
+        app = App(ServerSideFunctions(BaseHandler(modified)))
         res = app.get("/.asc?cast.pressure&"
                       "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
         self.assertEqual(res.text,
@@ -245,7 +245,7 @@ class TestBounds(unittest.TestCase):
                          '\n')
 
         modified.cast.time.attributes['grads_step'] = '1hr'
-        app = TestApp(ServerSideFunctions(BaseHandler(modified)))
+        app = App(ServerSideFunctions(BaseHandler(modified)))
         res = app.get("/.asc?cast.pressure&"
                       "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
         self.assertEqual(res.text,
@@ -259,7 +259,7 @@ class TestBounds(unittest.TestCase):
                          '\n')
 
         modified.cast.time.attributes['grads_step'] = '1dy'
-        app = TestApp(ServerSideFunctions(BaseHandler(modified)))
+        app = App(ServerSideFunctions(BaseHandler(modified)))
         res = app.get("/.asc?cast.pressure&"
                       "bounds(0,360,-90,90,0,500,12Z01JAN1970,12Z01JAN1970)")
         self.assertEqual(res.text,
@@ -274,21 +274,21 @@ class TestBounds(unittest.TestCase):
                          '\n')
 
         modified.cast.time.attributes['grads_step'] = '1mo'
-        app = TestApp(ServerSideFunctions(BaseHandler(modified)))
+        app = App(ServerSideFunctions(BaseHandler(modified)))
         with self.assertRaises(NotImplementedError):
             res = app.get("/.asc?cast.pressure&"
                           "bounds(0,360,-90,90,0,500,"
                           "12Z01JAN1970,12Z01JAN1970)")
 
         modified.cast.time.attributes['grads_step'] = '1yr'
-        app = TestApp(ServerSideFunctions(BaseHandler(modified)))
+        app = App(ServerSideFunctions(BaseHandler(modified)))
         with self.assertRaises(NotImplementedError):
             res = app.get("/.asc?cast.pressure&"
                           "bounds(0,360,-90,90,0,500,"
                           "12Z01JAN1970,12Z01JAN1970)")
 
         modified.cast.time.attributes['grads_step'] = '1xx'
-        app = TestApp(ServerSideFunctions(BaseHandler(modified)))
+        app = App(ServerSideFunctions(BaseHandler(modified)))
         with self.assertRaises(ServerError):
             res = app.get("/.asc?cast.pressure&"
                           "bounds(0,360,-90,90,0,500,"
@@ -301,11 +301,11 @@ class TestMean(unittest.TestCase):
 
     def setUp(self):
         """Create a simple WSGI app."""
-        self.app = TestApp(ServerSideFunctions(BaseHandler(SimpleGrid)))
+        self.app = App(ServerSideFunctions(BaseHandler(SimpleGrid)))
 
     def test_wrong_type(self):
         """Test passing a wrong type to mean function."""
-        app = TestApp(ServerSideFunctions(BaseHandler(SimpleSequence)))
+        app = App(ServerSideFunctions(BaseHandler(SimpleSequence)))
         with self.assertRaises(ConstraintExpressionError):
             app.get('/.dds?mean(sequence)')
 

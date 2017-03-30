@@ -2,7 +2,7 @@
 
 import sys
 
-from webtest import TestApp
+from webtest import TestApp as App
 from webob.headers import ResponseHeaders
 
 from pydap.lib import __version__
@@ -19,7 +19,7 @@ class TestASCIIResponseSequence(unittest.TestCase):
 
     def setUp(self):
         """Create a simple WSGI app for testing."""
-        app = TestApp(BaseHandler(SimpleSequence))
+        app = App(BaseHandler(SimpleSequence))
         self.res = app.get('/.asc')
 
     def test_dispatcher(self):
@@ -77,7 +77,7 @@ class TestASCIIResponseGrid(unittest.TestCase):
 
     def test_body(self):
         """Test the generated ASCII response."""
-        app = TestApp(BaseHandler(SimpleGrid))
+        app = App(BaseHandler(SimpleGrid))
         res = app.get('/.asc')
         self.assertEqual(res.text, """Dataset {
     Grid {
