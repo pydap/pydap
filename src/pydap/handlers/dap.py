@@ -139,43 +139,9 @@ class BaseProxy(object):
         dds, data = r.body.split(b'\nData:\n', 1)
         dds = dds.decode(r.content_encoding or 'ascii')
 
-        if self.shape:
-            # skip size packing
-            if self.dtype.char in 'SU':
-                data = data[4:]
-            else:
-                data = data[8:]
-
-        # calculate array size
-        shape = tuple(
-            int(np.ceil((s.stop-s.start)/float(s.step))) for s in index)
-        size = int(np.prod(shape))
-
-        if self.dtype == np.byte:
-            return np.fromstring(data[:size], 'B').reshape(shape)
-        elif self.dtype.char in 'SU':
-            out = []
-            for word in range(size):
-                n = np.asscalar(np.fromstring(data[:4], '>I'))  # read length
-                data = data[4:]
-                out.append(data[:n])
-                data = data[n + (-n % 4):]
-            return np.array([text_type(x.decode('ascii'))
-                             for x in out], 'S').reshape(shape)
-        else:
-            try:
-                return np.fromstring(data, self.dtype).reshape(shape)
-            except ValueError as e:
-                if str(e) == 'total size of new array must be unchanged':
-                    # server-side failure.
-                    # it is expected that the user should be mindful of this:
-                    raise RuntimeError(
-                                ('variable {0} could not be properly '
-                                 'retrieved. To avoid this '
-                                 'error consider using open_url(..., '
-                                 'output_grid=False).').format(quote(self.id)))
-                else:
-                    raise
+        # Parse received dataset:
+        dataset = build_dataset(dds, data=data)
+        return dataset[self.id].data
 
     def __len__(self):
         return self.shape[0]
