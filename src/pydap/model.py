@@ -191,7 +191,7 @@ class DapType(object):
 
     """
 
-    def __init__(self, name, attributes=None, **kwargs):
+    def __init__(self, name='nameless', attributes=None, **kwargs):
         self.name = quote(name)
         self.attributes = attributes or {}
         self.attributes.update(kwargs)
@@ -247,8 +247,8 @@ class BaseType(DapType):
 
     """A thin wrapper over Numpy arrays."""
 
-    def __init__(self, name, data=None, dimensions=None, attributes=None,
-                 **kwargs):
+    def __init__(self, name='nameless', data=None, dimensions=None,
+                 attributes=None, **kwargs):
         super(BaseType, self).__init__(name, attributes, **kwargs)
         self.data = data
         self.dimensions = dimensions or ()
@@ -365,7 +365,7 @@ class BaseType(DapType):
 class StructureType(DapType, Mapping):
     """A dict-like object holding other variables."""
 
-    def __init__(self, name, attributes=None, **kwargs):
+    def __init__(self, name='nameless', attributes=None, **kwargs):
         super(StructureType, self).__init__(name, attributes, **kwargs)
 
         # allow some keys to be hidden:
@@ -604,7 +604,7 @@ class SequenceType(StructureType):
 
     """
 
-    def __init__(self, name, data=None, attributes=None, **kwargs):
+    def __init__(self, name='nameless', data=None, attributes=None, **kwargs):
         super(SequenceType, self).__init__(name, attributes, **kwargs)
         self._data = data
 
@@ -705,7 +705,7 @@ class GridType(StructureType):
 
     """
 
-    def __init__(self, name, attributes=None, **kwargs):
+    def __init__(self, name='nameless', attributes=None, **kwargs):
         super(GridType, self).__init__(name, attributes, **kwargs)
         self._output_grid = True
 
