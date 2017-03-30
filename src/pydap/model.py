@@ -328,7 +328,8 @@ class StructureType(DapType):
             splitted = key.split('.')
             if len(splitted) > 1:
                 try:
-                    return self.__getitem__(splitted[0])['.'.join(splitted[1:])]
+                    return (self
+                            .__getitem__(splitted[0])['.'.join(splitted[1:])])
                 except KeyError:
                     return self.__getitem__('.'.join(splitted[1:]))
             else:

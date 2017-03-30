@@ -28,7 +28,7 @@ from ..lib import (
     encode, combine_slices, fix_slice, hyperslab,
     START_OF_SEQUENCE, walk)
 from .lib import ConstraintExpression, BaseHandler, IterData
-from ..parsers.dds import build_dataset, convert_data_to_array
+from ..parsers.dds import build_dataset
 from ..parsers.das import parse_das, add_attributes
 from ..parsers import parse_ce
 logger = logging.getLogger('pydap')

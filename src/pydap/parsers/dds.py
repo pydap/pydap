@@ -83,7 +83,8 @@ class DDSParser(SimpleParser):
 
         data = DummyData(dtype, shape)
         if self.data is not None:
-            data, self.data = convert_data_to_array(self.data, shape, dtype, name)
+            data, self.data = convert_data_to_array(self.data, shape,
+                                                    dtype, name)
         var = BaseType(name, data, dimensions=dimensions)
 
         return var
@@ -197,7 +198,8 @@ def convert_data_to_array(data, shape, dtype, id):
                          for x in out], 'S').reshape(shape), data
     else:
         try:
-            return np.fromstring(data[:nitems], dtype).reshape(shape), data[nitems:]
+            return (np.fromstring(data[:nitems], dtype).reshape(shape),
+                    data[nitems:])
         except ValueError as e:
             if str(e) == 'total size of new array must be unchanged':
                 # server-side failure.
