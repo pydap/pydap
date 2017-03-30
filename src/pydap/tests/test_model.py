@@ -163,10 +163,10 @@ class TestStructureType(unittest.TestCase):
         self.assertEqual(var._dict, {})
 
     def test_instance(self):
-        """Test that it is a MutableMapping and DapType."""
+        """Test that it is a Mapping and DapType."""
         var = StructureType("var")
-        from collections import MutableMapping
-        assert isinstance(var, MutableMapping)
+        from collections import Mapping
+        assert isinstance(var, Mapping)
         assert isinstance(var, DapType)
 
     def test_repr(self):

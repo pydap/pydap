@@ -118,7 +118,7 @@ import copy
 from six.moves import reduce, map
 from six import string_types, binary_type
 import numpy as np
-from collections import OrderedDict, MutableMapping
+from collections import OrderedDict, Mapping
 
 from .lib import quote, decode_np_strings
 
@@ -283,7 +283,7 @@ class BaseType(DapType):
     data = property(_get_data, _set_data)
 
 
-class StructureType(DapType, MutableMapping):
+class StructureType(DapType, Mapping):
     """A dict-like object holding other variables."""
 
     def __init__(self, name, attributes=None, **kwargs):
