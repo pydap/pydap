@@ -7,7 +7,6 @@ It is based on CSV data but with more handlers
 it could work with more data formats.
 """
 
-import sys
 import csv
 import tempfile
 import os
