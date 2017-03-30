@@ -23,6 +23,7 @@ functions_extras = [
 
 server_extras = [
     'gunicorn',
+    'werkzeug'
 ]
 
 docs_extras = [
@@ -35,16 +36,11 @@ cas_extras = [
     'requests'
     ]
 
-server_extras = [
-    'werkzeug'
-    ]
-
-tests_require = (functions_extras + cas_extras +
-                 server_extras +
-                 ['WebTest',
-                  'beautifulsoup4',
-                  'scipy',
-                  'flake8'])
+tests_require = functions_extras + cas_extras + server_extras + [
+    'WebTest',
+    'beautifulsoup4',
+    'flake8'
+]
 
 testing_extras = tests_require + [
     'pytest-cov',
