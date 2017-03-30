@@ -8,7 +8,10 @@ from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
 
 import unittest
-from unittest.mock import patch
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
 
 
 class TestDapHandler(unittest.TestCase):
@@ -64,7 +67,7 @@ class TestDapHandler(unittest.TestCase):
             self.assertEqual(
                     repr(dataset.SimpleGrid[:]),
                     "<GridType with array 'SimpleGrid' and maps 'x', 'y'>")
-            mock_degenerate.assert_called()
+            assert mock_degenerate.called
 
     def test_grid_output_grid_false(self):
         """Test that dataset has the correct data proxies for grids with
@@ -111,7 +114,7 @@ class TestDapHandler(unittest.TestCase):
                                  output_grid=False).dataset
             np.testing.assert_array_equal(dataset.SimpleGrid[:],
                                           [[0, 1, 2], [3, 4, 5]])
-            mock_degenerate.assert_called()
+            assert mock_degenerate.called
 
     def test_grid_with_projection(self):
         """Test that a sliced proxy can be created for grids."""
