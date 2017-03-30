@@ -33,7 +33,7 @@ docs_extras = [
     'sphinx_rtd_theme',
 ]
 
-tests_require = functions_extras + cas_extras + server_extras + [
+tests_require = functions_extras + server_extras + [
     'WebTest',
     'beautifulsoup4',
     'scipy',

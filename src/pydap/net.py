@@ -1,4 +1,3 @@
-from webob.exc import HTTPError
 from contextlib import closing
 import requests
 from requests.exceptions import MissingSchema
@@ -25,12 +24,7 @@ def GET(url, application=None, session=None):
 
 
 def raise_for_status(response):
-    if response.status_code >= 400:
-        raise HTTPError(
-            detail=response.status,
-            headers=response.headers,
-            comment=response.content
-        )
+    response.raise_for_status()
 
 
 class WSGISession():
