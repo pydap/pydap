@@ -98,6 +98,16 @@ class TestBaseType(unittest.TestCase):
         var = BaseType("var", np.arange(16).reshape(2, 2, 2, 2))
         self.assertEqual(var.shape, (2, 2, 2, 2))
 
+    def test_size(self):
+        """Test ``size`` property."""
+        var = BaseType("var", np.arange(16).reshape(2, 2, 2, 2))
+        self.assertEqual(var.size, 16)
+
+    def test_ndim(self):
+        """Test ``ndim`` property."""
+        var = BaseType("var", np.arange(16).reshape(2, 2, 2, 2))
+        self.assertEqual(var.ndim, 4)
+
     def test_copy(self):
         """Test lightweight ``__copy__`` method."""
         original = BaseType("var", np.array(1))
@@ -135,6 +145,12 @@ class TestBaseType(unittest.TestCase):
         var = BaseType("var", np.arange(10))
         self.assertEqual(list(iter(var)), list(range(10)))
 
+    def test_array(self):
+        """Test array conversion."""
+        var = BaseType("var", np.arange(16).reshape(2, 2, 2, 2))
+        np.testing.assert_array_equal(np.array(var),
+                                      np.arange(16).reshape(2, 2, 2, 2))
+
 
 class TestStructureType(unittest.TestCase):
 
@@ -146,6 +162,13 @@ class TestStructureType(unittest.TestCase):
         self.assertEqual(var._keys, [])
         self.assertEqual(var._dict, {})
 
+    def test_instance(self):
+        """Test that it is a Mapping and DapType."""
+        var = StructureType("var")
+        from collections import Mapping
+        assert isinstance(var, Mapping)
+        assert isinstance(var, DapType)
+
     def test_repr(self):
         """Test ``__repr__`` method."""
         var = StructureType("var")
@@ -155,6 +178,13 @@ class TestStructureType(unittest.TestCase):
         var["two"] = BaseType("two")
         self.assertEqual(
             repr(var), "<StructureType with children 'one', 'two'>")
+
+    def test_len(self):
+        """Test ``__len__`` method."""
+        var = StructureType("var")
+        var["one"] = BaseType("one")
+        var["two"] = BaseType("two")
+        self.assertEqual(len(var), 2)
 
     def test_contains(self):
         """Test container behavior."""
@@ -359,6 +389,26 @@ class TestGridType(unittest.TestCase):
         self.assertEqual(
             repr(self.example), "<GridType with array 'a' and maps 'x', 'y'>")
 
+    def test_dtype(self):
+        """Test ``dtype`` of grids."""
+        self.assertEqual(self.example.dtype, np.dtype('l'))
+
+    def test_shape(self):
+        """Test ``shape`` of grids."""
+        self.assertEqual(self.example.shape, (30, 50))
+
+    def test_size(self):
+        """Test ``size`` of grids."""
+        self.assertEqual(self.example.size, 30 * 50)
+
+    def test_ndim(self):
+        """Test ``ndim`` of grids."""
+        self.assertEqual(self.example.ndim, 2)
+
+    def test_len(self):
+        """Test ``__len__`` of grids."""
+        self.assertEqual(len(self.example), 30)
+
     def test_getitem(self):
         """Test item retrieval.
 
@@ -387,6 +437,11 @@ class TestGridType(unittest.TestCase):
     def test_array(self):
         """Test ``array`` property."""
         self.assertIs(self.example.array, self.example["a"])
+
+    def test_array2(self):
+        """Test __array__ method."""
+        np.testing.assert_array_equal(np.array(self.example),
+                                      self.example["a"].data)
 
     def test_maps(self):
         """Test ``maps`` property."""

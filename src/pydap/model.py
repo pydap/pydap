@@ -118,7 +118,7 @@ import copy
 from six.moves import reduce, map
 from six import string_types, binary_type
 import numpy as np
-from collections import OrderedDict
+from collections import OrderedDict, Mapping
 
 from .lib import quote, decode_np_strings
 
@@ -215,6 +215,14 @@ class BaseType(DapType):
         """Property that returns the data shape."""
         return self.data.shape
 
+    @property
+    def ndim(self):
+        return len(self.shape)
+
+    @property
+    def size(self):
+        return int(np.prod(self.shape))
+
     def __copy__(self):
         """A lightweight copy of the variable.
 
@@ -264,6 +272,9 @@ class BaseType(DapType):
             for item in self._data:
                 yield item
 
+    def __array__(self):
+        return self.data
+
     def _get_data(self):
         return self._data
 
@@ -272,7 +283,7 @@ class BaseType(DapType):
     data = property(_get_data, _set_data)
 
 
-class StructureType(DapType):
+class StructureType(DapType, Mapping):
     """A dict-like object holding other variables."""
 
     def __init__(self, name, attributes=None, **kwargs):
@@ -342,6 +353,9 @@ class StructureType(DapType):
     def keys(self):
         """Method to emulate a dictionary, returning keys."""
         return self._keys[:]
+
+    def __len__(self):
+        return len(self._keys)
 
     def _get_data(self):
         return [var.data for var in self.children()]
@@ -578,6 +592,28 @@ class GridType(StructureType):
                 var.data = self[var.name].data[slice_]
             return out
 
+    def __len__(self):
+        """Return the first children length."""
+        return len(self.array)
+
+    @property
+    def dtype(self):
+        """Return the first children dtype."""
+        return self.array.dtype
+
+    @property
+    def shape(self):
+        """Return the first children shape."""
+        return self.array.shape
+
+    @property
+    def ndim(self):
+        return len(self.shape)
+
+    @property
+    def size(self):
+        return int(np.prod(self.shape))
+
     @property
     def output_grid(self):
         return self._output_grid
@@ -589,6 +625,9 @@ class GridType(StructureType):
     def array(self):
         """Return the first children."""
         return self[self.keys()[0]]
+
+    def __array__(self):
+        return self.array.data
 
     @property
     def maps(self):
