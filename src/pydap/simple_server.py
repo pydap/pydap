@@ -1,6 +1,8 @@
 from webob.request import Request
+from webob.exc import HTTPError
 import threading
 import time
+import math
 
 from werkzeug.serving import run_simple
 from .handlers.csv import CSVHandler
@@ -66,11 +68,12 @@ class LocalTestServer:
 
     def __init__(self, file_name, port=None,
                  handler=CSVHandler,
-                 wait=1e-2):
+                 wait=0.5, polling=1e-2):
         self.file_name = file_name
         self._port = port or get_open_port()
         self.handler = handler
         self._wait = wait
+        self._polling = polling
 
     def connect(self):
         # Start a simple WSGI server:
@@ -80,9 +83,25 @@ class LocalTestServer:
                                              self.port,
                                              self.handler)))
         self.server_process.start()
-        # Wait a little while for the server to start:
-        time.sleep(self._wait)
+        # Poll the server 
+        ok = False
+        for trial in range(math.ceil(self._wait/self._polling)):
+            try:
+                resp = (Request
+                        .blank("http://0.0.0.0:%s/.dds" % self.port)
+                        .get_response())
+                ok = (resp.status_code == 200)
+            except HTTPError:
+                pass
+            if ok:
+                break
+            time.sleep(self._polling)
 
+        if not ok:
+            raise Exception(('LocalTestServer did not start in {0}s. '
+                             'Try using LocalTestServer(..., wait={1}')
+                            .format(self._wait, 2*self._wait))
+            
     @property
     def port(self):
         return self._port
@@ -97,7 +116,6 @@ class LocalTestServer:
          .blank("http://0.0.0.0:%s/shutdown" % self.port)
          .get_response())
         self.server_process.join()
-        del self.server_process
 
     def __exit__(self, *_):
         self.disconnect()
