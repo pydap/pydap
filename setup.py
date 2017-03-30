@@ -17,8 +17,7 @@ if sys.version_info < (3, 5):
 
 functions_extras = [
     'gsw',
-    'coards',
-    'scipy',
+    'coards'
 ]
 
 server_extras = [
