@@ -18,6 +18,7 @@ from pydap.handlers.csv import CSVHandler
 from webob.exc import HTTPError
 from pydap.client import open_url
 from pydap.simple_server import LocalTestServer
+from pydap.model import DatasetType
 
 import unittest
 
@@ -46,9 +47,6 @@ class TestCSVserver(unittest.TestCase):
 
     def test_open(self):
         """Test that dataset has the correct data proxies for grids."""
-        url = "http://0.0.0.0:8000/" + os.path.basename(self.test_file)
-        dataset = open_url(url)
-        seq = dataset['sequence']
         dtype = [('index', '<i4'),
                  ('temperature', '<f8'),
                  ('station', 'S40')]
@@ -67,6 +65,8 @@ class TestCSVserver(unittest.TestCase):
         with LocalTestServer(self.test_file, handler=CSVHandler) as server:
             url = ("http://0.0.0.0:%s/" % server.port +
                    os.path.basename(self.test_file))
+            dataset = open_url(url)
+            assert isinstance(dataset, DatasetType)
             with self.assertRaises(HTTPError):
                     open_url(url, timeout=1e-8)
 
