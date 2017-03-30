@@ -83,7 +83,7 @@ class LocalTestServer:
                                              self.port,
                                              self.handler)))
         self.server_process.start()
-        # Poll the server 
+        # Poll the server
         ok = False
         for trial in range(int(math.ceil(self._wait/self._polling))):
             try:
@@ -101,7 +101,7 @@ class LocalTestServer:
             raise Exception(('LocalTestServer did not start in {0}s. '
                              'Try using LocalTestServer(..., wait={1}')
                             .format(self._wait, 2*self._wait))
-            
+
     @property
     def port(self):
         return self._port
