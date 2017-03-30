@@ -7,7 +7,6 @@ It is based on CSV data but with more handlers
 it could work with more data formats.
 """
 
-import sys
 import csv
 import tempfile
 import os
@@ -16,6 +15,7 @@ from nose.plugins.attrib import attr
 import warnings
 
 from pydap.handlers.csv import CSVHandler
+from webob.exc import HTTPError
 from pydap.client import open_url
 from pydap.simple_server import LocalTestServer
 
@@ -68,18 +68,7 @@ class TestCSVserver(unittest.TestCase):
             url = ("http://0.0.0.0:%s/" % server.port +
                    os.path.basename(self.test_file))
             with self.assertRaises(HTTPError):
-                with warnings.catch_warnings():
-                    # This is for python 2.6
-                    warnings.filterwarnings('error',
-                                            category=DeprecationWarning,
-                                            message='Currently pydap does not '
-                                                    'support '
-                                                    'user-specified timeouts '
-                                                    'in python 2.6')
-                    try:
-                        open_url(url, timeout=1e-8)
-                    except DeprecationWarning:
-                        raise HTTPError
+                    open_url(url, timeout=1e-8)
 
     def test_timeout_open_dods(self):
         """Test that timeout on open_dods  raises the correct HTTPError"""

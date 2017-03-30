@@ -46,7 +46,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 from .model import DapType
-from .lib import encode
+from .lib import encode, DEFAULT_TIMEOUT
 from .net import GET
 from .handlers.dap import DAPHandler, unpack_data, StreamReader
 from .parsers.dds import build_dataset
