@@ -85,7 +85,7 @@ class LocalTestServer:
         self.server_process.start()
         # Poll the server
         ok = False
-        for trial in range(math.ceil(self._wait/self._polling)):
+        for trial in range(int(math.ceil(self._wait/self._polling))):
             try:
                 resp = (Request
                         .blank("http://0.0.0.0:%s/.dds" % self.port)
