@@ -14,6 +14,7 @@ import operator
 import itertools
 import ast
 import copy
+from collections import Mapping
 
 import numpy as np
 from webob import Request

@@ -4,6 +4,7 @@ import numpy as np
 from pydap.handlers.lib import IterData
 from pydap.model import DatasetType, SequenceType, BaseType
 import pytest
+>>>>>>> IterData is now tested
 
 
 @pytest.fixture

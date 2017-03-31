@@ -11,10 +11,10 @@ import json
 
 from pkg_resources import get_distribution
 
-from pydap.handlers.lib import BaseHandler, IterData
-from pydap.model import DatasetType, SequenceType, BaseType
-from pydap.exceptions import OpenFileError
-from pydap.parsers.das import add_attributes
+from ...handlers.lib import BaseHandler, IterData
+from ...model import DatasetType, SequenceType, BaseType
+from ...exceptions import OpenFileError
+from ...parsers.das import add_attributes
 
 
 class CSVHandler(BaseHandler):
