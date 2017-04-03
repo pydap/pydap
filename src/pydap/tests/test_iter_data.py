@@ -2,7 +2,7 @@
 
 import numpy as np
 from pydap.handlers.lib import IterData
-from pydap.model import DatasetType, SequenceType, BaseType, StructureType
+from pydap.model import DatasetType, SequenceType, BaseType
 
 import unittest
 
@@ -37,7 +37,7 @@ class TestSimpleIterData(unittest.TestCase):
                                        (5, 6, 60.),
                                        (6, 7, 70.),
                                        (7, 8, 80.)],
-                                       seq)
+                                      seq)
 
     def test_iter(self):
         self.assertEqual([tuple(row)
@@ -134,8 +134,8 @@ class TestNestedIterData(unittest.TestCase):
 
     def setUp(self):
         self.shallow_data = [(1, 1, 1), (2, 4, 4),
-                            (3, 6, 9), (4, 8, 16)]
-        self.deep_data = [[(10, 11, 12), (21, 22, 23),],
+                             (3, 6, 9), (4, 8, 16)]
+        self.deep_data = [[(10, 11, 12), (21, 22, 23)],
                           [(15, 16, 17)],
                           [],
                           [(31, 32, 33), (41, 42, 43),
@@ -189,7 +189,6 @@ class TestNestedIterData(unittest.TestCase):
                          [tuple(row) for row in self.nested_data
                           if row[0] > 2])
 
-    #@unittest.skip("This test is not fully implemented")
     def test_projection(self):
         projection = self.nested_data[1::2]
         self.assertEqual([tuple(row) for row in projection],
@@ -210,10 +209,10 @@ class TestNestedIterData(unittest.TestCase):
                     if row[0] < 4]
         filtered = filtered[::2]
         self.assertEqual([tuple(row) for row in filtered],
-                         [(3, 6, 9, [])]) 
+                         [(3, 6, 9, [])])
 
         filtered = self.nested_object[self.nested_object["a"] > 2]
         filtered = filtered[filtered["a"] < 4]
         filtered = filtered[::2]
         self.assertEqual([tuple(row) for row in filtered],
-                         [(3, 6, 9, [])]) 
+                         [(3, 6, 9, [])])

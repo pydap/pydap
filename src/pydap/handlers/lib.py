@@ -308,8 +308,9 @@ class IterData(object):
                 peek = x
                 if isinstance(x, IterData):
                     peek = next(iter(x))
-                return np.dtype([(col, array_dtype(val, template[col])) for col, val in 
-                                 zip(template.keys(), peek)])
+                return np.dtype([(col, array_dtype(val, template[col]))
+                                 for col, val
+                                 in zip(template.keys(), peek)])
             else:
                 return np.array(x).dtype
         return array_dtype(next(iter(self)), self.template)
