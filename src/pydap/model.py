@@ -309,7 +309,7 @@ class StructureType(DapType, Mapping):
     # From these, __contains__, keys, items, values, get, __eq__,
     # and __ne__ are obtained.
     def __iter__(self):
-        if self.__class__ == SequenceType:
+        if isinstance(self, SequenceType):
             warnings.warn('Iteration now yields children names. '
                           'This means that ``for val in sequence: ...`` '
                           'will give children names. '
