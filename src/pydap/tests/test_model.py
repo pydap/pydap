@@ -8,6 +8,7 @@ from pydap.model import (DatasetType, BaseType,
 
 import unittest
 import pytest
+import warnings
 
 
 class TestDapType(unittest.TestCase):
@@ -300,81 +301,83 @@ class TestDatasetType(unittest.TestCase):
         self.assertEqual(child.id, "child")
 
 
-class TestSequenceType(unittest.TestCase):
+@pytest.fixture
+def sequence_example():
+    """Create a standard sequence from the DAP spec."""
+    example = SequenceType("example")
+    example["index"] = BaseType("index")
+    example["temperature"] = BaseType("temperature")
+    example["site"] = BaseType("site")
+    example.data = np.rec.fromrecords([
+        (10, 15.2, "Diamond_St"),
+        (11, 13.1, 'Blacktail_Loop'),
+        (12, 13.3, 'Platinum_St'),
+        (13, 12.1, 'Kodiak_Trail')], names=list(example.keys()))
+    return example
 
-    """Test Pydap sequences."""
 
-    def setUp(self):
-        """Create a standard sequence from the DAP spec."""
-        example = SequenceType("example")
-        example["index"] = BaseType("index")
-        example["temperature"] = BaseType("temperature")
-        example["site"] = BaseType("site")
-        example.data = np.rec.fromrecords([
-            (10, 15.2, "Diamond_St"),
-            (11, 13.1, 'Blacktail_Loop'),
-            (12, 13.3, 'Platinum_St'),
-            (13, 12.1, 'Kodiak_Trail')], names=list(example.keys()))
+def test_data(sequence_example):
+    """Test data assignment in sequences."""
+    np.testing.assert_array_equal(
+        sequence_example["index"].data, np.array([10, 11, 12, 13]))
 
-        self.example = example
 
-    def test_data(self):
-        """Test data assignment in sequences."""
-        np.testing.assert_array_equal(
-            self.example["index"].data, np.array([10, 11, 12, 13]))
+def test_len(sequence_example):
+    """Test that length is read from the data attribute."""
+    assert len(sequence_example.data) == 4
 
-    def test_len(self):
-        """Test that length is read from the data attribute."""
-        self.assertEqual(len(self.example.data), 4)
 
-    def test_iter_(self):
-        """Test that iteration happens over the child names."""
-        for a, b in zip(iter(self.example), self.example.children()):
-            self.assertEqual(a, b.id.split('.')[-1])
+def test_iter_(sequence_example):
+    """Test that iteration happens over the child names."""
+    for a, b in zip(iter(sequence_example), sequence_example.children()):
+        assert a == b.id.split('.')[-1]
 
-    def test_iter_deprecation(self):
-        """Test that direct iteration over data attribute is deprecated."""
-        with pytest.deprecated_call():
-            for a in self.example:
-                self.assertEqual(a, 'index')
-                break
 
-    def test_getitem(self):
-        """Test item retrieval.
+def test_iter_deprecation(sequence_example, recwarn):
+    """Test that direct iteration over data attribute is deprecated."""
+    warnings.simplefilter('always')
+    warnings.warn("deprecated", DeprecationWarning)
+    iter(sequence_example)
+    assert len(recwarn) == 1
+    assert recwarn.pop(DeprecationWarning)
 
-        The ``__getitem__`` method is overloaded for sequences, and behavior
-        will depend on the type of the key. It can either return a child or a
-        new sequence.
 
-        """
-        # a string should return the corresponding child
-        self.assertIsInstance(self.example["index"], BaseType)
+def test_getitem(sequence_example):
+    """Test item retrieval.
 
-        # a tuple should reorder the children
-        self.assertEqual(
-            list(self.example.keys()), ["index", "temperature", "site"])
-        modified = self.example["site", "temperature"]
-        self.assertEqual(list(modified.keys()), ["site", "temperature"])
+    The ``__getitem__`` method is overloaded for sequences, and behavior
+    will depend on the type of the key. It can either return a child or a
+    new sequence.
 
-        # the return sequence is a new one
-        self.assertIsNot(self.example, modified)
-        self.assertIsNot(self.example["site"], modified["site"])
+    """
+    # a string should return the corresponding child
+    assert isinstance(sequence_example["index"], BaseType)
 
-        # and the data is not shared
-        self.assertIsNot(self.example["site"].data, modified["site"].data)
+    # a tuple should reorder the children
+    assert list(sequence_example.keys()) == ["index", "temperature", "site"]
+    modified = sequence_example["site", "temperature"]
+    assert list(modified.keys()) == ["site", "temperature"]
 
-        # it is also possible to slice the data, returning a new sequence
-        subset = self.example[self.example["index"] > 11]
-        self.assertIsNot(self.example, subset)
-        np.testing.assert_array_equal(
-            subset.data,
-            self.example.data[self.example.data["index"] > 11])
+    # the return sequence is a new one
+    assert sequence_example is not modified
+    assert sequence_example["site"] is not modified["site"]
 
-    def test_copy(self):
-        """Test the lightweight ``__copy__`` method."""
-        clone = copy.copy(self.example)
-        self.assertIsNot(self.example, clone)
-        self.assertIs(self.example.data, clone.data)
+    # and the data is not shared
+    assert sequence_example["site"].data is not modified["site"].data
+
+    # it is also possible to slice the data, returning a new sequence
+    subset = sequence_example[sequence_example["index"] > 11]
+    assert sequence_example is not subset
+    np.testing.assert_array_equal(
+        subset.data,
+        sequence_example.data[sequence_example.data["index"] > 11])
+
+
+def test_copy(sequence_example):
+    """Test the lightweight ``__copy__`` method."""
+    clone = copy.copy(sequence_example)
+    assert sequence_example is not clone
+    assert (sequence_example.data == clone.data).all()
 
 
 class TestGridType(unittest.TestCase):

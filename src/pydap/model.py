@@ -314,7 +314,7 @@ class StructureType(DapType, Mapping):
                           'This means that ``for val in sequence: ...`` '
                           'will give children names. '
                           'To iterate over data use the construct '
-                          '``for val in sequence.data: ...``',
+                          '``for val in sequence.iterdata(): ...``',
                           DeprecationWarning)
         for key in self._keys:
             yield key
