@@ -334,7 +334,7 @@ class TestSequenceType(unittest.TestCase):
 
     def test_iter_deprecation(self):
         """Test that direct iteration over data attribute is deprecated."""
-        with pytest.warns(DeprecationWarning):
+        with pytest.deprecated_call():
             for a in self.example:
                 self.assertEqual(a, 'index')
                 break
