@@ -2,15 +2,12 @@
 
 import copy
 import numpy as np
-import warnings
 from pydap.model import (DatasetType, BaseType,
                          SequenceType, StructureType,
                          GridType, DapType)
 
 import unittest
-
-# Cause all warnings to always be triggered.
-warnings.simplefilter("always")
+import pytest
 
 
 class TestDapType(unittest.TestCase):
@@ -337,19 +334,10 @@ class TestSequenceType(unittest.TestCase):
 
     def test_iter_deprecation(self):
         """Test that direct iteration over data attribute is deprecated."""
-        with warnings.catch_warnings(record=True) as w:
+        with pytest.warns(DeprecationWarning):
             for a in self.example:
                 self.assertEqual(a, 'index')
                 break
-            msg = ('Iteration now yields children names. '
-                   'This means that ``for val in sequence: ...`` '
-                   'will give children names. '
-                   'To iterate over data use the construct '
-                   '``for val in sequence.data: ...``')
-            # Verify some things
-            assert len(w) == 1
-            assert issubclass(w[-1].category, DeprecationWarning)
-            assert msg == str(w[-1].message)
 
     def test_getitem(self):
         """Test item retrieval.
