@@ -27,9 +27,9 @@ class TestDapHandler(unittest.TestCase):
         """Test that dataset has the correct data proxies for grids."""
         dataset = DAPHandler("http://localhost:8001/", self.app1).dataset
 
-        self.assertEqual(dataset.keys(), ["SimpleGrid", "x", "y"])
+        self.assertEqual(list(dataset.keys()), ["SimpleGrid", "x", "y"])
         self.assertEqual(
-            dataset.SimpleGrid.keys(), ["SimpleGrid", "x", "y"])
+            list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
         self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
@@ -75,9 +75,9 @@ class TestDapHandler(unittest.TestCase):
         dataset = DAPHandler("http://localhost:8001/", self.app1,
                              output_grid=False).dataset
 
-        self.assertEqual(dataset.keys(), ["SimpleGrid", "x", "y"])
+        self.assertEqual(list(dataset.keys()), ["SimpleGrid", "x", "y"])
         self.assertEqual(
-            dataset.SimpleGrid.keys(), ["SimpleGrid", "x", "y"])
+            list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
         self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
@@ -145,7 +145,7 @@ class TestDapHandler(unittest.TestCase):
                              self.app1).dataset
 
         # object should be a structure, not a grid
-        self.assertEqual(dataset.keys(), ["SimpleGrid"])
+        self.assertEqual(list(dataset.keys()), ["SimpleGrid"])
         self.assertNotIsInstance(dataset.SimpleGrid, GridType)
         self.assertIsInstance(dataset.SimpleGrid, StructureType)
 
@@ -168,9 +168,9 @@ class TestDapHandler(unittest.TestCase):
         """Test that dataset has the correct data proxies for sequences."""
         dataset = DAPHandler("http://localhost:8001/", self.app2).dataset
 
-        self.assertEqual(dataset.keys(), ["cast"])
+        self.assertEqual(list(dataset.keys()), ["cast"])
         self.assertEqual(
-            dataset.cast.keys(), [
+            list(dataset.cast.keys()), [
                 'id', 'lon', 'lat', 'depth', 'time', 'temperature', 'salinity',
                 'pressure'])
 
@@ -200,7 +200,7 @@ class TestDapHandler(unittest.TestCase):
 
         self.assertEqual(dataset.cast.data.slice, (slice(1, 2, 1),))
         self.assertEqual(
-            [tuple(row) for row in dataset.cast], [
+            [tuple(row) for row in dataset.cast.iterdata()], [
                 ('2', 200, 10, 500, 1, 15, 35, 100)])
 
 
@@ -321,7 +321,8 @@ class TestSequenceProxy(unittest.TestCase):
         """Test attributes of the remote sequence."""
         self.assertEqual(self.remote.baseurl, "http://localhost:8001/")
         self.assertEqual(self.remote.id, "sequence")
-        self.assertEqual(self.remote.template.keys(), ["byte", "int", "float"])
+        self.assertEqual(list(self.remote.template.keys()),
+                         ["byte", "int", "float"])
         self.assertEqual(self.remote.selection, [])
         self.assertEqual(self.remote.slice, (slice(None),))
 
@@ -334,7 +335,7 @@ class TestSequenceProxy(unittest.TestCase):
 
         child = self.remote[["float", "int"]]
         self.assertEqual(child.id, "sequence.float,sequence.int")
-        self.assertEqual(child.template.keys(), ["float", "int"])
+        self.assertEqual(list(child.template.keys()), ["float", "int"])
 
         child = self.remote[0]
         self.assertEqual(child.slice, (slice(0, 1, 1),))

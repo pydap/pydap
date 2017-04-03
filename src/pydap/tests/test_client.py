@@ -24,7 +24,7 @@ class TestOpenUrl(unittest.TestCase):
     def test_open_url(self):
         """Open an URL and check dataset keys."""
         dataset = open_url('http://localhost:8001/', self.app)
-        self.assertEqual(dataset.keys(), ["cast"])
+        self.assertEqual(list(dataset.keys()), ["cast"])
 
 
 class TestOpenFile(unittest.TestCase):

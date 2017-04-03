@@ -172,7 +172,7 @@ class TestApplyProjectionGrid(unittest.TestCase):
     def test_simple_projection(self):
         """Test simple projections."""
         dataset = apply_projection(parse_projection("x"), self.dataset)
-        self.assertEqual(dataset.keys(), ["x"])
+        self.assertEqual(list(dataset.keys()), ["x"])
 
     def test_simple_projection_with_index(self):
         """Test simple projections."""
@@ -401,7 +401,7 @@ class TestRegexp(unittest.TestCase):
         ], sequence)
 
         filtered = sequence[ConstraintExpression('sequence.name=~"J.*"')]
-        self.assertEqual(list(filtered), [("John",)])
+        self.assertEqual(list(filtered.iterdata()), [("John",)])
 
 
 class TestNestedIterData(unittest.TestCase):

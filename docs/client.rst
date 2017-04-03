@@ -180,7 +180,7 @@ Note that the variable ``dataset.location`` is of type ``SequenceType`` -- also 
 
 .. code-block:: python
 
-    >>> for i, id_ in enumerate(my_location['_id']):
+    >>> for i, id_ in enumerate(my_location['_id'].iterdata()):
     ...     print id_
     ...     if i == 10:
     ...         print '...'
@@ -215,7 +215,7 @@ And we can print the temperature profiles at each location. We're going to use t
 .. code-block:: python
 
     >>> from coards import from_udunits
-    >>> for position in my_location:
+    >>> for position in my_location.iterdata():
     ...     date = from_udunits(position.JULD.data, position.JULD.units.replace('GMT', '+0:00'))
     ...     print
     ...     print position.LATITUDE.data, position.LONGITUDE.data, date
@@ -307,7 +307,7 @@ These profiles could be easily plotted using `matplotlib <http://matplotlib.sf.n
 
 .. code-block:: python
 
-    >>> for position in my_location:
+    >>> for position in my_location.iterdata():
     ...     plot(position.profile.TEMP, position.profile.PRES)
     >>> show()
 
@@ -315,7 +315,7 @@ You can also access the deep variables directly. When you iterate over these var
 
 .. code-block:: python
 
-    >>> for value in my_location.profile.PRES:
+    >>> for value in my_location.profile.PRES.iterdata():
     ...     print value[:10]
     [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]
     [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]

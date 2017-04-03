@@ -95,7 +95,7 @@ def _sequencetype(var):
         # be inneficient if there are many strings of different length only
         cache = {}
 
-        for record in var:
+        for record in var.iterdata():
             yield START_OF_SEQUENCE
 
             if strings:
@@ -124,7 +124,7 @@ def _sequencetype(var):
         for name in var.keys():
             struct[name] = copy.copy(var[name])
 
-        for record in var:
+        for record in var.iterdata():
             yield START_OF_SEQUENCE
             struct.data = record
             for block in dods(struct):

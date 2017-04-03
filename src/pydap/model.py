@@ -119,6 +119,7 @@ from six.moves import reduce, map
 from six import string_types, binary_type
 import numpy as np
 from collections import OrderedDict, Mapping
+import warnings
 
 from .lib import quote, decode_np_strings
 
@@ -194,7 +195,7 @@ class BaseType(DapType):
 
     def __init__(self, name, data=None, dimensions=None, attributes=None,
                  **kwargs):
-        DapType.__init__(self, name, attributes, **kwargs)
+        super(BaseType, self).__init__(name, attributes, **kwargs)
         self._data = data
         self.dimensions = dimensions or ()
 
@@ -287,7 +288,7 @@ class StructureType(DapType, Mapping):
     """A dict-like object holding other variables."""
 
     def __init__(self, name, attributes=None, **kwargs):
-        DapType.__init__(self, name, attributes, **kwargs)
+        super(StructureType, self).__init__(name, attributes, **kwargs)
 
         # emulate a simple ordered dict
         self._keys = []
@@ -295,10 +296,7 @@ class StructureType(DapType, Mapping):
 
     def __repr__(self):
         return '<%s with children %s>' % (
-            self.__class__.__name__, ', '.join(map(repr, self.keys())))
-
-    def __contains__(self, child):
-        return self._dict.__contains__(child)
+            self.__class__.__name__, ', '.join(map(repr, self._keys)))
 
     def __getattr__(self, attr):
         """Lazy shortcut return children."""
@@ -307,15 +305,45 @@ class StructureType(DapType, Mapping):
         except:
             return DapType.__getattr__(self, attr)
 
+    # __iter__, __getitem__, __len__ are required for Mapping
+    # From these, __contains__, keys, items, values, get, __eq__,
+    # and __ne__ are obtained.
     def __iter__(self):
+        if self.__class__ == SequenceType:
+            warnings.warn('Iteration now yields children names. '
+                          'This means that ``for val in sequence: ...`` '
+                          'will give children names. '
+                          'To iterate over data use the construct '
+                          '``for val in sequence.data: ...``',
+                          DeprecationWarning)
         for key in self._keys:
-            x = self._dict[key]
-            if isinstance(x, binary_type):
-                yield x.tostring().decode('utf-8')
-            else:
-                yield x
+            yield key
 
-    children = __iter__
+    def __getitem__(self, key):
+        try:
+            x = self._dict[quote(key)]
+            if isinstance(x, binary_type):
+                x = x.tostring().decode('utf-8')
+            return x
+        except KeyError:
+            splitted = key.split('.')
+            if len(splitted) > 1:
+                try:
+                    return (self
+                            .__getitem__(splitted[0])['.'.join(splitted[1:])])
+                except KeyError:
+                    return self.__getitem__('.'.join(splitted[1:]))
+            else:
+                raise
+
+    def __len__(self):
+        return len(self._keys)
+
+    def children(self):
+        # children method always yields an
+        # iterator on children:
+        for key in self._keys:
+            yield self[key]
 
     def __setitem__(self, key, item):
         key = quote(key)
@@ -332,30 +360,9 @@ class StructureType(DapType, Mapping):
         # Set item id.
         item.id = '%s.%s' % (self.id, item.name)
 
-    def __getitem__(self, key):
-        try:
-            return self._dict[quote(key)]
-        except KeyError:
-            splitted = key.split('.')
-            if len(splitted) > 1:
-                try:
-                    return (self
-                            .__getitem__(splitted[0])['.'.join(splitted[1:])])
-                except KeyError:
-                    return self.__getitem__('.'.join(splitted[1:]))
-            else:
-                raise
-
     def __delitem__(self, key):
         self._dict.__delitem__(key)
         self._keys.remove(key)
-
-    def keys(self):
-        """Method to emulate a dictionary, returning keys."""
-        return self._keys[:]
-
-    def __len__(self):
-        return len(self._keys)
 
     def _get_data(self):
         return [var.data for var in self.children()]
@@ -498,7 +505,7 @@ class SequenceType(StructureType):
     """
 
     def __init__(self, name, data=None, attributes=None, **kwargs):
-        StructureType.__init__(self, name, attributes, **kwargs)
+        super(SequenceType, self).__init__(name, attributes, **kwargs)
         self._data = data
 
     def _set_data(self, data):
@@ -512,10 +519,7 @@ class SequenceType(StructureType):
 
     data = property(_get_data, _set_data)
 
-    def __len__(self):
-        return len(self.data)
-
-    def __iter__(self):
+    def iterdata(self):
         for line in self.data:
             yield tuple(map(decode_np_strings, line))
 
@@ -526,18 +530,18 @@ class SequenceType(StructureType):
 
         # If it's a tuple, return a new `SequenceType` with selected children.
         elif isinstance(key, tuple):
-            out = SequenceType(self.name, self.data, self.attributes.copy())
+            out = self.__class__(self.name, self._data, self.attributes.copy())
             for name in key:
                 out[name] = copy.copy(StructureType.__getitem__(self, name))
             # copy.copy() is necessary here because a view will be returned in
             # the future:
-            out.data = copy.copy(self.data[list(key)])
+            out.data = copy.copy(self._data[list(key)])
             return out
 
-        # Else return a new `SequenceType` with the data sliced.
+        # Else return a new `SequenceTypeData` with the data sliced.
         else:
             out = copy.copy(self)
-            out.data = self.data[key]
+            out.data = self._data[key]
             return out
 
     def __copy__(self):
@@ -547,13 +551,12 @@ class SequenceType(StructureType):
         data object are not copied.
 
         """
-        out = self.__class__(self.name, self.data, self.attributes.copy())
+        out = self.__class__(self.name, self._data, self.attributes.copy())
         out.id = self.id
 
         # Clone children too.
         for child in self.children():
             out[child.name] = copy.copy(child)
-
         return out
 
 
@@ -566,13 +569,14 @@ class GridType(StructureType):
     """
 
     def __init__(self, name, attributes=None, **kwargs):
-        StructureType.__init__(self, name, attributes, **kwargs)
+        super(GridType, self).__init__(name, attributes, **kwargs)
         self._output_grid = True
 
     def __repr__(self):
         return '<%s with array %s and maps %s>' % (
             self.__class__.__name__,
-            repr(self.keys()[0]), ', '.join(map(repr, self.keys()[1:])))
+            repr(list(self.keys())[0]),
+            ', '.join(map(repr, list(self.keys())[1:])))
 
     def __getitem__(self, key):
         # Return a child.
@@ -591,10 +595,6 @@ class GridType(StructureType):
             for var, slice_ in zip(out.children(), [key] + list(key)):
                 var.data = self[var.name].data[slice_]
             return out
-
-    def __len__(self):
-        """Return the first children length."""
-        return len(self.array)
 
     @property
     def dtype(self):
@@ -624,7 +624,7 @@ class GridType(StructureType):
     @property
     def array(self):
         """Return the first children."""
-        return self[self.keys()[0]]
+        return self[list(self.keys())[0]]
 
     def __array__(self):
         return self.array.data
@@ -632,9 +632,9 @@ class GridType(StructureType):
     @property
     def maps(self):
         """Return the axes in an ordered dict."""
-        return OrderedDict((k, self[k]) for k in self.keys()[1:])
+        return OrderedDict([(k, self[k]) for k in self.keys()][1:])
 
     @property
     def dimensions(self):
         """Return the name of the axes."""
-        return tuple(self.keys()[1:])
+        return tuple(list(self.keys())[1:])
