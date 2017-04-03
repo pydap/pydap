@@ -302,8 +302,17 @@ class IterData(object):
     @property
     def dtype(self):
         """Return Numpy dtype of the object."""
-        peek = next(iter(self))
-        return np.array(peek).dtype
+        def array_dtype(x, template):
+            if (hasattr(template, 'keys') and
+               len(template.keys()) > 1):
+                peek = x
+                if isinstance(x, IterData):
+                    peek = next(iter(x))
+                return np.dtype([(col, array_dtype(val, template[col])) for col, val in 
+                                 zip(template.keys(), peek)])
+            else:
+                return np.array(x).dtype
+        return array_dtype(next(iter(self)), self.template)
 
     def iterdata(self):
         """Included for code symmetry with Types"""
