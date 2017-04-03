@@ -9,6 +9,9 @@ from pydap.model import (DatasetType, BaseType,
 
 import unittest
 
+# Cause all warnings to always be triggered.
+warnings.simplefilter("always")
+
 
 class TestDapType(unittest.TestCase):
 
@@ -335,8 +338,6 @@ class TestSequenceType(unittest.TestCase):
     def test_iter_deprecation(self):
         """Test that direct iteration over data attribute is deprecated."""
         with warnings.catch_warnings(record=True) as w:
-            # Cause all warnings to always be triggered.
-            warnings.simplefilter("always")
             for a in self.example:
                 self.assertEqual(a, 'index')
                 break
