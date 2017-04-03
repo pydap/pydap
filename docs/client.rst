@@ -197,7 +197,7 @@ Note that the variable ``dataset.location`` is of type ``SequenceType`` -- also 
     881368
     1127922
     ...
-    >>> print len(my_location['_id'])
+    >>> print len(my_location['_id'].iterdata())
     623
 
 Note that calculating the length of a sequence takes some time, since the client has to download all the data and do the calculation locally. This is why you should use ``len(my_location['_id'])`` instead of ``len(my_location)``. Both should give the same result (unless the dataset changes between requests), but the former retrieves only data for the ``_id`` variable, while the later retrives data for all variables.
@@ -207,7 +207,7 @@ We can explicitly select just the first 5 profiles from our sequence:
 .. doctest:: python
 
     >>> my_location = my_location[:5]
-    >>> print len(my_location['_id'])
+    >>> print len(my_location['_id'].iterdata())
     5
 
 And we can print the temperature profiles at each location. We're going to use the `coards <http://pypi.python.org/pypi/coards>`_ module to convert the time to a Python ``datetime`` object:
