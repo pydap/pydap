@@ -53,7 +53,7 @@ def ascii(var, printname=True):
 def _sequenctype(var, printname=True):
     yield ', '.join([child.id for child in var.children()])
     yield '\n'
-    for rec in var:
+    for rec in var.iterdata():
         out = copy.copy(var)
         out.__class__ = StructureType
         out.data = rec

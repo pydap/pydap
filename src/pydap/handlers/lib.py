@@ -332,7 +332,7 @@ class IterData(object):
         # column is returned
         if isinstance(key, string_types):
             try:
-                col = self.template.keys().index(key)
+                col = list(self.template.keys()).index(key)
             except ValueError:
                 raise KeyError(key)
             out.level += 1
@@ -341,7 +341,7 @@ class IterData(object):
 
         # return a new sequence with the selected children
         elif isinstance(key, list):
-            cols = [self.template.keys().index(k) for k in key]
+            cols = [list(self.template.keys()).index(k) for k in key]
             # store the original keys for filtering
             out.template._original_keys = out.template._keys
             out.template._keys = key
@@ -501,7 +501,7 @@ def build_filter(expression, template):
                 return [col for col in row if op(a(col), b(col))]
 
             # navigate inside the sequence
-            col = target.keys().index(token)
+            col = list(target.keys()).index(token)
             target = target[col]
 
             # modify data in place; we need to convert tuple to list

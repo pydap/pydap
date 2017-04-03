@@ -53,6 +53,7 @@ class DDSResponse(BaseResponse):
 
     def __iter__(self):
         for line in dds(self.dataset):
+            print(line)
             yield line.encode('ascii')
 
 

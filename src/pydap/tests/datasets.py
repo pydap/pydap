@@ -81,7 +81,7 @@ D1.Drifters.data = np.array(np.rec.fromrecords(list(zip(
     [u"This is a data test string (pass {0}).".format(i*2) for i in range(5)],
     [1000.0, 999.95, 999.80, 999.55, 999.20],
     [999.95, 999.55, 998.75, 997.55, 995.95])),
-    names=D1.Drifters.keys()))
+    names=list(D1.Drifters.keys())))
 
 
 # testing structures
@@ -128,7 +128,7 @@ bounds['sequence']['measurement'] = BaseType('measurement')
 bounds.sequence.data = np.array(np.rec.fromrecords([
     (100, -10, 0, -1, 42),
     (200, 10, 500, 1, 43),
-], names=bounds.sequence.keys()))
+], names=list(bounds.sequence.keys())))
 
 
 # test for density
@@ -140,7 +140,7 @@ ctd['cast']['pressure'] = BaseType('pressure')
 ctd.cast.data = np.array(np.rec.fromrecords([
     (21, 35, 0),
     (15, 35, 100),
-], names=ctd.cast.keys()))
+], names=list(ctd.cast.keys())))
 
 # a simple sequence, simulating a CTD profile
 SimpleSequence = DatasetType(
@@ -159,7 +159,7 @@ SimpleSequence["cast"]["pressure"] = BaseType("pressure")
 SimpleSequence["cast"].data = np.array(np.rec.fromrecords([
     ("1", 100, -10,   0, -1, 21, 35,   0),
     ("2", 200,  10, 500,  1, 15, 35, 100),
-], names=SimpleSequence['cast'].keys()))
+], names=list(SimpleSequence['cast'].keys())))
 # SimpleSequence["cast"].data = IterData([
 #     ("1", 100, -10,   0, -1, 21, 35,   0),
 #     ("2", 200,  10, 500,  1, 15, 35, 100),

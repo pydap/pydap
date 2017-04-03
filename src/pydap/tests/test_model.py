@@ -2,6 +2,7 @@
 
 import copy
 import numpy as np
+import warnings
 from pydap.model import (DatasetType, BaseType,
                          SequenceType, StructureType,
                          GridType, DapType)
@@ -199,12 +200,12 @@ class TestStructureType(unittest.TestCase):
         self.assertEqual(var.value, 42)
         self.assertIs(var.one, var["one"])
 
-    def test_iter(self):
-        """Test iteration, should return all children."""
+    def test_children(self):
+        """Test children iteration, should return all children."""
         var = StructureType("var", value=42, one="1")
         var["one"] = BaseType("one")
         var["two"] = BaseType("two")
-        self.assertEqual(list(iter(var)), [var["one"], var["two"]])
+        self.assertEqual(list(var.children()), [var["one"], var["two"]])
 
     def test_setitem(self):
         """Test item assignment.
@@ -216,7 +217,7 @@ class TestStructureType(unittest.TestCase):
         """
         var = StructureType("var")
         var["foo.bar"] = BaseType("foo.bar")
-        self.assertEqual(var.keys(), ['foo%2Ebar'])
+        self.assertEqual(list(var.keys()), ['foo%2Ebar'])
 
         with self.assertRaises(KeyError):
             var["bar"] = BaseType("baz")
@@ -224,7 +225,7 @@ class TestStructureType(unittest.TestCase):
         # test reordering
         var["bar"] = BaseType("bar")
         var["foo.bar"] = BaseType("foo.bar")
-        self.assertEqual(var.keys(), ['bar', 'foo%2Ebar'])
+        self.assertEqual(list(var.keys()), ['bar', 'foo%2Ebar'])
 
     def test_getitem(self):
         """Test item retrieval."""
@@ -238,10 +239,10 @@ class TestStructureType(unittest.TestCase):
         var = StructureType("var")
         var["one"] = BaseType("one")
 
-        self.assertEqual(var.keys(), ['one'])
+        self.assertEqual(list(var.keys()), ['one'])
 
         del var["one"]
-        self.assertEqual(var.keys(), [])
+        self.assertEqual(list(var.keys()), [])
 
     def test_get_data(self):
         """Test that structure collects data from children."""
@@ -313,7 +314,7 @@ class TestSequenceType(unittest.TestCase):
             (10, 15.2, "Diamond_St"),
             (11, 13.1, 'Blacktail_Loop'),
             (12, 13.3, 'Platinum_St'),
-            (13, 12.1, 'Kodiak_Trail')], names=example.keys())
+            (13, 12.1, 'Kodiak_Trail')], names=list(example.keys()))
 
         self.example = example
 
@@ -327,11 +328,27 @@ class TestSequenceType(unittest.TestCase):
         self.assertEqual(len(self.example.data), 4)
 
     def test_iter_(self):
-        """Test that iteration happens over the data attribute."""
-        for a, b in zip(iter(self.example), iter(self.example.data)):
-            self.assertEqual(a[0], b[0])
-            self.assertAlmostEqual(a[1], b[1])
-            self.assertEqual(a[2], b[2])
+        """Test that iteration happens over the child names."""
+        for a, b in zip(iter(self.example), self.example.children()):
+            self.assertEqual(a, b.id.split('.')[-1])
+
+    def test_iter_deprecation(self):
+        """Test that direct iteration over data attribute is deprecated."""
+        with warnings.catch_warnings(record=True) as w:
+            # Cause all warnings to always be triggered.
+            warnings.simplefilter("always")
+            for a in self.example:
+                self.assertEqual(a, 'index')
+                break
+            msg = ('Iteration now yields children names. '
+                   'This means that ``for val in sequence: ...`` '
+                   'will give children names. '
+                   'To iterate over data use the construct '
+                   '``for val in sequence.data: ...``')
+            # Verify some things
+            assert len(w) == 1
+            assert issubclass(w[-1].category, DeprecationWarning)
+            assert msg == str(w[-1].message)
 
     def test_getitem(self):
         """Test item retrieval.
@@ -346,9 +363,9 @@ class TestSequenceType(unittest.TestCase):
 
         # a tuple should reorder the children
         self.assertEqual(
-            self.example.keys(), ["index", "temperature", "site"])
+            list(self.example.keys()), ["index", "temperature", "site"])
         modified = self.example["site", "temperature"]
-        self.assertEqual(modified.keys(), ["site", "temperature"])
+        self.assertEqual(list(modified.keys()), ["site", "temperature"])
 
         # the return sequence is a new one
         self.assertIsNot(self.example, modified)
@@ -407,7 +424,7 @@ class TestGridType(unittest.TestCase):
 
     def test_len(self):
         """Test ``__len__`` of grids."""
-        self.assertEqual(len(self.example), 30)
+        self.assertEqual(len(self.example), 3)
 
     def test_getitem(self):
         """Test item retrieval.
