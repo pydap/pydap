@@ -29,7 +29,7 @@ typemap = {
     'f': 'Float32',
     'h': 'Int16',
     'i': 'Int32', 'l': 'Int32', 'q': 'Int32',
-    'b': 'Byte',
+    'b': 'Int16',
     'H': 'UInt16',
     'I': 'UInt32', 'L': 'UInt32', 'Q': 'UInt32',
     'B': 'Byte',
