@@ -290,13 +290,13 @@ class StructureType(DapType, Mapping):
     def __init__(self, name, attributes=None, **kwargs):
         super(StructureType, self).__init__(name, attributes, **kwargs)
 
-        # emulate a simple ordered dict
-        self._keys = []
+        # allow some keys to be hidden:
+        self._visible_keys = []
         self._dict = OrderedDict()
 
     def __repr__(self):
         return '<%s with children %s>' % (
-            self.__class__.__name__, ', '.join(map(repr, self._keys)))
+            self.__class__.__name__, ', '.join(map(repr, self.visible_keys)))
 
     def __getattr__(self, attr):
         """Lazy shortcut return children."""
@@ -305,19 +305,30 @@ class StructureType(DapType, Mapping):
         except:
             return DapType.__getattr__(self, attr)
 
+    def __contains__(self, key):
+        return (key in self.visible_keys)
+
     # __iter__, __getitem__, __len__ are required for Mapping
-    # From these, __contains__, keys, items, values, get, __eq__,
+    # From these, keys, items, values, get, __eq__,
     # and __ne__ are obtained.
     def __iter__(self):
-        if isinstance(self, SequenceType):
-            warnings.warn('Iteration now yields children names. '
-                          'This means that ``for val in sequence: ...`` '
-                          'will give children names. '
-                          'To iterate over data use the construct '
-                          '``for val in sequence.iterdata(): ...``',
-                          DeprecationWarning)
-        return iter(self._keys)
-        #return iter(self._dict.keys())
+        return iter(self.visible_keys)
+
+    def all_keys(self):
+        return iter(self._dict.keys())
+
+    def all_items(self):
+        return iter(self._dict.items())
+
+    def all_values(self):
+        return iter(self._dict.values())
+
+    def _set_visible_keys(self, keys):
+        self._visible_keys = keys
+
+    def _get_visible_keys(self):
+        return self._visible_keys
+    visible_keys = property(_get_visible_keys, _set_visible_keys)
 
     def __getitem__(self, key):
         try:
@@ -329,20 +340,19 @@ class StructureType(DapType, Mapping):
             splitted = key.split('.')
             if len(splitted) > 1:
                 try:
-                    return (self
-                            .__getitem__(splitted[0])['.'.join(splitted[1:])])
+                    return self[splitted[0]]['.'.join(splitted[1:])]
                 except KeyError:
-                    return self.__getitem__('.'.join(splitted[1:]))
+                    return self['.'.join(splitted[1:])]
             else:
                 raise
 
     def __len__(self):
-        return len(self._dict)
+        return len(self.visible_keys)
 
     def children(self):
         # children method always yields an
-        # iterator on children:
-        for key in self._keys:
+        # iterator on visible children:
+        for key in self.visible_keys:
             yield self[key]
 
     def __setitem__(self, key, item):
@@ -352,17 +362,21 @@ class StructureType(DapType, Mapping):
                 'Key "%s" is different from variable name "%s"!' %
                 (key, item.name))
 
-        if key in self._keys:
-            self._keys.pop(self._keys.index(key))
-        self._keys.append(key)
+        if key in self:
+            del self[key]
         self._dict[key] = item
+        # By default added keys are visible:
+        self._visible_keys.append(key)
 
         # Set item id.
         item.id = '%s.%s' % (self.id, item.name)
 
     def __delitem__(self, key):
         del self._dict[key]
-        self._keys.remove(key)
+        try:
+            self._visible_keys.remove(key)
+        except ValueError:
+            pass
 
     def _get_data(self):
         return [var.data for var in self.children()]
@@ -382,10 +396,9 @@ class StructureType(DapType, Mapping):
         out = self.__class__(self.name, self.attributes.copy())
         out.id = self.id
 
-        # Clone children too.
-        for child in self.children():
+        # Clone all children too.
+        for child in self.all_values():
             out[child.name] = copy.copy(child)
-
         return out
 
 
@@ -523,6 +536,53 @@ class SequenceType(StructureType):
         for line in self.data:
             yield tuple(map(decode_np_strings, line))
 
+    _iter_deprecation_msg = ('Iteration now yields children names. '
+                             'This means that in the future '
+                             '``for val in sequence: ...`` '
+                             'will give children names. '
+                             'To iterate over data the construct '
+                             '``for val in sequence.iterdata(): ...``'
+                             'is available and will be supported in the'
+                             'future')
+
+    def __iter__(self):
+        # This method should be removed once the deprecation is
+        # complete.
+        warnings.warn(self._iter_deprecation_msg,
+                      PendingDeprecationWarning)
+        return self.iterdata()
+
+    def __len__(self):
+        # This method should be removed once the deprecation is
+        # complete.
+        warnings.warn('len(sequence) will in the future give '
+                      'the number of children and not the '
+                      'length of the dataset.',
+                      PendingDeprecationWarning)
+        return len(self._data)
+
+    def items(self):
+        # This method should be removed once the deprecation is
+        # complete.
+        for key in self.visible_keys:
+            yield (key, self[key])
+
+    def values(self):
+        # This method should be removed once the deprecation is
+        # complete.
+        for key in self.visible_keys:
+            yield self[key]
+
+    def keys(self):
+        # This method should be removed once the deprecation is
+        # complete.
+        return iter(self.visible_keys)
+
+    def __contains__(self, key):
+        # This method should be removed once the deprecation is
+        # complete.
+        return (key in self.visible_keys)
+
     def __getitem__(self, key):
         # If key is a string, return child with the corresponding data.
         if isinstance(key, string_types):
@@ -530,7 +590,7 @@ class SequenceType(StructureType):
 
         # If it's a tuple, return a new `SequenceType` with selected children.
         elif isinstance(key, tuple):
-            out = self.__class__(self.name, self._data, self.attributes.copy())
+            out = type(self)(self.name, self._data, self.attributes.copy())
             for name in key:
                 out[name] = copy.copy(StructureType.__getitem__(self, name))
             # copy.copy() is necessary here because a view will be returned in

@@ -333,7 +333,9 @@ class TestSequenceProxy(unittest.TestCase):
         self.assertEqual(child.template.dtype, np.dtype(">i4"))
         self.assertEqual(child.template.shape, ())
 
+        print(self.remote)
         child = self.remote[["float", "int"]]
+        print(child)
         self.assertEqual(child.id, "sequence.float,sequence.int")
         self.assertEqual(list(child.template.keys()), ["float", "int"])
 
