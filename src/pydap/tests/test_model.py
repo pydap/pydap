@@ -250,6 +250,22 @@ def test_StructureType_getitem():
     assert var["child"] is child
 
 
+def test_StructureType_getitem_tuple():
+    """Test multiple item retrieval."""
+    var = StructureType("var")
+    for name in ['child1', 'child2', 'child3']:
+        child = BaseType(name)
+        var[name] = child
+        assert var[name] is child
+    assert list(var['child1', 'child3'].keys()) == ['child1', 'child3']
+    assert (list(var['child1', 'child3'].values()) ==
+            [BaseType(name) for name in ['child1', 'child3']])
+    assert (list(var['child1', 'child3'].all_keys()) ==
+            ['child1', 'child2', 'child3'])
+    assert (list(var['child1', 'child3'].all_values()) ==
+            [BaseType(name) for name in ['child1', 'child2', 'child3']])
+
+
 def test_StructureType_delitem():
     """Test item deletion."""
     var = StructureType("var")
@@ -376,18 +392,25 @@ def test_SequenceType_getitem(sequence_example):
     # a tuple should reorder the children
     assert list(sequence_example.keys()) == ["index", "temperature", "site"]
     modified = sequence_example["site", "temperature"]
+    assert isinstance(modified, SequenceType)
     assert list(modified.keys()) == ["site", "temperature"]
 
     # the return sequence is a new one
     assert sequence_example is not modified
     assert sequence_example["site"] is not modified["site"]
+    assert isinstance(sequence_example["site"], BaseType)
 
     # and the data is not shared
     assert sequence_example["site"].data is not modified["site"].data
 
+    subset = sequence_example["site"][::2]
+    assert sequence_example is not subset
+    assert isinstance(subset, SequenceType)
+
     # it is also possible to slice the data, returning a new sequence
     subset = sequence_example[sequence_example["index"] > 11]
     assert sequence_example is not subset
+    assert isinstance(subset, SequenceType)
     np.testing.assert_array_equal(
         subset.data,
         sequence_example.data[sequence_example.data["index"] > 11])
@@ -462,7 +485,7 @@ def test_GridType_getitem(gridtype_example):
     assert gridtype_example is not subset
 
 
-def test_GridType_geitem_not_tuple(gridtype_example):
+def test_GridType_getitem_not_tuple(gridtype_example):
     """Test that method works with non-tuple slices."""
     subset = gridtype_example[20:22]
     assert (subset["a"].shape == (2, 50))
