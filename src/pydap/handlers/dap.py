@@ -219,7 +219,7 @@ class SequenceProxy(object):
         # return a new object with requested columns
         elif isinstance(key, list):
             out.sub_children = True
-            out.template._keys = key
+            out.template.visible_keys = key
 
         # return a copy with the added constraints
         elif isinstance(key, ConstraintExpression):
