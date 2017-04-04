@@ -336,7 +336,6 @@ def test_iter_(sequence_example):
 def test_iter_deprecation(sequence_example, recwarn):
     """Test that direct iteration over data attribute is deprecated."""
     warnings.simplefilter('always')
-    warnings.warn("deprecated", DeprecationWarning)
     iter(sequence_example)
     assert len(recwarn) == 1
     assert recwarn.pop(DeprecationWarning)
