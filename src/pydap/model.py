@@ -7,18 +7,32 @@ Here's a simple example of a `BaseType` variable::
 
     >>> import numpy as np
     >>> foo = BaseType('foo', np.arange(4, dtype='i'))
+    >>> bar = BaseType('bar', np.arange(4, dtype='i'))
+    >>> foobar = BaseType('foobar', np.arange(4, dtype='i'))
     >>> print(foo[-2:])
     [2 3]
     >>> print(foo.dtype)
     int32
     >>> print(foo.shape)
     (4,)
+    >>> for record in foo.iterdata():
+    ...     print(record)
+    0
+    1
+    2
+    3
+
+It is also possible to iterate directly over a `BaseType`::
     >>> for record in foo:
     ...     print(record)
     0
     1
     2
     3
+
+This is however discouraged because this approach will soon be deprecated
+for the `SequenceType` where only the ``.iterdata()`` will continue to be
+supported.
 
 The `BaseType` is simply a thin wrapper over Numpy arrays, implementing the
 `dtype` and `shape` attributes, and the sequence and iterable protocols. Why
@@ -37,7 +51,7 @@ arbitrary attributes::
     >>> foo.dimensions = ('time',)
 
 Second, `BaseType` can hold data objects other than Numpy arrays. There are
-more complex data objects, like `pydap.proxy.ArrayProxy`, which acts as a
+more complex data objects, like `pydap.handlers.dap.BaseProxy`, which acts as a
 transparent proxy to a remote dataset, exposing it through the same interface.
 
 Now that we have some data, we can organize it using containers::
@@ -45,13 +59,46 @@ Now that we have some data, we can organize it using containers::
     >>> dataset = DatasetType('baz')
     >>> dataset['s'] = StructureType('s')
     >>> dataset['s']['foo'] = foo
+    >>> dataset['s']['bar'] = bar
+    >>> dataset['s']['foobar'] = foobar
 
 `StructureType` and `DatasetType` are very similar; the only difference is that
 `DatasetType` should be used as the root container for a dataset. They behave
 like ordered Python dictionaries::
 
-    >>> print(dataset.s.keys())
-    ['foo']
+    >>> print(list(dataset.s.keys()))
+    ['foo', 'bar', 'foobar']
+
+Slicing these datasets with a list of keywords yields a `StructureType`
+or `DatasetType` with only a subset of the children::
+
+    >>> print(dataset.s['foo', 'foobar'])
+    <StructureType with children 'foo', 'foobar'>
+    >>> print(list(dataset.s['foo', 'foobar'].keys()))
+    ['foo', 'foobar']
+
+In the same way, the ``.items()`` and ``.values()`` methods are like in python
+dictionnaries and they iterate over sliced values.
+
+The `StructureType`` never forgets of its children when sliced. Slicing a
+`StructureType` in fact simply changes its ``visible_keys`` property::
+
+    >>> print(dataset.s['foo', 'foobar'].visible_keys)
+    ['foo', 'foobar']
+
+The original children of a `StructureType`
+can be recovered by using the ``.all_keys()`` method::
+
+    >>> print(list(dataset.s['foo', 'foobar'].all_keys()))
+    ['foo', 'bar', 'foobar']
+
+In the same way, the ``.all_items()`` and ``.all_values()`` methods are like
+in python dictionnaries and they iterate over sliced values.
+
+Selecting only one child returns the child::
+
+    >>> print(dataset.s['foo'])
+    <BaseType with data array([0, 1, 2, 3], dtype=int32)>
 
 A `GridType` is a special container where the first child should be an
 n-dimensional `BaseType`. This children should be followed by `n` additional
@@ -66,9 +113,12 @@ variable::
     >>> print(rain.array)  #doctest: +ELLIPSIS
     <BaseType with data array([[0, 1, 2],
            [3, 4, 5]])>
-    >>> print(rain.maps)
-    OrderedDict([('x', <BaseType with data array([0, 1, 2])>),
-                 ('y', <BaseType with data array([0, 1])>)])
+    >>> print(type(rain.maps))
+    <class 'collections.OrderedDict'>
+    >>> for item in rain.maps.items():
+    ...     print(item)
+    ('x', <BaseType with data array([0, 1, 2])>)
+    ('y', <BaseType with data array([0, 1])>)
 
 There a last special container called `SequenceType`. This data structure is
 analogous to a series of records (or rows), with one column for each of its
@@ -87,14 +137,14 @@ Note that the data in this case is attributed to the `SequenceType`, and is
 composed of a series of values for each of the children.  Pydap `SequenceType`
 obects are very flexible. Data can be accessed by iterating over the object::
 
-    >>> for record in cast:
+    >>> for record in cast.iterdata():
     ...     print(record)
     (10.0, 17.0, 35.0, '1')
     (20.0, 15.0, 35.0, '2')
 
 It is possible to select only a few variables::
 
-    >>> for record in cast['salinity', 'depth']:
+    >>> for record in cast['salinity', 'depth'].iterdata():
     ...     print(record)
     (35.0, 10.0)
     (35.0, 20.0)
@@ -103,14 +153,29 @@ It is possible to select only a few variables::
     float32
     >>> print(cast['temperature'].shape)
     (2,)
+
+When sliced, it yields the underlying array:
+    >>> print(type(cast['temperature'][-1:]))
+    <class 'numpy.ndarray'>
     >>> for record in cast['temperature'][-1:]:
     ...     print(record)
     15.0
+
+When constrained, it yields the SequenceType:
+    >>> print(type(cast[ cast['temperature'] < 16 ]))
+    <class 'pydap.model.SequenceType'>
+    >>> for record in cast[ cast['temperature'] < 16 ].iterdata():
+    ...     print(record)
+    (20.0, 15.0, 35.0, '2')
+
+As mentioned earlier, it is still possible to iterate directly over data::
 
     >>> for record in cast[ cast['temperature'] < 16 ]:
     ...     print(record)
     (20.0, 15.0, 35.0, '2')
 
+But this is discouraged as this will be deprecated soon. The ``.iterdata()`` is
+therefore highly recommended.
 """
 
 import operator
@@ -231,8 +296,8 @@ class BaseType(DapType):
         dimensions, same name, and a view of the data.
 
         """
-        out = self.__class__(self.name, self.data, self.dimensions[:],
-                             self.attributes.copy())
+        out = type(self)(self.name, self.data, self.dimensions[:],
+                         self.attributes.copy())
         out.id = self.id
         return out
 
@@ -257,21 +322,25 @@ class BaseType(DapType):
 
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
-        if hasattr(self.data, 'dtype') and self.data.dtype.char == 'S':
-            return np.vectorize(decode_np_strings)(self.data[index])
+        if hasattr(self._data, 'dtype') and self._data.dtype.char == 'S':
+            return np.vectorize(decode_np_strings)(self._data[index])
         else:
-            return self.data[index]
+            return self._data[index]
 
     def __len__(self):
         return len(self.data)
 
     def __iter__(self):
         if hasattr(self._data, 'dtype') and self._data.dtype.char == 'S':
-            for item in self._data:
-                yield decode_np_strings(item)
+            for item in self.data:
+                yield np.vectorize(decode_np_strings)(item)
         else:
-            for item in self._data:
+            for item in self.data:
                 yield item
+
+    def iterdata(self):
+        """ This method was added to mimic new SequenceType method."""
+        return iter(self)
 
     def __array__(self):
         return self.data
@@ -330,7 +399,8 @@ class StructureType(DapType, Mapping):
         return self._visible_keys
     visible_keys = property(_get_visible_keys, _set_visible_keys)
 
-    def __getitem__(self, key):
+    def _getitem_string(self, key):
+        """ Assume that key is a string type """
         try:
             x = self._dict[quote(key)]
             if isinstance(x, binary_type):
@@ -345,6 +415,25 @@ class StructureType(DapType, Mapping):
                     return self['.'.join(splitted[1:])]
             else:
                 raise
+
+    def _getitem_string_tuple(self, key):
+        """ Assume that key is a tuple of strings """
+        out = type(self)(self.name, data=self.data,
+                         attributes=self.attributes.copy())
+        for name in key:
+            out[name] = copy.copy(self._getitem_string(name))
+        return out
+
+    def __getitem__(self, key):
+        if isinstance(key, string_types):
+            return self._getitem_string(key)
+        elif (isinstance(key, tuple) and
+              all(isinstance(name, string_types)
+                  for name in key)):
+            self.visible_keys = list(key)
+            return self
+        else:
+            raise KeyError(key)
 
     def __len__(self):
         return len(self.visible_keys)
@@ -393,7 +482,7 @@ class StructureType(DapType, Mapping):
         data object are not copied.
 
         """
-        out = self.__class__(self.name, self.attributes.copy())
+        out = type(self)(self.name, self.attributes.copy())
         out.id = self.id
 
         # Clone all children too.
@@ -453,25 +542,25 @@ class SequenceType(StructureType):
 
     Iteraring over the sequence returns data:
 
-        >>> for line in seq:
+        >>> for line in seq.iterdata():
         ...     print(line)
-        (10, 15.199999809265137, 'Diamond_St')
-        (11, 13.100000381469727, 'Blacktail_Loop')
-        (12, 13.300000190734863, 'Platinum_St')
-        (13, 12.100000381469727, 'Kodiak_Trail')
+        (10, 15.2, 'Diamond_St')
+        (11, 13.1, 'Blacktail_Loop')
+        (12, 13.3, 'Platinum_St')
+        (13, 12.1, 'Kodiak_Trail')
 
     The order of the variables can be changed:
 
-        >>> for line in seq['temperature', 'site', 'index']:
+        >>> for line in seq['temperature', 'site', 'index'].iterdata():
         ...     print(line)
-        (15.199999809265137, 'Diamond_St', 10)
-        (13.100000381469727, 'Blacktail_Loop', 11)
-        (13.300000190734863, 'Platinum_St', 12)
-        (12.100000381469727, 'Kodiak_Trail', 13)
+        (15.2, 'Diamond_St', 10)
+        (13.1, 'Blacktail_Loop', 11)
+        (13.3, 'Platinum_St', 12)
+        (12.1, 'Kodiak_Trail', 13)
 
     We can iterate over children:
 
-        >>> for line in seq['temperature']:
+        >>> for line in seq['temperature'].iterdata():
         ...     print(line)
         15.2
         13.1
@@ -480,32 +569,33 @@ class SequenceType(StructureType):
 
     We can filter the data:
 
-        >>> for line in seq[ seq.index > 10 ]:
+        >>> for line in seq[ seq.index > 10 ].iterdata():
         ...     print(line)
-        (11, 13.100000381469727, 'Blacktail_Loop')
-        (12, 13.300000190734863, 'Platinum_St')
-        (13, 12.100000381469727, 'Kodiak_Trail')
+        (11, 13.1, 'Blacktail_Loop')
+        (12, 13.3, 'Platinum_St')
+        (13, 12.1, 'Kodiak_Trail')
 
-        >>> for line in seq[ seq.index > 10 ]['site']:
+        >>> for line in seq[ seq.index > 10 ]['site'].iterdata():
         ...     print(line)
         Blacktail_Loop
         Platinum_St
         Kodiak_Trail
 
-        >>> for line in seq['site', 'temperature'][ seq.index > 10 ]:
+        >>> for line in (seq['site', 'temperature'][seq.index > 10]
+        ...              .iterdata()):
         ...     print(line)
-        ('Blacktail_Loop', 13.100000381469727)
-        ('Platinum_St', 13.300000190734863)
-        ('Kodiak_Trail', 12.100000381469727)
+        ('Blacktail_Loop', 13.1)
+        ('Platinum_St', 13.3)
+        ('Kodiak_Trail', 12.1)
 
     Or slice it:
 
-        >>> for line in seq[::2]:
+        >>> for line in seq[::2].iterdata():
         ...     print(line)
-        (10, 15.199999809265137, 'Diamond_St')
-        (12, 13.300000190734863, 'Platinum_St')
+        (10, 15.2, 'Diamond_St')
+        (12, 13.3, 'Platinum_St')
 
-        >>> for line in seq[ seq.index > 10 ][::2]['site']:
+        >>> for line in seq[ seq.index > 10 ][::2]['site'].iterdata():
         ...     print(line)
         Blacktail_Loop
         Kodiak_Trail
@@ -559,7 +649,7 @@ class SequenceType(StructureType):
                       'the number of children and not the '
                       'length of the dataset.',
                       PendingDeprecationWarning)
-        return len(self._data)
+        return len(self.data)
 
     def items(self):
         # This method should be removed once the deprecation is
@@ -586,22 +676,20 @@ class SequenceType(StructureType):
     def __getitem__(self, key):
         # If key is a string, return child with the corresponding data.
         if isinstance(key, string_types):
-            return StructureType.__getitem__(self, key)
+            return self._getitem_string(key)
 
         # If it's a tuple, return a new `SequenceType` with selected children.
         elif isinstance(key, tuple):
-            out = type(self)(self.name, self._data, self.attributes.copy())
-            for name in key:
-                out[name] = copy.copy(StructureType.__getitem__(self, name))
+            out = self._getitem_string_tuple(key)
             # copy.copy() is necessary here because a view will be returned in
             # the future:
-            out.data = copy.copy(self._data[list(key)])
+            out.data = copy.copy(self.data[list(key)])
             return out
 
-        # Else return a new `SequenceTypeData` with the data sliced.
+        # Else return a new `SequenceType` with the data sliced.
         else:
             out = copy.copy(self)
-            out.data = self._data[key]
+            out.data = self.data[key]
             return out
 
     def __copy__(self):
@@ -611,7 +699,7 @@ class SequenceType(StructureType):
         data object are not copied.
 
         """
-        out = self.__class__(self.name, self._data, self.attributes.copy())
+        out = type(self)(self.name, self.data, self.attributes.copy())
         out.id = self.id
 
         # Clone children too.
@@ -641,9 +729,15 @@ class GridType(StructureType):
     def __getitem__(self, key):
         # Return a child.
         if isinstance(key, string_types):
-            return StructureType.__getitem__(self, key)
+            return self._getitem_string(key)
 
         # Return a new `GridType` with part of the data.
+        elif (isinstance(key, tuple) and
+              all(isinstance(name, string_types)
+                  for name in key)):
+            out = self._getitem_string_tuple(key)
+            for var in out.children():
+                var.data = self[var.name].data
         else:
             if not self.output_grid:
                 return self.array[key]
