@@ -292,7 +292,7 @@ class StructureType(DapType, Mapping):
 
         # emulate a simple ordered dict
         self._keys = []
-        self._dict = {}
+        self._dict = OrderedDict()
 
     def __repr__(self):
         return '<%s with children %s>' % (
@@ -316,8 +316,8 @@ class StructureType(DapType, Mapping):
                           'To iterate over data use the construct '
                           '``for val in sequence.iterdata(): ...``',
                           DeprecationWarning)
-        for key in self._keys:
-            yield key
+        return iter(self._keys)
+        #return iter(self._dict.keys())
 
     def __getitem__(self, key):
         try:
@@ -337,7 +337,7 @@ class StructureType(DapType, Mapping):
                 raise
 
     def __len__(self):
-        return len(self._keys)
+        return len(self._dict)
 
     def children(self):
         # children method always yields an
@@ -361,7 +361,7 @@ class StructureType(DapType, Mapping):
         item.id = '%s.%s' % (self.id, item.name)
 
     def __delitem__(self, key):
-        self._dict.__delitem__(key)
+        del self._dict[key]
         self._keys.remove(key)
 
     def _get_data(self):
