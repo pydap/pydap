@@ -281,7 +281,7 @@ We can also iterate over the ``SequenceType``. In this case, it will return a se
     (2, 20)
     (3, 30)
 
-Prior to Pydap 3.3, this approach was not possible and one had to iterate directly over ``SequenceType``: 
+Prior to Pydap 3.2.2, this approach was not possible and one had to iterate directly over ``SequenceType``: 
 
 .. doctest::
 
