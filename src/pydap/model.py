@@ -10,6 +10,10 @@ Here's a simple example of a `BaseType` variable::
     >>> bar = BaseType('bar', np.arange(4, dtype='i'))
     >>> foobar = BaseType('foobar', np.arange(4, dtype='i'))
     >>> print(foo[-2:])
+    <BaseType with data array([2, 3], dtype=int32)>
+    >>> print(foo[-2:].data)
+    [2 3]
+    >>> print(foo.data[-2:])
     [2 3]
     >>> print(foo.dtype)
     int32
@@ -156,8 +160,8 @@ It is possible to select only a few variables::
 
 When sliced, it yields the underlying array:
     >>> print(type(cast['temperature'][-1:]))
-    <class 'numpy.ndarray'>
-    >>> for record in cast['temperature'][-1:]:
+    <class 'pydap.model.BaseType'>
+    >>> for record in cast['temperature'][-1:].iterdata():
     ...     print(record)
     15.0
 
@@ -281,6 +285,11 @@ class BaseType(DapType):
         """Property that returns the data shape."""
         return self.data.shape
 
+    def reshape(self, *args):
+        """Method that reshapes the data:"""
+        self.data = self.data.reshape(*args)
+        return self
+
     @property
     def ndim(self):
         return len(self.shape)
@@ -322,28 +331,37 @@ class BaseType(DapType):
 
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
-        if hasattr(self._data, 'dtype') and self._data.dtype.char == 'S':
-            return np.vectorize(decode_np_strings)(self._data[index])
-        else:
-            return self._data[index]
+        out = copy.copy(self)
+        out.data = self._get_data_index(index)
+        return out
 
     def __len__(self):
         return len(self.data)
 
     def __iter__(self):
-        if hasattr(self._data, 'dtype') and self._data.dtype.char == 'S':
+        if self._is_string_dtype:
             for item in self.data:
                 yield np.vectorize(decode_np_strings)(item)
         else:
             for item in self.data:
                 yield item
 
+    @property
+    def _is_string_dtype(self):
+        return hasattr(self._data, 'dtype') and self._data.dtype.char == 'S'
+
     def iterdata(self):
         """ This method was added to mimic new SequenceType method."""
         return iter(self)
 
     def __array__(self):
-        return self.data
+        return self._get_data_index()
+
+    def _get_data_index(self, index=Ellipsis):
+        if self._is_string_dtype:
+            return np.vectorize(decode_np_strings)(self._data[index])
+        else:
+            return self._data[index]
 
     def _get_data(self):
         return self._data
@@ -381,7 +399,9 @@ class StructureType(DapType, Mapping):
     # From these, keys, items, values, get, __eq__,
     # and __ne__ are obtained.
     def __iter__(self):
-        return iter(self.visible_keys)
+        for key in self._dict.keys():
+            if key in self.visible_keys:
+                yield key
 
     def all_keys(self):
         return iter(self._dict.keys())
@@ -626,51 +646,43 @@ class SequenceType(StructureType):
         for line in self.data:
             yield tuple(map(decode_np_strings, line))
 
-    _iter_deprecation_msg = ('Iteration now yields children names. '
-                             'This means that in the future '
-                             '``for val in sequence: ...`` '
-                             'will give children names. '
-                             'To iterate over data the construct '
-                             '``for val in sequence.iterdata(): ...``'
-                             'is available and will be supported in the'
-                             'future')
-
     def __iter__(self):
-        # This method should be removed once the deprecation is
-        # complete.
-        warnings.warn(self._iter_deprecation_msg,
+        # This method should be removed in Pydap 3.4
+        warnings.warn('Starting with Pydap 3.4 '
+                      '``for val in sequence: ...`` '
+                      'will give children names. '
+                      'To iterate over data the construct '
+                      '``for val in sequence.iterdata(): ...``'
+                      'is available now and will be supported in the'
+                      'future to iterate over data.',
                       PendingDeprecationWarning)
         return self.iterdata()
 
     def __len__(self):
-        # This method should be removed once the deprecation is
-        # complete.
-        warnings.warn('len(sequence) will in the future give '
+        # This method should be removed in Pydap 3.4
+        warnings.warn('Starting with Pydap 3.4, '
+                      '``len(sequence)`` will give '
                       'the number of children and not the '
-                      'length of the dataset.',
+                      'length of the data.',
                       PendingDeprecationWarning)
         return len(self.data)
 
     def items(self):
-        # This method should be removed once the deprecation is
-        # complete.
+        # This method should be removed in Pydap 3.4
         for key in self.visible_keys:
             yield (key, self[key])
 
     def values(self):
-        # This method should be removed once the deprecation is
-        # complete.
+        # This method should be removed in Pydap 3.4
         for key in self.visible_keys:
             yield self[key]
 
     def keys(self):
-        # This method should be removed once the deprecation is
-        # complete.
+        # This method should be removed in Pydap 3.4
         return iter(self.visible_keys)
 
     def __contains__(self, key):
-        # This method should be removed once the deprecation is
-        # complete.
+        # This method should be removed in Pydap 3.4
         return (key in self.visible_keys)
 
     def __getitem__(self, key):
