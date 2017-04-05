@@ -51,10 +51,14 @@ The second attribute is called ``id``. In the examples we've seen so far, ``id``
 
 .. doctest::
 
-    >>> print(a.name, a.id)
-    a a
-    >>> print(c.name, c.id)
-    long%20%26%20complicated long%20%26%20complicated
+    >>> print(a.name)
+    a
+    >>> print(a.id)
+    a
+    >>> print(c.name)
+    long%20%26%20complicated
+    >>> print(c.id)
+    long%20%26%20complicated
 
 This is because the ``id`` is used to show the position of the variable in a given dataset, and in these
 examples the variables do not belong to any datasets. First let's store our variables in a container
@@ -166,8 +170,10 @@ Note that the default type for variables is ``Int32``:
 
 .. doctest::
 
-    >>> print(a.dtype, b.dtype)
-    int64 int64
+    >>> print(a.dtype)
+    int64
+    >>> print(b.dtype)
+    int64
 
 When you *slice* a ``BaseType`` array, the slice is simply passed onto the data attribute. So we may have:
 
