@@ -19,7 +19,6 @@ Here an example of creating one of these objects:
 
     >>> from pydap.model import *
     >>> import numpy as np
-    >>> np.set_printoptions(suppress=True) # Important for doctests
     >>> a = BaseType(
     ...         'a',
     ...         data=np.array([1]),
@@ -260,12 +259,13 @@ Let's add some data to our sequence. This can be done by attributing a structure
     >>> print(s)
     <SequenceType with children 'a', 'long%20%26%20complicated'>
     >>> test_data = np.array([
-    ... (1, 10),
-    ... (2, 20),
-    ... (3, 30)],
+    ... (1, 10.0),
+    ... (2, 20.0),
+    ... (3, 30.0)],
     ... dtype=np.dtype([
     ... ('a', np.int32), ('long%20%26%20complicated', np.float32)]))
     >>> s.data = test_data
+    >>> np.set_printoptions(suppress=False) # Important for doctests
     >>> print(s.data)
     [(1, 10.0) (2, 20.0) (3, 30.0)]
 
