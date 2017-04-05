@@ -251,7 +251,7 @@ class DapType(object):
         except (KeyError, TypeError):
             raise AttributeError(
                 "'%s' object has no attribute '%s'"
-                % (self.__class__, attr))
+                % (type(self), attr))
 
     def children(self):
         """Return iterator over children."""
@@ -273,7 +273,7 @@ class BaseType(DapType):
         self._shape = ()
 
     def __repr__(self):
-        return '<%s with data %s>' % (self.__class__.__name__, repr(self.data))
+        return '<%s with data %s>' % (type(self).__name__, repr(self.data))
 
     @property
     def dtype(self):
@@ -383,7 +383,7 @@ class StructureType(DapType, Mapping):
 
     def __repr__(self):
         return '<%s with children %s>' % (
-            self.__class__.__name__, ', '.join(map(repr, self.visible_keys)))
+            type(self).__name__, ', '.join(map(repr, self.visible_keys)))
 
     def __getattr__(self, attr):
         """Lazy shortcut return children."""
@@ -734,7 +734,7 @@ class GridType(StructureType):
 
     def __repr__(self):
         return '<%s with array %s and maps %s>' % (
-            self.__class__.__name__,
+            type(self).__name__,
             repr(list(self.keys())[0]),
             ', '.join(map(repr, list(self.keys())[1:])))
 
