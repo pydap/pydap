@@ -305,6 +305,10 @@ class IterData(object):
         peek = next(iter(self))
         return np.array(peek).dtype
 
+    def iterdata(self):
+        """Included for code symmetry with Types"""
+        return iter(self)
+
     def __iter__(self):
         data = iter(self.stream)
 

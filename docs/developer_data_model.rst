@@ -18,19 +18,17 @@ Here an example of creating one of these objects:
 .. doctest::
 
     >>> from pydap.model import *
+    >>> import numpy as np
     >>> a = BaseType(
     ...         'a',
-    ...         data=1,
-    ...         shape=(),
-    ...         dimensions=(),
-    ...         type=Int32,
+    ...         data=np.array([1]),
     ...         attributes={'long_name': 'variable a'})
 
 All Pydap types have five attributes in common. The first one is the ``name`` of the variable; in this case, our variable is called "a":
 
 .. doctest::
 
-    >>> print a.name
+    >>> print(a.name)
     a
 
 Note that there's a difference between the variable name (the local name ``a``) and its attribute ``name``; in this example they are equal, but we could reference our object using any other name:
@@ -38,7 +36,7 @@ Note that there's a difference between the variable name (the local name ``a``) 
 .. doctest::
 
     >>> b = a  # b now points to a
-    >>> print b.name
+    >>> print(b.name)
     a
 
 We can use special characters for the variable names; they will be quoted accordingly:
@@ -46,16 +44,16 @@ We can use special characters for the variable names; they will be quoted accord
 .. doctest::
 
     >>> c = BaseType('long & complicated')
-    >>> print c.name
+    >>> print(c.name)
     long%20%26%20complicated
 
 The second attribute is called ``id``. In the examples we've seen so far, ``id`` and ``name`` are equal:
 
 .. doctest::
 
-    >>> print a.name, a.id
+    >>> print(a.name, a.id)
     a a
-    >>> print c.name, c.id
+    >>> print(c.name, c.id)
     long%20%26%20complicated long%20%26%20complicated
 
 This is because the ``id`` is used to show the position of the variable in a given dataset, and in these
@@ -85,11 +83,11 @@ it may contain any number of ``StructureType`` objects, which can be deeply nest
 
     >>> dataset = DatasetType('example')
     >>> dataset['s'] = s
-    >>> print dataset.id
+    >>> print(dataset.id)
     example
-    >>> print dataset['s'].id
+    >>> print(dataset['s'].id)
     s
-    >>> print dataset['s']['a'].id
+    >>> print(dataset['s']['a'].id)
     s.a
 
 Note that for objects on the first level of the dataset, like ``s``, the id is identical to the name.
@@ -98,7 +96,7 @@ variables with a period. One detail is that we can access variables stored in a 
 
 .. doctest::
 
-    >>> print dataset.s.a.id
+    >>> print(dataset.s.a.id)
     s.a
 
 The third common attribute that variables share is called ``attributes``, which hold most of its metadata.
@@ -107,14 +105,14 @@ For our variable ``a`` we have:
 
 .. doctest::
 
-    >>> print a.attributes
+    >>> print(a.attributes)
     {'long_name': 'variable a'}
 
 These attributes can be accessed lazily directly from the variable:
 
 .. doctest::
 
-    >>> print a.long_name
+    >>> print(a.long_name)
     variable a
 
 But if you want to create a new attribute you'll have to insert it directly into ``attributes``:
@@ -122,11 +120,13 @@ But if you want to create a new attribute you'll have to insert it directly into
 .. doctest::
 
     >>> a.history = 'Created by me'
-    >>> print a.attributes
+    >>> print(a.attributes)
     {'long_name': 'variable a'}
     >>> a.attributes['history'] = 'Created by me'
-    >>> print a.attributes
-    {'long_name': 'variable a', 'history': 'Created by me'}
+    >>> for key in sorted(a.attributes.keys()):
+    ...     print((key, a.attributes[key]))
+    ('history', 'Created by me')
+    ('long_name', 'variable a')
 
 It's always better to use the correct syntax instead of the lazy one when writing code.
 Use the lazy syntax only when introspecting a dataset on the Python interpreter, to save a few keystrokes.
@@ -135,9 +135,8 @@ The fourth attribute is called ``data``, and it holds a representation of the ac
 We'll take a detailed look of this attribute in the next subsection.
 
 .. note:: Prior to Pydap 3.2, all variables had also an attribute called ``_nesting_level``.
-          This attribute has value 1 if the variable is inside a ``SequenceType`` object,
+          This attribute had value 1 if the variable was inside a ``SequenceType`` object,
           0 if it's outside, and >1 if it's inside a nested sequence.
-          This will become clearer later when we talk about sequential data.
           Since Pydap 3.2, the ``_nesting_level`` has been deprecated and there is no
           intrisic way of finding the where in a deep object a variable is located.
 
@@ -155,35 +154,33 @@ though we can also use a Numpy scalar or Python number:
 
 .. doctest::
 
-    >>> a = BaseType('a', data=1)
-    >>> print a.data
-    1
+    >>> a = BaseType('a', data=np.array([1]))
+    >>> print(a.data)
+    [1]
 
-    >>> import numpy
-    >>> b = BaseType('b', data=numpy.arange(4), shape=(4,))
-    >>> print b.data
+    >>> b = BaseType('b', data=np.arange(4))
+    >>> print(b.data)
     [0 1 2 3]
 
 Note that the default type for variables is ``Int32``:
 
 .. doctest::
 
-    >>> print a.type, b.type
-    <class 'pydap.model.Int32'> <class 'pydap.model.Int32'>
+    >>> print(a.dtype, b.dtype)
+    int64 int64
 
 When you *slice* a ``BaseType`` array, the slice is simply passed onto the data attribute. So we may have:
 
 .. doctest::
 
-    >>> print b[-1]
+    >>> print(b[-1])
+    <BaseType with data 3>
+    >>> print(b[-1].data)
     3
-    >>> print b[:2]
+    >>> print(b[:2])
+    <BaseType with data array([0, 1])>
+    >>> print(b[:2].data)
     [0 1]
-    >>> print a[0]
-    Traceback (most recent call last):
-      File "<stdin>", line 1, in <module>
-      File "pydap/model.py", line 188, in __getitem__
-    TypeError: 'int' object is unsubscriptable
     
 You can think of a ``BaseType`` object as a thin layer around Numpy arrays, 
 until you realize that the ``data`` attribute can be *any* object implementing the array interface! 
@@ -194,16 +191,17 @@ Here's an example:
 
 .. doctest::
 
-    >>> from pydap.proxy import ArrayProxy
-    >>> pseudo_array = ArrayProxy(
-    ...         'SST.SST',
+    >>> from pydap.handlers.dap import BaseProxy
+    >>> pseudo_array = BaseProxy(
     ...         'http://test.opendap.org/dap/data/nc/coads_climatology.nc',
+    ...         'SST.SST',
+    ...         np.float64,
     ...         (12, 90, 180))
-    >>> print pseudo_array[0, 10:14, 10:14]  # download the corresponding data
-    [[ -1.26285708e+00  -9.99999979e+33  -9.99999979e+33  -9.99999979e+33]
-     [ -7.69166648e-01  -7.79999971e-01  -6.75454497e-01  -5.95714271e-01]
-     [  1.28333330e-01  -5.00000156e-02  -6.36363626e-02  -1.41666666e-01]
-     [  6.38000011e-01   8.95384610e-01   7.21666634e-01   8.10000002e-01]]
+    >>> print(pseudo_array[0, 10:14, 10:14])  # download the corresponding data
+    [[[ -1.26285708e+00  -9.99999979e+33  -9.99999979e+33  -9.99999979e+33]
+      [ -7.69166648e-01  -7.79999971e-01  -6.75454497e-01  -5.95714271e-01]
+      [  1.28333330e-01  -5.00000156e-02  -6.36363626e-02  -1.41666666e-01]
+      [  6.38000011e-01   8.95384610e-01   7.21666634e-01   8.10000002e-01]]]
     
 In the example above, the data is only downloaded in the last line, when the pseudo array is sliced. The object will construct the appropriate DAP URL, request the data, unpack it and return a Numpy array. 
 
@@ -217,21 +215,21 @@ A ``StructureType`` holds no data; instead, its ``data`` attribute is a property
     >>> s = StructureType('s')
     >>> s[a.name] = a
     >>> s[b.name] = b
-    >>> print a.data
-    1
-    >>> print b.data
+    >>> print(a.data)
+    [1]
+    >>> print(b.data)
     [0 1 2 3]
-    >>> print s.data
-    (1, array([0, 1, 2, 3]))
+    >>> print(s.data)
+    [array([1]), array([0, 1, 2, 3])]
 
 The opposite is also true; it's possible to specify the structure data and have it propagated to the children:
 
 .. doctest::
 
     >>> s.data = (1, 2)
-    >>> print s.a.data
+    >>> print(s.a.data)
     1
-    >>> print s.b.data
+    >>> print(s.b.data)
     2
 
 The same is true for objects of ``DatasetType``, since the dataset is simply the root structure.
@@ -239,7 +237,8 @@ The same is true for objects of ``DatasetType``, since the dataset is simply the
 ``SequenceType``
 ****************
 
-A ``SequenceType`` object is a special kind of ``StructureType`` holding sequential data. Here's an example of a sequence holding the variables ``a`` and ``c`` that we created before:
+A ``SequenceType`` object is a special kind of ``StructureType`` holding sequential data. 
+Here's an example of a sequence holding the variables ``a`` and ``c`` that we created before:
 
 .. doctest::
 
@@ -247,153 +246,163 @@ A ``SequenceType`` object is a special kind of ``StructureType`` holding sequent
     >>> s[a.name] = a
     >>> s[c.name] = c
 
-Let's add some data to our sequence. This can be done in several ways, the easiest of which is adding the data to its children:
+Let's add some data to our sequence. This can be done by attributing a structured numpy array to the data attribute:
 
 .. doctest::
 
-    >>> s.a.data = [1,2,3]
-    >>> s.b.data = [10,20,30]
-    >>> s.data
-    array([[1, 10],
-           [2, 20],
-           [3, 30]], dtype=object)
+    >>> print(s)
+    <SequenceType with children 'a', 'long%20%26%20complicated'>
+    >>> test_data = np.array([
+    ... (1, 10),
+    ... (2, 20),
+    ... (3, 30)],
+    ... dtype=np.dtype([
+    ... ('a', np.int32), ('long%20%26%20complicated', np.float32)]))
+    >>> s.data = test_data
+    >>> print(s.data)
+    [(1, 10.0) (2, 20.0) (3, 30.0)]
 
-Note that the data for the sequence is an aggregation of the children data, similar to Python's ``zip()`` builtin. This will be more complicated when encountering nested sequences, but for flat sequences they behave the same.
+Note that the data for the sequence is an aggregation of the children data, similar to Python's ``zip()`` builtin. 
+This will be more complicated when encountering nested sequences, but for flat sequences they behave the same.
 
-We can also iterate over the ``SequenceType``. In this case, it will return a series of ``StructureType`` objects, each one containing data for the children variables. The ``StructureType`` will have the same children as the sequence, with each one containing data for a single record:
-
-.. doctest::
-
-    >>> for record in s:
-    ...     print type(record), record.keys(), record.data
-    <class 'pydap.model.StructureType'> ['a', 'b'] (1, 10)
-    <class 'pydap.model.StructureType'> ['a', 'b'] (2, 20)
-    <class 'pydap.model.StructureType'> ['a', 'b'] (3, 30)
-
-The second way of defining the data of a ``SequenceType`` is by setting if directly to the object:
+We can also iterate over the ``SequenceType``. In this case, it will return a series of tuples with the data: 
 
 .. doctest::
 
-    >>> s.data = [(4,40), (5,50)]
-    >>> s['a'].data
-    array([4, 5], dtype=object)
+    >>> for record in s.iterdata():
+    ...     print(record)
+    (1, 10.0)
+    (2, 20.0)
+    (3, 30.0)
 
-Like in the ``StructureType``, the data is propagated to its children. Note that in the two cases the data was defined using Python lists, being automatically converted to Numpy arrays. In fact, the ``SequenceType`` behaves pretty much like `record arrays <http://docs.scipy.org/doc/numpy/user/basics.rec.html>`_ from Numpy, since we can reference them by column (``s['a']``) or by index:
+Prior to Pydap 3.3, this approach was not possible and one had to iterate directly over ``SequenceType``: 
+
+.. doctest::
+
+    >>> for record in s.iterdata():
+    ...     print(record)
+    (1, 10.0)
+    (2, 20.0)
+    (3, 30.0)
+
+This approach will be deprecated in Pydap 3.4.
+
+The ``SequenceType`` behaves pretty much like `record arrays <http://docs.scipy.org/doc/numpy/user/basics.rec.html>`_ from 
+Numpy, since we can reference them by column (``s['a']``) or by index:
 
 .. doctest::
 
     >>> s[1].data
-    array([[5, 50]], dtype=object)
-    >>> s[ s.a < 5 ].data
-    array([[4, 40]], dtype=object)
+    (2, 20.0)
+    >>> s[ s.a < 3 ].data
+    array([(1, 10.0), (2, 20.0)], 
+          dtype=[('a', '<i4'), ('long%20%26%20complicated', '<f4')])
 
 Note that these objects are also ``SequenceType`` themselves. The basic rules when working with sequence data are: 
 
 1. When a ``SequenceType`` is sliced with a string the corresponding children is returned. For example: ``s['a']`` will return child ``a``;
-2. When a ``SequenceType`` is iterated over it will return a series of ``StructureType`` objects, each one containing the data for a record;
+2. When a ``SequenceType`` is iterated over (using ``.iterdata()`` after Pydap 3.3) it will return a series of ``StructureType`` objects, each one containing the data for a record;
 3. When a ``SequenceType`` is sliced with an integer, a comparison or a ``slice()`` a new ``SequenceType`` will be returned;
 4. When a ``SequenceType`` is sliced with a tuple of strings a new ``SequenceType`` will be returned, containing only the children defined in the tuple in the new order. For example, ``s[('c', 'a')]`` will return a sequence ``s`` with the children ``c`` and ``a``, in that order.
 
 Note that except for rule 4 ``SequenceType`` mimics the behavior of Numpy record arrays.
 
-Now imagine that we want to add to a ``SequenceType`` data pulled from a relational database. The easy way would be to fetch the data in the correct column order, and insert it into the sequence. But what if we don't want to store the data in memory, and instead we would like to stream it directly from the database? In this case we can create an object that behaves like a record array, similar to the proxy object that implements the array interface. Pydap defines a "protocol" called ``SequenceData``, which is simply any object that:
+Now imagine that we want to add to a ``SequenceType`` data pulled from a relational database. 
+The easy way would be to fetch the data in the correct column order, and insert it into the sequence. 
+But what if we don't want to store the data in memory, and instead we would like to stream it directly from the database? 
+In this case we can create an object that behaves like a record array, similar to the proxy object that implements the array interface. 
+Pydap defines a "protocol" called ``IterData``, which is simply any object that:
 
 1. Returns data when iterated over.
-2. Returns a new ``SequenceData`` when sliced such that:
+2. Returns a new ``IterData`` when sliced such that:
 
-   a) if the slice is a string the new ``SequenceData`` contains data only for that children;
+   a) if the slice is a string the new ``IterData`` contains data only for that children;
    b) if the slice is a tuple of strings the object contains only those children, in that order;
    c) if the slice is an integer, a ``slice()`` or a comparison, the data is filter accordingly.
 
-The base implementation works by wrapping data from a basic Numpy array:
-
-.. code-block:: python
-
-    class SequenceData(object):
-        """
-        An extended Numpy record array.
-
-        The so-called ``SequenceData`` protocol extends the behavior of record
-        arrays from Numpy so that tuples passed to ``_getitem__`` return a new
-        object with only those children.
-
-        """
-        def __init__(self, data, keys):
-            self.data = data
-            self.keys = keys
-
-        def __iter__(self):
-            return iter(self.data)
-
-        def __len__(self):
-            return len(self.data)
-
-        def __getitem__(self, key):
-            if isinstance(key, basestring):
-                col = self.keys.index(key)
-                return SequenceData(self.data[:,col], ())
-            elif isinstance(key, tuple):
-                return SequenceData(
-                    numpy.dstack([self.data[:, self.keys.index(k)] for k in key]),
-                    key)
-            else:
-                return SequenceData(self.data[key], self.keys)
-
-        # comparison are passed to the data object
-        def __eq__(self, other): return self.data == other
-        def __ne__(self, other): return self.data != other
-        def __ge__(self, other): return self.data >= other
-        def __le__(self, other): return self.data <= other
-        def __gt__(self, other): return self.data > other
-        def __lt__(self, other): return self.data < other
-
+The base implementation works by wrapping data from a basic Numpy array. 
 And here is an example of how we would use it:
 
 .. doctest::
 
-    >>> from pydap.model import SequenceData
-    >>> s.data = SequenceData(numpy.array([(1,2), (10,20)]), ('a', 'b'))
+    >>> from pydap.handlers.lib import IterData
+    >>> s.data = IterData(np.array([(1,2), (10,20)]), s)
+    >>> print(s)
+    <SequenceType with children 'a', 'long%20%26%20complicated'>
     >>> s2 = s.data[ s['a'] > 1 ]
-    >>> s2.data
-    array([[10, 20]])
+    >>> print(s2)
+    <IterData to stream array([[ 1,  2],
+           [10, 20]])>
+    >>> for record in s2.iterdata():
+    ...     print(record)
+    (10, 20)
 
-There are many implementations of classes derived from ``SequenceData``: ``pydap.proxy.SequenceProxy`` is a proxy to sequential data on Opendap servers, ``pydap.handlers.csv.CSVProxy`` wraps a CSV file, and ``pydap.handlers.sql.SQLProxy`` works as a stream to a relational database.
+One can also iterate directly over the ``IterData`` object to obtain the data:
+
+.. doctest::
+
+    >>> for record in s2:
+    ...     print(record)
+    (10, 20)
+
+This approach will not be deprecated in Pydap 3.4.
+
+There are many implementations of classes derived from ``IterData``: ``pydap.handlers.dap.SequenceProxy`` is a proxy to 
+sequential data on Opendap servers, ``pydap.handlers.csv.CSVProxy`` wraps a CSV file, 
+and ``pydap.handlers.sql.SQLProxy`` works as a stream to a relational database.
 
 ``GridType``
 ************
 
-A ``GridType`` is a special kind of object that behaves like an array and a ``StructureType``. The class is derived from ``StructureType``; the major difference is that the first defined variable is a multidimensional array, while subsequent children are vector maps that define the axes of the array. This way, the ``data`` attribute on a ``GridType`` returns the data of all its children: the n-dimensional array followed by *n* maps.
+A ``GridType`` is a special kind of object that behaves like an array and a ``StructureType``. 
+The class is derived from ``StructureType``; the major difference is that the first defined variable is a multidimensional array, 
+while subsequent children are vector maps that define the axes of the array. This way, the ``data`` attribute on a ``GridType`` 
+returns the data of all its children: the n-dimensional array followed by *n* maps.
 
 Here is a simple example:
 
 .. doctest::
 
     >>> g = GridType('g')
-    >>> data = numpy.arange(6.)
+    >>> data = np.arange(6.)
     >>> data.shape = (2, 3)
-    >>> g['a'] = BaseType('a', data=data, shape=data.shape, type=Float32, dimensions=('x', 'y'))
-    >>> g['x'] = BaseType('x', data=numpy.arange(2.), shape=(2,), type=Float64)
-    >>> g['y'] = BaseType('y', data=numpy.arange(3.), shape=(3,), type=Float64)
+    >>> g['a'] = BaseType('a', data=data, shape=data.shape, type=np.float32, dimensions=('x', 'y'))
+    >>> g['x'] = BaseType('x', data=np.arange(2.), shape=(2,), type=np.float64)
+    >>> g['y'] = BaseType('y', data=np.arange(3.), shape=(3,), type=np.float64)
     >>> g.data
-    (array([[ 0.,  1.,  2.],
-           [ 3.,  4.,  5.]]), array([ 0.,  1.]), array([ 0.,  1.,  2.]))
+    [array([[ 0.,  1.,  2.],
+           [ 3.,  4.,  5.]]), array([ 0.,  1.]), array([ 0.,  1.,  2.])]
  
 Grid behave like arrays in that they can be sliced. When this happens, a new ``GridType`` is returned with the proper data and axes:
 
 .. doctest::
 
-    >>> print g
-    <class 'pydap.model.GridType'>
-        with data
-    [[ 0.  1.  2.]
-     [ 3.  4.  5.]]
-        and axes
-    [ 0.  1.]
-    [ 0.  1.  2.]
-    >>> print g[0]
-    <class 'pydap.model.GridType'>
-        with data
-    [[ 0.  1.  2.]]
-        and axes
-    [ 0.]
+    >>> print(g)
+    <GridType with array 'a' and maps 'x', 'y'>
+    >>> print(g[0])
+    <GridType with array 'a' and maps 'x', 'y'>
+    >>> print(g[0].data)
+    [array([ 0.,  1.,  2.]), 0.0, array([ 0.,  1.,  2.])]
+
+It is possible to disable this feature (some older servers might not handle it nicely):
+
+.. doctest::
+
+    >>> g = GridType('g')
+    >>> g.set_output_grid(False)
+    >>> data = np.arange(6.)
+    >>> data.shape = (2, 3)
+    >>> g['a'] = BaseType('a', data=data, shape=data.shape, type=np.float32, dimensions=('x', 'y'))
+    >>> g['x'] = BaseType('x', data=np.arange(2.), shape=(2,), type=np.float64)
+    >>> g['y'] = BaseType('y', data=np.arange(3.), shape=(3,), type=np.float64)
+    >>> g.data
+    [array([[ 0.,  1.,  2.],
+           [ 3.,  4.,  5.]]), array([ 0.,  1.]), array([ 0.,  1.,  2.])]
+    >>> print(g)
+    <GridType with array 'a' and maps 'x', 'y'>
+    >>> print(g[0])
+    <BaseType with data array([ 0.,  1.,  2.])>
+    >>> print(g[0].name)
+    a
+    >>> print(g[0].data)
     [ 0.  1.  2.]

@@ -405,7 +405,7 @@ def test_SequenceType_getitem(sequence_example):
 
     subset = sequence_example["site"][::2]
     assert sequence_example is not subset
-    assert isinstance(subset, SequenceType)
+    assert isinstance(subset, BaseType)
 
     # it is also possible to slice the data, returning a new sequence
     subset = sequence_example[sequence_example["index"] > 11]
