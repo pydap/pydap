@@ -19,6 +19,7 @@ Here an example of creating one of these objects:
 
     >>> from pydap.model import *
     >>> import numpy as np
+    >>> np.set_printoptions(suppress=True) # Important for doctests
     >>> a = BaseType(
     ...         'a',
     ...         data=np.array([1]),
