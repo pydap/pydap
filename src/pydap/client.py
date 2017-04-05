@@ -17,7 +17,7 @@ This allows calling server-specific functions, like those supported by the
 Ferret and the GrADS data servers:
 
     >>> from pydap.client import open_dods
-    >>> dataset = open_dods( 
+    >>> dataset = open_dods(
     ...     "http://test.pydap.org/coads.nc.dods",
     ...     metadata=True)
 

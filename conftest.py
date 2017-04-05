@@ -1,5 +1,5 @@
 # Define which file to ignore in tests:
-collect_ignore = ["setup.py", "bootstrap.py"]
+collect_ignore = ["setup.py", "bootstrap.py", "docs/conf.py"]
 
 # This line should be deleted once the online documentation is
 # fixed:
