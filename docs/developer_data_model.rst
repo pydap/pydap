@@ -259,15 +259,14 @@ Let's add some data to our sequence. This can be done by attributing a structure
     >>> print(s)
     <SequenceType with children 'a', 'long%20%26%20complicated'>
     >>> test_data = np.array([
-    ... (1, 10.0),
-    ... (2, 20.0),
-    ... (3, 30.0)],
+    ... (1, 10),
+    ... (2, 20),
+    ... (3, 30)],
     ... dtype=np.dtype([
-    ... ('a', np.int32), ('long%20%26%20complicated', np.float32)]))
+    ... ('a', np.int32), ('long%20%26%20complicated', np.int16)]))
     >>> s.data = test_data
-    >>> np.set_printoptions(suppress=False) # Important for doctests
     >>> print(s.data)
-    [(1, 10.0) (2, 20.0) (3, 30.0)]
+    [(1, 10) (2, 20) (3, 30)]
 
 Note that the data for the sequence is an aggregation of the children data, similar to Python's ``zip()`` builtin. 
 This will be more complicated when encountering nested sequences, but for flat sequences they behave the same.
@@ -278,9 +277,9 @@ We can also iterate over the ``SequenceType``. In this case, it will return a se
 
     >>> for record in s.iterdata():
     ...     print(record)
-    (1, 10.0)
-    (2, 20.0)
-    (3, 30.0)
+    (1, 10)
+    (2, 20)
+    (3, 30)
 
 Prior to Pydap 3.3, this approach was not possible and one had to iterate directly over ``SequenceType``: 
 
@@ -288,9 +287,9 @@ Prior to Pydap 3.3, this approach was not possible and one had to iterate direct
 
     >>> for record in s.iterdata():
     ...     print(record)
-    (1, 10.0)
-    (2, 20.0)
-    (3, 30.0)
+    (1, 10)
+    (2, 20)
+    (3, 30)
 
 This approach will be deprecated in Pydap 3.4.
 
@@ -300,17 +299,18 @@ Numpy, since we can reference them by column (``s['a']``) or by index:
 .. doctest::
 
     >>> s[1].data
-    (2, 20.0)
+    (2, 20)
     >>> s[ s.a < 3 ].data
-    array([(1, 10.0), (2, 20.0)], 
-          dtype=[('a', '<i4'), ('long%20%26%20complicated', '<f4')])
+    array([(1, 10), (2, 20)], 
+          dtype=[('a', '<i4'), ('long%20%26%20complicated', '<i2')])
 
 Note that these objects are also ``SequenceType`` themselves. The basic rules when working with sequence data are: 
 
 1. When a ``SequenceType`` is sliced with a string the corresponding children is returned. For example: ``s['a']`` will return child ``a``;
-2. When a ``SequenceType`` is iterated over (using ``.iterdata()`` after Pydap 3.3) it will return a series of ``StructureType`` objects, each one containing the data for a record;
+2. When a ``SequenceType`` is iterated over (using ``.iterdata()`` after Pydap 3.3) it will return a series of tuples, each one containing the data for a record;
 3. When a ``SequenceType`` is sliced with an integer, a comparison or a ``slice()`` a new ``SequenceType`` will be returned;
-4. When a ``SequenceType`` is sliced with a tuple of strings a new ``SequenceType`` will be returned, containing only the children defined in the tuple in the new order. For example, ``s[('c', 'a')]`` will return a sequence ``s`` with the children ``c`` and ``a``, in that order.
+4. When a ``SequenceType`` is sliced with a tuple of strings a new ``SequenceType`` will be returned, containing only the children defined in the tuple in the new order.
+   For example, ``s[('c', 'a')]`` will return a sequence ``s`` with the children ``c`` and ``a``, in that order.
 
 Note that except for rule 4 ``SequenceType`` mimics the behavior of Numpy record arrays.
 
@@ -333,7 +333,7 @@ And here is an example of how we would use it:
 .. doctest::
 
     >>> from pydap.handlers.lib import IterData
-    >>> s.data = IterData(np.array([(1,2), (10,20)]), s)
+    >>> s.data = IterData(np.array([(1, 2), (10, 20)]), s)
     >>> print(s)
     <SequenceType with children 'a', 'long%20%26%20complicated'>
     >>> s2 = s.data[ s['a'] > 1 ]
@@ -371,14 +371,14 @@ Here is a simple example:
 .. doctest::
 
     >>> g = GridType('g')
-    >>> data = np.arange(6.)
+    >>> data = np.arange(6)
     >>> data.shape = (2, 3)
-    >>> g['a'] = BaseType('a', data=data, shape=data.shape, type=np.float32, dimensions=('x', 'y'))
-    >>> g['x'] = BaseType('x', data=np.arange(2.), shape=(2,), type=np.float64)
-    >>> g['y'] = BaseType('y', data=np.arange(3.), shape=(3,), type=np.float64)
+    >>> g['a'] = BaseType('a', data=data, shape=data.shape, type=np.int32, dimensions=('x', 'y'))
+    >>> g['x'] = BaseType('x', data=np.arange(2), shape=(2,), type=np.int32)
+    >>> g['y'] = BaseType('y', data=np.arange(3), shape=(3,), type=np.int32)
     >>> g.data
-    [array([[ 0.,  1.,  2.],
-           [ 3.,  4.,  5.]]), array([ 0.,  1.]), array([ 0.,  1.,  2.])]
+    [array([[0, 1, 2],
+               [3, 4, 5]]), array([0, 1]), array([0, 1, 2])]
  
 Grid behave like arrays in that they can be sliced. When this happens, a new ``GridType`` is returned with the proper data and axes:
 
@@ -389,7 +389,7 @@ Grid behave like arrays in that they can be sliced. When this happens, a new ``G
     >>> print(g[0])
     <GridType with array 'a' and maps 'x', 'y'>
     >>> print(g[0].data)
-    [array([ 0.,  1.,  2.]), 0.0, array([ 0.,  1.,  2.])]
+    [array([0, 1, 2]), 0, array([0, 1, 2])]
 
 It is possible to disable this feature (some older servers might not handle it nicely):
 
@@ -397,19 +397,19 @@ It is possible to disable this feature (some older servers might not handle it n
 
     >>> g = GridType('g')
     >>> g.set_output_grid(False)
-    >>> data = np.arange(6.)
+    >>> data = np.arange(6)
     >>> data.shape = (2, 3)
-    >>> g['a'] = BaseType('a', data=data, shape=data.shape, type=np.float32, dimensions=('x', 'y'))
-    >>> g['x'] = BaseType('x', data=np.arange(2.), shape=(2,), type=np.float64)
-    >>> g['y'] = BaseType('y', data=np.arange(3.), shape=(3,), type=np.float64)
+    >>> g['a'] = BaseType('a', data=data, shape=data.shape, type=np.int32, dimensions=('x', 'y'))
+    >>> g['x'] = BaseType('x', data=np.arange(2), shape=(2,), type=np.int32)
+    >>> g['y'] = BaseType('y', data=np.arange(3), shape=(3,), type=np.int32)
     >>> g.data
-    [array([[ 0.,  1.,  2.],
-           [ 3.,  4.,  5.]]), array([ 0.,  1.]), array([ 0.,  1.,  2.])]
+    [array([[0, 1, 2],
+           [3, 4, 5]]), array([0, 1]), array([0, 1, 2])]
     >>> print(g)
     <GridType with array 'a' and maps 'x', 'y'>
     >>> print(g[0])
-    <BaseType with data array([ 0.,  1.,  2.])>
+    <BaseType with data array([0, 1, 2])>
     >>> print(g[0].name)
     a
     >>> print(g[0].data)
-    [ 0.  1.  2.]
+    [0  1  2]
