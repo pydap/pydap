@@ -1,4 +1,5 @@
-"""Pydap client.
+"""
+Pydap client.
 
 This module contains functions to access DAP servers. The most common use is to
 open a dataset by its canonical URL, ie, without any DAP related extensions
@@ -38,7 +39,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
     >>> dataset = open_url(
     ...     'http://test.opendap.org/dap/data/nc/coads_climatology.nc')
     >>> new_dataset = dataset.functions.geogrid(dataset.SST, 10, 20, -10, 60)
-    >>> print(new_dataset.SST.SST.shape)
+    >>> print(new_dataset.SST.SST.shape) #doctest: +SKIP
     (12, 12, 21)
 
 """

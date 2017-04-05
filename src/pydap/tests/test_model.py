@@ -8,6 +8,8 @@ from pydap.model import (DatasetType, BaseType,
 import pytest
 import warnings
 
+warnings.simplefilter('always')
+
 
 # Test the super class for Pydap types.
 def test_DapType_quote():
@@ -357,7 +359,6 @@ def test_SequenceType_data(sequence_example):
 def test_SequenceType_len(sequence_example, recwarn):
     """Test that length is read from the data attribute."""
     assert len(list(sequence_example.keys())) == 3
-    warnings.simplefilter('always')
     assert len(sequence_example) == 4
     assert len(recwarn) == 1
     assert recwarn.pop(PendingDeprecationWarning)
@@ -372,7 +373,6 @@ def test_SequenceType_iter_(sequence_example):
 
 def test_SequenceType_iter_deprecation(sequence_example, recwarn):
     """Test that direct iteration over data attribute is deprecated."""
-    warnings.simplefilter('always')
     iter(sequence_example)
     assert len(recwarn) == 1
     assert recwarn.pop(PendingDeprecationWarning)
