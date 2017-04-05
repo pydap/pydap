@@ -197,7 +197,7 @@ Here's an example:
     ...         'SST.SST',
     ...         np.float64,
     ...         (12, 90, 180))
-    >>> print(pseudo_array[0, 10:14, 10:14])  # download the corresponding data
+    >>> print(pseudo_array[0, 10:14, 10:14])  # download the corresponding data #doctest: +SKIP
     [[[ -1.26285708e+00  -9.99999979e+33  -9.99999979e+33  -9.99999979e+33]
       [ -7.69166648e-01  -7.79999971e-01  -6.75454497e-01  -5.95714271e-01]
       [  1.28333330e-01  -5.00000156e-02  -6.36363626e-02  -1.41666666e-01]
