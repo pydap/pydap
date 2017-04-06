@@ -17,6 +17,71 @@ START_OF_SEQUENCE = b'\x5a\x00\x00\x00'
 END_OF_SEQUENCE = b'\xa5\x00\x00\x00'
 STRING = '|S128'
 
+NUMPY_TO_DAP2_TYPEMAP = {
+    'd': 'Float64',
+    'f': 'Float32',
+    'h': 'Int16',
+    'H': 'UInt16',
+    'i': 'Int32', 'l': 'Int32', 'q': 'Int32',
+    'I': 'UInt32', 'L': 'UInt32', 'Q': 'UInt32',
+    # DAP2 does not support signed bytes.
+    # It's Byte type is unsigned and thus corresponds
+    # to numpy's 'B'.
+    # The consequence is that there is no natural way
+    # in DAP2 to represent numpy's 'b' type.
+    # Ideally, DAP2 would have a signed Byte type
+    # and a usigned UByte type and we would have the
+    # following mapping: {'b': 'Byte', 'B': 'UByte'}
+    # but this not how the protocol has been defined.
+    # This means that numpy's 'b' must be mapped to Int16
+    # and data must be upconverted in the DODS response.
+    'b': 'Int16',
+    'B': 'Byte',
+    # There are no boolean types in DAP2. Upconvert to
+    # Byte:
+    '?': 'Byte',
+    'S': 'String',
+    # Map numpy's 'U' to String b/c
+    # DAP2 does not explicitly support unicode.
+    'U': 'String'
+}
+
+# DAP2 demands big-endian 32 bytes signed integers
+# www.opendap.org/pdf/dap_2_data_model.pdf
+# Before pydap 3.2.2, length was
+# big-endian 32 bytes UNSIGNED integers:
+DAP2_ARRAY_LENGTH_NUMPY_TYPE = '>I'
+# Since pydap 3.2.2, the length type is accurate:
+# DAP2_ARRAY_LENGTH_NUMPY_TYPE = '>i'
+
+DAP2_TO_NUMPY_TYPEMAP = {
+    'Float64': '>d',
+    'Float32': '>f',
+    # This is a weird aspect of the DAP2 specification.
+    # For backward-compatibility, Int16 and UInt16 are
+    # encoded as 32 bits integers in the response,
+    # respectively:
+    'Int16': '>i',
+    'UInt16': '>I',
+    'Int32': '>i',
+    'UInt32': '>I',
+    # DAP2 does not support signed bytes.
+    # It's Byte type is unsigned and thus corresponds
+    # to numpy 'B'.
+    # The consequence is that there is no natural way
+    # in DAP2 to represent numpy's 'b' type.
+    # Ideally, DAP2 would have a signed Byte type
+    # and a usigned UByte type and we would have the
+    # following mapping: {'Byte': 'b', 'UByte': 'B'}
+    # but this not how the protocol has been defined.
+    # This means that DAP2 Byte is unsigned and must be
+    # mapped to numpy's 'B' type, usigned byte.
+    'Byte': 'B',
+    # Map String to numpy's string type 'S' b/c
+    # DAP2 does not explicitly support unicode.
+    'String': 'S'
+}
+
 
 def quote(name):
     """Return quoted name according to the DAP specification.

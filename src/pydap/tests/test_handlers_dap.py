@@ -215,7 +215,7 @@ class TestBaseProxy(unittest.TestCase):
 
         self.data = BaseProxy(
                               "http://localhost:8001/", "byte",
-                              np.dtype("b"), (5,),
+                              np.dtype("B"), (5,),
                               application=self.app)
 
     def test_repr(self):
@@ -223,7 +223,7 @@ class TestBaseProxy(unittest.TestCase):
         self.assertEqual(
                          repr(self.data),
                          "BaseProxy('http://localhost:8001/', 'byte', "
-                         "dtype('int8'), (5,), "
+                         "dtype('uint8'), (5,), "
                          "(slice(None, None, None),))")
 
     def test_getitem(self):

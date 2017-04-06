@@ -96,7 +96,8 @@ class TestDDSResponseStructure(unittest.TestCase):
         res = app.get('/.dds')
         self.assertEqual(res.text, """Dataset {
     Structure {
-        Byte b;
+        Int16 b;
+        Byte ub;
         Int32 i32;
         UInt32 ui32;
         Int16 i16;
@@ -105,6 +106,7 @@ class TestDDSResponseStructure(unittest.TestCase):
         Float64 f64;
         String s;
         String u;
+        String U;
     } types;
 } SimpleStructure;
 """)

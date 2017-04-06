@@ -16,10 +16,6 @@ from . import SimpleParser
 from ..lib import walk
 
 
-atomic = ('byte', 'int', 'uint', 'int16', 'uint16', 'int32', 'uint32',
-          'float32', 'float64', 'string', 'url')
-
-
 class DASParser(SimpleParser):
 
     """A parser for the Dataset Attribute Structure response."""
