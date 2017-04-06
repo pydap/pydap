@@ -4,6 +4,7 @@ import numpy as np
 from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
 from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy
+from pydap.handlers.dap import find_pattern_in_string_iter
 from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
 
@@ -386,6 +387,28 @@ class TestSequenceProxy(unittest.TestCase):
 
         child = self.remote["byte"]
         self.assertEqual(list(child), [0, 1, 2, 3, 4, 5, 6, 7])
+
+    def test_iter_find_pattern(self):
+        pattern = b'Data:\n'
+        # Check in a simple iteration:
+        string_iter = iter([b'blahblah ', b'Data:\n', b'blahblahblah'])
+        last_chunk = find_pattern_in_string_iter(pattern, string_iter)
+        assert last_chunk == b''
+        assert next(string_iter) == b'blahblahblah'
+
+        # Check in a more complex iteration:
+        string_iter = iter([b'blahblah Da', b'ta:\nblahb', b'lahblah'])
+        last_chunk = find_pattern_in_string_iter(pattern, string_iter)
+        assert last_chunk == b'blahb'
+        assert next(string_iter) == b'lahblah'
+
+        # Check for a character by character iteration:
+        string_iter = iter([b'b', b'l', b'a', b'h', b'b', b'l', b'a',
+                            b'h', b' ', b'D', b'a', b't', b'a', b':', b'\n',
+                            b'b', b'l', b'a'])
+        last_chunk = find_pattern_in_string_iter(pattern, string_iter)
+        assert last_chunk == b''
+        assert next(string_iter) == b'b'
 
     def test_comparisons(self):
         """Test lazy comparisons on the object."""
