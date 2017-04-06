@@ -8,21 +8,22 @@ from . import SimpleParser
 from ..model import (DatasetType, BaseType,
                      SequenceType, StructureType,
                      GridType)
-from ..lib import quote, STRING
+from ..lib import (quote, STRING, DAP2_TO_NUMPY_RESPONSE_TYPEMAP,
+                   DAP2_TO_NUMPY_PARSER_TYPEMAP, DAP2_ARRAY_LENGTH_NUMPY_TYPE)
 
-typemap = {
-    'byte':    np.dtype("B"),
-    'int':     np.dtype(">i4"),
-    'uint':    np.dtype(">u4"),
-    'int16':   np.dtype(">i4"),
-    'uint16':  np.dtype(">u4"),
-    'int32':   np.dtype(">i4"),
-    'uint32':  np.dtype(">u4"),
-    'float32': np.dtype(">f4"),
-    'float64': np.dtype(">f8"),
-    'string':  np.dtype(STRING),  # default is "|S128"
-    'url':     np.dtype(STRING),
-    }
+# This is the typemap of the reponse received from a server:
+response_typemap = {key.lower(): np.dtype(val) for key, val
+                    in DAP2_TO_NUMPY_RESPONSE_TYPEMAP.items()}
+response_typemap['string'] = np.dtype(STRING)  # default is "|S128"
+response_typemap['url'] = np.dtype(STRING)
+
+
+# This is the precision typemap:
+precision_typemap = {key.lower(): np.dtype(val) for key, val
+                     in DAP2_TO_NUMPY_PARSER_TYPEMAP.items()}
+precision_typemap['string'] = np.dtype(STRING)  # default is "|S128"
+precision_typemap['url'] = np.dtype(STRING)
+
 constructors = ('grid', 'sequence', 'structure')
 name_regexp = '[\w%!~"\'\*-]+'
 
@@ -74,12 +75,13 @@ class DDSParser(SimpleParser):
         """Parse a base variable, returning a ``BaseType``."""
         type = self.consume('\w+')
 
-        dtype = typemap[type.lower()]
+        response_dtype = response_typemap[type.lower()]
+        precision_dtype = precision_typemap[type.lower()]
         name = quote(self.consume('[^;\[]+'))
         shape, dimensions = self.dimensions()
         self.consume(';')
 
-        data = DummyData(dtype, shape)
+        data = DummyData(precision_dtype, shape)
         var = BaseType(name, data, dimensions=dimensions)
 
         return var

@@ -50,11 +50,11 @@ NUMPY_TO_DAP2_TYPEMAP = {
 # www.opendap.org/pdf/dap_2_data_model.pdf
 # Before pydap 3.2.2, length was
 # big-endian 32 bytes UNSIGNED integers:
-DAP2_ARRAY_LENGTH_NUMPY_TYPE = '>I'
+# DAP2_ARRAY_LENGTH_NUMPY_TYPE = '>I'
 # Since pydap 3.2.2, the length type is accurate:
-# DAP2_ARRAY_LENGTH_NUMPY_TYPE = '>i'
+DAP2_ARRAY_LENGTH_NUMPY_TYPE = '>i'
 
-DAP2_TO_NUMPY_TYPEMAP = {
+DAP2_TO_NUMPY_RESPONSE_TYPEMAP = {
     'Float64': '>d',
     'Float32': '>f',
     # This is a weird aspect of the DAP2 specification.
@@ -79,7 +79,29 @@ DAP2_TO_NUMPY_TYPEMAP = {
     'Byte': 'B',
     # Map String to numpy's string type 'S' b/c
     # DAP2 does not explicitly support unicode.
-    'String': 'S'
+    'String': 'S',
+    'URL': 'S',
+    #
+    # These two types are not DAP2 but it is useful
+    # to include them for compatiblity with other
+    # data sources:
+    'Int': '>i',
+    'UInt': '>I',
+}
+
+# Here, the endianness is important:
+DAP2_TO_NUMPY_PARSER_TYPEMAP = {
+    'Float64': '>d',
+    'Float32': '>f',
+    'Int16': '>h',
+    'UInt16': '>H',
+    'Int32': '>i',
+    'UInt32': '>I',
+    'Byte': 'B',
+    'String': 'S',
+    'URL': 'S',
+    'Int': '>i',
+    'UInt': '>I',
 }
 
 

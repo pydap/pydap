@@ -18,7 +18,7 @@ from ..model import (BaseType,
                      SequenceType, StructureType)
 from ..lib import (walk, START_OF_SEQUENCE, END_OF_SEQUENCE, __version__,
                    NUMPY_TO_DAP2_TYPEMAP,
-                   DAP2_TO_NUMPY_TYPEMAP,
+                   DAP2_TO_NUMPY_RESPONSE_TYPEMAP,
                    DAP2_ARRAY_LENGTH_NUMPY_TYPE)
 from .lib import BaseResponse
 from .dds import dds
@@ -35,7 +35,7 @@ def DAP2dtypemap(dtype):
     and returns a dtype object that is compatible with
     the DAP2 specification.
     """
-    dtype_str = DAP2_TO_NUMPY_TYPEMAP[
+    dtype_str = DAP2_TO_NUMPY_RESPONSE_TYPEMAP[
                     NUMPY_TO_DAP2_TYPEMAP[
                         dtype.char]]
     return np.dtype(dtype_str)

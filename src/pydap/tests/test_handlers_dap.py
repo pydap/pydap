@@ -270,12 +270,13 @@ class TestBaseProxyShort(unittest.TestCase):
 
         self.data = BaseProxy(
                               "http://localhost:8001/", "short",
-                              np.dtype(">i"), (),
+                              np.dtype(">h"), (),
                               application=self.app)
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:], np.array(1))
+        assert self.data[:].dtype.char == 'h'
 
 
 class TestBaseProxyString(unittest.TestCase):

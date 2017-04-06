@@ -427,9 +427,10 @@ def dump():  # pragma: no cover
     """
     dods = sys.stdin.read()
     dds, xdrdata = dods.split(b'\nData:\n', 1)
-    xdr_stream = io.BytesIO(xdrdata)
+    #xdr_stream = io.BytesIO(xdrdata)
     dds = dds.decode('ascii')
-    dataset = build_dataset(dds)
-    data = unpack_data(xdr_stream, dataset)
+    dataset = build_dataset(dds, data=xdrdata)
+    #data = unpack_data(xdr_stream, dataset)
+    data = dataset.data
 
     pprint.pprint(data)

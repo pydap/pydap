@@ -70,13 +70,13 @@ class TestBuildDataset(unittest.TestCase):
     def test_integer_16(self):
         """Test integer 16 parsing."""
         self.assertIsInstance(self.dataset.structure.i16, BaseType)
-        self.assertEqual(self.dataset.structure.i16.dtype, np.dtype(">i"))
+        self.assertEqual(self.dataset.structure.i16.dtype, np.dtype(">h"))
         self.assertEqual(self.dataset.structure.i16.shape, ())
 
     def test_unsigned_integer_16(self):
         """Test unsigned integer 16 parsing."""
         self.assertIsInstance(self.dataset.structure.ui16, BaseType)
-        self.assertEqual(self.dataset.structure.ui16.dtype, np.dtype(">I"))
+        self.assertEqual(self.dataset.structure.ui16.dtype, np.dtype(">H"))
         self.assertEqual(self.dataset.structure.ui16.shape, ())
 
     def test_integer_32(self):
