@@ -500,7 +500,7 @@ class TestStringBaseType(unittest.TestCase):
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:],
-                                      np.array("This is a test", dtype='S'))
+                                      "This is a test")
 
 
 class TestArrayStringBaseType(unittest.TestCase):
