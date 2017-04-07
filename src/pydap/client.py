@@ -48,7 +48,7 @@ from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from .model import DapType
-from .lib import encode
+from .lib import encode, BytesReader
 from .net import GET
 from .handlers.dap import DAPHandler, unpack_data, StreamReader
 from .parsers.dds import build_dataset
