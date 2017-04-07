@@ -12,14 +12,14 @@ Let's start accessing gridded data, i.e., data that is stored as a regular multi
 
     >>> from pydap.client import open_url
     >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc')
-    >>> print(type(dataset))
+    >>> type(dataset)
     <class 'pydap.model.DatasetType'>
 
 Here we use the ``pydap.client.open_url`` function to open an URL specifying the location of the dataset; this URL should be stripped of the extensions commonly used for OPeNDAP datasets, like `.dds` or `.das`. When we access the remote dataset the function returns a ``DatasetType`` object, which is a *Structure* -- a fancy dictionary that stores other variables. We can check the names of the store variables like we would do with a Python dictionary:
 
 .. doctest::
 
-    >>> print(list(dataset.keys()))
+    >>> list(dataset.keys())
     ['COADSX', 'COADSY', 'TIME', 'SST', 'AIRT', 'UWND', 'VWND']
 
 Let's work with the ``SST`` variable; we can reference it using the usual dictionary syntax of ``dataset['SST']``, or using the "lazy" syntax ``dataset.SST``:
@@ -27,37 +27,37 @@ Let's work with the ``SST`` variable; we can reference it using the usual dictio
 .. doctest::
 
     >>> sst = dataset['SST']  # or dataset.SST
-    >>> print(type(sst))
+    >>> type(sst)
     <class 'pydap.model.GridType'>
 
 Note that the variable is of type ``GridType``, a multidimensional array with specific axes defining each of its dimensions:
 
 .. doctest::
     
-    >>> print(sst.dimensions)
+    >>> sst.dimensions
     ('TIME', 'COADSY', 'COADSX')
-    >>> print(sst.maps)
+    >>> sst.maps
     OrderedDict([('TIME', <BaseType with data BaseProxy('http://test.opendap.org/dap/data/nc/coads_climatology.nc', 'SST.TIME', dtype('>f8'), (12,), (slice(None, None, None),))>), ('COADSY', <BaseType with data BaseProxy('http://test.opendap.org/dap/data/nc/coads_climatology.nc', 'SST.COADSY', dtype('>f8'), (90,), (slice(None, None, None),))>), ('COADSX', <BaseType with data BaseProxy('http://test.opendap.org/dap/data/nc/coads_climatology.nc', 'SST.COADSX', dtype('>f8'), (180,), (slice(None, None, None),))>)])
 
 Each map is also, in turn, a variable that can be accessed using the same syntax used for Structures:
 
 .. doctest::
 
-    >>> print(sst.TIME)
+    >>> sst.TIME
     <BaseType with data BaseProxy('http://test.opendap.org/dap/data/nc/coads_climatology.nc', 'SST.TIME', dtype('>f8'), (12,), (slice(None, None, None),))>
 
 The axes are all of type ``BaseType``. This is the OPeNDAP equivalent of a multidimensional array, with a specific shape and type. Even though no data have been downloaded up to this point, we can introspect these attributes from the axes or from the Grid itself:
 
 .. doctest::
 
-    >>> print(sst.shape)
+    >>> sst.shape
     (12, 90, 180)
-    >>> print(sst.dtype)
-    >f4
-    >>> print(sst.TIME.shape)
+    >>> sst.dtype
+    dtype('>f4')
+    >>> sst.TIME.shape
     (12,)
-    >>> print(sst.TIME.dtype)
-    >f8
+    >>> sst.TIME.dtype
+    dtype('>f8')
 
 We can also introspect the variable attributes; they are stored in an attribute appropriately called ``attributes``, and they can also be accessed with a "lazy" syntax:
 
@@ -70,24 +70,24 @@ We can also introspect the variable attributes; they are stored in an attribute 
      'long_name': 'SEA SURFACE TEMPERATURE',
      'missing_value': -9.99999979e+33,
      'units': 'Deg C'}
-    >>> print(sst.units)
-    Deg C
+    >>> sst.units
+    'Deg C'
 
 Finally, we can also download some data. To download data we simply access it like we would access a `Numpy <http://numpy.scipy.org/>`_ array, and the data for the corresponding subset will be dowloaded on the fly from the server:
 
 .. doctest::
 
-    >>> print(sst.shape)
+    >>> sst.shape
     (12, 90, 180)
     >>> grid = sst[0,10:14,10:14]  # this will download data from the server
-    >>> print(grid)
+    >>> grid
     <GridType with array 'SST' and maps 'TIME', 'COADSY', 'COADSX'>
 
 The data itself can be accessed in the ``array`` attribute of the Grid, and also on the individual axes:
 
 .. doctest::
 
-    >>> print(grid.array[:])
+    >>> grid.array[:]
     <BaseType with data array([[[ -1.26285708e+00,  -9.99999979e+33,  -9.99999979e+33,
               -9.99999979e+33],
             [ -7.69166648e-01,  -7.79999971e-01,  -6.75454497e-01,
@@ -101,7 +101,7 @@ The data itself can be accessed in the ``array`` attribute of the Grid, and also
       [ -7.69166648e-01  -7.79999971e-01  -6.75454497e-01  -5.95714271e-01]
       [  1.28333330e-01  -5.00000156e-02  -6.36363626e-02  -1.41666666e-01]
       [  6.38000011e-01   8.95384610e-01   7.21666634e-01   8.10000002e-01]]]
-    >>> print(grid.COADSX[:])
+    >>> grid.COADSX[:]
     <BaseType with data array([ 41.,  43.,  45.,  47.])>
     >>> print(grid.COADSX[:].data)
     [ 41.  43.  45.  47.]
@@ -127,7 +127,7 @@ the coordinate axes of a variable. The work around is to simply disable the retr
     >>> from pydap.client import open_url
     >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc', output_grid=False)
     >>> grid = sst[0,10:14,10:14]  # this will download data from the server
-    >>> print(grid)
+    >>> grid
     <GridType with array 'SST' and maps 'TIME', 'COADSY', 'COADSX'>
 
 
@@ -147,9 +147,9 @@ The first thing we'd like to do is limit our region; let's work with a small reg
 
 .. doctest:: python
 
-    >>> print(type(dataset.location))
+    >>> type(dataset.location)
     <class 'pydap.model.SequenceType'>
-    >>> print(dataset.location.keys())
+    >>> dataset.location.keys()
     ['LATITUDE', 'JULD', 'LONGITUDE', '_id', 'profile', 'attributes', 'variable_attributes']
     >>> my_location = dataset.location[
     ...         (dataset.location.LATITUDE > -2) &
@@ -178,7 +178,7 @@ Note that the variable ``dataset.location`` is of type ``SequenceType`` -- also 
     881368
     1127922
     ...
-    >>> print len(my_location['_id'].iterdata())
+    >>> len(my_location['_id'].iterdata())
     623
 
 Note that calculating the length of a sequence takes some time, since the client has to download all the data and do the calculation locally. This is why you should use ``len(my_location['_id'])`` instead of ``len(my_location)``. Both should give the same result (unless the dataset changes between requests), but the former retrieves only data for the ``_id`` variable, while the later retrives data for all variables.
@@ -188,7 +188,7 @@ We can explicitly select just the first 5 profiles from our sequence:
 .. doctest:: python
 
     >>> my_location = my_location[:5]
-    >>> print len(my_location['_id'].iterdata())
+    >>> len(my_location['_id'].iterdata())
     5
 
 And we can print the temperature profiles at each location. We're going to use the `coards <http://pypi.python.org/pypi/coards>`_ module to convert the time to a Python ``datetime`` object:
@@ -375,11 +375,11 @@ When you open a remote dataset, the ``DatasetType`` object has a special attribu
 
     >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc')
     >>> new_dataset = dataset.functions.geogrid(dataset.SST, 10, 20, -10, 60)
-    >>> print(new_dataset.SST.shape)
+    >>> new_dataset.SST.shape
     (12, 12, 21)
-    >>> print new_dataset.SST.COADSY[:]
+    >>> new_dataset.SST.COADSY[:]
     [-11.  -9.  -7.  -5.  -3.  -1.   1.   3.   5.   7.   9.  11.]
-    >>> print(new_dataset.SST.COADSX[:])
+    >>> new_dataset.SST.COADSX[:]
     [ 21.  23.  25.  27.  29.  31.  33.  35.  37.  39.  41.  43.  45.  47.  49.
       51.  53.  55.  57.  59.  61.]
 
@@ -393,7 +393,7 @@ You can pass any URL to the ``open_url`` function, together with any valid const
 .. doctest::
 
     >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc?SST[0:3:11][0:1:89][0:1:179]')
-    >>> print(dataset.SST.shape)
+    >>> dataset.SST.shape
     (4, 90, 180)
 
 This can be extremely useful for server side-processing; for example, we can create and access a new variable ``A`` in this dataset, equal to twice ``SSH``:
@@ -401,7 +401,7 @@ This can be extremely useful for server side-processing; for example, we can cre
 .. doctest::
 
     >>> dataset = open_url('http://hycom.coaps.fsu.edu:8080/thredds/dodsC/las/dynamic/data_A5CDC5CAF9D810618C39646350F727FF.jnl_expr_%7B%7D%7Blet%20A=SSH*2%7D?A')
-    >>> print dataset.keys()
+    >>> dataset.keys()
     ['A']
 
 In this case, we're using the Ferret syntax ``let A=SSH*2`` to define the new variable, since the data is stored in an `F-TDS server <http://ferret.pmel.noaa.gov/LAS/documentation/the-ferret-thredds-data-server-f-tds/using-f-tds-and-the-server-side-analysis/>`_. Server-side processing is useful when you want to reduce the data before downloading it, to calculate a global average, for example.
@@ -424,7 +424,7 @@ This function allows you to access raw data from any URL, including appending ex
     >>> dataset = open_dods(
     ...     'http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods?SST[0:3:11][0:1:89][0:1:179]',
     ...      get_metadata=True)
-    >>> print(dataset.attributes['NC_GLOBAL']['history'])
+    >>> dataset.attributes['NC_GLOBAL']['history']
     FERRET V4.30 (debug/no GUI) 15-Aug-96
 
 

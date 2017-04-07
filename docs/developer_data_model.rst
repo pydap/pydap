@@ -13,14 +13,14 @@ Pydap has a series of classes in the ``pydap.model`` module, representing the DA
 The most fundamental data type is called ``BaseType``, and it represents a value or an array of values.
 Here an example of creating one of these objects:
 
-.. note:: Prior to Pydap 3.2 all date types the ``name`` argument was optional. Since Pydap 3.2, it is mandatory.
+.. note:: Prior to Pydap 3.2, the name argument was optional for all date types. Since Pydap 3.2, it is mandatory.
 
 .. doctest::
 
     >>> from pydap.model import *
     >>> import numpy as np
     >>> a = BaseType(
-    ...         'a',
+    ...         name='a',
     ...         data=np.array([1]),
     ...         attributes={'long_name': 'variable a'})
 
@@ -28,37 +28,37 @@ All Pydap types have five attributes in common. The first one is the ``name`` of
 
 .. doctest::
 
-    >>> print(a.name)
-    a
+    >>> a.name
+    'a'
 
 Note that there's a difference between the variable name (the local name ``a``) and its attribute ``name``; in this example they are equal, but we could reference our object using any other name:
 
 .. doctest::
 
     >>> b = a  # b now points to a
-    >>> print(b.name)
-    a
+    >>> b.name
+    'a'
 
 We can use special characters for the variable names; they will be quoted accordingly:
 
 .. doctest::
 
-    >>> c = BaseType('long & complicated')
-    >>> print(c.name)
-    long%20%26%20complicated
+    >>> c = BaseType(name='long & complicated')
+    >>> c.name
+    'long%20%26%20complicated'
 
 The second attribute is called ``id``. In the examples we've seen so far, ``id`` and ``name`` are equal:
 
 .. doctest::
 
-    >>> print(a.name)
-    a
-    >>> print(a.id)
-    a
-    >>> print(c.name)
-    long%20%26%20complicated
-    >>> print(c.id)
-    long%20%26%20complicated
+    >>> a.name
+    'a'
+    >>> a.id
+    'a'
+    >>> c.name
+    'long%20%26%20complicated'
+    >>> c.id
+    'long%20%26%20complicated'
 
 This is because the ``id`` is used to show the position of the variable in a given dataset, and in these
 examples the variables do not belong to any datasets. First let's store our variables in a container
@@ -85,14 +85,14 @@ it may contain any number of ``StructureType`` objects, which can be deeply nest
 
 .. doctest::
 
-    >>> dataset = DatasetType('example')
+    >>> dataset = DatasetType(name='example')
     >>> dataset['s'] = s
-    >>> print(dataset.id)
-    example
-    >>> print(dataset['s'].id)
-    s
-    >>> print(dataset['s']['a'].id)
-    s.a
+    >>> dataset.id
+    'example'
+    >>> dataset['s'].id
+    's'
+    >>> dataset['s']['a'].id
+    's.a'
 
 Note that for objects on the first level of the dataset, like ``s``, the id is identical to the name.
 Deeper objects, like ``a`` which is stored in ``s``, have their id calculated by joining the names of the
@@ -100,8 +100,8 @@ variables with a period. One detail is that we can access variables stored in a 
 
 .. doctest::
 
-    >>> print(dataset.s.a.id)
-    s.a
+    >>> dataset.s.a.id
+    's.a'
 
 The third common attribute that variables share is called ``attributes``, which hold most of its metadata.
 This attribute is a dictionary of keys and values, and the values themselves can also be dictionaries.
@@ -109,28 +109,27 @@ For our variable ``a`` we have:
 
 .. doctest::
 
-    >>> print(a.attributes)
+    >>> a.attributes
     {'long_name': 'variable a'}
 
 These attributes can be accessed lazily directly from the variable:
 
 .. doctest::
 
-    >>> print(a.long_name)
-    variable a
+    >>> a.long_name
+    'variable a'
 
 But if you want to create a new attribute you'll have to insert it directly into ``attributes``:
 
 .. doctest::
 
     >>> a.history = 'Created by me'
-    >>> print(a.attributes)
+    >>> a.attributes
     {'long_name': 'variable a'}
     >>> a.attributes['history'] = 'Created by me'
-    >>> for key in sorted(a.attributes.keys()):
-    ...     print((key, a.attributes[key]))
-    ('history', 'Created by me')
-    ('long_name', 'variable a')
+    >>> sorted(a.attributes.items())
+    [('history', 'Created by me'),
+    ('long_name', 'variable a')]
 
 It's always better to use the correct syntax instead of the lazy one when writing code.
 Use the lazy syntax only when introspecting a dataset on the Python interpreter, to save a few keystrokes.
@@ -142,7 +141,7 @@ We'll take a detailed look of this attribute in the next subsection.
           This attribute had value 1 if the variable was inside a ``SequenceType`` object,
           0 if it's outside, and >1 if it's inside a nested sequence.
           Since Pydap 3.2, the ``_nesting_level`` has been deprecated and there is no
-          intrisic way of finding the where in a deep object a variable is located.
+          intrinsic way of finding the where in a deep object a variable is located.
 
 Data
 ~~~~
@@ -158,35 +157,35 @@ though we can also use a Numpy scalar or Python number:
 
 .. doctest::
 
-    >>> a = BaseType('a', data=np.array([1]))
-    >>> print(a.data)
-    [1]
+    >>> a = BaseType(name='a', data=np.array(1))
+    >>> a.data
+    array(1)
 
-    >>> b = BaseType('b', data=np.arange(4))
-    >>> print(b.data)
-    [0 1 2 3]
+    >>> b = BaseType(name='b', data=np.arange(4))
+    >>> b.data
+    array([0, 1, 2, 3])
 
-Note that the default type for variables is ``Int32``:
+Note that starting from Pydap 3.2 the datatype is inferred from the input data:
 
 .. doctest::
 
-    >>> print(a.dtype)
-    int64
-    >>> print(b.dtype)
-    int64
+    >>> a.dtype
+    dtype('int64')
+    >>> b.dtype
+    dtype('int64')
 
 When you *slice* a ``BaseType`` array, the slice is simply passed onto the data attribute. So we may have:
 
 .. doctest::
 
-    >>> print(b[-1])
-    <BaseType with data 3>
-    >>> print(b[-1].data)
-    3
-    >>> print(b[:2])
+    >>> b[-1]
+    <BaseType with data array(3)>
+    >>> b[-1].data
+    array(3)
+    >>> b[:2]
     <BaseType with data array([0, 1])>
-    >>> print(b[:2].data)
-    [0 1]
+    >>> b[:2].data
+    array([0, 1])
     
 You can think of a ``BaseType`` object as a thin layer around Numpy arrays, 
 until you realize that the ``data`` attribute can be *any* object implementing the array interface! 
@@ -218,15 +217,15 @@ A ``StructureType`` holds no data; instead, its ``data`` attribute is a property
 
 .. doctest::
 
-    >>> s = StructureType('s')
+    >>> s = StructureType(name='s')
     >>> s[a.name] = a
     >>> s[b.name] = b
-    >>> print(a.data)
-    [1]
-    >>> print(b.data)
-    [0 1 2 3]
+    >>> a.data
+    array(1)
+    >>> b.data
+    array([0, 1, 2, 3])
     >>> print(s.data)
-    [array([1]), array([0, 1, 2, 3])]
+    [array(1), array([0, 1, 2, 3])]
 
 The opposite is also true; it's possible to specify the structure data and have it propagated to the children:
 
@@ -248,11 +247,11 @@ Here's an example of a sequence holding the variables ``a`` and ``c`` that we cr
 
 .. doctest::
 
-    >>> s = SequenceType('s')
+    >>> s = SequenceType(name='s')
     >>> s[a.name] = a
     >>> s[c.name] = c
 
-Let's add some data to our sequence. This can be done by attributing a structured numpy array to the data attribute:
+Let's add some data to our sequence. This can be done by setting a structured numpy array to the data attribute:
 
 .. doctest::
 
@@ -285,7 +284,7 @@ Prior to Pydap 3.2.2, this approach was not possible and one had to iterate dire
 
 .. doctest::
 
-    >>> for record in s.iterdata():
+    >>> for record in s:
     ...     print(record)
     (1, 10)
     (2, 20)
@@ -370,12 +369,12 @@ Here is a simple example:
 
 .. doctest::
 
-    >>> g = GridType('g')
+    >>> g = GridType(name='g')
     >>> data = np.arange(6)
     >>> data.shape = (2, 3)
-    >>> g['a'] = BaseType('a', data=data, shape=data.shape, type=np.int32, dimensions=('x', 'y'))
-    >>> g['x'] = BaseType('x', data=np.arange(2), shape=(2,), type=np.int32)
-    >>> g['y'] = BaseType('y', data=np.arange(3), shape=(3,), type=np.int32)
+    >>> g['a'] = BaseType(name='a', data=data, shape=data.shape, type=np.int32, dimensions=('x', 'y'))
+    >>> g['x'] = BaseType(name='x', data=np.arange(2), shape=(2,), type=np.int32)
+    >>> g['y'] = BaseType(name='y', data=np.arange(3), shape=(3,), type=np.int32)
     >>> g.data
     [array([[0, 1, 2],
                [3, 4, 5]]), array([0, 1]), array([0, 1, 2])]
@@ -389,19 +388,19 @@ Grid behave like arrays in that they can be sliced. When this happens, a new ``G
     >>> print(g[0])
     <GridType with array 'a' and maps 'x', 'y'>
     >>> print(g[0].data)
-    [array([0, 1, 2]), 0, array([0, 1, 2])]
+    [array([0, 1, 2]), array(0), array([0, 1, 2])]
 
 It is possible to disable this feature (some older servers might not handle it nicely):
 
 .. doctest::
 
-    >>> g = GridType('g')
+    >>> g = GridType(name='g')
     >>> g.set_output_grid(False)
     >>> data = np.arange(6)
     >>> data.shape = (2, 3)
-    >>> g['a'] = BaseType('a', data=data, shape=data.shape, type=np.int32, dimensions=('x', 'y'))
-    >>> g['x'] = BaseType('x', data=np.arange(2), shape=(2,), type=np.int32)
-    >>> g['y'] = BaseType('y', data=np.arange(3), shape=(3,), type=np.int32)
+    >>> g['a'] = BaseType(name='a', data=data, shape=data.shape, type=np.int32, dimensions=('x', 'y'))
+    >>> g['x'] = BaseType(name='x', data=np.arange(2), shape=(2,), type=np.int32)
+    >>> g['y'] = BaseType(name='y', data=np.arange(3), shape=(3,), type=np.int32)
     >>> g.data
     [array([[0, 1, 2],
            [3, 4, 5]]), array([0, 1]), array([0, 1, 2])]

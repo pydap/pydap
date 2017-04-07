@@ -90,7 +90,7 @@ def test_BaseType_data_and_dimensions():
 def test_BaseType_repr():
     """Test ``__repr__`` method."""
     var = BaseType("var", 42, foo="bar")
-    assert (repr(var) == "<BaseType with data 42>")
+    assert (repr(var) == "<BaseType with data array(42)>")
 
 
 def test_BaseType_dtype():
@@ -262,9 +262,9 @@ def test_StructureType_getitem_tuple():
     assert list(var['child1', 'child3'].keys()) == ['child1', 'child3']
     assert (list(var['child1', 'child3'].values()) ==
             [BaseType(name) for name in ['child1', 'child3']])
-    assert (list(var['child1', 'child3'].all_keys()) ==
+    assert (list(var['child1', 'child3']._all_keys()) ==
             ['child1', 'child2', 'child3'])
-    assert (list(var['child1', 'child3'].all_values()) ==
+    assert (list(var['child1', 'child3']._all_values()) ==
             [BaseType(name) for name in ['child1', 'child2', 'child3']])
 
 

@@ -28,7 +28,7 @@ This will install Pydap together with all the required dependencies. You can now
     >>> var.dtype
     dtype('>f4')
     >>> data = var[0,10:14,10:14]  # this will download data from the server
-    >>> print(data)
+    >>> data
     <GridType with array 'SST' and maps 'TIME', 'COADSY', 'COADSX'>
     >>> print(data.data)
     [array([[[ -1.26285708e+00,  -9.99999979e+33,  -9.99999979e+33,

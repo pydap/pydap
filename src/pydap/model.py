@@ -9,15 +9,15 @@ Here's a simple example of a `BaseType` variable::
     >>> foo = BaseType('foo', np.arange(4, dtype='i'))
     >>> bar = BaseType('bar', np.arange(4, dtype='i'))
     >>> foobar = BaseType('foobar', np.arange(4, dtype='i'))
-    >>> print(foo[-2:])
+    >>> foo[-2:]
     <BaseType with data array([2, 3], dtype=int32)>
-    >>> print(foo[-2:].data)
-    [2 3]
-    >>> print(foo.data[-2:])
-    [2 3]
-    >>> print(foo.dtype)
-    int32
-    >>> print(foo.shape)
+    >>> foo[-2:].data
+    array([2, 3], dtype=int32)
+    >>> foo.data[-2:]
+    array([2, 3], dtype=int32)
+    >>> foo.dtype
+    dtype('int32')
+    >>> foo.shape
     (4,)
     >>> for record in foo.iterdata():
     ...     print(record)
@@ -44,13 +44,13 @@ not use Numpy arrays directly then? First, `BaseType` can have additional
 metadata added to them; this include names for its dimensions and also
 arbitrary attributes::
 
-    >>> print(foo.attributes)
+    >>> foo.attributes
     {}
     >>> foo.attributes['units'] = 'm/s'
-    >>> print(foo.units)
-    m/s
+    >>> foo.units
+    'm/s'
 
-    >>> print(foo.dimensions)
+    >>> foo.dimensions
     ()
     >>> foo.dimensions = ('time',)
 
@@ -70,38 +70,23 @@ Now that we have some data, we can organize it using containers::
 `DatasetType` should be used as the root container for a dataset. They behave
 like ordered Python dictionaries::
 
-    >>> print(list(dataset.s.keys()))
+    >>> list(dataset.s.keys())
     ['foo', 'bar', 'foobar']
 
 Slicing these datasets with a list of keywords yields a `StructureType`
 or `DatasetType` with only a subset of the children::
 
-    >>> print(dataset.s['foo', 'foobar'])
+    >>> dataset.s['foo', 'foobar']
     <StructureType with children 'foo', 'foobar'>
-    >>> print(list(dataset.s['foo', 'foobar'].keys()))
+    >>> list(dataset.s['foo', 'foobar'].keys())
     ['foo', 'foobar']
 
 In the same way, the ``.items()`` and ``.values()`` methods are like in python
-dictionnaries and they iterate over sliced values.
-
-The `StructureType`` never forgets of its children when sliced. Slicing a
-`StructureType` in fact simply changes its ``visible_keys`` property::
-
-    >>> print(dataset.s['foo', 'foobar'].visible_keys)
-    ['foo', 'foobar']
-
-The original children of a `StructureType`
-can be recovered by using the ``.all_keys()`` method::
-
-    >>> print(list(dataset.s['foo', 'foobar'].all_keys()))
-    ['foo', 'bar', 'foobar']
-
-In the same way, the ``.all_items()`` and ``.all_values()`` methods are like
-in python dictionnaries and they iterate over sliced values.
+dictionaries and they iterate over sliced values.
 
 Selecting only one child returns the child::
 
-    >>> print(dataset.s['foo'])
+    >>> dataset.s['foo']
     <BaseType with data array([0, 1, 2, 3], dtype=int32)>
 
 A `GridType` is a special container where the first child should be an
@@ -114,10 +99,10 @@ variable::
     ...     'rain', np.arange(6).reshape(2, 3), dimensions=('y', 'x'))
     >>> rain['x'] = BaseType('x', np.arange(3), units='degrees_east')
     >>> rain['y'] = BaseType('y', np.arange(2), units='degrees_north')
-    >>> print(rain.array)  #doctest: +ELLIPSIS
+    >>> rain.array  #doctest: +ELLIPSIS
     <BaseType with data array([[0, 1, 2],
            [3, 4, 5]])>
-    >>> print(type(rain.maps))
+    >>> type(rain.maps)
     <class 'collections.OrderedDict'>
     >>> for item in rain.maps.items():
     ...     print(item)
@@ -153,20 +138,20 @@ It is possible to select only a few variables::
     (35.0, 10.0)
     (35.0, 20.0)
 
-    >>> print(cast['temperature'].dtype)
-    float32
-    >>> print(cast['temperature'].shape)
+    >>> cast['temperature'].dtype
+    dtype('float32')
+    >>> cast['temperature'].shape
     (2,)
 
 When sliced, it yields the underlying array:
-    >>> print(type(cast['temperature'][-1:]))
+    >>> type(cast['temperature'][-1:])
     <class 'pydap.model.BaseType'>
     >>> for record in cast['temperature'][-1:].iterdata():
     ...     print(record)
     15.0
 
 When constrained, it yields the SequenceType:
-    >>> print(type(cast[ cast['temperature'] < 16 ]))
+    >>> type(cast[ cast['temperature'] < 16 ])
     <class 'pydap.model.SequenceType'>
     >>> for record in cast[ cast['temperature'] < 16 ].iterdata():
     ...     print(record)
@@ -240,8 +225,8 @@ class DapType(object):
 
             >>> var = DapType('var')
             >>> var.attributes['foo'] = 'bar'
-            >>> print(var.foo)
-            bar
+            >>> var.foo
+            'bar'
 
         This will return the value stored under `attributes`.
 
@@ -265,7 +250,7 @@ class BaseType(DapType):
     def __init__(self, name, data=None, dimensions=None, attributes=None,
                  **kwargs):
         super(BaseType, self).__init__(name, attributes, **kwargs)
-        self._data = data
+        self.data = data
         self.dimensions = dimensions or ()
 
         # these are set when not data is present (eg, when parsing a DDS)
@@ -368,6 +353,12 @@ class BaseType(DapType):
 
     def _set_data(self, data):
         self._data = data
+        if np.isscalar(data):
+            # Convert scalar data to
+            # numpy scalar, otherwise
+            # ``.dtype`` and ``.shape``
+            # methods will fail.
+            self._data = np.array(data)
     data = property(_get_data, _set_data)
 
 
@@ -383,7 +374,7 @@ class StructureType(DapType, Mapping):
 
     def __repr__(self):
         return '<%s with children %s>' % (
-            type(self).__name__, ', '.join(map(repr, self.visible_keys)))
+            type(self).__name__, ', '.join(map(repr, self._visible_keys)))
 
     def __getattr__(self, attr):
         """Lazy shortcut return children."""
@@ -393,31 +384,24 @@ class StructureType(DapType, Mapping):
             return DapType.__getattr__(self, attr)
 
     def __contains__(self, key):
-        return (key in self.visible_keys)
+        return (key in self._visible_keys)
 
     # __iter__, __getitem__, __len__ are required for Mapping
     # From these, keys, items, values, get, __eq__,
     # and __ne__ are obtained.
     def __iter__(self):
         for key in self._dict.keys():
-            if key in self.visible_keys:
+            if key in self._visible_keys:
                 yield key
 
-    def all_keys(self):
+    def _all_keys(self):
         return iter(self._dict.keys())
 
-    def all_items(self):
+    def _all_items(self):
         return iter(self._dict.items())
 
-    def all_values(self):
+    def _all_values(self):
         return iter(self._dict.values())
-
-    def _set_visible_keys(self, keys):
-        self._visible_keys = keys
-
-    def _get_visible_keys(self):
-        return self._visible_keys
-    visible_keys = property(_get_visible_keys, _set_visible_keys)
 
     def _getitem_string(self, key):
         """ Assume that key is a string type """
@@ -450,18 +434,19 @@ class StructureType(DapType, Mapping):
         elif (isinstance(key, tuple) and
               all(isinstance(name, string_types)
                   for name in key)):
-            self.visible_keys = list(key)
-            return self
+            out = copy.copy(self)
+            out._visible_keys = list(key)
+            return out
         else:
             raise KeyError(key)
 
     def __len__(self):
-        return len(self.visible_keys)
+        return len(self._visible_keys)
 
     def children(self):
         # children method always yields an
         # iterator on visible children:
-        for key in self.visible_keys:
+        for key in self._visible_keys:
             yield self[key]
 
     def __setitem__(self, key, item):
@@ -506,7 +491,7 @@ class StructureType(DapType, Mapping):
         out.id = self.id
 
         # Clone all children too.
-        for child in self.all_values():
+        for child in self._all_values():
             out[child.name] = copy.copy(child)
         return out
 
@@ -519,8 +504,8 @@ class DatasetType(StructureType):
 
         >>> dataset = DatasetType("A")
         >>> dataset["B"] = BaseType("B")
-        >>> print(dataset["B"].id)
-        B
+        >>> dataset["B"].id
+        'B'
 
     """
 
@@ -669,21 +654,21 @@ class SequenceType(StructureType):
 
     def items(self):
         # This method should be removed in Pydap 3.4
-        for key in self.visible_keys:
+        for key in self._visible_keys:
             yield (key, self[key])
 
     def values(self):
         # This method should be removed in Pydap 3.4
-        for key in self.visible_keys:
+        for key in self._visible_keys:
             yield self[key]
 
     def keys(self):
         # This method should be removed in Pydap 3.4
-        return iter(self.visible_keys)
+        return iter(self._visible_keys)
 
     def __contains__(self, key):
         # This method should be removed in Pydap 3.4
-        return (key in self.visible_keys)
+        return (key in self._visible_keys)
 
     def __getitem__(self, key):
         # If key is a string, return child with the corresponding data.
