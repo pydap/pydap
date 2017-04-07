@@ -1,7 +1,7 @@
-from webob.request import Request
-from webob.exc import HTTPError
 from contextlib import closing
+import requests
 from requests.exceptions import MissingSchema
+import wsgiadapter
 
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
@@ -17,63 +17,36 @@ def GET(url, application=None, session=None):
     """
     if application:
         _, _, path, query, fragment = urlsplit(url)
-        url = urlunsplit(('', '', path, query, fragment))
+        url = urlunsplit(('WSGIapplication', '', path, query, fragment))
 
-    return follow_redirect(url, application=application, session=session)
+    with WSGISession(url, application, session) as wsgi:
+        return wsgi.get(url)
 
 
 def raise_for_status(response):
-    if response.status_code >= 400:
-        raise HTTPError(
-            detail=response.status,
-            headers=response.headers,
-            comment=response.body
-        )
+    response.raise_for_status()
 
 
-def follow_redirect(url, application=None, session=None):
-    """
-    This function essentially performs the following command:
-    >>> Request.blank(url).get_response(application)
+class WSGISession():
+    def __init__(self, url, application=None, session=None):
+        self.session = session
+        self._close_session = False
+        if session is None:
+            self.session = requests.Session()
+            self._close_session = True
 
-    It however makes sure that the request possesses the same cookies and
-    headers as the passed session.
-    """
+        scheme, netloc, path, query, fragment = urlsplit(url)
+        self._domain = urlunsplit((scheme, netloc, '', '', ''))
+        self.session.mount(self._domain, wsgiadapter.WSGIAdapter(application))
 
-    req = create_request(url, session=session)
-    return req.get_response(application)
+    def __enter__(self):
+        return self.session
 
+    def close(self):
+        if self._close_session:
+            self.session.close()
+        else:
+            session.mount(self._domain, requests.adapters.HTTPAdapter())
 
-def create_request(url, session=None):
-    if session is not None:
-        # If session is set and cookies were loaded using pydap.cas.get_cookies
-        # using the check_url option, then we can legitimately expect that
-        # the connection will go through seamlessly. However, there might be
-        # redirects that might want to modify the cookies. Webob is not
-        # really up to the task here. The approach used here is to
-        # piggy back on the requests library and use it to fetch the
-        # head of the requested url. Requests will follow redirects and
-        # adjust the cookies as needed. We can then use the final url and
-        # the final cookies to set up a webob Request object that will
-        # be guaranteed to have all the needed credentials:
-        try:
-            # Use session to follow redirects:
-            with closing(session.head(url)) as head:
-                req = Request.blank(head.url)
-
-                # Get cookies from head:
-                cookies_dict = head.cookies.get_dict()
-
-                # Set request cookies to the head cookies:
-                req.headers['Cookie'] = ','.join(name + '=' +
-                                                 cookies_dict[name]
-                                                 for name in cookies_dict)
-                # Set the headers to the session headers:
-                for item in head.request.headers:
-                    req.headers[item] = head.request.headers[item]
-                return req
-        except MissingSchema:
-            # Missing schema can occur in tests when the url
-            # is not pointing to any resource. Simply pass.
-            pass
-    return Request.blank(url)
+    def __exit__(self ,type, value, traceback):
+        self.close()
