@@ -18,7 +18,7 @@ from itertools import chain
 import logging
 import numpy as np
 from six.moves.urllib.parse import urlsplit, urlunsplit, quote
-from six import text_type, string_types, next
+from six import text_type, string_types
 
 from pydap.model import (BaseType,
                          SequenceType, StructureType,
@@ -26,7 +26,7 @@ from pydap.model import (BaseType,
 from ..net import GET, raise_for_status
 from ..lib import (
     encode, combine_slices, fix_slice, hyperslab,
-    START_OF_SEQUENCE, walk)
+    START_OF_SEQUENCE, walk, StreamReader, BytesReader)
 from .lib import ConstraintExpression, BaseHandler, IterData
 from ..parsers.dds import build_dataset
 from ..parsers.das import parse_das, add_attributes
@@ -140,7 +140,8 @@ class BaseProxy(object):
         dds = dds.decode(r.content_encoding or 'ascii')
 
         # Parse received dataset:
-        dataset = build_dataset(dds, data=data)
+        dataset = build_dataset(dds)
+        dataset.data = unpack_data(BytesReader(data), dataset)
         return dataset[self.id].data
 
     def __len__(self):
@@ -306,25 +307,6 @@ class SequenceProxy(object):
         return ConstraintExpression('%s<%s' % (self.id, encode(other)))
 
 
-class StreamReader(object):
-
-    """Class to allow reading a `urllib3.HTTPResponse`."""
-
-    def __init__(self, stream):
-        self.stream = stream
-        self.buf = bytearray()
-
-    def read(self, n):
-        """Read and return `n` bytes."""
-        while len(self.buf) < n:
-            bytes_read = next(self.stream)
-            self.buf.extend(bytes_read)
-
-        out = bytes(self.buf[:n])
-        self.buf = self.buf[n:]
-        return out
-
-
 def unpack_sequence(stream, template):
     """Unpack data from a sequence, yielding records."""
     # is this a sequence or a base type?
@@ -372,40 +354,58 @@ def unpack_children(stream, template):
             out.append(tuple(unpack_children(stream, col)))
 
         # unpack arrays
-        elif col.shape:
-            n = np.fromstring(stream.read(4), ">I")[0]
-            count = col.dtype.itemsize * n
-            if col.dtype.char in "SU":
-                data = []
-                for _ in range(n):
-                    k = np.fromstring(stream.read(4), ">I")[0]
-                    data.append(stream.read(k))
-                    stream.read(-k % 4)
-                out.append(np.array(text_type(data), dtype='S'))
+        else:
+            out.extend(convert_stream_to_list(stream, col.dtype, col.shape,
+                                              col.id))
+    return out
 
-            else:
-                stream.read(4)  # read additional length
+
+def convert_stream_to_list(stream, dtype, shape, id):
+    out = []
+    if shape:
+        n = np.fromstring(stream.read(4), ">I")[0]
+        count = dtype.itemsize * n
+        if dtype.char in "SU":
+            data = []
+            for _ in range(n):
+                k = np.fromstring(stream.read(4), ">I")[0]
+                data.append(stream.read(k))
+                stream.read(-k % 4)
+            out.append(np.array([text_type(x.decode('ascii'))
+                                 for x in data], 'S').reshape(shape))
+        else:
+            stream.read(4)  # read additional length
+            try:
                 out.append(
                     np.fromstring(
-                        stream.read(count), col.dtype).reshape(col.shape))
-                if col.dtype.char == "B":
-                    stream.read(-n % 4)
+                        stream.read(count), dtype).reshape(shape))
+            except ValueError as e:
+                if str(e) == 'total size of new array must be unchanged':
+                    # server-side failure.
+                    # it is expected that the user should be mindful of this:
+                    raise RuntimeError(
+                                ('variable {0} could not be properly '
+                                 'retrieved. To avoid this '
+                                 'error consider using open_url(..., '
+                                 'output_grid=False).').format(quote(id)))
+                else:
+                    raise
+            if dtype.char == "B":
+                stream.read(-n % 4)
 
-        # special types: strings and bytes
-        elif col.dtype.char in 'SU':
-            n = np.fromstring(stream.read(4), '>I')[0]
-            out.append(stream.read(n).decode('ascii'))
-            stream.read(-n % 4)
-        elif col.dtype.char == 'B':
-            data = np.fromstring(stream.read(1), col.dtype)[0]
-            stream.read(3)
-            out.append(data)
-
-        # usual data
-        else:
-            out.append(
-                np.fromstring(stream.read(col.dtype.itemsize), col.dtype)[0])
-
+    # special types: strings and bytes
+    elif dtype.char in 'SU':
+        k = np.fromstring(stream.read(4), '>I')[0]
+        out.append(text_type(stream.read(k).decode('ascii')))
+        stream.read(-k % 4)
+    elif dtype.char == 'B':
+        data = np.fromstring(stream.read(1), dtype)[0]
+        stream.read(3)
+        out.append(data)
+    # usual data
+    else:
+        out.append(
+            np.fromstring(stream.read(dtype.itemsize), dtype)[0])
     return out
 
 
