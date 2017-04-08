@@ -89,19 +89,21 @@ DAP2_TO_NUMPY_RESPONSE_TYPEMAP = {
     'UInt': '>I',
 }
 
-# Here, the endianness is important:
-DAP2_TO_NUMPY_PARSER_TYPEMAP = {
-    'Float64': '>d',
-    'Float32': '>f',
-    'Int16': '>h',
-    'UInt16': '>H',
-    'Int32': '>i',
-    'UInt32': '>I',
-    'Byte': 'B',
-    'String': 'S',
-    'URL': 'S',
-    'Int': '>i',
-    'UInt': '>I',
+# Typemap from lower case DAP2 types to
+# numpy dtype string with specified endiannes.
+# Here, the endianness is very important:
+LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP = {
+    'float64': '>d',
+    'float32': '>f',
+    'int16': '>h',
+    'uint16': '>H',
+    'int32': '>i',
+    'uint32': '>I',
+    'byte': 'B',
+    'string': STRING,
+    'url': STRING,
+    'int': '>i',
+    'uint': '>I',
 }
 
 

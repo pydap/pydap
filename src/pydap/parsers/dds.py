@@ -8,24 +8,20 @@ from . import SimpleParser
 from ..model import (DatasetType, BaseType,
                      SequenceType, StructureType,
                      GridType)
-from ..lib import (quote, STRING, DAP2_TO_NUMPY_RESPONSE_TYPEMAP,
-                   DAP2_TO_NUMPY_PARSER_TYPEMAP, DAP2_ARRAY_LENGTH_NUMPY_TYPE)
-
-# This is the typemap of the reponse received from a server:
-response_typemap = {key.lower(): np.dtype(val) for key, val
-                    in DAP2_TO_NUMPY_RESPONSE_TYPEMAP.items()}
-response_typemap['string'] = np.dtype(STRING)  # default is "|S128"
-response_typemap['url'] = np.dtype(STRING)
-
-
-# This is the precision typemap:
-precision_typemap = {key.lower(): np.dtype(val) for key, val
-                     in DAP2_TO_NUMPY_PARSER_TYPEMAP.items()}
-precision_typemap['string'] = np.dtype(STRING)  # default is "|S128"
-precision_typemap['url'] = np.dtype(STRING)
+from ..lib import (quote, LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP)
 
 constructors = ('grid', 'sequence', 'structure')
 name_regexp = '[\w%!~"\'\*-]+'
+
+
+def DAP2_parser_typemap(type_string):
+    """
+    This function takes a numpy dtype object
+    and returns a dtype object that is compatible with
+    the DAP2 specification.
+    """
+    dtype_str = LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP[type_string.lower()]
+    return np.dtype(dtype_str)
 
 
 class DDSParser(SimpleParser):
@@ -73,15 +69,14 @@ class DDSParser(SimpleParser):
 
     def base(self):
         """Parse a base variable, returning a ``BaseType``."""
-        type = self.consume('\w+')
+        data_type_string = self.consume('\w+')
 
-        response_dtype = response_typemap[type.lower()]
-        precision_dtype = precision_typemap[type.lower()]
+        parser_dtype = DAP2_parser_typemap(data_type_string)
         name = quote(self.consume('[^;\[]+'))
         shape, dimensions = self.dimensions()
         self.consume(';')
 
-        data = DummyData(precision_dtype, shape)
+        data = DummyData(parser_dtype, shape)
         var = BaseType(name, data, dimensions=dimensions)
 
         return var

@@ -29,7 +29,7 @@ except ImportError:
     from singledispatch import singledispatch
 
 
-def DAP2dtypemap(dtype):
+def DAP2_response_dtypemap(dtype):
     """
     This function takes a numpy dtype object
     and returns a dtype object that is compatible with
@@ -97,7 +97,7 @@ def _sequencetype(var):
         DAP2_types = []
         position = 0
         for child in var.children():
-            if DAP2dtypemap(child.dtype).char == 'S':
+            if DAP2_response_dtypemap(child.dtype).char == 'S':
                 (DAP2_types
                  .append(DAP2_ARRAY_LENGTH_NUMPY_TYPE))  # string length
                 DAP2_types.append('|S{%s}' % position)   # string padded to 4n
@@ -105,7 +105,7 @@ def _sequencetype(var):
             else:
                 # Convert any numpy dtypes to numpy dtypes compatible
                 # with the DAP2 standard:
-                DAP2_types.append(DAP2dtypemap(child.dtype).str)
+                DAP2_types.append(DAP2_response_dtypemap(child.dtype).str)
         DAP2_dtype_str = ','.join(DAP2_types)
         strings = position > 0
 
@@ -168,7 +168,7 @@ def _basetype(var):
 
     # Convert any numpy dtypes to numpy dtypes compatible
     # with the DAP2 standard:
-    DAP2_dtype = DAP2dtypemap(data.dtype)
+    DAP2_dtype = DAP2_response_dtypemap(data.dtype)
 
     if data.shape:
         # pack length for arrays
@@ -242,7 +242,7 @@ def calculate_size(dataset):
         # everything.
         if (isinstance(var, SequenceType) or
             (isinstance(var, BaseType) and
-             DAP2dtypemap(var.dtype).char == 'S')):
+             DAP2_response_dtypemap(var.dtype).char == 'S')):
             return None
         elif isinstance(var, BaseType):
             if var.shape:
@@ -252,7 +252,7 @@ def calculate_size(dataset):
 
             # Convert any numpy dtype to numpy dtype compatible
             # with the DAP2 standard:
-            DAP2_dtype = DAP2dtypemap(var.data.dtype)
+            DAP2_dtype = DAP2_response_dtypemap(var.data.dtype)
             if DAP2_dtype == np.ubyte:
                 length += size + (-size % 4)
             else:
