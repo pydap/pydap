@@ -34,7 +34,7 @@ def raise_for_status(response):
 def follow_redirect(url, application=None, session=None):
     """
     This function essentially performs the following command:
-    >>> Request.blank(url).get_response(application)
+    >>> Request.blank(url).get_response(application)  # doctest: +SKIP
 
     It however makes sure that the request possesses the same cookies and
     headers as the passed session.

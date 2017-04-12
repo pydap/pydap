@@ -17,7 +17,7 @@ class TestQuote(unittest.TestCase):
 
     def test_name(self):
         """Check that the name was properly escaped."""
-        self.assertEqual(self.dataset.keys(), ["foo%5B"])
+        self.assertEqual(list(self.dataset.keys()), ["foo%5B"])
 
     def test_dds(self):
         text = Request.blank("/.dds").get_response(self.app).text
@@ -35,7 +35,7 @@ class TestQuote(unittest.TestCase):
 
     def test_client(self):
         dataset = open_url("http://localhost:8001/", application=self.app)
-        self.assertEqual(self.dataset.keys(), ["foo%5B"])
+        self.assertEqual(list(self.dataset.keys()), ["foo%5B"])
         self.assertEqual(dataset["foo["].name, "foo%5B")
         self.assertEqual(dataset["foo%5B"][0], 1)
 

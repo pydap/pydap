@@ -124,8 +124,8 @@ class ServerSideFunctions(object):
 
                 for sequence in walk(dataset, SequenceType):
                     sequence.data = np.rec.fromrecords(
-                        [tuple(row) for row in sequence],
-                        names=sequence.keys())[valid]
+                        [tuple(row) for row in sequence.iterdata()],
+                        names=list(sequence.keys()))[valid]
 
         # now apply projection
         if projection:
