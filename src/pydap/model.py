@@ -170,7 +170,7 @@ therefore highly recommended.
 import operator
 import copy
 from six.moves import reduce, map
-from six import string_types, binary_type
+from six import string_types
 import numpy as np
 from collections import OrderedDict, Mapping
 import warnings
@@ -395,21 +395,13 @@ class StructureType(DapType, Mapping):
                 yield key
 
     def _all_keys(self):
+        # used in ..handlers.lib
         return iter(self._dict.keys())
-
-    def _all_items(self):
-        return iter(self._dict.items())
-
-    def _all_values(self):
-        return iter(self._dict.values())
 
     def _getitem_string(self, key):
         """ Assume that key is a string type """
         try:
-            x = self._dict[quote(key)]
-            if isinstance(x, binary_type):
-                x = x.tostring().decode('utf-8')
-            return x
+            return self._dict[quote(key)]
         except KeyError:
             splitted = key.split('.')
             if len(splitted) > 1:
@@ -491,7 +483,7 @@ class StructureType(DapType, Mapping):
         out.id = self.id
 
         # Clone all children too.
-        for child in self._all_values():
+        for child in self._dict.values():
             out[child.name] = copy.copy(child)
         return out
 
@@ -735,6 +727,7 @@ class GridType(StructureType):
             out = self._getitem_string_tuple(key)
             for var in out.children():
                 var.data = self[var.name].data
+            return out
         else:
             if not self.output_grid:
                 return self.array[key]

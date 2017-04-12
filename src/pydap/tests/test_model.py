@@ -250,6 +250,13 @@ def test_StructureType_getitem():
     child = BaseType("child")
     var["child"] = child
     assert var["child"] is child
+    with pytest.raises(KeyError):
+        var["unloved child"]
+    with pytest.raises(KeyError):
+        var[:]
+
+    assert var["parent.child"] is child
+    assert var["grandparent.parent.child"] is child
 
 
 def test_StructureType_getitem_tuple():
@@ -260,23 +267,34 @@ def test_StructureType_getitem_tuple():
         var[name] = child
         assert var[name] is child
     assert list(var['child1', 'child3'].keys()) == ['child1', 'child3']
-    assert (list(var['child1', 'child3'].values()) ==
-            [BaseType(name) for name in ['child1', 'child3']])
     assert (list(var['child1', 'child3']._all_keys()) ==
             ['child1', 'child2', 'child3'])
-    assert (list(var['child1', 'child3']._all_values()) ==
-            [BaseType(name) for name in ['child1', 'child2', 'child3']])
+    with pytest.raises(KeyError):
+        var['unloved child']
 
 
 def test_StructureType_delitem():
     """Test item deletion."""
     var = StructureType("var")
     var["one"] = BaseType("one")
+    var["two"] = BaseType("two")
+    var["three"] = BaseType("three")
 
-    assert (list(var.keys()) == ['one'])
+    assert (list(var.keys()) == ['one', 'two', 'three'])
 
     del var["one"]
-    assert (list(var.keys()) == [])
+    assert (list(var.keys()) == ['two', 'three'])
+
+    # Make sure that one can safely delete
+    # a non visible child:
+    subset = var[("two",)]
+    assert list(subset.keys()) == ['two']
+    assert isinstance(subset, StructureType)
+    subset.__delitem__("three")
+
+    # Cannot delete an inexistent child:
+    with pytest.raises(KeyError):
+        del var["inexistent"]
 
 
 def test_StructureType_get_data():
@@ -364,8 +382,16 @@ def test_SequenceType_len(sequence_example, recwarn):
     assert recwarn.pop(PendingDeprecationWarning)
 
 
-def test_SequenceType_iter_(sequence_example):
-    """Test that iteration happens over the child names."""
+def test_SequenceType_iterdata(sequence_example):
+    """Test that data iteration happens over data."""
+    for a, b in zip(sequence_example.iterdata(), sequence_example.data):
+        for sub_a, sub_b in zip(a, b):
+            assert sub_a == sub_b
+
+
+def test_SequenceType_iter(sequence_example):
+    """Test that iteration happens ove data."""
+    # Remove in pydap 3.4
     for a, b in zip(iter(sequence_example), sequence_example.data):
         for sub_a, sub_b in zip(a, b):
             assert sub_a == sub_b
@@ -373,9 +399,26 @@ def test_SequenceType_iter_(sequence_example):
 
 def test_SequenceType_iter_deprecation(sequence_example, recwarn):
     """Test that direct iteration over data attribute is deprecated."""
+    # Remove in pydap 3.4
     iter(sequence_example)
     assert len(recwarn) == 1
     assert recwarn.pop(PendingDeprecationWarning)
+
+
+def test_SequenceType_items(sequence_example):
+    """Test that iteration happens over the child names."""
+    assert list(sequence_example.items()) == [(key, sequence_example[key])
+                                              for key in ['index',
+                                                          'temperature',
+                                                          'site']]
+
+
+def test_SequenceType_values(sequence_example):
+    """Test that iteration happens over the child names."""
+    assert list(sequence_example.values()) == [sequence_example[key]
+                                               for key in ['index',
+                                                           'temperature',
+                                                           'site']]
 
 
 def test_SequenceType_getitem(sequence_example):
@@ -483,6 +526,12 @@ def test_GridType_getitem(gridtype_example):
     assert (subset["y"].shape == (3,))
 
     assert gridtype_example is not subset
+
+    # pick more than one child:
+    np.testing.assert_equal(subset["a", "x"]["a"].data,
+                            subset["a"].data)
+    np.testing.assert_equal(subset["a", "x"]["x"].data,
+                            subset["x"].data)
 
 
 def test_GridType_getitem_not_tuple(gridtype_example):
