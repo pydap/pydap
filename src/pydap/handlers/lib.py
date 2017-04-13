@@ -189,7 +189,7 @@ def apply_selection(selection, dataset):
         conditions = [
             condition for condition in selection
             if re.match(
-                '%s\.[^\.]+(<=|<|>=|>|=|!=)' % re.escape(seq.id), condition)]
+                r'%s\.[^\.]+(<=|<|>=|>|=|!=)' % re.escape(seq.id), condition)]
         for condition in conditions:
             id1, op, id2 = parse_selection(condition, dataset)
             seq.data = seq[op(id1, id2)].data
