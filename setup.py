@@ -9,7 +9,7 @@ install_requires = [
     'Jinja2',
     'docopt',
     'six >= 1.4.0',
-    'mechanicalsoup',
+    'mechanicalsoup'
 ]
 
 if sys.version_info < (3, 5):
@@ -22,6 +22,7 @@ functions_extras = [
 
 server_extras = [
     'gunicorn',
+    'werkzeug'
 ]
 
 docs_extras = [
@@ -45,7 +46,8 @@ testing_extras = tests_require + [
     'pytest-cov',
     'pytest-attrib',
     'mock',
-    'requests'
+    'requests',
+    'flake8'
 ]
 
 
