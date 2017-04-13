@@ -8,7 +8,6 @@ it could work with more data formats.
 """
 
 import numpy as np
-import requests
 import pytest
 
 from webob.exc import HTTPError
@@ -60,6 +59,7 @@ def test_open(sequence_type_data):
                                     sequence_type_data.data[:],
                                     dtype=sequence_type_data.data.dtype))
 
+
 @server
 def test_open_timeout(sequence_type_data):
     """Test that timeout works properly"""
@@ -73,12 +73,12 @@ def test_open_timeout(sequence_type_data):
         with pytest.raises(HTTPError) as e:
             open_url(url, timeout=1e-8)
         assert 'Timeout' in str(e)
-        
+
         # test open_dods
         with pytest.raises(HTTPError):
             open_dods(url + '.dods?sequence', timeout=1e-8)
         assert 'Timeout' in str(e)
-        
+
         # test sequenceproxy
         dataset = open_url(url)
         seq = dataset['sequence']

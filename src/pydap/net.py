@@ -1,7 +1,7 @@
 from webob.request import Request
 from webob.exc import HTTPError
 from contextlib import closing
-from requests.exceptions import MissingSchema
+from requests.exceptions import MissingSchema, Timeout
 
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
@@ -80,7 +80,7 @@ def create_request(url, session=None, timeout=DEFAULT_TIMEOUT):
             # Missing schema can occur in tests when the url
             # is not pointing to any resource. Simply pass.
             pass
-        except requests.exceptions.Timeout:
+        except Timeout:
             raise HTTPError('Timeout')
     req.environ['webob.client.timeout'] = timeout
     return req
