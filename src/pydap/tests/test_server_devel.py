@@ -84,16 +84,16 @@ def test_open_timeout(sequence_type_data):
         seq = dataset['sequence']
         assert isinstance(seq.data, SequenceProxy)
         # Change the timeout of the sequence proxy:
-        seq.data.timeout = 1e-8
+        seq.data.timeout = 1e-12
         with pytest.raises(HTTPError) as e:
-            next(iter(seq))
+            next(seq.iterdata())
         assert 'Timeout' in str(e)
 
         # test baseproxy:
         dat = dataset['byte']
         assert isinstance(dat.data, BaseProxy)
         # Change the timeout of the baseprox proxy:
-        dat.data.timeout = 1e-8
+        dat.data.timeout = 1e-12
         with pytest.raises(HTTPError) as e:
             dat[:]
         assert 'Timeout' in str(e)
