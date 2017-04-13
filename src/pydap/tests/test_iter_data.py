@@ -165,20 +165,19 @@ def test_nested_iter(nested_data, nested_object):
 
 
 def test_nested_iter_child(nested_data, nested_object):
-    assert (
-        list(nested_object["a"]) ==
-        [row[0] for row in nested_data])
+    expected = [row[0] for row in nested_data]
+    assert list(nested_object["a"]) == expected
 
 
 def test_nested_iter_nested_sequence(nested_data, nested_object):
-    assert (list(nested_object["d"]) ==
-            [row[3] for row in nested_data])
+    expected = [row[3] for row in nested_data]
+    assert list(nested_object["d"]) == expected
 
 
 def test_nested_iter_nested_deep_child(nested_data, nested_object):
-    assert (list(nested_object['d']['e']) ==
-            [[col[0] for col in row[3]]
-             for row in nested_data])
+    expected = [[col[0] for col in row[3]]
+                for row in nested_data]
+    assert list(nested_object['d']['e']) == expected
 
 
 def test_nested_dtype(nested_dtype, nested_object):
@@ -187,23 +186,23 @@ def test_nested_dtype(nested_dtype, nested_object):
 
 def test_nested_selection(nested_data, nested_object):
     selection = nested_object[nested_object["a"] > 2]
-    assert ([tuple(row) for row in selection] ==
-            [tuple(row) for row in nested_data
-             if row[0] > 2])
+    expected = [tuple(row) for row in nested_data
+                if row[0] > 2]
+    assert [tuple(row) for row in selection] == expected
 
 
 def test_nested_projection(nested_data, nested_object):
     projection = nested_data[1::2]
-    assert ([tuple(row) for row in projection] ==
-            [tuple(row) for row_id, row
-             in enumerate(nested_data)
-             if row_id in range(1, len(nested_data), 2)])
+    expected = [tuple(row) for row_id, row
+                in enumerate(nested_data)
+                if row_id in range(1, len(nested_data), 2)]
+    assert [tuple(row) for row in projection] == expected
 
     projection = nested_object[1::2]
-    assert ([tuple(row) for row in projection] ==
-            [tuple(row) for row_id, row
-             in enumerate(nested_data)
-             if row_id in range(1, len(nested_data), 2)])
+    expected = [tuple(row) for row_id, row
+                in enumerate(nested_data)
+                if row_id in range(1, len(nested_data), 2)]
+    assert [tuple(row) for row in projection] == expected
 
 
 def test_nested_combined(nested_data, nested_object):

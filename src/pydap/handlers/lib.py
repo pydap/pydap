@@ -304,7 +304,7 @@ class IterData(object):
         """Return Numpy dtype of the object."""
         def array_dtype(x, template):
             if (hasattr(template, 'keys') and
-               len(template.keys()) > 1):
+               len(list(template.keys())) > 1):
                 peek = x
                 if isinstance(x, IterData):
                     peek = next(iter(x))
