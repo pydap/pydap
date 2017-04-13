@@ -73,14 +73,16 @@ def test_timeout(sequence_type_data):
     # to guarantee that it timeouts
     def wrap_mocker(func):
         def mock_add_latency(*args, **kwargs):
-            time.sleep(1)
+            time.sleep(1e-1)
             return func(*args, **kwargs)
+        return mock_add_latency
 
-    application.__call__ = wrap_mocker(application.__call__)
+    application = wrap_mocker(application)
     with LocalTestServer(application) as server:
         url = ("http://0.0.0.0:%s/" % server.port)
 
         # test open_url
+        assert open_url(url) == TestDataset
         with pytest.raises(HTTPError) as e:
             open_url(url, timeout=1e-5)
         assert 'Timeout' in str(e)
