@@ -441,12 +441,13 @@ You can specify a cache directory in the ``pydap.lib.CACHE`` global variable. If
 Timeout
 ~~~~~~~
 
-To specify a timeout for the client, just set the global variable ``pydap.lib.TIMEOUT`` to the desired number of seconds; after this time trying to connect the client will give up. The default is ``None`` (never timeout).
+To specify a timeout for the client, just set the desired number of seconds using the ``timeout`` option to ``open_url(...)`` or ``open_dods(...)``.
+For example, the following commands would timeout after 30 seconds without receiving a response from the server:
 
 .. code-block:: python
 
-    >>> import pydap.lib
-    >>> pydap.lib.TIMEOUT = 60
+    >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc, timeout=30)
+    >>> dataset = open_dods('http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods, timeout=30)
 
 Configuring a proxy
 ~~~~~~~~~~~~~~~~~~~

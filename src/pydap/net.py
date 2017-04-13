@@ -5,8 +5,10 @@ from requests.exceptions import MissingSchema
 
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
+from .lib import DEFAULT_TIMEOUT
 
-def GET(url, application=None, session=None):
+
+def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT):
     """Open a remote URL returning a webob.response.Response object
 
     Optional parameters:
@@ -19,7 +21,8 @@ def GET(url, application=None, session=None):
         _, _, path, query, fragment = urlsplit(url)
         url = urlunsplit(('', '', path, query, fragment))
 
-    return follow_redirect(url, application=application, session=session)
+    return follow_redirect(url, application=application, session=session,
+                           timeout=timeout)
 
 
 def raise_for_status(response):
@@ -31,7 +34,8 @@ def raise_for_status(response):
         )
 
 
-def follow_redirect(url, application=None, session=None):
+def follow_redirect(url, application=None, session=None,
+                    timeout=DEFAULT_TIMEOUT):
     """
     This function essentially performs the following command:
     >>> Request.blank(url).get_response(application)  # doctest: +SKIP
@@ -40,11 +44,12 @@ def follow_redirect(url, application=None, session=None):
     headers as the passed session.
     """
 
-    req = create_request(url, session=session)
+    req = create_request(url, session=session, timeout=timeout)
     return req.get_response(application)
 
 
-def create_request(url, session=None):
+def create_request(url, session=None, timeout=DEFAULT_TIMEOUT):
+    req = Request.blank(url)
     if session is not None:
         # If session is set and cookies were loaded using pydap.cas.get_cookies
         # using the check_url option, then we can legitimately expect that
@@ -58,7 +63,7 @@ def create_request(url, session=None):
         # be guaranteed to have all the needed credentials:
         try:
             # Use session to follow redirects:
-            with closing(session.head(url)) as head:
+            with closing(session.head(url, timeout=timeout)) as head:
                 req = Request.blank(head.url)
 
                 # Get cookies from head:
@@ -71,9 +76,11 @@ def create_request(url, session=None):
                 # Set the headers to the session headers:
                 for item in head.request.headers:
                     req.headers[item] = head.request.headers[item]
-                return req
         except MissingSchema:
             # Missing schema can occur in tests when the url
             # is not pointing to any resource. Simply pass.
             pass
-    return Request.blank(url)
+        except requests.exceptions.Timeout:
+            raise HTTPError('Timeout')
+    req.environ['webob.client.timeout'] = timeout
+    return req
