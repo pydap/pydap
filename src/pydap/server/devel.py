@@ -1,6 +1,7 @@
 from webob.request import Request
 from webob.exc import HTTPError
 import threading
+import multiprocessing
 import time
 import math
 import numpy as np
@@ -78,18 +79,24 @@ class LocalTestServer:
     """
 
     def __init__(self, application=BaseHandler(DefaultDataset),
-                 port=None, wait=0.5, polling=1e-2):
+                 port=None, wait=0.5, polling=1e-2, multiprocessing=False):
         self._port = port or get_open_port()
         self.application = application
         self._wait = wait
         self._polling = polling
+        self._multiprocessing = multiprocessing
 
     def start(self):
         # Start a simple WSGI server:
         self.httpd = run_simple_server(self.port, self.application)
-        self.server_process = (threading
-                               .Thread(target=self.httpd.serve_forever,
-                                       kwargs={'poll_interval': 1e-2}))
+        if self._multiprocessing:
+            self.server_process = (multiprocessing
+                                   .Process(target=self.httpd.serve_forever,
+                                            kwargs={'poll_interval': 1e-2}))
+        else:
+            self.server_process = (threading
+                                   .Thread(target=self.httpd.serve_forever,
+                                           kwargs={'poll_interval': 1e-2}))
 
         self.server_process.start()
         # Poll the server
@@ -121,8 +128,11 @@ class LocalTestServer:
 
     def shutdown(self):
         # Shutdown the server:
-        self.httpd.shutdown()
-        self.server_process.join()
+        if self._multiprocessing:
+            self.server_process.terminate()
+        else:
+            self.httpd.shutdown()
+            self.server_process.join()
 
     def __exit__(self, *_):
         self.shutdown()

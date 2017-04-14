@@ -15,7 +15,6 @@ from pydap.model import DatasetType, BaseType, SequenceType
 from pydap.client import open_url
 from pydap.server.devel import LocalTestServer
 
-
 server = pytest.mark.server
 
 
@@ -56,3 +55,15 @@ def test_open(sequence_type_data):
                                   np.array(
                                     sequence_type_data.data[:],
                                     dtype=sequence_type_data.data.dtype))
+
+
+@server
+def test_netcdf(sequence_type_data):
+    """Test that LocalTestServer works properly"""
+    TestDataset = DatasetType('Test')
+    TestDataset['byte'] = BaseType('byte', np.array(1, dtype=np.ubyte))
+
+    with TestDataset.to_netcdf() as ds:
+        assert 'byte' in ds.variables
+        assert ds['byte'].dtype == np.byte
+        assert ds['byte'][:] == np.array(1, dtype=np.byte)
