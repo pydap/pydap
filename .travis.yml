@@ -15,6 +15,7 @@ addons:
       - libnetcdf-dev
 
 install:
+    - pip install --upgrade pip>=8.1
     # Install the package:
     - pip install -e .[testing,functions,server,tests]
 
