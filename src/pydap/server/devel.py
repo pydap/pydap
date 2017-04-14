@@ -92,11 +92,11 @@ class LocalTestServer:
         if self._multiprocessing:
             self.server_process = (multiprocessing
                                    .Process(target=self.httpd.serve_forever,
-                                            kwargs={'poll_interval': 1e-2}))
+                                            kwargs={'poll_interval': 1e-1}))
         else:
             self.server_process = (threading
                                    .Thread(target=self.httpd.serve_forever,
-                                           kwargs={'poll_interval': 1e-2}))
+                                           kwargs={'poll_interval': 1e-1}))
 
         self.server_process.start()
         # Poll the server
