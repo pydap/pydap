@@ -21,8 +21,7 @@ functions_extras = [
 ]
 
 server_extras = [
-    'gunicorn',
-    'werkzeug'
+    'gunicorn'
 ]
 
 docs_extras = [

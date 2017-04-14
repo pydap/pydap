@@ -6,7 +6,7 @@ import math
 import numpy as np
 import socket
 
-from werkzeug.serving import run_simple
+from wsgiref.simple_server import make_server
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
@@ -32,26 +32,7 @@ def get_open_port():
 def run_simple_server(port, application):
     application = ServerSideFunctions(application)
 
-    def app_check_for_shutdown(environ, start_response):
-        if environ['PATH_INFO'].endswith('shutdown'):
-            shutdown_server(environ)
-            return shutdown_application(environ, start_response)
-        else:
-            return application(environ, start_response)
-
-    run_simple('0.0.0.0', port,
-               app_check_for_shutdown)
-
-
-def shutdown_server(environ):
-    if 'werkzeug.server.shutdown' not in environ:
-        raise RuntimeError('Not running the development server')
-    environ['werkzeug.server.shutdown']()
-
-
-def shutdown_application(environ, start_response):
-    start_response('200 OK', [('Content-Type', 'text/plain')])
-    return [b'Server is shutting down.']
+    return make_server('0.0.0.0', port, application)
 
 
 class LocalTestServer:
@@ -105,10 +86,11 @@ class LocalTestServer:
 
     def start(self):
         # Start a simple WSGI server:
+        self.httpd = run_simple_server(self.port, self.application)
         self.server_process = (threading
-                               .Thread(target=run_simple_server,
-                                       args=(self.port,
-                                             self.application)))
+                               .Thread(target=self.httpd.serve_forever,
+                                       kwargs={'poll_interval': 1e-2}))
+
         self.server_process.start()
         # Poll the server
         ok = False
@@ -139,9 +121,7 @@ class LocalTestServer:
 
     def shutdown(self):
         # Shutdown the server:
-        (Request
-         .blank("http://0.0.0.0:%s/shutdown" % self.port)
-         .get_response())
+        threading.Thread(target=self.httpd.shutdown).start()
         self.server_process.join()
 
     def __exit__(self, *_):
