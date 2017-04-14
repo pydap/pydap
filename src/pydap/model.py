@@ -519,7 +519,8 @@ class DatasetType(StructureType):
             from .apis.netcdf4 import NetCDF
             return NetCDF(self, *args, **kwargs)
         except ImportError:
-            raise NotImplementedError('.to_netcdf requires the netCDF4 package')
+            raise NotImplementedError('.to_netcdf requires the netCDF4 '
+                                      'package.')
 
 
 class SequenceType(StructureType):
