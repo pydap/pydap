@@ -121,7 +121,7 @@ class LocalTestServer:
 
     def shutdown(self):
         # Shutdown the server:
-        threading.Thread(target=self.httpd.shutdown).start()
+        self.httpd.shutdown()
         self.server_process.join()
 
     def __exit__(self, *_):
