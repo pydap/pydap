@@ -514,6 +514,13 @@ class DatasetType(StructureType):
         for child in self.children():
             child.id = child.name
 
+    def to_netcdf(self, *args, **kwargs):
+        try:
+            from .apis.netcdf4 import NetCDF
+            return NetCDF(self, *args, **kwargs)
+        except ImportError:
+            raise NotImplementedError('.to_netcdf requires the netCDF4 package')
+
 
 class SequenceType(StructureType):
 
