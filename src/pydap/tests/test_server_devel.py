@@ -61,9 +61,9 @@ def test_open(sequence_type_data):
 def test_netcdf(sequence_type_data):
     """Test that LocalTestServer works properly"""
     TestDataset = DatasetType('Test')
-    TestDataset['byte'] = BaseType('byte', np.array(1, dtype=np.ubyte))
+    TestDataset['float'] = BaseType('float', np.array(1, dtype=np.float32))
 
     with TestDataset.to_netcdf() as ds:
-        assert 'byte' in ds.variables
-        assert ds['byte'].dtype == np.byte
-        assert ds['byte'][:] == np.array(1, dtype=np.byte)
+        assert 'float' in ds.variables
+        assert ds['float'].dtype == np.float32
+        assert ds['float'][:] == np.array(1, dtype=np.float32)
