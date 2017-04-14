@@ -7,24 +7,7 @@ python:
     - 3.5
     - 3.6
 
-addons:
-  apt:
-    packages:
-      # The following as required for netcdf files:
-      - libhdf5-serial-dev
-      - netcdf-bin
-      - libnetcdf-dev
-
 install:
-    # Install netcdf4-python from github. pip install does not
-    # appear to be working:
-    - git clone https://github.com/Unidata/netcdf4-python.git
-    - cd netcdf4-python
-    - python setup.py build
-    - python setup.py install
-    - cd ..
-    - rm -rf netcdf4-python
-    # Install the package:
     - pip install -e .[testing,functions,server,tests]
 
 script:
