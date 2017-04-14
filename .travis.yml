@@ -12,7 +12,9 @@ addons:
       - libhdf5-serial-dev
       - netcdf-bin
       - libnetcdf-dev
+
 install:
+    # Install the package:
     - pip install -e .[testing,functions,server,tests]
 
 script:

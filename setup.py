@@ -90,8 +90,9 @@ setup(name='Pydap',
             'docs': docs_extras,
             'tests': tests_require,
             'cas': cas_extras,
-            'server': server_extras,
             'handlers.netcdf': hdl_netcdf_extras
+            'netcdf': hdl_netcdf_extras,
+            'server': server_extras
       },
       test_suite="pydap.tests",
       entry_points="""
