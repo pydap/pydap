@@ -12,10 +12,9 @@ _private_atts = ['server']
 class NetCDF(Dataset):
     def __init__(self, dataset, *args, **kwargs):
         self.server = LocalTestServer(application=BaseHandler(dataset=dataset),
-                                      multiprocessing=True)
+                                      as_process=True)
         self.server.start()
-        url = ("http://0.0.0.0:%s/" % self.server.port)
-        super(NetCDF, self).__init__(url, *args, **kwargs)
+        super(NetCDF, self).__init__(self.server.url, *args, **kwargs)
 
     def __setattr__(self, name, value):
         if name in _private_atts:
