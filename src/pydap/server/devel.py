@@ -148,6 +148,7 @@ class LocalTestServer:
         else:
             self._httpd.shutdown()
         self._server.join()
+        self._httpd.server_close()
 
     def __exit__(self, *_):
         self.shutdown()
