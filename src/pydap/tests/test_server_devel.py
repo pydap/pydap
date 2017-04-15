@@ -44,8 +44,7 @@ def test_open(sequence_type_data):
     TestDataset = DatasetType('Test')
     TestDataset['sequence'] = sequence_type_data
     with LocalTestServer(BaseHandler(TestDataset)) as server:
-        url = ("http://0.0.0.0:%s/" % server.port)
-        dataset = open_url(url)
+        dataset = open_url(server.url)
         seq = dataset['sequence']
         retrieved_data = [line for line in seq]
 
