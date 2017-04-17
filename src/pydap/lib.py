@@ -226,7 +226,6 @@ class BytesReader(object):
 
     def __init__(self, data):
         self.data = data
-        self.buf = bytearray()
 
     def read(self, n):
         """Read and return `n` bytes."""
