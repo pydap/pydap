@@ -25,12 +25,12 @@ NUMPY_TO_DAP2_TYPEMAP = {
     'i': 'Int32', 'l': 'Int32', 'q': 'Int32',
     'I': 'UInt32', 'L': 'UInt32', 'Q': 'UInt32',
     # DAP2 does not support signed bytes.
-    # It's Byte type is unsigned and thus corresponds
+    # Its Byte type is unsigned and thus corresponds
     # to numpy's 'B'.
     # The consequence is that there is no natural way
     # in DAP2 to represent numpy's 'b' type.
     # Ideally, DAP2 would have a signed Byte type
-    # and a usigned UByte type and we would have the
+    # and an unsigned UByte type and we would have the
     # following mapping: {'b': 'Byte', 'B': 'UByte'}
     # but this not how the protocol has been defined.
     # This means that numpy's 'b' must be mapped to Int16
