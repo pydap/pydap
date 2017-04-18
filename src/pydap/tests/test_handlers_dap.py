@@ -4,6 +4,7 @@ import numpy as np
 from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
 from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy
+from pydap.handlers.dap import find_pattern_in_string_iter
 from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
 
@@ -27,9 +28,9 @@ class TestDapHandler(unittest.TestCase):
         """Test that dataset has the correct data proxies for grids."""
         dataset = DAPHandler("http://localhost:8001/", self.app1).dataset
 
-        self.assertEqual(dataset.keys(), ["SimpleGrid", "x", "y"])
+        self.assertEqual(list(dataset.keys()), ["SimpleGrid", "x", "y"])
         self.assertEqual(
-            dataset.SimpleGrid.keys(), ["SimpleGrid", "x", "y"])
+            list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
         self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
@@ -75,9 +76,9 @@ class TestDapHandler(unittest.TestCase):
         dataset = DAPHandler("http://localhost:8001/", self.app1,
                              output_grid=False).dataset
 
-        self.assertEqual(dataset.keys(), ["SimpleGrid", "x", "y"])
+        self.assertEqual(list(dataset.keys()), ["SimpleGrid", "x", "y"])
         self.assertEqual(
-            dataset.SimpleGrid.keys(), ["SimpleGrid", "x", "y"])
+            list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
         self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
@@ -145,7 +146,7 @@ class TestDapHandler(unittest.TestCase):
                              self.app1).dataset
 
         # object should be a structure, not a grid
-        self.assertEqual(dataset.keys(), ["SimpleGrid"])
+        self.assertEqual(list(dataset.keys()), ["SimpleGrid"])
         self.assertNotIsInstance(dataset.SimpleGrid, GridType)
         self.assertIsInstance(dataset.SimpleGrid, StructureType)
 
@@ -168,9 +169,9 @@ class TestDapHandler(unittest.TestCase):
         """Test that dataset has the correct data proxies for sequences."""
         dataset = DAPHandler("http://localhost:8001/", self.app2).dataset
 
-        self.assertEqual(dataset.keys(), ["cast"])
+        self.assertEqual(list(dataset.keys()), ["cast"])
         self.assertEqual(
-            dataset.cast.keys(), [
+            list(dataset.cast.keys()), [
                 'id', 'lon', 'lat', 'depth', 'time', 'temperature', 'salinity',
                 'pressure'])
 
@@ -200,7 +201,7 @@ class TestDapHandler(unittest.TestCase):
 
         self.assertEqual(dataset.cast.data.slice, (slice(1, 2, 1),))
         self.assertEqual(
-            [tuple(row) for row in dataset.cast], [
+            [tuple(row) for row in dataset.cast.iterdata()], [
                 ('2', 200, 10, 500, 1, 15, 35, 100)])
 
 
@@ -321,7 +322,8 @@ class TestSequenceProxy(unittest.TestCase):
         """Test attributes of the remote sequence."""
         self.assertEqual(self.remote.baseurl, "http://localhost:8001/")
         self.assertEqual(self.remote.id, "sequence")
-        self.assertEqual(self.remote.template.keys(), ["byte", "int", "float"])
+        self.assertEqual(list(self.remote.template.keys()),
+                         ["byte", "int", "float"])
         self.assertEqual(self.remote.selection, [])
         self.assertEqual(self.remote.slice, (slice(None),))
 
@@ -332,9 +334,11 @@ class TestSequenceProxy(unittest.TestCase):
         self.assertEqual(child.template.dtype, np.dtype(">i4"))
         self.assertEqual(child.template.shape, ())
 
+        print(self.remote)
         child = self.remote[["float", "int"]]
+        print(child)
         self.assertEqual(child.id, "sequence.float,sequence.int")
-        self.assertEqual(child.template.keys(), ["float", "int"])
+        self.assertEqual(list(child.template.keys()), ["float", "int"])
 
         child = self.remote[0]
         self.assertEqual(child.slice, (slice(0, 1, 1),))
@@ -383,6 +387,28 @@ class TestSequenceProxy(unittest.TestCase):
 
         child = self.remote["byte"]
         self.assertEqual(list(child), [0, 1, 2, 3, 4, 5, 6, 7])
+
+    def test_iter_find_pattern(self):
+        pattern = b'Data:\n'
+        # Check in a simple iteration:
+        string_iter = iter([b'blahblah ', b'Data:\n', b'blahblahblah'])
+        last_chunk = find_pattern_in_string_iter(pattern, string_iter)
+        assert last_chunk == b''
+        assert next(string_iter) == b'blahblahblah'
+
+        # Check in a more complex iteration:
+        string_iter = iter([b'blahblah Da', b'ta:\nblahb', b'lahblah'])
+        last_chunk = find_pattern_in_string_iter(pattern, string_iter)
+        assert last_chunk == b'blahb'
+        assert next(string_iter) == b'lahblah'
+
+        # Check for a character by character iteration:
+        string_iter = iter([b'b', b'l', b'a', b'h', b'b', b'l', b'a',
+                            b'h', b' ', b'D', b'a', b't', b'a', b':', b'\n',
+                            b'b', b'l', b'a'])
+        last_chunk = find_pattern_in_string_iter(pattern, string_iter)
+        assert last_chunk == b''
+        assert next(string_iter) == b'b'
 
     def test_comparisons(self):
         """Test lazy comparisons on the object."""

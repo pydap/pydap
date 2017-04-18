@@ -220,7 +220,7 @@ class SequenceProxy(object):
         # return a new object with requested columns
         elif isinstance(key, list):
             out.sub_children = True
-            out.template._keys = key
+            out.template._visible_keys = key
 
         # return a copy with the added constraints
         elif isinstance(key, ConstraintExpression):
@@ -266,18 +266,12 @@ class SequenceProxy(object):
 
         # Fast forward past the DDS header
         # the pattern could span chunk boundaries though so make sure to check
-        previous_chunk = b''
-        this_chunk = b''
         pattern = b'Data:\n'
-        for this_chunk in i:
-            m = re.search(pattern, previous_chunk + this_chunk)
-            if m:
-                break
-        if not m:
+        last_chunk = find_pattern_in_string_iter(pattern, i)
+
+        if last_chunk is None:
             raise ValueError("Could not find data segment in response from {}"
                              .format(self.url))
-
-        last_chunk = (previous_chunk + this_chunk)[m.end():]
 
         # Then construct a stream consisting of everything from
         # 'Data:\n' to the end of the chunk + the rest of the stream
@@ -412,6 +406,17 @@ def convert_stream_to_list(stream, dtype, shape, id):
 def unpack_data(xdr_stream, dataset):
     """Unpack a string of encoded data, returning data as lists."""
     return unpack_children(xdr_stream, dataset)
+
+
+def find_pattern_in_string_iter(pattern, i):
+    last_chunk = b''
+    length = len(pattern)
+    for this_chunk in i:
+        last_chunk += this_chunk
+        m = re.search(pattern, last_chunk)
+        if m:
+            return last_chunk[m.end():]
+        last_chunk = last_chunk[-length:]
 
 
 def dump():  # pragma: no cover

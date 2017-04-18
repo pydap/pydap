@@ -225,7 +225,7 @@ def apply_projection(projection, dataset):
                         # the candidate so it has only explicitly added
                         # children; also, Grids are degenerated into Structures
                         candidate = degenerate_grid_to_structure(candidate)
-                        candidate._keys = []
+                        candidate._visible_keys = []
                     target[name] = candidate
                 target, template = target[name], template[name]
             else:
@@ -302,8 +302,22 @@ class IterData(object):
     @property
     def dtype(self):
         """Return Numpy dtype of the object."""
-        peek = next(iter(self))
-        return np.array(peek).dtype
+        def array_dtype(x, template):
+            if (hasattr(template, 'keys') and
+               len(list(template.keys())) > 1):
+                peek = x
+                if isinstance(x, IterData):
+                    peek = next(iter(x))
+                return np.dtype([(col, array_dtype(val, template[col]))
+                                 for col, val
+                                 in zip(template.keys(), peek)])
+            else:
+                return np.array(x).dtype
+        return array_dtype(next(iter(self)), self.template)
+
+    def iterdata(self):
+        """Included for code symmetry with Types"""
+        return iter(self)
 
     def __iter__(self):
         data = iter(self.stream)
@@ -332,7 +346,7 @@ class IterData(object):
         # column is returned
         if isinstance(key, string_types):
             try:
-                col = self.template.keys().index(key)
+                col = list(self.template.keys()).index(key)
             except ValueError:
                 raise KeyError(key)
             out.level += 1
@@ -341,10 +355,8 @@ class IterData(object):
 
         # return a new sequence with the selected children
         elif isinstance(key, list):
-            cols = [self.template.keys().index(k) for k in key]
-            # store the original keys for filtering
-            out.template._original_keys = out.template._keys
-            out.template._keys = key
+            cols = [list(self.template.keys()).index(k) for k in key]
+            out.template._visible_keys = key
             out.imap.append(deep_map(
                 lambda row: tuple(row[i] for i in cols), out.level+1))
 
@@ -441,7 +453,7 @@ def build_filter(expression, template):
         target = template
         for level, token in enumerate(id1.split(".")):
             parent1 = target.id
-            keys = getattr(target, "_original_keys", target._keys)
+            keys = list(target._all_keys())
             col = keys.index(token)
             target = target[token]
         a = operator.itemgetter(col)
@@ -454,7 +466,7 @@ def build_filter(expression, template):
     # if we're comparing two variables they must be on the same sequence, so
     # ``parent1`` must be equal to ``parent2``
     if id2.rsplit(".", 1)[0] == parent1:  # parent2 == parent1
-        keys = getattr(template, "_original_keys", template._keys)
+        keys = list(template._all_keys())
         col = keys.index(id2.split(".")[-1])
         b = operator.itemgetter(col)
     else:
@@ -501,7 +513,7 @@ def build_filter(expression, template):
                 return [col for col in row if op(a(col), b(col))]
 
             # navigate inside the sequence
-            col = target.keys().index(token)
+            col = list(target.keys()).index(token)
             target = target[col]
 
             # modify data in place; we need to convert tuple to list

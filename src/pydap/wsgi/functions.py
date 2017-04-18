@@ -48,7 +48,7 @@ def density(dataset, salinity, temperature, pressure):
             'Function "bounds" should be used on a Sequence.')
 
     selection = sequence[salinity.name, temperature.name, pressure.name]
-    rows = [tuple(row) for row in selection]
+    rows = [tuple(row) for row in selection.iterdata()]
     data = np.rec.fromrecords(
         rows, names=['salinity', 'temperature', 'pressure'])
     rho = gsw.rho(data['salinity'], data['temperature'], data['pressure'])

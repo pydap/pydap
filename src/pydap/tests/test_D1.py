@@ -55,17 +55,17 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
 
     def test_data(self):
         dataset = open_url('http://localhost:8001/', application=self.app)
-        data = list(dataset.Drifters)
+        data = list(dataset.Drifters.iterdata())
         self.assertEqual(data, D1.Drifters.data.tolist())
 
     def test_filtering(self):
         dataset = open_url('http://localhost:8001/', application=self.app)
         drifters = dataset.Drifters
         selection = np.rec.fromrecords(
-            list(drifters[drifters.longitude < 999]), names=drifters.keys())
+            list(drifters[drifters.longitude < 999].iterdata()), names=list(drifters.keys()))
 
         data = np.rec.fromrecords(
-                D1.Drifters.data.tolist(), names=drifters.keys())
+                D1.Drifters.data.tolist(), names=list(drifters.keys()))
         filtered = data[data['longitude'] < 999]
 
         np.testing.assert_array_equal(filtered, selection)
@@ -77,7 +77,7 @@ Drifters.instrument_id, Drifters.location, Drifters.latitude, Drifters.longitude
             list(drifters[drifters.longitude < 999]['location']))
 
         data = np.rec.fromrecords(
-                D1.Drifters.data.tolist(), names=drifters.keys())
+                D1.Drifters.data.tolist(), names=list(drifters.keys()))
         filtered = data[data['longitude'] < 999]['location']
 
         np.testing.assert_array_equal(filtered, selection)
