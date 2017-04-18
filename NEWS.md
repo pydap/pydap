@@ -1,6 +1,14 @@
 News
 ====
 
+3.2.2
+-----
+
+* Python 3.3 is no longer supported. This is in line with
+  other similar projects (Numpy, Xarray, ...) and it preempts the
+  expected python 3.3 EOL in September 2017.
+
+
 3.2.1
 -----
 
