@@ -16,7 +16,7 @@ if sys.version_info < (3, 5):
     install_requires.append('singledispatch')
 
 functions_extras = [
-    'gsw>=3.0.6',
+    'gsw==3.0.6',
     'coards'
 ]
 
@@ -45,6 +45,7 @@ testing_extras = tests_require + [
     'pytest-cov',
     'pytest-attrib',
     'mock',
+    'requests-mock',
     'requests'
 ]
 
@@ -54,8 +55,9 @@ setup(name='Pydap',
       description="An implementation of the Data Access Protocol.",
       long_description="",
       classifiers=[
+            "Programming Language :: Python :: 2",
             "Programming Language :: Python :: 2.7",
-            "Programming Language :: Python :: 3.3",
+            "Programming Language :: Python :: 3",
             "Programming Language :: Python :: 3.4",
             "Programming Language :: Python :: 3.5",
             "Programming Language :: Python :: 3.6"

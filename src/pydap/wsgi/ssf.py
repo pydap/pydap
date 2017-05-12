@@ -181,7 +181,7 @@ def eval_function(dataset, function, functions):
             return eval_function(dataset, token, functions)
         else:
             try:
-                names = re.sub('\[.*?\]', '', str(token)).split('.')
+                names = re.sub(r'\[.*?\]', '', str(token)).split('.')
                 return reduce(operator.getitem, [dataset] + names)
             except:
                 try:

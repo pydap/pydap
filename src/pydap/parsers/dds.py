@@ -11,7 +11,7 @@ from ..model import (DatasetType, BaseType,
 from ..lib import (quote, LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP)
 
 constructors = ('grid', 'sequence', 'structure')
-name_regexp = '[\w%!~"\'\*-]+'
+name_regexp = r'[\w%!~"\'\*-]+'
 
 
 def DAP2_parser_typemap(type_string):
@@ -57,7 +57,7 @@ class DDSParser(SimpleParser):
 
     def declaration(self):
         """Parse and return a declaration."""
-        token = self.peek('\w+').lower()
+        token = self.peek(r'\w+').lower()
 
         map = {
             'grid':      self.grid,
@@ -73,6 +73,7 @@ class DDSParser(SimpleParser):
 
         parser_dtype = DAP2_parser_typemap(data_type_string)
         name = quote(self.consume('[^;\[]+'))
+
         shape, dimensions = self.dimensions()
         self.consume(';')
 
@@ -86,14 +87,14 @@ class DDSParser(SimpleParser):
         shape = []
         names = []
         while not self.peek(';'):
-            self.consume('\[')
+            self.consume(r'\[')
             token = self.consume(name_regexp)
             if self.peek('='):
                 names.append(token)
                 self.consume('=')
-                token = self.consume('\d+')
+                token = self.consume(r'\d+')
             shape.append(int(token))
-            self.consume('\]')
+            self.consume(r'\]')
         return tuple(shape), tuple(names)
 
     def sequence(self):
