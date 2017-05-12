@@ -127,7 +127,7 @@ bounds.__version__ = "1.0"
 
 def parse_step(step):
     """Parse a GrADS time step returning a timedelta."""
-    value, units = re.search('(\d+)(.*)', step).groups()
+    value, units = re.search(r'(\d+)(.*)', step).groups()
     value = int(value)
     if units.lower() == 'mn':
         return timedelta(minutes=value)
