@@ -60,10 +60,10 @@ def create_request(url, session=None):
         # be guaranteed to have all the needed credentials:
         return create_request_from_session(url, session)
     else:
-        # If a session object was not passed, we simply pass the requests
-        # library. The requests library allows the handling of redirects
-        # that are not naturally handled by Webob.
-        return create_request_from_session(url, requests)
+        # If a session object was not passed, we simply pass a new
+        # requests.Session() object. The requests library allows the
+        # handling of redirects that are not naturally handled by Webob.
+        return create_request_from_session(url, requests.Session())
 
 
 def create_request_from_session(url, session):
