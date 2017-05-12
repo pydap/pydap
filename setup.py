@@ -16,7 +16,7 @@ if sys.version_info < (3, 5):
     install_requires.append('singledispatch')
 
 functions_extras = [
-    'gsw>=3.0.6',
+    'gsw==3.0.6',
     'coards'
 ]
 
