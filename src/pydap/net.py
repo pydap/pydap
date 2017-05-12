@@ -1,7 +1,8 @@
 from webob.request import Request
 from webob.exc import HTTPError
 from contextlib import closing
-from requests.exceptions import MissingSchema
+import requests
+from requests.exceptions import MissingSchema, InvalidSchema
 
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
@@ -23,7 +24,8 @@ def GET(url, application=None, session=None):
 
 
 def raise_for_status(response):
-    if response.status_code >= 400:
+    # Raise error if status is above 300:
+    if response.status_code >= 300:
         raise HTTPError(
             detail=response.status,
             headers=response.headers,
@@ -56,24 +58,32 @@ def create_request(url, session=None):
         # adjust the cookies as needed. We can then use the final url and
         # the final cookies to set up a webob Request object that will
         # be guaranteed to have all the needed credentials:
-        try:
-            # Use session to follow redirects:
-            with closing(session.head(url)) as head:
-                req = Request.blank(head.url)
+        return create_request_from_session(url, session)
+    else:
+        # If a session object was not passed, we simply pass a new
+        # requests.Session() object. The requests library allows the
+        # handling of redirects that are not naturally handled by Webob.
+        return create_request_from_session(url, requests.Session())
 
-                # Get cookies from head:
-                cookies_dict = head.cookies.get_dict()
 
-                # Set request cookies to the head cookies:
-                req.headers['Cookie'] = ','.join(name + '=' +
-                                                 cookies_dict[name]
-                                                 for name in cookies_dict)
-                # Set the headers to the session headers:
-                for item in head.request.headers:
-                    req.headers[item] = head.request.headers[item]
-                return req
-        except MissingSchema:
-            # Missing schema can occur in tests when the url
-            # is not pointing to any resource. Simply pass.
-            pass
-    return Request.blank(url)
+def create_request_from_session(url, session):
+    try:
+        # Use session to follow redirects:
+        with closing(session.head(url, allow_redirects=True)) as head:
+            req = Request.blank(head.url)
+
+            # Get cookies from head:
+            cookies_dict = head.cookies.get_dict()
+
+            # Set request cookies to the head cookies:
+            req.headers['Cookie'] = ','.join(name + '=' +
+                                             cookies_dict[name]
+                                             for name in cookies_dict)
+            # Set the headers to the session headers:
+            for item in head.request.headers:
+                req.headers[item] = head.request.headers[item]
+            return req
+    except (MissingSchema, InvalidSchema):
+        # Missing schema can occur in tests when the url
+        # is not pointing to any resource. Simply pass.
+        return Request.blank(url)

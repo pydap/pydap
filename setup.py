@@ -45,6 +45,7 @@ testing_extras = tests_require + [
     'pytest-cov',
     'pytest-attrib',
     'mock',
+    'requests-mock',
     'requests'
 ]
 
