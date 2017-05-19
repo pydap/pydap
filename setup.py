@@ -9,7 +9,7 @@ install_requires = [
     'Jinja2',
     'docopt',
     'six >= 1.4.0',
-    'mechanicalsoup',
+    'mechanicalsoup>=0.7',
 ]
 
 if sys.version_info < (3, 5):

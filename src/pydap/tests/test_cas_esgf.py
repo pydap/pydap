@@ -91,3 +91,25 @@ class TestESGF(unittest.TestCase):
                          [677.014, 628.29675, 551.06, 455.5758, 343.7354],
                          [1268.3304, 1287.9553, 1161.0402, 978.3153, 809.143]]
         assert(np.isclose(data, expected_data).all())
+
+
+    def test_variable_esgf_query_ceda(self):
+        assert(os.environ.get('OPENID_ESGF_CEDA'))
+        assert(os.environ.get('USERNAME_ESGF_CEDA'))
+        assert(os.environ.get('PASSWORD_ESGF_CEDA'))
+        session = esgf.setup_session(os.environ.get('OPENID_ESGF_CEDA'),
+                                     os.environ.get('PASSWORD_ESGF_CEDA'),
+                                     check_url=self.url,
+                                     username=os.environ.get('USERNAME_ESGF_CEDA'))
+        # Ensure authentication:
+        res = pydap.net.follow_redirect(self.test_url, session=session)
+        assert(res.status_code == 200)
+
+        dataset = open_url(self.url, session=session, output_grid=False)
+        data = dataset['orog'][50:55, 50:55]
+        expected_data = [[197.70425, 16.319595, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0],
+                         [0.0, 0.0, 0.0, 0.0, 0.0],
+                         [677.014, 628.29675, 551.06, 455.5758, 343.7354],
+                         [1268.3304, 1287.9553, 1161.0402, 978.3153, 809.143]]
+        assert(np.isclose(data, expected_data).all())

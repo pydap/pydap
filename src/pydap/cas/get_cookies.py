@@ -37,7 +37,7 @@ def setup_session(uri,
     if not verify:
         verify_flag = session.verify
         session.verify = False
-    br = mechanicalsoup.Browser(session=session)
+    br = mechanicalsoup.StatefulBrowser(session=session)
 
     if isinstance(uri, str):
         url = uri
@@ -53,7 +53,7 @@ def setup_session(uri,
         return session
 
     # Allow for several subsequent security layers:
-    full_url = copy.copy(uri)
+    full_url = copy.copy(url)
     if isinstance(full_url, list):
         url = full_url[0]
 
@@ -119,7 +119,7 @@ def raise_if_form_exists(url, session):
         class HTMLParseError(Exception):
             pass
 
-    br = mechanicalsoup.Browser(session=session)
+    br = mechanicalsoup.StatefulBrowser(session=session)
     try:
         login_page = br.get(url)
     except HTMLParseError:
