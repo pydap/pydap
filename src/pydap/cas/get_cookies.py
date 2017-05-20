@@ -152,7 +152,7 @@ def soup_login(session, url, username, password,
                             'wait or use authentication '
                             'from another service.'
                             .format(url))
-    
+
     # Replicate all other fields:
     for input in login_form.findAll('input'):
         if (input.get('name') not in payload and
@@ -161,7 +161,7 @@ def soup_login(session, url, username, password,
 
     # Remove other submit fields:
     submit_type = 'submit'
-    submit_names = [input.get('name') for input 
+    submit_names = [input.get('name') for input
                     in login_form.findAll('input', {'type': submit_type})]
     for input in login_form.findAll('input', {'type': submit_type}):
         if ('submit' in submit_names and
