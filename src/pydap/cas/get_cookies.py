@@ -122,7 +122,7 @@ def soup_login(session, url, username, password,
 
     soup = BeautifulSoup(resp.content, 'html5lib')
     login_form = soup.select('form')[0]
-    
+
     def get_to_url(current_url, to_url):
         split_current = urlsplit(current_url)
         split_to = urlsplit(to_url)
@@ -132,16 +132,15 @@ def soup_login(session, url, username, password,
     to_url = get_to_url(resp.url, login_form.get('action'))
 
     session.headers['Referer'] = resp.url
-    method = login_form.get('method')
 
     payload = {}
     if username_field is not None:
         if len(login_form.findAll('input', {'name': username_field})) > 0:
-           payload.update({username_field: username})
+            payload.update({username_field: username})
 
     if password_field is not None:
         if len(login_form.findAll('input', {'name': password_field})) > 0:
-           payload.update({password_field: password})
+            payload.update({password_field: password})
         else:
             # If there is no password_field, it might be because
             # something should be handled in the browser
