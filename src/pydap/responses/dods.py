@@ -64,16 +64,12 @@ class DODSResponse(BaseResponse):
             self.headers.append(('Content-length', str(length)))
 
     def __iter__(self):
-        length = 0
         # generate DDS
         for line in dds(self.dataset):
-            length += len(line)
             yield line.encode('ascii')
 
         yield b'Data:\n'
-        length += len(b'Data:\n')
         for block in dods(self.dataset):
-            length += len(block)
             yield block
 
 
