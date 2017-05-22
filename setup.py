@@ -44,7 +44,6 @@ tests_require = (functions_extras + cas_extras + server_extras +
                  hdl_netcdf_extras +
                  ['WebTest',
                   'beautifulsoup4',
-                  'scipy',
                   'flake8'])
 
 testing_extras = tests_require + [
