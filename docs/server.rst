@@ -1,7 +1,9 @@
 Running a server
 ================
 
-Pydap comes with a lightweight and scalable OPeNDAP server, implemented as a `WSGI <http://wsgi.org/>`_ application. Being a WSGI `application <http://wsgi.org/wsgi/Applications>`_, Pydap can run on a variety of `servers <http://wsgi.org/wsgi/Servers>`_, including Apache, IIS or even as a standalone Python process. It can also be seamless combined with different `middleware <http://wsgi.org/wsgi/Middleware_and_Utilities>`_ for authentication/authorization, GZip compression, and much more.
+Pydap comes with a lightweight and scalable OPeNDAP server, implemented as a `WSGI <http://wsgi.org/>`_ application. Being a WSGI `application <http://wsgi.org/wsgi/Applications>`_, Pydap can run on a variety of `servers <http://wsgi.org/wsgi/Servers>`_, and frameworks including Apache, `Nginx <https://www.nginx.com/>`_, IIS, `uWSGI <https://uwsgi-docs.readthedocs.io/en/latest/>`_, `Flask <http://flask.pocoo.org/>`_ or as a standalone Python process. It can also be seamless combined with different `middleware <http://wsgi.org/wsgi/Middleware_and_Utilities>`_ for authentication/authorization, GZip compression, and much more.
+
+There is no one right way to run Pydap server; your application requirements and software stack will inform your deployment decisions. In this chapter we provide a few examples to try and get you on the right track.
 
 In order to distribute your data first you need to install a proper `handler <handlers.html>`_, that will convert the data format to the Pydap data model. 
 
@@ -24,8 +26,20 @@ This will run the server on http://localhost:8001/, serving files from ``./myser
 
 To change the default directory listing, the help page and the HTML form, simply edit the corresponding templates in ``./myserver/templates/``. The HTML form template is fairly complex, since it contain some application logic and some Javascript code, so be careful to not break anything.
 
-Running Pydap with Apache
--------------------------
+Flask
+-----
+
+The `Flask <>`_ framework simply requires a small amount of boiler plate code and WSGI callable. Pydap provides the ``DapServer`` class which is a WSGI callable located in the ``pydap.wsgi.app`` module. A simple server would looks something like this (your mileage may vary):
+
+.. code-block:: python
+
+    from flask import Flask
+    from pydap.wsgi.app import DapServer
+
+    pydap_inst = DapServer('/path/to/my/data/files')
+    app = Flask(__name__)
+    app.wsgi_app = pydap_inst
+    app.run('0.0.0.0', 8000)
 
 For a robust deployment you should run Pydap with Apache, using `mod_wsgi <http://modwsgi.org/>`_. After `installing mod_wsgi <http://code.google.com/p/modwsgi/wiki/InstallationInstructions>`_, create a sandbox in a directory *outside* your DocumentRoot, say ``/var/www/pydap/``, using `virtualenv <http://pypi.python.org/pypi/virtualenv>`_:
 
