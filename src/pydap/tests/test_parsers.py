@@ -159,23 +159,23 @@ class TestSimpleParser(unittest.TestCase):
     def test_peek_existing(self):
         """Test the peek method when the token exists."""
         parser = SimpleParser("Hello, World!")
-        self.assertEqual(parser.peek("\w+"), "Hello")
+        self.assertEqual(parser.peek(r"\w+"), "Hello")
 
     def test_peek_missing(self):
         """Test the peek method when the token does not exist."""
         parser = SimpleParser("Hello, World!")
-        self.assertEqual(parser.peek("\d+"), "")
+        self.assertEqual(parser.peek(r"\d+"), "")
 
     def test_consume_existing(self):
         """Test the consume method when the token exists."""
         parser = SimpleParser("Hello, World!")
-        self.assertEqual(parser.consume("\w+"), "Hello")
+        self.assertEqual(parser.consume(r"\w+"), "Hello")
         self.assertEqual(parser.consume(", "), ", ")
-        self.assertEqual(parser.consume("\w+"), "World")
+        self.assertEqual(parser.consume(r"\w+"), "World")
         self.assertEqual(parser.consume("!"), "!")
 
     def test_consume_missing(self):
         """Test the consume method when the token does not exist."""
         parser = SimpleParser("Hello, World!")
         with self.assertRaises(Exception):
-            parser.consume("\d+")
+            parser.consume(r"\d+")

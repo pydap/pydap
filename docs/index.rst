@@ -25,19 +25,20 @@ This will install Pydap together with all the required dependencies. You can now
     >>> var = dataset['SST']
     >>> var.shape
     (12, 90, 180)
-    >>> var.type
-    <class 'pydap.model.Float32'>
-    >>> print var[0,10:14,10:14]  # this will download data from the server
-    <class 'pydap.model.GridType'>
-        with data
-    [[ -1.26285708e+00  -9.99999979e+33  -9.99999979e+33  -9.99999979e+33]
-     [ -7.69166648e-01  -7.79999971e-01  -6.75454497e-01  -5.95714271e-01]
-     [  1.28333330e-01  -5.00000156e-02  -6.36363626e-02  -1.41666666e-01]
-     [  6.38000011e-01   8.95384610e-01   7.21666634e-01   8.10000002e-01]]
-        and axes
-    366.0
-    [-69. -67. -65. -63.]
-    [ 41.  43.  45.  47.]
+    >>> var.dtype
+    dtype('>f4')
+    >>> data = var[0,10:14,10:14]  # this will download data from the server
+    >>> data
+    <GridType with array 'SST' and maps 'TIME', 'COADSY', 'COADSX'>
+    >>> print(data.data)
+    [array([[[ -1.26285708e+00,  -9.99999979e+33,  -9.99999979e+33,
+              -9.99999979e+33],
+            [ -7.69166648e-01,  -7.79999971e-01,  -6.75454497e-01,
+              -5.95714271e-01],
+            [  1.28333330e-01,  -5.00000156e-02,  -6.36363626e-02,
+              -1.41666666e-01],
+            [  6.38000011e-01,   8.95384610e-01,   7.21666634e-01,
+               8.10000002e-01]]], dtype=float32), array([ 366.]), array([-69., -67., -65., -63.]), array([ 41.,  43.,  45.,  47.])]
 
 For more information, please check the documentation on `using Pydap as a client <client.html>`_. Pydap also comes with a simple server, implemented as a `WSGI <http://wsgi.org/>`_ application. To use it, you first need to install a data handler:
 

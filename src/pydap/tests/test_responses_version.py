@@ -2,7 +2,7 @@
 
 import unittest
 
-from webtest import TestApp
+from webtest import TestApp as App
 
 from pydap.lib import __version__
 from pydap.handlers.lib import BaseHandler
@@ -20,7 +20,7 @@ class TestVersionResponse(unittest.TestCase):
 
     def setUp(self):
         """Create a simple WSGI app with a dataset."""
-        app = TestApp(BaseHandler(VerySimpleSequence))
+        app = App(BaseHandler(VerySimpleSequence))
         self.res = app.get('/.ver')
 
     def test_status(self):

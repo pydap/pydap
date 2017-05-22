@@ -27,9 +27,9 @@ import numpy as np
 import coards
 import gsw
 
-from pydap.model import SequenceType, GridType, BaseType
-from pydap.lib import walk
-from pydap.exceptions import ConstraintExpressionError, ServerError
+from ..model import SequenceType, GridType, BaseType
+from ..lib import walk
+from ..exceptions import ConstraintExpressionError, ServerError
 
 
 def density(dataset, salinity, temperature, pressure):
@@ -48,7 +48,7 @@ def density(dataset, salinity, temperature, pressure):
             'Function "bounds" should be used on a Sequence.')
 
     selection = sequence[salinity.name, temperature.name, pressure.name]
-    rows = [tuple(row) for row in selection]
+    rows = [tuple(row) for row in selection.iterdata()]
     data = np.rec.fromrecords(
         rows, names=['salinity', 'temperature', 'pressure'])
     rho = gsw.rho(data['salinity'], data['temperature'], data['pressure'])
@@ -127,7 +127,7 @@ bounds.__version__ = "1.0"
 
 def parse_step(step):
     """Parse a GrADS time step returning a timedelta."""
-    value, units = re.search('(\d+)(.*)', step).groups()
+    value, units = re.search(r'(\d+)(.*)', step).groups()
     value = int(value)
     if units.lower() == 'mn':
         return timedelta(minutes=value)

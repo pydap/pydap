@@ -12,8 +12,8 @@ import ast
 from six.moves.urllib.parse import unquote
 from six.moves import map
 
-from pydap.exceptions import ConstraintExpressionError
-from pydap.lib import get_var
+from ..exceptions import ConstraintExpressionError
+from ..lib import get_var
 
 
 def parse_projection(input):
@@ -42,7 +42,7 @@ def parse_projection(input):
         if '(' not in token:
             token = token.split('.')
             token = [
-                re.match('(.*?)(\[.*\])?$', part).groups()
+                re.match(r'(.*?)(\[.*\])?$', part).groups()
                 for part in token]
             token = [
                 (name, parse_hyperslab(slice_ or ''))

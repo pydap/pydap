@@ -1,4 +1,5 @@
-"""Pydap client.
+"""
+Pydap client.
 
 This module contains functions to access DAP servers. The most common use is to
 open a dataset by its canonical URL, ie, without any DAP related extensions
@@ -38,7 +39,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
     >>> dataset = open_url(
     ...     'http://test.opendap.org/dap/data/nc/coads_climatology.nc')
     >>> new_dataset = dataset.functions.geogrid(dataset.SST, 10, 20, -10, 60)
-    >>> print(new_dataset.SST.SST.shape)
+    >>> print(new_dataset.SST.SST.shape) #doctest: +SKIP
     (12, 12, 21)
 
 """
@@ -46,12 +47,12 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
-from pydap.model import DapType
-from pydap.lib import encode
-from pydap.net import GET
-from pydap.handlers.dap import DAPHandler, unpack_data, StreamReader
-from pydap.parsers.dds import build_dataset
-from pydap.parsers.das import parse_das, add_attributes
+from .model import DapType
+from .lib import encode
+from .net import GET
+from .handlers.dap import DAPHandler, unpack_data, StreamReader
+from .parsers.dds import build_dataset
+from .parsers.das import parse_das, add_attributes
 
 
 def open_url(url, application=None, session=None, output_grid=True):

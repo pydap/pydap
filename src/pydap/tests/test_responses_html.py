@@ -1,6 +1,6 @@
 """Test the HTML response from Pydap."""
 
-from webtest import TestApp
+from webtest import TestApp as App
 from webob import Request
 from webob.headers import ResponseHeaders
 from bs4 import BeautifulSoup
@@ -19,7 +19,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
 
     def setUp(self):
         """Create a simple app and request HTML response."""
-        self.app = TestApp(BaseHandler(VerySimpleSequence))
+        self.app = App(BaseHandler(VerySimpleSequence))
 
     def test_status(self):
         """Test the status code."""
@@ -103,7 +103,7 @@ class TestHTMLResponseGrid(unittest.TestCase):
 
     def setUp(self):
         """Create a simple app and request HTML response."""
-        self.app = TestApp(BaseHandler(SimpleGrid))
+        self.app = App(BaseHandler(SimpleGrid))
 
     def test_filter(self):
         """Test filtering the grid."""

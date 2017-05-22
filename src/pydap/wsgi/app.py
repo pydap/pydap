@@ -30,10 +30,10 @@ import pkg_resources
 from six.moves.urllib.parse import unquote
 from six import string_types
 
-from pydap.lib import __version__
-from pydap.handlers.lib import get_handler, load_handlers
-from pydap.exceptions import ExtensionNotSupportedError
-from pydap.wsgi.ssf import ServerSideFunctions
+from ..lib import __version__
+from ..handlers.lib import get_handler, load_handlers
+from ..exceptions import ExtensionNotSupportedError
+from .ssf import ServerSideFunctions
 
 
 class DapServer(object):

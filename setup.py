@@ -1,11 +1,10 @@
 from setuptools import setup, find_packages
+import sys
 
-
-__version__ = '3.2.0'
+__version__ = '3.2.1'
 
 install_requires = [
     'numpy',
-    'singledispatch',
     'Webob',
     'Jinja2',
     'docopt',
@@ -13,10 +12,12 @@ install_requires = [
     'mechanicalsoup',
 ]
 
+if sys.version_info < (3, 5):
+    install_requires.append('singledispatch')
+
 functions_extras = [
-    'gsw',
-    'coards',
-    'scipy',
+    'gsw==3.0.6',
+    'coards'
 ]
 
 server_extras = [
@@ -34,7 +35,6 @@ cas_extras = [
     ]
 
 hdl_netcdf_extras = [
-    'scipy',
     'netCDF4',
     'ordereddict'
     ]
@@ -47,8 +47,11 @@ tests_require = (functions_extras + cas_extras + server_extras +
                   'flake8'])
 
 testing_extras = tests_require + [
-    'nose',
-    'coverage',
+    'pytest>=2.8',
+    'pytest-cov',
+    'pytest-attrib',
+    'mock',
+    'requests-mock',
     'requests'
 ]
 
@@ -58,8 +61,9 @@ setup(name='Pydap',
       description="An implementation of the Data Access Protocol.",
       long_description="",
       classifiers=[
+            "Programming Language :: Python :: 2",
             "Programming Language :: Python :: 2.7",
-            "Programming Language :: Python :: 3.3",
+            "Programming Language :: Python :: 3",
             "Programming Language :: Python :: 3.4",
             "Programming Language :: Python :: 3.5",
             "Programming Language :: Python :: 3.6"

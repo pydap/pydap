@@ -1,4 +1,4 @@
-from webtest import TestApp
+from webtest import TestApp as App
 import unittest
 
 
@@ -11,7 +11,7 @@ def MyApp(environ, start_response):
 
 class MyTest(unittest.TestCase):
     def setUp(self):
-        self.app = TestApp(MyApp)
+        self.app = App(MyApp)
 
     def test_webtest(self):
         expected = 'foo\nbar\nbaz\n'

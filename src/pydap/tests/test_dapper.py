@@ -152,5 +152,5 @@ class TestDapper(unittest.TestCase):
         self.dataset = add_attributes(dataset, attributes)
 
     def test_parse(self):
-        self.assertEqual(self.dataset.keys(),
+        self.assertEqual(list(self.dataset.keys()),
                          ['location', 'constrained_ranges'])

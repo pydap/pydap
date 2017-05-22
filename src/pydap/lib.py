@@ -6,7 +6,7 @@ from six.moves.urllib.parse import quote as quote_
 from six.moves import reduce, zip_longest
 from six import binary_type, MAXSIZE
 
-from pydap.exceptions import ConstraintExpressionError
+from .exceptions import ConstraintExpressionError
 
 
 __dap__ = '2.15'
@@ -187,3 +187,48 @@ def decode_np_strings(numpy_var):
         return numpy_var.tostring().decode('utf-8')
     else:
         return numpy_var
+
+
+def load_from_entry_point_relative(r, package):
+    try:
+        loaded = getattr(__import__(r.module_name
+                                    .replace(package + '.', '', 1),
+                                    globals(), None, [r.attrs[0]], 1),
+                         r.attrs[0])
+        return r.name, loaded
+    except ImportError:
+        # This is only used in handlers testing:
+        return r.name, r.load()
+
+
+class StreamReader(object):
+
+    """Class to allow reading a `urllib3.HTTPResponse`."""
+
+    def __init__(self, stream):
+        self.stream = stream
+        self.buf = bytearray()
+
+    def read(self, n):
+        """Read and return `n` bytes."""
+        while len(self.buf) < n:
+            bytes_read = next(self.stream)
+            self.buf.extend(bytes_read)
+
+        out = bytes(self.buf[:n])
+        self.buf = self.buf[n:]
+        return out
+
+
+class BytesReader(object):
+
+    """Class to allow reading a `bytes` object."""
+
+    def __init__(self, data):
+        self.data = data
+
+    def read(self, n):
+        """Read and return `n` bytes."""
+        out = self.data[:n]
+        self.data = self.data[n:]
+        return out

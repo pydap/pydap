@@ -4,12 +4,11 @@ import re
 
 import numpy as np
 
-from pydap.parsers import SimpleParser
-from pydap.model import (DatasetType, BaseType,
-                         SequenceType, StructureType,
-                         GridType)
-from pydap.lib import quote, STRING
-
+from . import SimpleParser
+from ..model import (DatasetType, BaseType,
+                     SequenceType, StructureType,
+                     GridType)
+from ..lib import quote, STRING
 
 typemap = {
     'byte':    np.dtype("B"),
@@ -25,7 +24,7 @@ typemap = {
     'url':     np.dtype(STRING),
     }
 constructors = ('grid', 'sequence', 'structure')
-name_regexp = '[\w%!~"\'\*-]+'
+name_regexp = r'[\w%!~"\'\*-]+'
 
 
 class DDSParser(SimpleParser):
@@ -61,7 +60,7 @@ class DDSParser(SimpleParser):
 
     def declaration(self):
         """Parse and return a declaration."""
-        token = self.peek('\w+').lower()
+        token = self.peek(r'\w+').lower()
 
         map = {
             'grid':      self.grid,
@@ -73,10 +72,10 @@ class DDSParser(SimpleParser):
 
     def base(self):
         """Parse a base variable, returning a ``BaseType``."""
-        type = self.consume('\w+')
+        type = self.consume(r'\w+')
 
         dtype = typemap[type.lower()]
-        name = quote(self.consume('[^;\[]+'))
+        name = quote(self.consume(r'[^;\[]+'))
         shape, dimensions = self.dimensions()
         self.consume(';')
 
@@ -90,14 +89,14 @@ class DDSParser(SimpleParser):
         shape = []
         names = []
         while not self.peek(';'):
-            self.consume('\[')
+            self.consume(r'\[')
             token = self.consume(name_regexp)
             if self.peek('='):
                 names.append(token)
                 self.consume('=')
-                token = self.consume('\d+')
+                token = self.consume(r'\d+')
             shape.append(int(token))
-            self.consume('\]')
+            self.consume(r'\]')
         return tuple(shape), tuple(names)
 
     def sequence(self):
@@ -113,7 +112,6 @@ class DDSParser(SimpleParser):
 
         sequence.name = quote(self.consume('[^;]+'))
         self.consume(';')
-
         return sequence
 
     def structure(self):

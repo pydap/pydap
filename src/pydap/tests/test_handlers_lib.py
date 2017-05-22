@@ -3,7 +3,8 @@
 import copy
 from six import text_type
 
-from webtest import TestApp, AppError
+from webtest import AppError
+from webtest import TestApp as App
 import numpy as np
 
 from pydap.model import BaseType, StructureType, SequenceType
@@ -52,7 +53,7 @@ class TestBaseHandler(unittest.TestCase):
 
     def setUp(self):
         """Create a basic WSGI app."""
-        self.app = TestApp(MockHandler(SimpleArray))
+        self.app = App(MockHandler(SimpleArray))
 
     def test_unconstrained_das(self):
         """DAS responses are always unconstrained."""
@@ -99,14 +100,14 @@ class TestBaseHandler(unittest.TestCase):
 
     def test_exception_non_captured(self):
         """Test exception handling when not captured."""
-        app = TestApp(MockHandler(SimpleArray), extra_environ={
+        app = App(MockHandler(SimpleArray), extra_environ={
             "x-wsgiorg.throw_errors": True})
         with self.assertRaises(KeyError):
             app.get("/.foo")
 
     def test_missing_dataset(self):
         """Test exception when dataset is not set."""
-        app = TestApp(MockHandler(), extra_environ={
+        app = App(MockHandler(), extra_environ={
             "x-wsgiorg.throw_errors": True})
         with self.assertRaises(NotImplementedError):
             app.get("/.dds")
@@ -171,7 +172,7 @@ class TestApplyProjectionGrid(unittest.TestCase):
     def test_simple_projection(self):
         """Test simple projections."""
         dataset = apply_projection(parse_projection("x"), self.dataset)
-        self.assertEqual(dataset.keys(), ["x"])
+        self.assertEqual(list(dataset.keys()), ["x"])
 
     def test_simple_projection_with_index(self):
         """Test simple projections."""
@@ -400,7 +401,7 @@ class TestRegexp(unittest.TestCase):
         ], sequence)
 
         filtered = sequence[ConstraintExpression('sequence.name=~"J.*"')]
-        self.assertEqual(list(filtered), [("John",)])
+        self.assertEqual(list(filtered.iterdata()), [("John",)])
 
 
 class TestNestedIterData(unittest.TestCase):
@@ -503,7 +504,7 @@ class MockHandler(BaseHandler):
 
     """A fake handler for testing."""
 
-    extensions = "^.*\.foo$"
+    extensions = r"^.*\.foo$"
 
     def __init__(self, dataset=None):
         BaseHandler.__init__(self, dataset)
@@ -518,6 +519,9 @@ class MockEntryPoint(object):
 
     def __init__(self, handler):
         self.handler = handler
+        self.name = 'test'
+        self.module_name = 'pydap.handlers.test'
+        self.attrs = ('TestHandler', )
 
     def load(self):
         """Return the wrapped handler."""

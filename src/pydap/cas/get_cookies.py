@@ -4,7 +4,7 @@ import requests
 from requests.packages.urllib3.exceptions import (InsecureRequestWarning,
                                                   InsecurePlatformWarning)
 import copy
-from ..lib import __version__ as pydap__version__
+from .. import lib
 
 ssl_verify_categories = [InsecureRequestWarning,
                          InsecurePlatformWarning]
@@ -26,7 +26,7 @@ def setup_session(uri,
     if session is None:
         # Connections must be closed since some CAS
         # will cough when connections are kept alive:
-        headers = [('User-agent', 'Pydap/{}'.format(pydap__version__)),
+        headers = [('User-agent', 'Pydap/{}'.format(lib.__version__)),
                    ('Connection', 'close')]
         session = requests.Session()
         session.headers.update(headers)

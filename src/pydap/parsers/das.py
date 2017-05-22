@@ -12,8 +12,8 @@ import operator
 
 from six.moves import reduce
 
-from pydap.parsers import SimpleParser
-from pydap.lib import walk
+from . import SimpleParser
+from ..lib import walk
 
 
 atomic = ('byte', 'int', 'uint', 'int16', 'uint16', 'int32', 'uint32',
@@ -49,8 +49,8 @@ class DASParser(SimpleParser):
         """Collect the attributes for a DAP variable."""
         self.consume('{')
         while not self.peek('}'):
-            if self.peek('[^\s]+\s+{'):
-                name = self.consume('[^\s]+')
+            if self.peek(r'[^\s]+\s+{'):
+                name = self.consume(r'[^\s]+')
                 target[name] = {}
                 self.container(target[name])
             else:
@@ -66,8 +66,8 @@ class DASParser(SimpleParser):
         attribute(s).
 
         """
-        type = self.consume('[^\s]+')
-        name = self.consume('[^\s]+')
+        type = self.consume(r'[^\s]+')
+        name = self.consume(r'[^\s]+')
 
         values = []
         while not self.peek(';'):
@@ -124,9 +124,16 @@ def add_attributes(dataset, attributes):
             nested = reduce(
                 operator.getitem, [attributes] + var.id.split('.')[:-1])
             k = var.id.split('.')[-1]
-            var.attributes.update(nested.pop(k))
+            value = nested.pop(k)
         except KeyError:
             pass
+        else:
+            try:
+                var.attributes.update(value)
+            except (TypeError, ValueError):
+                # This attribute should be given to the parent.
+                # Keep around:
+                nested.update({k: value})
 
     # add attributes that don't belong to any child
     for k, v in attributes.items():

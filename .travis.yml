@@ -2,38 +2,17 @@ language: python
 
 python:
     - 2.7
-    - 3.3
     - 3.4
     - 3.5
     - 3.6
 
-addons:
-  apt:
-    packages:
-      - gfortran
-      - libblas-dev
-      - liblapack-dev
-      - cython
       # The following is required for netcdf files:
       - libhdf5-serial-dev
       - netcdf-bin
       - libnetcdf-dev
 install:
-    # Install netcdf4-python from github. pip install does not
-    # appear to be working:
-    - if [ "${TRAVIS_PYTHON_VERSION}" == 2.6 ]; then pip install ordereddict; fi
-    - git clone https://github.com/Unidata/netcdf4-python.git
-    - cd netcdf4-python
-    # Use the last python 2.6-compatible commit:
-    - if [ "${TRAVIS_PYTHON_VERSION}" == 2.6 ]; then git checkout 02870031d9b783ba153406f046d24890468db85f; fi
-    - python setup.py build
-    - python setup.py install
-    - cd ..
-    - rm -rf netcdf4-python
-    # Continue typical install:
-    - travis_wait 30 pip install scipy
     - pip install -e .[testing,functions,server,tests]
 
 script:
-    - python setup.py nosetests -a '!auth'
-    - if [ "${TRAVIS_PYTHON_VERSION}" == 3.5 ]; then flake8; fi
+    - flake8
+    - py.test -a 'not auth' --cov=src/pydap/

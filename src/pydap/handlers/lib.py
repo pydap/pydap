@@ -22,15 +22,16 @@ from numpy.lib.arrayterator import Arrayterator
 from six.moves import filter, map
 from six import string_types, next
 
-from pydap.responses.lib import load_responses
-from pydap.responses.error import ErrorResponse
-from pydap.parsers import parse_ce, parse_selection
-from pydap.exceptions import (
+from ..responses.lib import load_responses
+from ..responses.error import ErrorResponse
+from ..parsers import parse_ce, parse_selection
+from ..exceptions import (
     ConstraintExpressionError, ExtensionNotSupportedError)
-from pydap.lib import walk, fix_shorthand, get_var, encode
-from pydap.model import (DatasetType, BaseType,
-                         SequenceType, StructureType,
-                         GridType)
+from ..lib import (walk, fix_shorthand, get_var, encode,
+                   load_from_entry_point_relative)
+from ..model import (DatasetType, BaseType,
+                     SequenceType, StructureType,
+                     GridType)
 
 
 # buffer size in bytes, for streaming data
@@ -49,7 +50,17 @@ def load_handlers(working_set=pkg_resources.working_set):
                 distutils-programmatically-adding-entry-points
 
     """
-    return [ep.load() for ep in working_set.iter_entry_points("pydap.handler")]
+    # Relative import of handlers:
+    package = 'pydap'
+    entry_points = 'pydap.handler'
+    base_dict = dict(load_from_entry_point_relative(r, package)
+                     for r in working_set.iter_entry_points(entry_points)
+                     if r.module_name.startswith(package))
+    opts_dict = dict((r.name, r.load())
+                     for r in working_set.iter_entry_points(entry_points)
+                     if not r.module_name.startswith(package))
+    base_dict.update(opts_dict)
+    return base_dict.values()
 
 
 def get_handler(filepath, handlers=None):
@@ -178,11 +189,18 @@ def apply_selection(selection, dataset):
         conditions = [
             condition for condition in selection
             if re.match(
-                '%s\.[^\.]+(<=|<|>=|>|=|!=)' % re.escape(seq.id), condition)]
+                r'%s\.[^\.]+(<=|<|>=|>|=|!=)' % re.escape(seq.id), condition)]
         for condition in conditions:
             id1, op, id2 = parse_selection(condition, dataset)
             seq.data = seq[op(id1, id2)].data
     return dataset
+
+
+def degenerate_grid_to_structure(candidate):
+    if isinstance(candidate, GridType):
+        candidate = StructureType(
+            candidate.name, candidate.attributes)
+    return candidate
 
 
 def apply_projection(projection, dataset):
@@ -190,7 +208,6 @@ def apply_projection(projection, dataset):
 
     This function builds and returns a new dataset by adding those variables
     that were requested on the projection.
-
     """
     out = DatasetType(name=dataset.name, attributes=dataset.attributes)
 
@@ -207,10 +224,8 @@ def apply_projection(projection, dataset):
                         # if there are more children to add we need to clear
                         # the candidate so it has only explicitly added
                         # children; also, Grids are degenerated into Structures
-                        if isinstance(candidate, GridType):
-                            candidate = StructureType(
-                                candidate.name, candidate.attributes)
-                        candidate._keys = []
+                        candidate = degenerate_grid_to_structure(candidate)
+                        candidate._visible_keys = []
                     target[name] = candidate
                 target, template = target[name], template[name]
             else:
@@ -287,8 +302,22 @@ class IterData(object):
     @property
     def dtype(self):
         """Return Numpy dtype of the object."""
-        peek = next(iter(self))
-        return np.array(peek).dtype
+        def array_dtype(x, template):
+            if (hasattr(template, 'keys') and
+               len(list(template.keys())) > 1):
+                peek = x
+                if isinstance(x, IterData):
+                    peek = next(iter(x))
+                return np.dtype([(col, array_dtype(val, template[col]))
+                                 for col, val
+                                 in zip(template.keys(), peek)])
+            else:
+                return np.array(x).dtype
+        return array_dtype(next(iter(self)), self.template)
+
+    def iterdata(self):
+        """Included for code symmetry with Types"""
+        return iter(self)
 
     def __iter__(self):
         data = iter(self.stream)
@@ -317,7 +346,7 @@ class IterData(object):
         # column is returned
         if isinstance(key, string_types):
             try:
-                col = self.template.keys().index(key)
+                col = list(self.template.keys()).index(key)
             except ValueError:
                 raise KeyError(key)
             out.level += 1
@@ -326,10 +355,8 @@ class IterData(object):
 
         # return a new sequence with the selected children
         elif isinstance(key, list):
-            cols = [self.template.keys().index(k) for k in key]
-            # store the original keys for filtering
-            out.template._original_keys = out.template._keys
-            out.template._keys = key
+            cols = [list(self.template.keys()).index(k) for k in key]
+            out.template._visible_keys = key
             out.imap.append(deep_map(
                 lambda row: tuple(row[i] for i in cols), out.level+1))
 
@@ -426,7 +453,7 @@ def build_filter(expression, template):
         target = template
         for level, token in enumerate(id1.split(".")):
             parent1 = target.id
-            keys = getattr(target, "_original_keys", target._keys)
+            keys = list(target._all_keys())
             col = keys.index(token)
             target = target[token]
         a = operator.itemgetter(col)
@@ -439,7 +466,7 @@ def build_filter(expression, template):
     # if we're comparing two variables they must be on the same sequence, so
     # ``parent1`` must be equal to ``parent2``
     if id2.rsplit(".", 1)[0] == parent1:  # parent2 == parent1
-        keys = getattr(template, "_original_keys", template._keys)
+        keys = list(template._all_keys())
         col = keys.index(id2.split(".")[-1])
         b = operator.itemgetter(col)
     else:
@@ -486,7 +513,7 @@ def build_filter(expression, template):
                 return [col for col in row if op(a(col), b(col))]
 
             # navigate inside the sequence
-            col = target.keys().index(token)
+            col = list(target.keys()).index(token)
             target = target[col]
 
             # modify data in place; we need to convert tuple to list
