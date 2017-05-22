@@ -31,7 +31,8 @@ docs_extras = [
 ]
 
 cas_extras = [
-    'requests'
+    'requests',
+    'html5lib'
     ]
 
 hdl_netcdf_extras = [
