@@ -13,11 +13,7 @@ from pydap.model import DatasetType, GridType, BaseType
 from pydap.handlers.lib import BaseHandler
 from pydap.exceptions import OpenFileError
 
-# Python 2.6 compatibility:
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
 
 # Check for netCDF4 presence:
 try:
