@@ -11,4 +11,4 @@ install:
 
 script:
     - flake8
-    - py.test -a 'not auth' --cov=src/pydap/
+    - py.test --cov=src/pydap/
