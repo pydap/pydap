@@ -9,7 +9,7 @@ install_requires = [
     'Jinja2',
     'docopt',
     'six >= 1.4.0',
-    'beautifulsoup4',
+    'beautifulsoup4'
 ]
 
 if sys.version_info < (3, 5):
@@ -32,7 +32,7 @@ docs_extras = [
 
 cas_extras = [
     'requests',
-    'html5lib'
+    'lmxl'
     ]
 
 hdl_netcdf_extras = [
