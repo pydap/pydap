@@ -2,14 +2,19 @@ language: python
 
 python:
     - 2.7
-    - 3.3
     - 3.4
     - 3.5
     - 3.6
-
+addons:
+  apt:
+      packages:
+      # The following is required for netcdf files:
+      - libhdf5-serial-dev
+      - netcdf-bin
+      - libnetcdf-dev
 install:
     - pip install -e .[testing,functions,server,tests]
 
 script:
     - flake8
-    - py.test -a 'not auth' --cov=src/pydap/
+    - py.test --cov=src/pydap/

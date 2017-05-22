@@ -1,7 +1,9 @@
 from webob.request import Request
 from webob.exc import HTTPError
 from contextlib import closing
-from requests.exceptions import MissingSchema, Timeout
+import requests
+from requests.exceptions import (MissingSchema, InvalidSchema,
+                                 Timeout)
 
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
@@ -26,9 +28,10 @@ def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT):
 
 
 def raise_for_status(response):
-    if response.status_code >= 400:
+    # Raise error if status is above 300:
+    if response.status_code >= 300:
         raise HTTPError(
-            detail=response.status,
+            detail=response.status+'\n'+response.text,
             headers=response.headers,
             comment=response.body
         )
@@ -61,26 +64,38 @@ def create_request(url, session=None, timeout=DEFAULT_TIMEOUT):
         # adjust the cookies as needed. We can then use the final url and
         # the final cookies to set up a webob Request object that will
         # be guaranteed to have all the needed credentials:
-        try:
-            # Use session to follow redirects:
-            with closing(session.head(url, timeout=timeout)) as head:
-                req = Request.blank(head.url)
+        return create_request_from_session(url, session, timeout=timeout)
+    else:
+        # If a session object was not passed, we simply pass a new
+        # requests.Session() object. The requests library allows the
+        # handling of redirects that are not naturally handled by Webob.
+        return create_request_from_session(url, requests.Session(), timeout=timeout)
 
-                # Get cookies from head:
-                cookies_dict = head.cookies.get_dict()
 
-                # Set request cookies to the head cookies:
-                req.headers['Cookie'] = ','.join(name + '=' +
-                                                 cookies_dict[name]
-                                                 for name in cookies_dict)
-                # Set the headers to the session headers:
-                for item in head.request.headers:
-                    req.headers[item] = head.request.headers[item]
-        except MissingSchema:
-            # Missing schema can occur in tests when the url
-            # is not pointing to any resource. Simply pass.
-            pass
-        except Timeout:
-            raise HTTPError('Timeout')
-    req.environ['webob.client.timeout'] = timeout
-    return req
+def create_request_from_session(url, session, timeout=DEFAULT_TIMEOUT):
+    try:
+        # Use session to follow redirects:
+        with closing(session.head(url, allow_redirects=True,
+                                  timeout=timeout)) as head:
+            req = Request.blank(head.url)
+            req.environ['webob.client.timeout'] = timeout
+
+            # Get cookies from head:
+            cookies_dict = head.cookies.get_dict()
+
+            # Set request cookies to the head cookies:
+            req.headers['Cookie'] = ','.join(name + '=' +
+                                             cookies_dict[name]
+                                             for name in cookies_dict)
+            # Set the headers to the session headers:
+            for item in head.request.headers:
+                req.headers[item] = head.request.headers[item]
+            return req
+    except (MissingSchema, InvalidSchema):
+        # Missing schema can occur in tests when the url
+        # is not pointing to any resource. Simply pass.
+        req = Request.blank(url)
+        req.environ['webob.client.timeout'] = timeout
+        return req
+    except Timeout:
+        raise HTTPError('Timeout')

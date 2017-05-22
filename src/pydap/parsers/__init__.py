@@ -42,7 +42,7 @@ def parse_projection(input):
         if '(' not in token:
             token = token.split('.')
             token = [
-                re.match('(.*?)(\[.*\])?$', part).groups()
+                re.match(r'(.*?)(\[.*\])?$', part).groups()
                 for part in token]
             token = [
                 (name, parse_hyperslab(slice_ or ''))

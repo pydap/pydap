@@ -3,7 +3,6 @@
 import re
 
 import numpy as np
-from six import text_type
 
 from . import SimpleParser
 from ..model import (DatasetType, BaseType,
@@ -25,17 +24,16 @@ typemap = {
     'url':     np.dtype(STRING),
     }
 constructors = ('grid', 'sequence', 'structure')
-name_regexp = '[\w%!~"\'\*-]+'
+name_regexp = r'[\w%!~"\'\*-]+'
 
 
 class DDSParser(SimpleParser):
 
     """A parser for the DDS."""
 
-    def __init__(self, dds, data=None):
+    def __init__(self, dds):
         super(DDSParser, self).__init__(dds, re.IGNORECASE)
         self.dds = dds
-        self.data = data
 
     def consume(self, regexp):
         """Consume and return a token."""
@@ -62,7 +60,7 @@ class DDSParser(SimpleParser):
 
     def declaration(self):
         """Parse and return a declaration."""
-        token = self.peek('\w+').lower()
+        token = self.peek(r'\w+').lower()
 
         map = {
             'grid':      self.grid,
@@ -74,17 +72,14 @@ class DDSParser(SimpleParser):
 
     def base(self):
         """Parse a base variable, returning a ``BaseType``."""
-        type = self.consume('\w+')
+        type = self.consume(r'\w+')
 
         dtype = typemap[type.lower()]
-        name = quote(self.consume('[^;\[]+'))
+        name = quote(self.consume(r'[^;\[]+'))
         shape, dimensions = self.dimensions()
         self.consume(';')
 
         data = DummyData(dtype, shape)
-        if self.data is not None:
-            data, self.data = convert_data_to_array(self.data, shape,
-                                                    dtype, name)
         var = BaseType(name, data, dimensions=dimensions)
 
         return var
@@ -94,14 +89,14 @@ class DDSParser(SimpleParser):
         shape = []
         names = []
         while not self.peek(';'):
-            self.consume('\[')
+            self.consume(r'\[')
             token = self.consume(name_regexp)
             if self.peek('='):
                 names.append(token)
                 self.consume('=')
-                token = self.consume('\d+')
+                token = self.consume(r'\d+')
             shape.append(int(token))
-            self.consume('\]')
+            self.consume(r'\]')
         return tuple(shape), tuple(names)
 
     def sequence(self):
@@ -117,7 +112,6 @@ class DDSParser(SimpleParser):
 
         sequence.name = quote(self.consume('[^;]+'))
         self.consume(';')
-
         return sequence
 
     def structure(self):
@@ -160,54 +154,12 @@ class DDSParser(SimpleParser):
         return grid
 
 
-def build_dataset(dds, data=None):
+def build_dataset(dds):
     """Return a dataset object from a DDS representation."""
-    return DDSParser(dds, data=data).parse()
+    return DDSParser(dds).parse()
 
 
 class DummyData(object):
     def __init__(self, dtype, shape):
         self.dtype = dtype
         self.shape = shape
-
-
-def convert_data_to_array(data, shape, dtype, id):
-    if len(shape) > 0:
-        if dtype.char in 'SU':
-            data = data[4:]
-        else:
-            data = data[8:]
-
-    # calculate array size
-    size = 1
-    if len(shape) > 0:
-        size = int(np.prod(shape))
-
-    nitems = dtype.itemsize * size
-
-    if dtype == np.byte:
-        return np.fromstring(data[:nitems], 'B').reshape(shape), data[nitems:]
-    elif dtype.char in 'SU':
-        out = []
-        for word in range(size):
-            n = np.asscalar(np.fromstring(data[:4], '>I'))  # read itemsize
-            data = data[4:]
-            out.append(data[:n])
-            data = data[n + (-n % 4):]
-        return np.array([text_type(x.decode('ascii'))
-                         for x in out], 'S').reshape(shape), data
-    else:
-        try:
-            return (np.fromstring(data[:nitems], dtype).reshape(shape),
-                    data[nitems:])
-        except ValueError as e:
-            if str(e) == 'total size of new array must be unchanged':
-                # server-side failure.
-                # it is expected that the user should be mindful of this:
-                raise RuntimeError(
-                            ('variable {0} could not be properly '
-                             'retrieved. To avoid this '
-                             'error consider using open_url(..., '
-                             'output_grid=False).').format(quote(id)))
-            else:
-                raise

@@ -350,8 +350,9 @@ Authentication is done through an ``openid`` and a ``password``:
 
     >>> from pydap.client import open_url  
     >>> from pydap.cas.esgf import setup_session 
-    >>> session = setup_session(openid, password)
-    >>> dataset = open_url('http://server.example.com/path/to/dataset', session=session)
+    >>> dataset_url = 'http://server.example.com/path/to/dataset'
+    >>> session = setup_session(openid, password, check_url=dataset_url)
+    >>> dataset = open_url(dataset_url, session=session)
 
 If your ``openid`` contains contains the
 string ``ceda.ac.uk`` authentication requires an additional ``username`` argument:
@@ -360,8 +361,8 @@ string ``ceda.ac.uk`` authentication requires an additional ``username`` argumen
 
     >>> from pydap.client import open_url  
     >>> from pydap.cas.esgf import setup_session 
-    >>> session = setup_session(openid, password, username=username)
-    >>> dataset = open_url('http://server.example.com/path/to/dataset', session=session)
+    >>> session = setup_session(openid, password, check_url=dataset_url, username=username)
+    >>> dataset = open_url(dataset_url, session=session)
 
 Advanced features
 -----------------
