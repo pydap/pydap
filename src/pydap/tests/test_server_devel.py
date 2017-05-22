@@ -58,7 +58,10 @@ def test_open(sequence_type_data):
 
 @server
 def test_netcdf(sequence_type_data):
-    """Test that LocalTestServer works properly"""
+    """
+    Test that LocalTestServer works properly and that it works well with
+    netcdf4-python.
+    """
     TestDataset = DatasetType('Test')
     TestDataset['float'] = BaseType('float', np.array(1, dtype=np.float32))
 
