@@ -36,6 +36,7 @@ def test_registration_esgf_auth():
                            os.environ.get('PASSWORD_ESGF_NO_REG'),
                            check_url=url)
 
+
 @pytest.mark.auth
 @pytest.mark.prod_url
 @pytest.mark.skipif(not (os.environ.get('OPENID_ESGF') and

@@ -4,8 +4,6 @@ import pydap.net
 import requests
 import os
 import pytest
-from nose.plugins.attrib import attr
-import unittest
 
 
 url = ('https://goldsmr3.gesdisc.eosdis.nasa.gov/opendap/'
