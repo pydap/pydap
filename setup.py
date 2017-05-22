@@ -32,7 +32,7 @@ docs_extras = [
 
 cas_extras = [
     'requests',
-    'lmxl'
+    'lxml'
     ]
 
 hdl_netcdf_extras = [
