@@ -34,11 +34,17 @@ cas_extras = [
     'requests'
     ]
 
-tests_require = functions_extras + cas_extras + server_extras + [
-    'WebTest',
-    'beautifulsoup4',
-    'flake8'
-]
+hdl_netcdf_extras = [
+    'netCDF4',
+    'ordereddict'
+    ]
+
+tests_require = (functions_extras + cas_extras + server_extras +
+                 hdl_netcdf_extras +
+                 ['WebTest',
+                  'beautifulsoup4',
+                  'scipy',
+                  'flake8'])
 
 testing_extras = tests_require + [
     'pytest>=2.8',
@@ -84,7 +90,8 @@ setup(name='Pydap',
             'docs': docs_extras,
             'tests': tests_require,
             'cas': cas_extras,
-            'server': server_extras
+            'server': server_extras,
+            'handlers.netcdf': hdl_netcdf_extras
       },
       test_suite="pydap.tests",
       entry_points="""

@@ -27,7 +27,7 @@ def raise_for_status(response):
     # Raise error if status is above 300:
     if response.status_code >= 300:
         raise HTTPError(
-            detail=response.status,
+            detail=response.status+'\n'+response.text,
             headers=response.headers,
             comment=response.body
         )
