@@ -52,7 +52,6 @@ def follow_redirect(url, application=None, session=None,
 
 
 def create_request(url, session=None, timeout=DEFAULT_TIMEOUT):
-    req = Request.blank(url)
     if session is not None:
         # If session is set and cookies were loaded using pydap.cas.get_cookies
         # using the check_url option, then we can legitimately expect that
@@ -69,7 +68,8 @@ def create_request(url, session=None, timeout=DEFAULT_TIMEOUT):
         # If a session object was not passed, we simply pass a new
         # requests.Session() object. The requests library allows the
         # handling of redirects that are not naturally handled by Webob.
-        return create_request_from_session(url, requests.Session(), timeout=timeout)
+        return create_request_from_session(url, requests.Session(),
+                                           timeout=timeout)
 
 
 def create_request_from_session(url, session, timeout=DEFAULT_TIMEOUT):
