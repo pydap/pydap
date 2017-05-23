@@ -45,17 +45,6 @@ def shutdown_application(environ, start_response):
     return [b'Server is shutting down.']
 
 
-def run_simple_server(port, application, ssl_context):
-    application = ServerSideFunctions(application)
-
-    args = ('0.0.0.0', port, application)
-    if not ssl_context:
-        from werkzeug.serving import make_server as make_server_ssl
-        return make_server_ssl(*args, **{'ssl_context': ssl_context})
-    else:
-        return make_server(*args)
-
-
 class LocalTestServer:
     """
     Simple server instance that can be used to test pydap.
@@ -112,7 +101,12 @@ class LocalTestServer:
         # Start a simple WSGI server:
         application = ServerSideFunctions(self.application)
         address = '0.0.0.0'
-        self._httpd = make_server(address, self.port, application)
+        if self._ssl_context is None:
+            self._httpd = make_server(address, self.port, application)
+        else:
+            from werkzeug.serving import make_server as make_server_ssl
+            self._httpd = make_server_ssl(address, self.port, application,
+                                          **{'ssl_context': self._ssl_context})
         self.url = "http://{0}:{1}/".format(address, self.port)
 
         if self._as_process:

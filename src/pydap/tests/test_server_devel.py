@@ -129,6 +129,7 @@ def test_timeout(sequence_type_data):
 
 
 @server
+@pytest.mark.skipif(True, reason='server testing')
 def test_verify_open_url(recwarn):
     """Test that open_url raises the correct SSLError"""
     TestDataset = DatasetType('Test')
