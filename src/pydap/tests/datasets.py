@@ -15,6 +15,7 @@ from pydap.client import open_file
 
 from collections import OrderedDict
 
+# Note that DAP2 does not support signed bytes (signed 8bits integers).
 
 # A very simple sequence: flat and with no strings. This sequence can be mapped
 # directly to a Numpy structured array, and can be easily encoded and decoded
@@ -33,7 +34,7 @@ VerySimpleSequence["sequence"].data = np.array([
     (5, 6, 60.),
     (6, 7, 70.),
     (7, 8, 80.),
-    ], dtype=[('byte', 'b'), ('int', 'i4'), ('float', 'f4')])
+    ], dtype=[('byte', np.ubyte), ('int', 'i4'), ('float', 'f4')])
 
 
 # A nested sequence.
@@ -57,7 +58,7 @@ NestedSequence["location"].data = IterData([
 # A simple array with bytes, strings and shorts. These types require special
 # encoding for the DODS response.
 SimpleArray = DatasetType("SimpleArray")
-SimpleArray["byte"] = BaseType("byte", np.arange(5, dtype="b"))
+SimpleArray["byte"] = BaseType("byte", np.arange(5, dtype=np.ubyte))
 SimpleArray["string"] = BaseType("string", np.array(["one", "two"]))
 SimpleArray["short"] = BaseType("short", np.array(1, dtype="h"))
 
@@ -95,16 +96,19 @@ SimpleStructure['types'] = StructureType(
         ("array", np.array(1)),
         ("float", 1000.0),
     ]))
-SimpleStructure['types']['b'] = BaseType('b', np.array(0, np.byte))
-SimpleStructure['types']['i32'] = BaseType('i32', np.array(1, np.int32))
-SimpleStructure['types']['ui32'] = BaseType('ui32', np.array(0, np.uint32))
-SimpleStructure['types']['i16'] = BaseType('i16', np.array(0, np.int16))
-SimpleStructure['types']['ui16'] = BaseType('ui16', np.array(0, np.uint16))
-SimpleStructure['types']['f32'] = BaseType('f32', np.array(0.0, np.float32))
+SimpleStructure['types']['b'] = BaseType('b', np.array(-10, np.byte))
+SimpleStructure['types']['ub'] = BaseType('ub', np.array(10, np.ubyte))
+SimpleStructure['types']['i32'] = BaseType('i32', np.array(-10, np.int32))
+SimpleStructure['types']['ui32'] = BaseType('ui32', np.array(10, np.uint32))
+SimpleStructure['types']['i16'] = BaseType('i16', np.array(-10, np.int16))
+SimpleStructure['types']['ui16'] = BaseType('ui16', np.array(10, np.uint16))
+SimpleStructure['types']['f32'] = BaseType('f32', np.array(100.0, np.float32))
 SimpleStructure['types']['f64'] = BaseType('f64', np.array(1000., np.float64))
 SimpleStructure['types']['s'] = BaseType(
     's', np.array("This is a data test string (pass 0)."))
 SimpleStructure['types']['u'] = BaseType('u', np.array("http://www.dods.org"))
+SimpleStructure['types']['U'] = BaseType('U', np.array(u"test unicode",
+                                                       np.unicode))
 
 
 # test grid
