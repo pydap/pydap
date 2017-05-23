@@ -10,6 +10,9 @@ it could work with more data formats.
 import numpy as np
 import pytest
 import time
+import sys
+import requests
+import ssl
 
 from webob.exc import HTTPError
 from pydap.handlers.lib import BaseHandler
@@ -123,3 +126,30 @@ def test_timeout(sequence_type_data):
         with pytest.raises(HTTPError) as e:
             dat[:]
         assert 'Timeout' in str(e)
+
+
+@server
+def test_verify_open_url(recwarn):
+    """Test that open_url raises the correct SSLError"""
+    TestDataset = DatasetType('Test')
+    TestDataset['sequence'] = sequence_type_data
+    TestDataset['byte'] = BaseType('byte', 0)
+    application = BaseHandler(TestDataset)
+
+    with LocalTestServer(application, ssl_context='adhoc') as server:
+        url = ("http://0.0.0.0:%s/" % server.port)
+        try:
+            open_url(url, verify=False, session=requests.Session())
+            assert len(recwarn) == 1
+            assert recwarn.pop(requests.exceptions.InsecureRequestWarning)
+        except (ssl.SSLError, requests.exceptions.SSLError):
+            pytest.fail("SSLError should not be raised.")
+
+        with pytest.raises(requests.exceptions.SSLError):
+            open_url(url, session=requests.Session())
+
+        if not (sys.version_info >= (3, 0) and
+                sys.version_info < (3, 4, 4)):
+            # verify is disabled by default for python 3 before 3.4.4:
+            with pytest.raises(ssl.SSLError):
+                open_url(url)

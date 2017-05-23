@@ -56,7 +56,7 @@ from .parsers.das import parse_das, add_attributes
 
 
 def open_url(url, application=None, session=None, output_grid=True,
-             timeout=DEFAULT_TIMEOUT):
+             timeout=DEFAULT_TIMEOUT, verify=True):
     """
     Open a remote URL, returning a dataset.
 
@@ -64,7 +64,7 @@ def open_url(url, application=None, session=None, output_grid=True,
     never retrieve coordinate axes.
     """
     dataset = DAPHandler(url, application, session, output_grid,
-                         timeout).dataset
+                         timeout=timeout, verify=verify).dataset
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session)
@@ -107,7 +107,7 @@ def open_file(dods, das=None):
 
 
 def open_dods(url, metadata=False, application=None, session=None,
-              timeout=DEFAULT_TIMEOUT):
+              timeout=DEFAULT_TIMEOUT, verify=True):
     """Open a `.dods` response directly, returning a dataset."""
     r = GET(url, application, session, timeout=timeout)
     raise_for_status(r)
@@ -122,7 +122,8 @@ def open_dods(url, metadata=False, application=None, session=None,
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
             (scheme, netloc, path[:-4] + 'das', query, fragment))
-        r = GET(dasurl, application, session, timeout=timeout)
+        r = GET(dasurl, application, session, timeout=timeout,
+                verify=verify)
         raise_for_status(r)
         das = r.text
         add_attributes(dataset, parse_das(das))

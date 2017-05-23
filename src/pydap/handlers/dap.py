@@ -45,19 +45,21 @@ class DAPHandler(BaseHandler):
     """Build a dataset from a DAP base URL."""
 
     def __init__(self, url, application=None, session=None, output_grid=True,
-                 timeout=DEFAULT_TIMEOUT):
+                 timeout=DEFAULT_TIMEOUT, verify=True):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
         ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-        r = GET(ddsurl, application, session, timeout=timeout)
+        r = GET(ddsurl, application, session, timeout=timeout,
+                verify=verify)
         raise_for_status(r)
         if not r.charset:
             r.charset = 'ascii'
         dds = r.text
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-        r = GET(dasurl, application, session, timeout=timeout)
+        r = GET(dasurl, application, session, timeout=timeout,
+                verify=verify)
         raise_for_status(r)
         if not r.charset:
             r.charset = 'ascii'
@@ -112,7 +114,8 @@ class BaseProxy(object):
     """
 
     def __init__(self, baseurl, id, dtype, shape, slice_=None,
-                 application=None, session=None, timeout=DEFAULT_TIMEOUT):
+                 application=None, session=None, timeout=DEFAULT_TIMEOUT,
+                 verify=True):
         self.baseurl = baseurl
         self.id = id
         self.dtype = dtype
@@ -121,6 +124,7 @@ class BaseProxy(object):
         self.application = application
         self.session = session
         self.timeout = timeout
+        self.verify = verify
 
     def __repr__(self):
         return 'BaseProxy(%s)' % ', '.join(
@@ -138,7 +142,8 @@ class BaseProxy(object):
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
-        r = GET(url, self.application, self.session, timeout=self.timeout)
+        r = GET(url, self.application, self.session, timeout=self.timeout,
+                verify=self.verify)
         raise_for_status(r)
         dds, data = r.body.split(b'\nData:\n', 1)
         dds = dds.decode(r.content_encoding or 'ascii')
@@ -188,7 +193,8 @@ class SequenceProxy(object):
     shape = ()
 
     def __init__(self, baseurl, template, selection=None, slice_=None,
-                 application=None, session=None, timeout=DEFAULT_TIMEOUT):
+                 application=None, session=None, timeout=DEFAULT_TIMEOUT,
+                 verify=True):
         self.baseurl = baseurl
         self.template = template
         self.selection = selection or []
@@ -196,6 +202,7 @@ class SequenceProxy(object):
         self.application = application
         self.session = session
         self.timeout = timeout
+        self.verify = verify
 
         # this variable is true when only a subset of the children are selected
         self.sub_children = False
@@ -262,7 +269,8 @@ class SequenceProxy(object):
 
     def __iter__(self):
         # download and unpack data
-        r = GET(self.url, self.application, self.session, timeout=self.timeout)
+        r = GET(self.url, self.application, self.session, timeout=self.timeout,
+                verify=self.verify)
         raise_for_status(r)
 
         i = r.app_iter

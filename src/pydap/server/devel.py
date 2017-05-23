@@ -45,6 +45,17 @@ def shutdown_application(environ, start_response):
     return [b'Server is shutting down.']
 
 
+def run_simple_server(port, application, ssl_context):
+    application = ServerSideFunctions(application)
+
+    args = ('0.0.0.0', port, application)
+    if not ssl_context:
+        from werkzeug.serving import make_server as make_server_ssl
+        return make_server_ssl(*args, **{'ssl_context': ssl_context})
+    else:
+        return make_server(*args)
+
+
 class LocalTestServer:
     """
     Simple server instance that can be used to test pydap.
@@ -88,12 +99,14 @@ class LocalTestServer:
     """
 
     def __init__(self, application=BaseHandler(DefaultDataset),
-                 port=None, wait=0.5, polling=1e-2, as_process=False):
+                 port=None, wait=0.5, polling=1e-2, as_process=False,
+                 ssl_context=None):
         self._port = port or get_open_port()
         self.application = application
         self._wait = wait
         self._polling = polling
         self._as_process = as_process
+        self._ssl_context = ssl_context
 
     def start(self):
         # Start a simple WSGI server:
@@ -114,6 +127,7 @@ class LocalTestServer:
                                     kwargs={'poll_interval': 0.1}))
 
         self._server.start()
+
         # Poll the server
         ok = False
         for trial in range(int(math.ceil(self._wait/self._polling))):
