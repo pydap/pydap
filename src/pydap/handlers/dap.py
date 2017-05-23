@@ -27,11 +27,12 @@ from ..net import GET, raise_for_status
 from ..lib import (
     encode, combine_slices, fix_slice, hyperslab,
     START_OF_SEQUENCE, walk, StreamReader, BytesReader,
-    DEFAULT_TIMEOUT)
+    DEFAULT_TIMEOUT, DAP2_ARRAY_LENGTH_NUMPY_TYPE)
 from .lib import ConstraintExpression, BaseHandler, IterData
 from ..parsers.dds import build_dataset
 from ..parsers.das import parse_das, add_attributes
 from ..parsers import parse_ce
+from ..responses.dods import DAP2_response_dtypemap
 logger = logging.getLogger('pydap')
 logger.addHandler(logging.NullHandler())
 
@@ -358,15 +359,19 @@ def unpack_children(stream, template):
     return out
 
 
-def convert_stream_to_list(stream, dtype, shape, id):
+def convert_stream_to_list(stream, parser_dtype, shape, id):
     out = []
+    response_dtype = DAP2_response_dtypemap(parser_dtype)
     if shape:
-        n = np.fromstring(stream.read(4), ">I")[0]
-        count = dtype.itemsize * n
-        if dtype.char in "SU":
+        n = np.fromstring(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
+        count = response_dtype.itemsize * n
+        if response_dtype.char in 'S':
+            # Consider on 'S' and not 'SU' because
+            # response_dtype.char should never be
             data = []
             for _ in range(n):
-                k = np.fromstring(stream.read(4), ">I")[0]
+                k = np.fromstring(stream.read(4),
+                                  DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
                 data.append(stream.read(k))
                 stream.read(-k % 4)
             out.append(np.array([text_type(x.decode('ascii'))
@@ -376,7 +381,8 @@ def convert_stream_to_list(stream, dtype, shape, id):
             try:
                 out.append(
                     np.fromstring(
-                        stream.read(count), dtype).reshape(shape))
+                        stream.read(count), response_dtype)
+                    .astype(parser_dtype).reshape(shape))
             except ValueError as e:
                 if str(e) == 'total size of new array must be unchanged':
                     # server-side failure.
@@ -388,22 +394,26 @@ def convert_stream_to_list(stream, dtype, shape, id):
                                  'output_grid=False).').format(quote(id)))
                 else:
                     raise
-            if dtype.char == "B":
+            if response_dtype.char == "B":
+                # Unsigned Byte type is packed to multiples of 4 bytes:
                 stream.read(-n % 4)
 
     # special types: strings and bytes
-    elif dtype.char in 'SU':
-        k = np.fromstring(stream.read(4), '>I')[0]
+    elif response_dtype.char in 'S':
+        # Consider on 'S' and not 'SU' because
+        # response_dtype.char should never be
+        # 'U'
+        k = np.fromstring(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
         out.append(text_type(stream.read(k).decode('ascii')))
         stream.read(-k % 4)
-    elif dtype.char == 'B':
-        data = np.fromstring(stream.read(1), dtype)[0]
-        stream.read(3)
-        out.append(data)
     # usual data
     else:
         out.append(
-            np.fromstring(stream.read(dtype.itemsize), dtype)[0])
+            np.fromstring(stream.read(response_dtype.itemsize), response_dtype)
+            .astype(parser_dtype)[0])
+        if response_dtype.char == "B":
+            # Unsigned Byte type is packed to multiples of 4 bytes:
+            stream.read(3)
     return out
 
 
@@ -431,9 +441,9 @@ def dump():  # pragma: no cover
     """
     dods = sys.stdin.read()
     dds, xdrdata = dods.split(b'\nData:\n', 1)
-    xdr_stream = io.BytesIO(xdrdata)
-    dds = dds.decode('ascii')
     dataset = build_dataset(dds)
+    xdr_stream = io.BytesIO(xdrdata)
     data = unpack_data(xdr_stream, dataset)
+    data = dataset.data
 
     pprint.pprint(data)

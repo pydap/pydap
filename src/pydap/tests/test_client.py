@@ -189,7 +189,6 @@ class TestFunctions(unittest.TestCase):
             np.array(1.0))
 
 
-@unittest.skip("Unsure about this behavior")
 class Test16Bits(unittest.TestCase):
 
     """Test that 16-bit values are represented correctly.
@@ -204,11 +203,11 @@ class Test16Bits(unittest.TestCase):
         self.app = BaseHandler(SimpleStructure)
 
     def test_int16(self):
-        """Load an int16."""
+        """Load an int16 -> should yield '>i2' type."""
         dataset = open_url("http://localhost:8001/", self.app)
         self.assertEqual(dataset.types.i16.dtype, np.dtype(">i2"))
 
     def test_uint16(self):
-        """Load an uint16."""
+        """Load an uint16 -> should yield '>u2' type."""
         dataset = open_url("http://localhost:8001/", self.app)
         self.assertEqual(dataset.types.ui16.dtype, np.dtype(">u2"))

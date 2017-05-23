@@ -126,6 +126,8 @@ class TestDASResponseStructure(unittest.TestCase):
         }
         b {
         }
+        ub {
+        }
         i32 {
         }
         ui32 {
@@ -141,6 +143,8 @@ class TestDASResponseStructure(unittest.TestCase):
         s {
         }
         u {
+        }
+        U {
         }
     }
 }
