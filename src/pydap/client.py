@@ -48,21 +48,23 @@ from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
 from .model import DapType
-from .lib import encode
-from .net import GET
+from .lib import encode, DEFAULT_TIMEOUT
+from .net import GET, raise_for_status
 from .handlers.dap import DAPHandler, unpack_data, StreamReader
 from .parsers.dds import build_dataset
 from .parsers.das import parse_das, add_attributes
 
 
-def open_url(url, application=None, session=None, output_grid=True):
+def open_url(url, application=None, session=None, output_grid=True,
+             timeout=DEFAULT_TIMEOUT):
     """
     Open a remote URL, returning a dataset.
 
     set output_grid to False to retrieve only main arrays and
     never retrieve coordinate axes.
     """
-    dataset = DAPHandler(url, application, session, output_grid).dataset
+    dataset = DAPHandler(url, application, session, output_grid,
+                         timeout).dataset
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session)
@@ -104,9 +106,12 @@ def open_file(dods, das=None):
     return dataset
 
 
-def open_dods(url, metadata=False, application=None, session=None):
+def open_dods(url, metadata=False, application=None, session=None,
+              timeout=DEFAULT_TIMEOUT):
     """Open a `.dods` response directly, returning a dataset."""
-    r = GET(url, application, session)
+    r = GET(url, application, session, timeout=timeout)
+    raise_for_status(r)
+
     dds, data = r.body.split(b'\nData:\n', 1)
     dds = dds.decode(r.content_encoding or 'ascii')
     dataset = build_dataset(dds)
@@ -117,7 +122,9 @@ def open_dods(url, metadata=False, application=None, session=None):
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
             (scheme, netloc, path[:-4] + 'das', query, fragment))
-        das = GET(dasurl, application, session).text
+        r = GET(dasurl, application, session, timeout=timeout)
+        raise_for_status(r)
+        das = r.text
         add_attributes(dataset, parse_das(das))
 
     return dataset
