@@ -22,6 +22,7 @@ functions_extras = [
 
 server_extras = [
     'gunicorn',
+    'PasteDeploy',
 ]
 
 docs_extras = [
