@@ -10,7 +10,13 @@ In order to distribute your data first you need to install a proper `handler <ha
 Running standalone
 ------------------
 
-If you just want to quickly test the Pydap server, you can run it as a standalone Python application using the server that comes with `Python Paste <http://pythonpaste.org/>`_ and `gunicorn <http://gunicorn.org/>`_. To run the server just run the ``pydap`` script that pip installs into your bin directory:
+If you just want to quickly test the Pydap server, you can run it as a standalone Python application using the server that comes with `Python Paste <http://pythonpaste.org/>`_ and `gunicorn <http://gunicorn.org/>`_. To run the server, first make sure that you have installed Pydap with the server extras dependencies:
+
+.. code-block:: bash
+
+    $ pip install Pydap[server]
+
+and then just run the ``pydap`` script that pip installs into your bin directory:
 
 .. code-block:: bash
 
