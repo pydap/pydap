@@ -2,6 +2,7 @@ from webob.request import Request
 from webob.exc import HTTPError
 from contextlib import closing
 import requests
+import ssl
 from requests.exceptions import (MissingSchema, InvalidSchema,
                                  Timeout)
 

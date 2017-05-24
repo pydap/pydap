@@ -6,12 +6,14 @@ import time
 import math
 import numpy as np
 import socket
+from six.moves.http_client import RemoteDisconnected
 
 from wsgiref.simple_server import make_server
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
 from ..wsgi.ssf import ServerSideFunctions
+from ..net import get_response
 
 DefaultDataset = DatasetType("Default")
 DefaultDataset["byte"] = BaseType("byte", np.arange(5, dtype="B"))
@@ -126,11 +128,14 @@ class LocalTestServer:
         ok = False
         for trial in range(int(math.ceil(self._wait/self._polling))):
             try:
-                resp = (Request
-                        .blank("http://0.0.0.0:%s/.dds" % self.port)
-                        .get_response())
+                # When checking whether server has started, do
+                # not verify ssl:
+                resp = get_response(
+                        Request
+                        .blank("http://0.0.0.0:%s/.dds" % self.port),
+                        None, verify=False)
                 ok = (resp.status_code == 200)
-            except HTTPError:
+            except (HTTPError, RemoteDisconnected):
                 pass
             if ok:
                 break
