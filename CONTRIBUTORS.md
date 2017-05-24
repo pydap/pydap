@@ -4,6 +4,7 @@ Pydap contributors (sorted alphabetically)
 * Roberto De Almeida
 * James Gallagher
 * Aleksandar Jelenak
+* Daniel Gray
 * James Hiebert
 * Stephan Hoyer
 * **[SiggyF](https://github.com/SiggyF)**
