@@ -50,19 +50,16 @@ For more information, please check the documentation on [using Pydap as a client
 
 ```bash
 
-    $ pip install pydap.handlers.netcdf
+    $ pip install Pydap[server] pydap.handlers.netcdf
 ```
-This will install support for [netCDF](http://www.unidata.ucar.edu/software/netcdf/) files; more [handlers](http://pydap.readthedocs.io/en/latest/handlers.html) for different formats are available, if necessary. Now create a directory for your server data:
+This will install support for [netCDF](http://www.unidata.ucar.edu/software/netcdf/) files; more [handlers](http://pydap.readthedocs.io/en/latest/handlers.html) for different formats are available, if necessary. Now create a directory for your server data.
 
-```bash
 
-    $ paster create -t pydap myserver
-```
 To run the server just issue the command:
 
 ```bash
 
-    $ paster serve ./myserver/server.ini
+    $ pydap --data ./myserver/data/ --port 8001
 ```
 This will start a standalone server running on http://localhost:8001/, serving netCDF files from ``./myserver/data/``, similar to the test server at http://test.pydap.org/. Since the server uses the [WSGI](http://wsgi.org/) standard, it can easily be run behind Apache. The [server documentation](server.html) has more information on how to better deploy Pydap.
 
