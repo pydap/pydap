@@ -17,4 +17,4 @@ install:
 
 script:
     - flake8
-    - py.test --cov=src/pydap/
+    - py.test --cov=pydap/

@@ -7,4 +7,4 @@ collect_ignore.append("docs/client.rst")
 
 # These lines should be deleted when all examples use local files:
 collect_ignore.append("docs/index.rst")
-collect_ignore.append("src/pydap/client.py")
+collect_ignore.append("pydap/client.py")
