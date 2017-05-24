@@ -222,7 +222,7 @@ def main():  # pragma: no cover
     import multiprocessing
 
     from docopt import docopt
-    from gunicorn.app.pasterapp import paste_server
+    from gunicorn.app.pasterapp import PasterServerApplication
 
     arguments = docopt(__doc__, version="Pydap %s" % __version__)
 
@@ -245,12 +245,12 @@ def main():  # pragma: no cover
 
     # configure WSGI server
     workers = multiprocessing.cpu_count() * 2 + 1
-    paste_server(
+    PasterServerApplication(
         app,
         host=arguments["--bind"],
         port=int(arguments["--port"]),
         workers=workers,
-        worker_class=arguments["--worker-class"])
+        worker_class=arguments["--worker-class"]).run()
 
 
 if __name__ == "__main__":
