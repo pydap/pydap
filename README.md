@@ -46,11 +46,11 @@ This will install Pydap together with all the required dependencies. You can now
                8.10000002e-01]]], dtype=float32), array([ 366.]), array([-69., -67., -65., -63.]), array([ 41.,  43.,  45.,  47.])]
 ```
 
-For more information, please check the documentation on [using Pydap as a client](http://pydap.readthedocs.io/en/latest/server.html). Pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/) application. To use it, you first need to install a data handler:
+For more information, please check the documentation on [using Pydap as a client](http://pydap.readthedocs.io/en/latest/server.html). Pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/) application. To use it, you first need to install the server and optionally a data handler:
 
 ```bash
 
-    $ pip install Pydap[server] pydap.handlers.netcdf
+    $ pip install Pydap[server,handlers.netcdf]
 ```
 This will install support for [netCDF](http://www.unidata.ucar.edu/software/netcdf/) files; more [handlers](http://pydap.readthedocs.io/en/latest/handlers.html) for different formats are available, if necessary. Now create a directory for your server data.
 
