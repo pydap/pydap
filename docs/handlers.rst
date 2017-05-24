@@ -13,9 +13,9 @@ NetCDF
 
 .. code-block:: bash
 
-    $ pip install pydap.handlers.netcdf
+    $ pip install Pydap[handlers.netcdf]
 
-This will take care of the necessary dependencies. You don't even need to have to NetCDF libraries installed, since the handler will automatically install a pure Python NetCDF library called `pupynere <http://pypi.python.org/pypi/pupynere/>`_.
+This will take care of the necessary dependencies. You don't even need to have to NetCDF libraries installed, since the handler will use a pure Python NetCDF library from `scipy.io.netcdf <https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.io.netcdf.netcdf_file.html/>`_.
 
 The NetCDF handler uses a buffered reader that access the data in contiguous blocks from disk, avoiding reading everything into memory at once. You can configure the size of the buffer by specifying a key in the ``server.ini`` file:
 
