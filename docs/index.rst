@@ -40,23 +40,17 @@ This will install Pydap together with all the required dependencies. You can now
             [  6.38000011e-01,   8.95384610e-01,   7.21666634e-01,
                8.10000002e-01]]], dtype=float32), array([ 366.]), array([-69., -67., -65., -63.]), array([ 41.,  43.,  45.,  47.])]
 
-For more information, please check the documentation on `using Pydap as a client <client.html>`_. Pydap also comes with a simple server, implemented as a `WSGI <http://wsgi.org/>`_ application. To use it, you first need to install a data handler:
+For more information, please check the documentation on `using Pydap as a client <client.html>`_. Pydap also comes with a simple server, implemented as a `WSGI <http://wsgi.org/>`_ application. To use it, you first need to install Pydap with the server extras dependencies. If you want to serve `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ files, install Pydap with the ``handlers.netcdf`` extra:
 
 .. code-block:: bash
 
-    $ pip install pydap.handlers.netcdf
+    $ pip install Pydap[server,handlers.netcdf]
 
-This will install support for `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ files; more `handlers <handlers.html>`_ for different formats are available, if necessary. Now create a directory for your server data:
-
-.. code-block:: bash
-
-    $ paster create -t pydap myserver
-
-To run the server just issue the command:
+More `handlers <handlers.html>`_ for different formats are available, if necessary. To run a simple standalone server just issue the command:
 
 .. code-block:: bash
 
-    $ paster serve ./myserver/server.ini
+    $ pydap --data ./myserver/data/ --port 8001
 
 This will start a standalone server running on http://localhost:8001/, serving netCDF files from ``./myserver/data/``, similar to the test server at http://test.pydap.org/. Since the server uses the `WSGI <http://wsgi.org/>`_ standard, it can easily be run behind Apache. The `server documentation <server.html>`_ has more information on how to better deploy Pydap.
 

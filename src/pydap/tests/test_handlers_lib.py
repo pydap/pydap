@@ -504,7 +504,7 @@ class MockHandler(BaseHandler):
 
     """A fake handler for testing."""
 
-    extensions = "^.*\.foo$"
+    extensions = r"^.*\.foo$"
 
     def __init__(self, dataset=None):
         BaseHandler.__init__(self, dataset)

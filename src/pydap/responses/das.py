@@ -19,9 +19,8 @@ from six.moves import map
 from ..model import (DatasetType, BaseType,
                      StructureType, SequenceType,
                      GridType)
-from ..lib import encode, quote, __version__
+from ..lib import encode, quote, __version__, NUMPY_TO_DAP2_TYPEMAP
 from .lib import BaseResponse
-from .dds import typemap
 
 
 INDENT = ' ' * 4
@@ -130,13 +129,13 @@ def get_type(values):
 
     """
     if hasattr(values, 'dtype'):
-        return typemap[values.dtype.char]
+        return NUMPY_TO_DAP2_TYPEMAP[values.dtype.char]
     elif isinstance(values, string_types) or not isinstance(values, Iterable):
         return type_convert(values)
     else:
         # if there are several values, they may have different types, so we
         # need to convert all of them and use a precedence table
-        types = list(map(type_convert, values))
+        types = [type_convert(val) for val in values]
         precedence = ['String', 'Float64', 'Int32']
         types.sort(key=precedence.index)
         return types[0]

@@ -215,7 +215,7 @@ class TestBaseProxy(unittest.TestCase):
 
         self.data = BaseProxy(
                               "http://localhost:8001/", "byte",
-                              np.dtype("b"), (5,),
+                              np.dtype("B"), (5,),
                               application=self.app)
 
     def test_repr(self):
@@ -223,7 +223,7 @@ class TestBaseProxy(unittest.TestCase):
         self.assertEqual(
                          repr(self.data),
                          "BaseProxy('http://localhost:8001/', 'byte', "
-                         "dtype('int8'), (5,), "
+                         "dtype('uint8'), (5,), "
                          "(slice(None, None, None),))")
 
     def test_getitem(self):
@@ -270,12 +270,13 @@ class TestBaseProxyShort(unittest.TestCase):
 
         self.data = BaseProxy(
                               "http://localhost:8001/", "short",
-                              np.dtype(">i"), (),
+                              np.dtype(">h"), (),
                               application=self.app)
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:], np.array(1))
+        assert self.data[:].dtype.char == 'h'
 
 
 class TestBaseProxyString(unittest.TestCase):
@@ -500,7 +501,7 @@ class TestStringBaseType(unittest.TestCase):
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:],
-                                      np.array("This is a test", dtype='S'))
+                                      "This is a test")
 
 
 class TestArrayStringBaseType(unittest.TestCase):

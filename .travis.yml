@@ -6,10 +6,19 @@ python:
     - 3.5
     - 3.6
 
+addons:
+  apt:
+      packages:
+      # The following is required for netcdf files:
+      - libhdf5-serial-dev
+      - netcdf-bin
+      - libnetcdf-dev
+
 install:
     - pip install --upgrade pip>=8.1
+    # Install the package:
     - pip install -e .[testing,functions,server,tests]
 
 script:
     - flake8
-    - py.test -a 'not auth' --cov=src/pydap/
+    - py.test --cov=src/pydap/

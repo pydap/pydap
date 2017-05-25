@@ -16,10 +16,6 @@ from . import SimpleParser
 from ..lib import walk
 
 
-atomic = ('byte', 'int', 'uint', 'int16', 'uint16', 'int32', 'uint32',
-          'float32', 'float64', 'string', 'url')
-
-
 class DASParser(SimpleParser):
 
     """A parser for the Dataset Attribute Structure response."""
@@ -49,8 +45,8 @@ class DASParser(SimpleParser):
         """Collect the attributes for a DAP variable."""
         self.consume('{')
         while not self.peek('}'):
-            if self.peek('[^\s]+\s+{'):
-                name = self.consume('[^\s]+')
+            if self.peek(r'[^\s]+\s+{'):
+                name = self.consume(r'[^\s]+')
                 target[name] = {}
                 self.container(target[name])
             else:
@@ -66,8 +62,8 @@ class DASParser(SimpleParser):
         attribute(s).
 
         """
-        type = self.consume('[^\s]+')
-        name = self.consume('[^\s]+')
+        type = self.consume(r'[^\s]+')
+        name = self.consume(r'[^\s]+')
 
         values = []
         while not self.peek(';'):

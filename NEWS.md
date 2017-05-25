@@ -1,6 +1,39 @@
 News
 ====
 
+3.2.2
+-----
+
+*Release date: 2017-May-24*
+
+* Python 3.3 is no longer supported. This is in line with
+  other similar projects (Numpy, Xarray, ...) and it preempts the
+  expected python 3.3 EOL in September 2017.
+* Server improvements
+  * Merges pydap.handlers.netcdf into the main code base
+  * Adds a lightweight testing/development server
+  * Rewrites the server docs to reflect a post-paster world
+* Miscellaneous bug fixes
+  * Ensures Byte use is consistent with DAP2 standards
+  * Fixes client authentication to UK's CEDA
+  * Fixes client communcation with ERDDAP servers
+  * Fixes regression bug in model.GridType (#43)
+  * Fixes bug where the iteration does not replace previous_chunk
+  * Fixes bugs in command-line server (#52 and #53)
+* Fix mapping scheme for SequenceType (PR #89)
+  * Makes all types a mapping and protects the mapping semantics for sequence data
+  * Converts dict in StructureType to OrderedDict, changing
+    _original_keys handling (#3) and convers test_model.py to pytest
+    semantics (#82).
+  * Updats docs and docstrings. Added basic automatic
+    doctests. Doctests use integers for easy continuous integration
+  * 100% test coverage in src/pydap/model.py.
+* Various codebase improvements
+  * Transition tests from nose to pytest
+  * Tests with flake8 on all Python version
+* Adds timeout option to open_urls and open_dods
+
+
 3.2.1
 -----
 

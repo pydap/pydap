@@ -350,8 +350,9 @@ Authentication is done through an ``openid`` and a ``password``:
 
     >>> from pydap.client import open_url  
     >>> from pydap.cas.esgf import setup_session 
-    >>> session = setup_session(openid, password)
-    >>> dataset = open_url('http://server.example.com/path/to/dataset', session=session)
+    >>> dataset_url = 'http://server.example.com/path/to/dataset'
+    >>> session = setup_session(openid, password, check_url=dataset_url)
+    >>> dataset = open_url(dataset_url, session=session)
 
 If your ``openid`` contains contains the
 string ``ceda.ac.uk`` authentication requires an additional ``username`` argument:
@@ -360,8 +361,8 @@ string ``ceda.ac.uk`` authentication requires an additional ``username`` argumen
 
     >>> from pydap.client import open_url  
     >>> from pydap.cas.esgf import setup_session 
-    >>> session = setup_session(openid, password, username=username)
-    >>> dataset = open_url('http://server.example.com/path/to/dataset', session=session)
+    >>> session = setup_session(openid, password, check_url=dataset_url, username=username)
+    >>> dataset = open_url(dataset_url, session=session)
 
 Advanced features
 -----------------
@@ -441,12 +442,13 @@ You can specify a cache directory in the ``pydap.lib.CACHE`` global variable. If
 Timeout
 ~~~~~~~
 
-To specify a timeout for the client, just set the global variable ``pydap.lib.TIMEOUT`` to the desired number of seconds; after this time trying to connect the client will give up. The default is ``None`` (never timeout).
+To specify a timeout for the client, just set the desired number of seconds using the ``timeout`` option to ``open_url(...)`` or ``open_dods(...)``.
+For example, the following commands would timeout after 30 seconds without receiving a response from the server:
 
 .. code-block:: python
 
-    >>> import pydap.lib
-    >>> pydap.lib.TIMEOUT = 60
+    >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc, timeout=30)
+    >>> dataset = open_dods('http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods, timeout=30)
 
 Configuring a proxy
 ~~~~~~~~~~~~~~~~~~~
