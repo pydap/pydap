@@ -30,9 +30,8 @@ class CSVHandler(BaseHandler):
         ... (13, 12.1, 'Kodiak_Trail')]
 
         >>> import csv
-        >>> import tempfile
-        >>> tmp = tempfile.NamedTemporaryFile(suffix='.csv')
-        >>> with open(tmp.name, 'w') as f:
+        >>> temp_file = getfixture('tmpdir').join('test.csv')
+        >>> with open(str(temp_file), 'w') as f:
         ...     writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
         ...     writer.writerow(['index', 'temperature', 'site'])
         ...     for row in data:
@@ -45,7 +44,7 @@ class CSVHandler(BaseHandler):
 
     Iteraring over the sequence returns data:
 
-        >>> seq = CSVHandler(tmp.name).dataset['sequence']
+        >>> seq = CSVHandler(str(temp_file)).dataset['sequence']
 
         >>> for line in seq:
         ...     print(line)
@@ -111,7 +110,7 @@ class CSVHandler(BaseHandler):
 
     Finally, delete the data file:
 
-        >>> tmp.close()
+        >>> temp_file.remove()
     """
 
     __version__ = get_distribution("pydap").version
@@ -168,9 +167,8 @@ class CSVData(IterData):
         ... (13, 12.1, 'Kodiak_Trail')]
 
         >>> import csv
-        >>> import tempfile
-        >>> tmp = tempfile.NamedTemporaryFile(suffix='.csv')
-        >>> with open(tmp.name, 'w') as f:
+        >>> temp_file = getfixture('tmpdir').join('test.csv')
+        >>> with open(str(temp_file), 'w') as f:
         ...     writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
         ...     writer.writerow(['index', 'temperature', 'site'])
         ...     for row in data:
@@ -187,7 +185,7 @@ class CSVData(IterData):
         >>> seq['index'] = BaseType('index')
         >>> seq['temperature'] = BaseType('temperature')
         >>> seq['site'] = BaseType('site')
-        >>> seq.data = CSVData(tmp.name, copy.copy(seq))
+        >>> seq.data = CSVData(str(temp_file), copy.copy(seq))
 
         >>> for line in seq:
         ...     print(line)
@@ -253,7 +251,7 @@ class CSVData(IterData):
 
     Finally, delete the data file:
 
-        >>> tmp.close()
+        >>> temp_file.remove()
 
     """
 
