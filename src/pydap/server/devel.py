@@ -6,8 +6,8 @@ import time
 import math
 import numpy as np
 import socket
-from six.moves.http_client import RemoteDisconnected
 
+from httplib import HTTPException
 from wsgiref.simple_server import make_server
 
 from ..handlers.lib import BaseHandler
@@ -135,7 +135,7 @@ class LocalTestServer:
                         .blank("http://0.0.0.0:%s/.dds" % self.port),
                         None, verify=False)
                 ok = (resp.status_code == 200)
-            except (HTTPError, RemoteDisconnected):
+            except (HTTPError, HTTPException):
                 pass
             if ok:
                 break
