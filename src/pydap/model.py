@@ -343,7 +343,8 @@ class BaseType(DapType):
         return self._get_data_index()
 
     def _get_data_index(self, index=Ellipsis):
-        if self._is_string_dtype:
+        if (self._is_string_dtype and
+           isinstance(self._data, np.ndarray)):
             return np.vectorize(decode_np_strings)(self._data[index])
         else:
             return self._data[index]
