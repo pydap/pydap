@@ -26,11 +26,13 @@ from pydap.model import (BaseType,
 from ..net import GET, raise_for_status
 from ..lib import (
     encode, combine_slices, fix_slice, hyperslab,
-    START_OF_SEQUENCE, walk, StreamReader, BytesReader)
+    START_OF_SEQUENCE, walk, StreamReader, BytesReader,
+    DEFAULT_TIMEOUT, DAP2_ARRAY_LENGTH_NUMPY_TYPE)
 from .lib import ConstraintExpression, BaseHandler, IterData
 from ..parsers.dds import build_dataset
 from ..parsers.das import parse_das, add_attributes
 from ..parsers import parse_ce
+from ..responses.dods import DAP2_response_dtypemap
 logger = logging.getLogger('pydap')
 logger.addHandler(logging.NullHandler())
 
@@ -42,19 +44,20 @@ class DAPHandler(BaseHandler):
 
     """Build a dataset from a DAP base URL."""
 
-    def __init__(self, url, application=None, session=None, output_grid=True):
+    def __init__(self, url, application=None, session=None, output_grid=True,
+                 timeout=DEFAULT_TIMEOUT):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
         ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-        r = GET(ddsurl, application, session)
+        r = GET(ddsurl, application, session, timeout=timeout)
         raise_for_status(r)
         if not r.charset:
             r.charset = 'ascii'
         dds = r.text
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-        r = GET(dasurl, application, session)
+        r = GET(dasurl, application, session, timeout=timeout)
         raise_for_status(r)
         if not r.charset:
             r.charset = 'ascii'
@@ -109,7 +112,7 @@ class BaseProxy(object):
     """
 
     def __init__(self, baseurl, id, dtype, shape, slice_=None,
-                 application=None, session=None):
+                 application=None, session=None, timeout=DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.id = id
         self.dtype = dtype
@@ -117,6 +120,7 @@ class BaseProxy(object):
         self.slice = slice_ or tuple(slice(None) for s in self.shape)
         self.application = application
         self.session = session
+        self.timeout = timeout
 
     def __repr__(self):
         return 'BaseProxy(%s)' % ', '.join(
@@ -134,7 +138,7 @@ class BaseProxy(object):
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
-        r = GET(url, self.application, self.session)
+        r = GET(url, self.application, self.session, timeout=self.timeout)
         raise_for_status(r)
         dds, data = r.body.split(b'\nData:\n', 1)
         dds = dds.decode(r.content_encoding or 'ascii')
@@ -184,13 +188,14 @@ class SequenceProxy(object):
     shape = ()
 
     def __init__(self, baseurl, template, selection=None, slice_=None,
-                 application=None, session=None):
+                 application=None, session=None, timeout=DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.template = template
         self.selection = selection or []
         self.slice = slice_ or (slice(None),)
         self.application = application
         self.session = session
+        self.timeout = timeout
 
         # this variable is true when only a subset of the children are selected
         self.sub_children = False
@@ -257,7 +262,7 @@ class SequenceProxy(object):
 
     def __iter__(self):
         # download and unpack data
-        r = GET(self.url, self.application, self.session)
+        r = GET(self.url, self.application, self.session, timeout=self.timeout)
         raise_for_status(r)
 
         i = r.app_iter
@@ -354,15 +359,19 @@ def unpack_children(stream, template):
     return out
 
 
-def convert_stream_to_list(stream, dtype, shape, id):
+def convert_stream_to_list(stream, parser_dtype, shape, id):
     out = []
+    response_dtype = DAP2_response_dtypemap(parser_dtype)
     if shape:
-        n = np.fromstring(stream.read(4), ">I")[0]
-        count = dtype.itemsize * n
-        if dtype.char in "SU":
+        n = np.fromstring(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
+        count = response_dtype.itemsize * n
+        if response_dtype.char in 'S':
+            # Consider on 'S' and not 'SU' because
+            # response_dtype.char should never be
             data = []
             for _ in range(n):
-                k = np.fromstring(stream.read(4), ">I")[0]
+                k = np.fromstring(stream.read(4),
+                                  DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
                 data.append(stream.read(k))
                 stream.read(-k % 4)
             out.append(np.array([text_type(x.decode('ascii'))
@@ -372,7 +381,8 @@ def convert_stream_to_list(stream, dtype, shape, id):
             try:
                 out.append(
                     np.fromstring(
-                        stream.read(count), dtype).reshape(shape))
+                        stream.read(count), response_dtype)
+                    .astype(parser_dtype).reshape(shape))
             except ValueError as e:
                 if str(e) == 'total size of new array must be unchanged':
                     # server-side failure.
@@ -384,22 +394,26 @@ def convert_stream_to_list(stream, dtype, shape, id):
                                  'output_grid=False).').format(quote(id)))
                 else:
                     raise
-            if dtype.char == "B":
+            if response_dtype.char == "B":
+                # Unsigned Byte type is packed to multiples of 4 bytes:
                 stream.read(-n % 4)
 
     # special types: strings and bytes
-    elif dtype.char in 'SU':
-        k = np.fromstring(stream.read(4), '>I')[0]
+    elif response_dtype.char in 'S':
+        # Consider on 'S' and not 'SU' because
+        # response_dtype.char should never be
+        # 'U'
+        k = np.fromstring(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
         out.append(text_type(stream.read(k).decode('ascii')))
         stream.read(-k % 4)
-    elif dtype.char == 'B':
-        data = np.fromstring(stream.read(1), dtype)[0]
-        stream.read(3)
-        out.append(data)
     # usual data
     else:
         out.append(
-            np.fromstring(stream.read(dtype.itemsize), dtype)[0])
+            np.fromstring(stream.read(response_dtype.itemsize), response_dtype)
+            .astype(parser_dtype)[0])
+        if response_dtype.char == "B":
+            # Unsigned Byte type is packed to multiples of 4 bytes:
+            stream.read(3)
     return out
 
 
@@ -427,9 +441,9 @@ def dump():  # pragma: no cover
     """
     dods = sys.stdin.read()
     dds, xdrdata = dods.split(b'\nData:\n', 1)
-    xdr_stream = io.BytesIO(xdrdata)
-    dds = dds.decode('ascii')
     dataset = build_dataset(dds)
+    xdr_stream = io.BytesIO(xdrdata)
     data = unpack_data(xdr_stream, dataset)
+    data = dataset.data
 
     pprint.pprint(data)

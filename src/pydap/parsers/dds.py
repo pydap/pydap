@@ -8,23 +8,20 @@ from . import SimpleParser
 from ..model import (DatasetType, BaseType,
                      SequenceType, StructureType,
                      GridType)
-from ..lib import quote, STRING
+from ..lib import (quote, LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP)
 
-typemap = {
-    'byte':    np.dtype("B"),
-    'int':     np.dtype(">i4"),
-    'uint':    np.dtype(">u4"),
-    'int16':   np.dtype(">i4"),
-    'uint16':  np.dtype(">u4"),
-    'int32':   np.dtype(">i4"),
-    'uint32':  np.dtype(">u4"),
-    'float32': np.dtype(">f4"),
-    'float64': np.dtype(">f8"),
-    'string':  np.dtype(STRING),  # default is "|S128"
-    'url':     np.dtype(STRING),
-    }
 constructors = ('grid', 'sequence', 'structure')
 name_regexp = r'[\w%!~"\'\*-]+'
+
+
+def DAP2_parser_typemap(type_string):
+    """
+    This function takes a numpy dtype object
+    and returns a dtype object that is compatible with
+    the DAP2 specification.
+    """
+    dtype_str = LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP[type_string.lower()]
+    return np.dtype(dtype_str)
 
 
 class DDSParser(SimpleParser):
@@ -72,14 +69,15 @@ class DDSParser(SimpleParser):
 
     def base(self):
         """Parse a base variable, returning a ``BaseType``."""
-        type = self.consume(r'\w+')
+        data_type_string = self.consume('\w+')
 
-        dtype = typemap[type.lower()]
-        name = quote(self.consume(r'[^;\[]+'))
+        parser_dtype = DAP2_parser_typemap(data_type_string)
+        name = quote(self.consume('[^;\[]+'))
+
         shape, dimensions = self.dimensions()
         self.consume(';')
 
-        data = DummyData(dtype, shape)
+        data = DummyData(parser_dtype, shape)
         var = BaseType(name, data, dimensions=dimensions)
 
         return var

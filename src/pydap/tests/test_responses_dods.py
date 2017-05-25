@@ -5,12 +5,13 @@ import copy
 import numpy as np
 from webtest import TestApp as App
 from webob.headers import ResponseHeaders
+from collections import OrderedDict
 
 from pydap.lib import START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import (
     VerySimpleSequence, SimpleSequence, SimpleGrid,
-    SimpleArray, NestedSequence)
+    SimpleArray, NestedSequence, SimpleStructure)
 from pydap.responses.dods import dods, DODSResponse
 import unittest
 
@@ -145,6 +146,72 @@ class TestDODSResponseGrid(unittest.TestCase):
             b"\x00\x00\x00\x02"
             b"\x00\x00\x00\x00"
             b"\x00\x00\x00\x01")
+
+
+class TestDODSResponseStructure(unittest.TestCase):
+
+    """Test the DODS response with a sequence that has a string."""
+
+    def setUp(self):
+        """Create a simple WSGI app."""
+        app = App(BaseHandler(SimpleStructure))
+        self.res = app.get('/.dods')
+
+    def test_body(self):
+        """Test response body."""
+        dds, xdrdata = self.res.body.split(b'\nData:\n', 1)
+        dds = dds.decode('ascii')
+        self.assertEqual(dds, """Dataset {
+    Structure {
+        Int16 b;
+        Byte ub;
+        Int32 i32;
+        UInt32 ui32;
+        Int16 i16;
+        UInt16 ui16;
+        Float32 f32;
+        Float64 f64;
+        String s;
+        String u;
+        String U;
+    } types;
+} SimpleStructure;""")
+
+        expected = OrderedDict([
+            # -10 signed byte upconv. to Int32 for transfer
+            ('b', (np.array(-10, dtype=np.byte)
+                   .astype('>i')
+                   .tostring())),
+            # 10 usigned byte padded to multiple of 4 bytes for transfer
+            ('ub', (np.array(10, dtype=np.ubyte)
+                    .tostring()) + b'\x00\x00\x00'),
+            ('i32', (np.array(-10, dtype=np.int32)
+                     .astype('>i').tostring())),
+            ('ui32', (np.array(10, dtype=np.uint32)
+                      .astype('>I').tostring())),
+            # -10 int16 upconv. to int32 for transfer
+            ('i16', (np.array(-10, dtype=np.int16)
+                     .astype('>i')
+                     .newbyteorder('>').tostring())),
+            # 10 uint16 upconv. to uint32 for transfer
+            ('ui16', (np.array(10, dtype=np.uint16)
+                      .astype('>I')
+                      .tostring())),
+            ('f32', (np.array(100, dtype=np.float32)
+                     .astype('>f')
+                     .tostring())),
+            ('f64', (np.array(1000, dtype=np.float64)
+                     .astype('>d')
+                     .tostring())),
+            ('s', b'\x00\x00\x00$This is a data test string (pass 0).\x00'),
+            ('u', b'\x00\x00\x13http://www.dods.org\x00'),
+            ('U', b'\x00\x00\x00\x0ctest unicode')])
+
+        for key in expected:
+            string = expected[key]
+            assert xdrdata.startswith(string)
+            xdrdata = xdrdata[len(string):]
+        assert xdrdata == b''
 
 
 class TestDODSResponseSequence(unittest.TestCase):

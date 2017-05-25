@@ -19,23 +19,10 @@ from ..model import (DatasetType, BaseType,
                      SequenceType, StructureType,
                      GridType)
 from .lib import BaseResponse
-from ..lib import __version__
+from ..lib import __version__, NUMPY_TO_DAP2_TYPEMAP
 
 
 INDENT = ' ' * 4
-
-typemap = {
-    'd': 'Float64',
-    'f': 'Float32',
-    'h': 'Int16',
-    'i': 'Int32', 'l': 'Int32', 'q': 'Int32',
-    'b': 'Byte',
-    'H': 'UInt16',
-    'I': 'UInt32', 'L': 'UInt32', 'Q': 'UInt32',
-    'B': 'Byte',
-    'S': 'String',
-    'U': 'String',
-}
 
 
 class DDSResponse(BaseResponse):
@@ -119,6 +106,6 @@ def _basetype(var, level=0, sequence=0):
 
     yield '{indent}{type} {name}{shape};\n'.format(
         indent=level*INDENT,
-        type=typemap[var.dtype.char],
+        type=NUMPY_TO_DAP2_TYPEMAP[var.dtype.char],
         name=var.name,
         shape=shape)

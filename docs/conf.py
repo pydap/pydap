@@ -40,7 +40,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Pydap'
-copyright = u'2003-2014, Roberto De Almeida'
+copyright = u'2003-2017, Pydap contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

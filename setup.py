@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys
 
-__version__ = '3.2.1'
+__version__ = '3.2.2'
 
 install_requires = [
     'numpy',
@@ -22,6 +22,7 @@ functions_extras = [
 
 server_extras = [
     'gunicorn',
+    'PasteDeploy',
 ]
 
 docs_extras = [
