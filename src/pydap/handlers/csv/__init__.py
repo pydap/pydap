@@ -33,14 +33,8 @@ class CSVHandler(BaseHandler):
         >>> temp_file = getfixture('tmpdir').join('test.csv')
         >>> with open(str(temp_file), 'w') as f:
         ...     writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
-        ...     writer.writerow(['index', 'temperature', 'site'])
-        ...     for row in data:
-        ...         writer.writerow(row)
-        30
-        22
-        26
-        23
-        24
+        ...     row_length = writer.writerow(['index', 'temperature', 'site'])
+        ...     row_length = [writer.writerow(row) for row in data]
 
     Iteraring over the sequence returns data:
 
@@ -170,14 +164,8 @@ class CSVData(IterData):
         >>> temp_file = getfixture('tmpdir').join('test.csv')
         >>> with open(str(temp_file), 'w') as f:
         ...     writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
-        ...     writer.writerow(['index', 'temperature', 'site'])
-        ...     for row in data:
-        ...         writer.writerow(row)
-        30
-        22
-        26
-        23
-        24
+        ...     row_length = writer.writerow(['index', 'temperature', 'site'])
+        ...     row_length = [writer.writerow(row) for row in data]
 
     Iteraring over the sequence returns data:
 
