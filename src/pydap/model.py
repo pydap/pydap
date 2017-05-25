@@ -472,6 +472,11 @@ class StructureType(DapType, Mapping):
             var.data = col
     data = property(_get_data, _set_data)
 
+    def __shallowcopy__(self):
+        out = type(self)(self.name, self.attributes.copy())
+        out.id = self.id
+        return out
+
     def __copy__(self):
         """Return a lightweight copy of the Structure.
 
@@ -479,8 +484,7 @@ class StructureType(DapType, Mapping):
         data object are not copied.
 
         """
-        out = type(self)(self.name, self.attributes.copy())
-        out.id = self.id
+        out = self.__shallowcopy__()
 
         # Clone all children too.
         for child in self._dict.values():
@@ -681,19 +685,9 @@ class SequenceType(StructureType):
             out.data = self.data[key]
             return out
 
-    def __copy__(self):
-        """Return a lightweight copy of the Sequence.
-
-        The method will return a new Sequence with cloned children, but any
-        data object are not copied.
-
-        """
+    def __shallowcopy__(self):
         out = type(self)(self.name, self.data, self.attributes.copy())
         out.id = self.id
-
-        # Clone children too.
-        for child in self.children():
-            out[child.name] = copy.copy(child)
         return out
 
 

@@ -30,7 +30,9 @@ class CSVHandler(BaseHandler):
         ... (13, 12.1, 'Kodiak_Trail')]
 
         >>> import csv
-        >>> with open('test.csv', 'w') as f:
+        >>> import tempfile
+        >>> tmp = tempfile.NamedTemporaryFile(suffix='.csv')
+        >>> with open(tmp.name, 'w') as f:
         ...     writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
         ...     writer.writerow(['index', 'temperature', 'site'])
         ...     for row in data:
@@ -43,7 +45,7 @@ class CSVHandler(BaseHandler):
 
     Iteraring over the sequence returns data:
 
-        >>> seq = CSVHandler('test.csv').dataset['sequence']
+        >>> seq = CSVHandler(tmp.name).dataset['sequence']
 
         >>> for line in seq:
         ...     print(line)
@@ -84,7 +86,7 @@ class CSVHandler(BaseHandler):
         Platinum_St
         Kodiak_Trail
 
-        >>> for line in seq['site', 'temperature'][ seq.index > 10 ]:
+        >>> for line in seq[['site', 'temperature']][ seq.index > 10 ]:
         ...     print(line)
         ('Blacktail_Loop', 13.1)
         ('Platinum_St', 13.3)
@@ -109,7 +111,7 @@ class CSVHandler(BaseHandler):
 
     Finally, delete the data file:
 
-        >>> os.remove('test.csv')
+        >>> tmp.close()
     """
 
     __version__ = get_distribution("pydap").version
@@ -166,7 +168,9 @@ class CSVData(IterData):
         ... (13, 12.1, 'Kodiak_Trail')]
 
         >>> import csv
-        >>> with open('test.csv', 'w') as f:
+        >>> import tempfile
+        >>> tmp = tempfile.NamedTemporaryFile(suffix='.csv')
+        >>> with open(tmp.name, 'w') as f:
         ...     writer = csv.writer(f, quoting=csv.QUOTE_NONNUMERIC)
         ...     writer.writerow(['index', 'temperature', 'site'])
         ...     for row in data:
@@ -183,7 +187,7 @@ class CSVData(IterData):
         >>> seq['index'] = BaseType('index')
         >>> seq['temperature'] = BaseType('temperature')
         >>> seq['site'] = BaseType('site')
-        >>> seq.data = CSVData('test.csv', copy.copy(seq))
+        >>> seq.data = CSVData(tmp.name, copy.copy(seq))
 
         >>> for line in seq:
         ...     print(line)
@@ -249,7 +253,7 @@ class CSVData(IterData):
 
     Finally, delete the data file:
 
-        >>> os.remove('test.csv')
+        >>> tmp.close()
 
     """
 

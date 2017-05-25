@@ -4,7 +4,6 @@ import numpy as np
 from pydap.handlers.lib import IterData
 from pydap.model import DatasetType, SequenceType, BaseType
 import pytest
->>>>>>> IterData is now tested
 
 
 @pytest.fixture
@@ -118,6 +117,16 @@ def test_combined(simple_array, simple_object):
     filtered = filtered[::2]
     assert ([tuple(row) for row in filtered] ==
             [(2, 3, 30.), (4, 5, 50.)])
+
+
+def test_combined_other(simple_array, simple_object):
+    filtered = simple_array[['int', 'float']][simple_array["byte"] < 2]
+    assert ([tuple(row) for row in filtered] ==
+            [(1, 10.), (2, 20.)])
+
+    filtered = simple_object[['int', 'float']][simple_object["byte"] < 2]
+    assert ([tuple(row) for row in filtered] ==
+            [(1, 10.), (2, 20.)])
 
 
 @pytest.fixture
