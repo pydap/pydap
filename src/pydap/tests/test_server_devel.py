@@ -137,8 +137,10 @@ def test_verify_open_url(sequence_type_data, recwarn):
     TestDataset['byte'] = BaseType('byte', 0)
     application = BaseHandler(TestDataset)
 
-    with LocalTestServer(application, ssl_context='adhoc') as server:
+    with LocalTestServer(application, ssl_context='adhoc',
+                         as_process=True, wait=1) as server:
         url = ("http://0.0.0.0:%s/" % server.port)
+        print(url)
         try:
             open_url(url, verify=False, session=requests.Session())
             assert len(recwarn) == 1

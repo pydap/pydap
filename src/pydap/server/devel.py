@@ -42,11 +42,6 @@ def run_server_in_process(httpd, shutdown, **kwargs):
     _server.join()
 
 
-def shutdown_application(environ, start_response):
-    start_response('200 OK', [('Content-Type', 'text/plain')])
-    return [b'Server is shutting down.']
-
-
 class LocalTestServer:
     """
     Simple server instance that can be used to test pydap.
@@ -105,10 +100,12 @@ class LocalTestServer:
         address = '0.0.0.0'
         if self._ssl_context is None:
             self._httpd = make_server(address, self.port, application)
+            kwargs = {'poll_interval': 0.1}
         else:
             from werkzeug.serving import make_server as make_server_ssl
             self._httpd = make_server_ssl(address, self.port, application,
                                           **{'ssl_context': self._ssl_context})
+            kwargs = {}
         self.url = "http://{0}:{1}/".format(address, self.port)
 
         if self._as_process:
@@ -116,11 +113,11 @@ class LocalTestServer:
             self._server = (multiprocessing
                             .Process(target=run_server_in_process,
                                      args=(self._httpd, self._shutdown),
-                                     kwargs={'poll_interval': 0.1}))
+                                     kwargs=kwargs))
         else:
             self._server = (threading
                             .Thread(target=self._httpd.serve_forever,
-                                    kwargs={'poll_interval': 0.1}))
+                                    kwargs=kwargs))
 
         self._server.start()
 
@@ -142,6 +139,7 @@ class LocalTestServer:
             time.sleep(self._polling)
 
         if not ok:
+            self.shutdown()
             raise Exception(('LocalTestServer did not start in {0}s. '
                              'Try using LocalTestServer(..., wait={1}')
                             .format(self._wait, 2*self._wait))
