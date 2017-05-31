@@ -7,8 +7,8 @@ import math
 import numpy as np
 import socket
 
-from httplib import HTTPException
 from wsgiref.simple_server import make_server
+from http.client import RemoteDisconnected
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
@@ -85,28 +85,24 @@ class LocalTestServer:
     """
 
     def __init__(self, application=BaseHandler(DefaultDataset),
-                 port=None, wait=0.5, polling=1e-2, as_process=False,
-                 ssl_context=None):
+                 port=None, wait=0.5, polling=1e-2, as_process=False):
         self._port = port or get_open_port()
         self.application = application
         self._wait = wait
         self._polling = polling
         self._as_process = as_process
-        self._ssl_context = ssl_context
+        self._address = '0.0.0.0'
+
+    @property
+    def url(self):
+        return "http://{0}:{1}/".format(self._address, self.port)
 
     def start(self):
         # Start a simple WSGI server:
         application = ServerSideFunctions(self.application)
-        address = '0.0.0.0'
-        if self._ssl_context is None:
-            self._httpd = make_server(address, self.port, application)
-            kwargs = {'poll_interval': 0.1}
-        else:
-            from werkzeug.serving import make_server as make_server_ssl
-            self._httpd = make_server_ssl(address, self.port, application,
-                                          **{'ssl_context': self._ssl_context})
-            kwargs = {}
-        self.url = "http://{0}:{1}/".format(address, self.port)
+
+        self._httpd = make_server(address, self.port, application)
+        kwargs = {'poll_interval': 0.1}
 
         if self._as_process:
             self._shutdown = multiprocessing.Event()
@@ -120,7 +116,9 @@ class LocalTestServer:
                                     kwargs=kwargs))
 
         self._server.start()
+        self.poll_server()
 
+    def poll_server(self):
         # Poll the server
         ok = False
         for trial in range(int(math.ceil(self._wait/self._polling))):
@@ -129,10 +127,10 @@ class LocalTestServer:
                 # not verify ssl:
                 resp = get_response(
                         Request
-                        .blank("http://0.0.0.0:%s/.dds" % self.port),
+                        .blank(self.url + '.dds'),
                         None, verify=False)
                 ok = (resp.status_code == 200)
-            except (HTTPError, HTTPException):
+            except HTTPError:
                 pass
             if ok:
                 break
