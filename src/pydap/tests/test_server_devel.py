@@ -60,21 +60,6 @@ def test_open(sequence_type_data):
 
 
 @server
-def test_netcdf(sequence_type_data):
-    """
-    Test that LocalTestServer works properly and that it works well with
-    netcdf4-python.
-    """
-    TestDataset = DatasetType('Test')
-    TestDataset['float'] = BaseType('float', np.array(1, dtype=np.float32))
-
-    with TestDataset.to_netcdf() as ds:
-        assert 'float' in ds.variables
-        assert ds['float'].dtype == np.float32
-        assert ds['float'][:] == np.array(1, dtype=np.float32)
-
-
-@server
 def test_timeout(sequence_type_data):
     """Test that timeout works properly"""
     TestDataset = DatasetType('Test')
