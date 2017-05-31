@@ -54,8 +54,7 @@ def test_basic_esgf_auth():
                                  os.environ.get('PASSWORD_ESGF'),
                                  check_url=url)
 
-    res = requests.get(test_url, cookies=session.cookies,
-                       verify=False)
+    res = requests.get(test_url, cookies=session.cookies)
     assert(res.status_code == 200)
     res.close()
 

@@ -11,7 +11,9 @@ import numpy as np
 import pytest
 import sys
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import ssl
+import warnings
 
 from pydap.handlers.lib import BaseHandler
 from pydap.model import DatasetType, BaseType, SequenceType
@@ -60,8 +62,10 @@ def test_open(sequence_type_data):
 
 
 @server
-def test_verify_open_url(sequence_type_data, recwarn):
+def test_verify_open_url(sequence_type_data):
     """Test that open_url raises the correct SSLError"""
+    warnings.simplefilter("always")
+
     TestDataset = DatasetType('Test')
     TestDataset['sequence'] = sequence_type_data
     TestDataset['byte'] = BaseType('byte', 0)
@@ -70,8 +74,6 @@ def test_verify_open_url(sequence_type_data, recwarn):
     with LocalTestServerSSL(application, ssl_context='adhoc') as server:
         try:
             open_url(server.url, verify=False, session=requests.Session())
-            assert recwarn.pop(requests.packages.urllib3.exceptions
-                               .InsecureRequestWarning)
         except (ssl.SSLError, requests.exceptions.SSLError):
             pytest.fail("SSLError should not be raised.")
 
