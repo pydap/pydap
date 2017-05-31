@@ -9,16 +9,13 @@ it could work with more data formats.
 
 import numpy as np
 import pytest
-import time
 import sys
 import requests
 import ssl
 
-from webob.exc import HTTPError
 from pydap.handlers.lib import BaseHandler
-from pydap.handlers.dap import SequenceProxy, BaseProxy
 from pydap.model import DatasetType, BaseType, SequenceType
-from pydap.client import open_url, open_dods
+from pydap.client import open_url
 from pydap.server.devel_ssl import LocalTestServerSSL
 
 server = pytest.mark.server
@@ -62,7 +59,6 @@ def test_open(sequence_type_data):
                                     dtype=sequence_type_data.data.dtype))
 
 
-#@pytest.mark.skipif(True, reason='server testing')
 @server
 def test_verify_open_url(sequence_type_data, recwarn):
     """Test that open_url raises the correct SSLError"""
@@ -74,7 +70,8 @@ def test_verify_open_url(sequence_type_data, recwarn):
     with LocalTestServerSSL(application, ssl_context='adhoc') as server:
         try:
             open_url(server.url, verify=False, session=requests.Session())
-            assert recwarn.pop(requests.packages.urllib3.exceptions.InsecureRequestWarning)
+            assert recwarn.pop(requests.packages.urllib3.exceptions
+                               .InsecureRequestWarning)
         except (ssl.SSLError, requests.exceptions.SSLError):
             pytest.fail("SSLError should not be raised.")
 

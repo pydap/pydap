@@ -8,7 +8,6 @@ import numpy as np
 import socket
 
 from wsgiref.simple_server import make_server
-from http.client import RemoteDisconnected
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
@@ -101,7 +100,7 @@ class LocalTestServer:
         # Start a simple WSGI server:
         application = ServerSideFunctions(self.application)
 
-        self._httpd = make_server(address, self.port, application)
+        self._httpd = make_server(self._address, self.port, application)
         kwargs = {'poll_interval': 0.1}
 
         if self._as_process:

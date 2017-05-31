@@ -7,7 +7,7 @@ from werkzeug.serving import run_simple
 
 from ..wsgi.ssf import ServerSideFunctions
 from ..handlers.lib import BaseHandler
-from .devel import DefaultDataset, get_open_port, LocalTestServer
+from .devel import DefaultDataset, LocalTestServer
 
 
 def run_simple_server(application=BaseHandler(DefaultDataset),
@@ -24,6 +24,7 @@ def run_simple_server(application=BaseHandler(DefaultDataset),
     run_simple('0.0.0.0', port,
                app_check_for_shutdown,
                ssl_context=ssl_context)
+
 
 def shutdown_server(environ):
     if 'werkzeug.server.shutdown' not in environ:
@@ -78,10 +79,10 @@ class LocalTestServerSSL(LocalTestServer):
     >>> server.shutdown()
     """
     def __init__(self, application=BaseHandler(DefaultDataset),
-                 port=None, wait=0.5, polling=1e-2, as_process=False,
-                 ssl_context=None):
-        super(LocalTestServerSSL, self).__init__(application, port, wait, polling,
-                                              as_process)
+                 port=None, wait=0.5, polling=1e-2,
+                 as_process=False, ssl_context=None):
+        super(LocalTestServerSSL, self).__init__(application, port, wait,
+                                                 polling, as_process)
         self._ssl_context = ssl_context
 
     @property
@@ -95,9 +96,9 @@ class LocalTestServerSSL(LocalTestServer):
         # Start a simple WSGI server:
         self._server = (multiprocessing
                         .Process(target=run_simple_server,
-                                args=(self.application,
-                                      self.port,
-                                      self._ssl_context)))
+                                 args=(self.application,
+                                       self.port,
+                                       self._ssl_context)))
         self._server.start()
         # Wait a little while for the server to start:
         self.poll_server()

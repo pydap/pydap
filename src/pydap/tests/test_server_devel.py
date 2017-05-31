@@ -10,9 +10,6 @@ it could work with more data formats.
 import numpy as np
 import pytest
 import time
-import sys
-import requests
-import ssl
 
 from webob.exc import HTTPError
 from pydap.handlers.lib import BaseHandler
