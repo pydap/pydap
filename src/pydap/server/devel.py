@@ -41,7 +41,7 @@ def run_server_in_process(httpd, shutdown, **kwargs):
     _server.join()
 
 
-class LocalTestServer:
+class LocalTestServer(object):
     """
     Simple server instance that can be used to test pydap.
     Relies on threading and is usually slow (it has to
