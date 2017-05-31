@@ -80,7 +80,7 @@ def test_dimension_esgf_query():
 
     dataset = open_url(url, session=session)
     data = dataset['lon'][:5]
-    expected_data = np.array([0. , 1.25, 2.5, 3.75, 5.])
+    expected_data = np.array([0., 1.25, 2.5, 3.75, 5.])
     assert(np.isclose(data, expected_data).all())
 
 
