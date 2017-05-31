@@ -101,7 +101,6 @@ class LocalTestServerSSL(LocalTestServer):
         self._server.start()
         # Wait a little while for the server to start:
         self.poll_server()
-        print('Started')
 
     def shutdown(self):
         # Shutdown the server:
