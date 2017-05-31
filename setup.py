@@ -46,7 +46,8 @@ tests_require = (functions_extras + cas_extras + server_extras +
                  ['WebTest',
                   'beautifulsoup4',
                   'flake8',
-                  'werkzeug'])
+                  'werkzeug',
+                  'pyopenssl'])
 
 testing_extras = tests_require + [
     'pytest>=2.8',
