@@ -11,7 +11,6 @@ import numpy as np
 import pytest
 import sys
 import requests
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import ssl
 import warnings
 
