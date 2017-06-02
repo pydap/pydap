@@ -70,7 +70,6 @@ Documentation
    handlers
    responses
    developer
-   Changelog
    license
 
 Indices and tables
