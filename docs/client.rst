@@ -117,7 +117,7 @@ Alternatively, we could have dowloaded the data directly, skipping the axes:
       [  6.38000011e-01   8.95384610e-01   7.21666634e-01   8.10000002e-01]]]
 
 Older Servers
-^^^^^^^^^^^^^
+~~~~~~~~~~~~~
 Some servers using a very old OPeNDAP application might run of of memory when attempting to retrieve both the data and
 the coordinate axes of a variable. The work around is to simply disable the retrieval of coordinate axes by using the
 ``output_grid`` option to open url:
