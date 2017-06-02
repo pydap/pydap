@@ -1,4 +1,5 @@
 recursive-include docs *
+prune docs/_build
 recursive-include src/pydap/wsgi/templates *
 recursive-include src/pydap/responses/html/templates *
 recursive-include src/pydap/tests *.das *.dds *.dods
