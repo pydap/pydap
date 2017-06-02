@@ -51,11 +51,12 @@ testing_extras = tests_require + [
     'pytest>=2.8',
     'pytest-cov',
     'pytest-attrib',
-    'mock',
     'requests-mock',
     'requests'
 ]
 
+if sys.version_info < (3, 3):
+    testing_extras.append('mock')
 
 setup(name='Pydap',
       version=__version__,
