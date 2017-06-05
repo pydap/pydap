@@ -9,23 +9,25 @@ import numpy as np
 
 from pkg_resources import get_distribution
 
-from pydap.model import DatasetType, GridType, BaseType
-from pydap.handlers.lib import BaseHandler
-from pydap.exceptions import OpenFileError
+from ...model import DatasetType, GridType, BaseType
+from ..lib import BaseHandler
+from ...exceptions import OpenFileError
+from ...pycompat import suppress
 
 from collections import OrderedDict
 
 # Check for netCDF4 presence:
-try:
-    from netCDF4 import Dataset as netcdf_file
+with suppress(ImportError):
+    try:
+        from netCDF4 import Dataset as netcdf_file
 
-    def attrs(var):
-        return dict((k, getattr(var, k)) for k in var.ncattrs())
-except ImportError:
-    from scipy.io.netcdf import netcdf_file
+        def attrs(var):
+            return dict((k, getattr(var, k)) for k in var.ncattrs())
+    except ImportError:
+        from scipy.io.netcdf import netcdf_file
 
-    def attrs(var):
-        return var._attributes
+        def attrs(var):
+            return var._attributes
 
 
 class NetCDFHandler(BaseHandler):

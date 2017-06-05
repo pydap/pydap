@@ -24,12 +24,15 @@ from datetime import datetime, timedelta
 import re
 
 import numpy as np
-import coards
-import gsw
 
 from ..model import SequenceType, GridType, BaseType
 from ..lib import walk
 from ..exceptions import ConstraintExpressionError, ServerError
+from ..pycompat import suppress
+
+with suppress(ImportError):
+    import coards
+    import gsw
 
 
 def density(dataset, salinity, temperature, pressure):
