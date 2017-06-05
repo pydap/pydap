@@ -26,4 +26,4 @@ install:
 
 script:
     - flake8
-    - py.test --cov=src/pydap/
+    - if [ $TEST_SUITE == "testing" ]; then py.test --cov=src/pydap/; else py.test -a $TEST_SUITE; fi
