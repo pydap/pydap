@@ -10,7 +10,6 @@ from wsgiref.simple_server import make_server
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
-from ..wsgi.ssf import ServerSideFunctions
 
 DefaultDataset = DatasetType("Default")
 DefaultDataset["byte"] = BaseType("byte", np.arange(5, dtype="B"))
@@ -30,8 +29,6 @@ def get_open_port():
 
 
 def run_simple_server(port, application):
-    application = ServerSideFunctions(application)
-
     return make_server('0.0.0.0', port, application)
 
 
