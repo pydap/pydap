@@ -163,7 +163,6 @@ class BaseProxy(object):
         r = GET(url, self.application, self.session, timeout=self.timeout)
         raise_for_status(r)
         dds, data = safe_dds_and_data(r)
-        print(dds)
 
         # Parse received dataset:
         dataset = build_dataset(dds)
