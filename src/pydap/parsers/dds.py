@@ -69,13 +69,13 @@ class DDSParser(SimpleParser):
 
     def base(self):
         """Parse a base variable, returning a ``BaseType``."""
-        data_type_string = self.consume('\w+')
+        data_type_string = self.consume(r'\w+')
 
         parser_dtype = DAP2_parser_typemap(data_type_string)
-        name = quote(self.consume('[^;\[]+'))
+        name = quote(self.consume(r'[^;\[]+'))
 
         shape, dimensions = self.dimensions()
-        self.consume(';')
+        self.consume(r';')
 
         data = DummyData(parser_dtype, shape)
         var = BaseType(name, data, dimensions=dimensions)
