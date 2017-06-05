@@ -5,6 +5,7 @@ python:
     - 3.4
     - 3.5
     - 3.6
+
 addons:
   apt:
       packages:
@@ -13,6 +14,9 @@ addons:
       - netcdf-bin
       - libnetcdf-dev
 install:
+    # Workaround pip not properly pulling this version for netCDF4.
+    # See https://github.com/Unidata/netcdf4-python/pull/666#issuecomment-306219617
+    - pip install cython>=0.19
     - pip install -e .[testing,functions,server,tests]
 
 script:
