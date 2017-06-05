@@ -118,8 +118,8 @@ setup(name='pydap',
             'handlers.netcdf': hdl_netcdf_extras,
             'netcdf': hdl_netcdf_extras,
             'server': server_extras,
-            'handlers.netcdf': hdl_netcdf_extras
-            'testing': testing_extras,
+            'handlers.netcdf': hdl_netcdf_extras,
+            'testing': testing_extras
       },
       test_suite="pydap.tests",
       entry_points="""

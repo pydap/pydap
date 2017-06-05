@@ -11,6 +11,7 @@ import pytest
 DODS = os.path.join(os.path.dirname(__file__), 'test.01.dods')
 DAS = os.path.join(os.path.dirname(__file__), 'test.01.das')
 
+
 @pytest.fixture
 def sequence_app():
     return BaseHandler(SimpleSequence)
@@ -45,6 +46,7 @@ def test_open_dods():
     assert dataset.i32.attributes == {}
     assert dataset.b.attributes == {}
 
+
 @pytest.mark.client
 def test_open_dods_das():
     """Open a file downloaded from the test server with the DAS."""
@@ -74,7 +76,7 @@ def test_open_dods_das():
 
 
 @pytest.mark.client
-def test_open_dods(sequence_app):
+def test_open_dods_16bits(sequence_app):
     """Open the dods response from a server.
 
     Note that here we cannot simply compare ``dataset.data`` with the
@@ -128,6 +130,7 @@ def test_original(ssf_app):
     original = open_url('/', application=ssf_app)
     assert (original.SimpleGrid.SimpleGrid.shape == (2, 3))
 
+
 def test_first_axis(ssf_app):
     """Test mean over the first axis."""
     original = open_url('/', application=ssf_app)
@@ -136,6 +139,7 @@ def test_first_axis(ssf_app):
     np.testing.assert_array_equal(
         dataset.SimpleGrid.SimpleGrid.data,
         np.array([1.5, 2.5, 3.5]))
+
 
 def test_second_axis(ssf_app):
     """Test mean over the second axis."""
@@ -146,6 +150,7 @@ def test_second_axis(ssf_app):
         dataset.SimpleGrid.SimpleGrid.data,
         np.array([1.0, 4.0]))
 
+
 def test_lazy_evaluation_getitem(ssf_app):
     """Test that the dataset is only loaded when accessed."""
     original = open_url('/', application=ssf_app)
@@ -154,6 +159,7 @@ def test_lazy_evaluation_getitem(ssf_app):
     dataset['SimpleGrid']
     assert dataset.dataset is not None
 
+
 def test_lazy_evaluation_getattr(ssf_app):
     """Test that the dataset is only loaded when accessed."""
     original = open_url('/', application=ssf_app)
@@ -161,6 +167,7 @@ def test_lazy_evaluation_getattr(ssf_app):
     assert dataset.dataset is None
     dataset.SimpleGrid
     assert dataset.dataset is not None
+
 
 def test_nested_call(ssf_app):
     """Test nested calls."""
@@ -171,6 +178,7 @@ def test_nested_call(ssf_app):
     np.testing.assert_array_equal(
         dataset.SimpleGrid.SimpleGrid.data,
         np.array(2.5))
+
 
 def test_axis_mean(ssf_app):
     """Test the mean over an axis, returning a scalar."""
