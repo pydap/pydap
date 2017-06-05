@@ -111,7 +111,7 @@ def test_open_dods_with_attributes(sequence_app):
         dataset.cast.time.units == "days since 1970-01-01")
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def ssf_app():
     """Test the local implementation of server-side functions.
 
