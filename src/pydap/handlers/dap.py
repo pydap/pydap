@@ -7,6 +7,7 @@ dataset to the internal model.
 """
 
 import io
+import gzip
 import sys
 import pprint
 import copy
@@ -18,7 +19,7 @@ from itertools import chain
 import logging
 import numpy as np
 from six.moves.urllib.parse import urlsplit, urlunsplit, quote
-from six import text_type, string_types
+from six import text_type, string_types, BytesIO
 
 from pydap.model import (BaseType,
                          SequenceType, StructureType,
@@ -52,16 +53,12 @@ class DAPHandler(BaseHandler):
         ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
         r = GET(ddsurl, application, session, timeout=timeout)
         raise_for_status(r)
-        if not r.charset:
-            r.charset = 'ascii'
-        dds = r.text
+        dds = safe_charset_text(r)
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
         r = GET(dasurl, application, session, timeout=timeout)
         raise_for_status(r)
-        if not r.charset:
-            r.charset = 'ascii'
-        das = r.text
+        das = safe_charset_text(r)
 
         # build the dataset from the DDS and add attributes from the DAS
         self.dataset = build_dataset(dds)
@@ -102,6 +99,31 @@ class DAPHandler(BaseHandler):
             var.set_output_grid(output_grid)
 
 
+def get_charset(r):
+    charset = r.charset
+    if not charset:
+        charset = 'ascii'
+    return charset
+
+
+def safe_charset_text(r):
+    if r.content_encoding == 'gzip':
+        return (gzip.GzipFile(fileobj=BytesIO(r.body)).read()
+                .decode(get_charset(r)))
+    else:
+        r.charset = get_charset(r)
+        return r.text
+
+
+def safe_dds_and_data(r):
+    if r.content_encoding == 'gzip':
+        raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
+    else:
+        raw = r.body
+    dds, data = raw.split(b'\nData:\n', 1)
+    return dds.decode(get_charset(r)), data
+
+
 class BaseProxy(object):
 
     """A proxy for remote base types.
@@ -140,8 +162,8 @@ class BaseProxy(object):
         logger.info("Fetching URL: %s" % url)
         r = GET(url, self.application, self.session, timeout=self.timeout)
         raise_for_status(r)
-        dds, data = r.body.split(b'\nData:\n', 1)
-        dds = dds.decode(r.content_encoding or 'ascii')
+        dds, data = safe_dds_and_data(r)
+        print(dds)
 
         # Parse received dataset:
         dataset = build_dataset(dds)
