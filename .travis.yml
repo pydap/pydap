@@ -6,6 +6,11 @@ python:
     - 3.5
     - 3.6
 
+env:
+    # All tests:
+    - TEST_SUITE="testing"
+    # Base pydap:
+    - TEST_SUITE="client"
 addons:
   apt:
       packages:
@@ -17,7 +22,7 @@ addons:
 install:
     - pip install --upgrade pip>=8.1
     # Install the package:
-    - pip install -e .[testing,functions,server,tests]
+    - pip install -e .[$TEST_SUITE]
 
 script:
     - flake8
