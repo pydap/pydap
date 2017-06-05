@@ -21,8 +21,9 @@ addons:
 
 install:
     - pip install --upgrade pip>=8.1
-    # Install the package:
-    - pip install -e .[$TEST_SUITE]
+    # Always install 'tests' since this extra includes
+    # testing utilities like pytest, etc.
+    - pip install -e .[tests,$TEST_SUITE]
 
 script:
     - flake8
