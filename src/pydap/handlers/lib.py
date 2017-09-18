@@ -67,9 +67,16 @@ def get_handler(filepath, handlers=None):
     """Given a filepath, return the corresponding instantiated handler."""
     # Check each handler to see which one handles this file.
     for handler in handlers or load_handlers():
+        if getattr(handler,'extensions',None) is None: continue
         p = re.compile(handler.extensions)
         if p.match(filepath):
             return handler(filepath)
+    # If no extensions match, query the handlers to see if any can open
+    # the file.
+    for handler in handlers or load_handlers():
+        if hasattr(handler,'can_handle'):
+            if handler.can_handle(filepath):
+              return handler(filepath)
 
     raise ExtensionNotSupportedError(
         'No handler available for file {filepath}.'.format(filepath=filepath))
