@@ -30,7 +30,7 @@ import pkg_resources
 from six.moves.urllib.parse import unquote
 from six import string_types
 
-from ..lib import __version__
+from .. import __version__
 from ..handlers.lib import get_handler, load_handlers
 from ..exceptions import ExtensionNotSupportedError
 from .ssf import ServerSideFunctions
