@@ -2,7 +2,7 @@
 
 from webtest import TestApp as App
 from webob.headers import ResponseHeaders
-from pydap import __version__
+from pydap.lib import __version__
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 from pydap.responses.das import das

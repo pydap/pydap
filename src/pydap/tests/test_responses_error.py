@@ -2,7 +2,7 @@ import sys
 from webob import Request
 
 from pydap.responses.error import ErrorResponse
-from pydap import __version__
+from pydap.lib import __version__
 import unittest
 
 
