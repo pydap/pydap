@@ -13,7 +13,8 @@ KML, WMS, JSON, etc., installed as third-party Python packages that declare the
 from pkg_resources import iter_entry_points
 
 from ..model import DatasetType
-from ..lib import __version__, load_from_entry_point_relative
+from .. import __version__
+from ..lib import load_from_entry_point_relative
 
 
 def load_responses():

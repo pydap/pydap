@@ -7,7 +7,8 @@ from webtest import TestApp as App
 from webob.headers import ResponseHeaders
 from collections import OrderedDict
 
-from pydap.lib import START_OF_SEQUENCE, END_OF_SEQUENCE, __version__
+from pydap import __version__
+from pydap.lib import START_OF_SEQUENCE, END_OF_SEQUENCE
 from pydap.handlers.lib import BaseHandler
 from pydap.tests.datasets import (
     VerySimpleSequence, SimpleSequence, SimpleGrid,

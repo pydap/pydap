@@ -19,7 +19,8 @@ from ..model import (DatasetType, BaseType,
                      SequenceType, StructureType,
                      GridType)
 from .lib import BaseResponse
-from ..lib import __version__, NUMPY_TO_DAP2_TYPEMAP
+from .. import __version__
+from ..lib import NUMPY_TO_DAP2_TYPEMAP
 
 
 INDENT = ' ' * 4
