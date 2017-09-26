@@ -12,8 +12,8 @@
     <dataset name="{{ file.name }} " ID="{{ location }}{{ file.name }}">
         <dataSize units="bytes">{{ file.size }}</dataSize>
         <date type="modified">{{ file.last_modified|datetimeformat_iso }}</date>
-        <access serviceName="odap" urlPath="{{ location }}{{ file.name }}"/>
-        <access serviceName="file" urlPath="{{ location }}{{ file.name }}"/>
+        <access serviceName="odap" urlPath="{{ file.name }}"/>
+        <access serviceName="file" urlPath="{{ file.name }}"/>
     </dataset>
     {% endif %}
     {% endfor %}
