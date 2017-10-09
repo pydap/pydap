@@ -5,6 +5,7 @@ from pkg_resources import get_distribution
 from six.moves.urllib.parse import quote as quote_
 from six.moves import reduce, zip_longest
 from six import binary_type, MAXSIZE
+from numpy import isnan
 
 from .exceptions import ConstraintExpressionError
 
@@ -123,6 +124,11 @@ def quote(name):
 
 def encode(obj):
     """Return an object encoded to its DAP representation."""
+    try:
+        if isnan(obj):
+            return "NaN"
+    except TypeError:
+        pass
     try:
         return '%.6g' % obj
     except:
