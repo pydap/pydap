@@ -127,7 +127,7 @@ def encode(obj):
     try:
         if isnan(obj):
             return "NaN"
-    except TypeError:
+    except:
         pass
     try:
         return '%.6g' % obj
