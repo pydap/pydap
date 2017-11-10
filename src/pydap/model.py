@@ -408,7 +408,7 @@ class StructureType(DapType, Mapping):
             if len(splitted) > 1:
                 try:
                     return self[splitted[0]]['.'.join(splitted[1:])]
-                except KeyError:
+                except (KeyError,IndexError):
                     return self['.'.join(splitted[1:])]
             else:
                 raise
