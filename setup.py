@@ -45,7 +45,7 @@ tests_require = (functions_extras + cas_extras + server_extras +
                  hdl_netcdf_extras +
                  ['WebTest',
                   'beautifulsoup4',
-                  'flake8'])
+                  'flake8 < 3.5.0'])
 
 testing_extras = tests_require + [
     'pytest>=2.8',
