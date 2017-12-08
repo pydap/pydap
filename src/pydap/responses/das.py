@@ -19,7 +19,7 @@ from six.moves import map
 from ..model import (DatasetType, BaseType,
                      StructureType, SequenceType,
                      GridType)
-from ..lib import encode, quote, __version__, NUMPY_TO_DAP2_TYPEMAP
+from ..lib import encode, quote, quote_val, __version__, NUMPY_TO_DAP2_TYPEMAP
 from .lib import BaseResponse
 
 
@@ -113,12 +113,11 @@ def build_attributes(attr, values, level=0):
             values = [encode(values)]
         else:
             values = map(encode, values)
-
         yield '{indent}{type} {attr} {values};\n'.format(
             indent=(level)*INDENT,
             type=type,
             attr=quote(attr),
-            values=', '.join(values))
+            values=quote_val(u', '.join(values)))
 
 
 def get_type(values):
