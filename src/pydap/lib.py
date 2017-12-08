@@ -121,6 +121,19 @@ def quote(name):
     safe = '%_!~*\'-"'
     return quote_(name.encode('utf-8'), safe=safe).replace('.', '%2E')
 
+def quote_val(name):
+    """Return quoted name according to the DAP specification.
+       Used for attributes and values.
+       Encode every cahracter which is not 7bis ASCII.
+
+        >>> quote("White space. /;")
+        'White space. /;'
+        >>> quote("<Ue>mlaut")
+        '%C3%9Cmlaut'
+
+    """
+    safe = ''.join([chr(x) for x in range(128)])
+    return quote_(name.encode('utf-8'), safe=safe)
 
 def encode(obj):
     """Return an object encoded to its DAP representation."""
@@ -132,8 +145,7 @@ def encode(obj):
     try:
         return '%.6g' % obj
     except:
-        return '"{0}"'.format(obj)
-
+        return u'"{0}"'.format(obj)
 
 def fix_slice(slice_, shape):
     """Return a normalized slice.
