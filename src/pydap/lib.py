@@ -8,7 +8,6 @@ from six import binary_type, MAXSIZE
 
 from .exceptions import ConstraintExpressionError
 
-
 __dap__ = '2.15'
 __version__ = get_distribution("Pydap").version
 
@@ -136,6 +135,10 @@ def quote_val(name):
 
 def encode(obj):
     """Return an object encoded to its DAP representation."""
+    try:
+        return quote_val(obj)
+    except:
+        pass
     try:
         return '%.6g' % obj
     except:

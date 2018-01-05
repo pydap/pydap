@@ -20,7 +20,6 @@ from ..lib import encode, __version__
 from .lib import BaseResponse
 from .dds import dds
 
-
 class ASCIIResponse(BaseResponse):
 
     """The ASCII response."""

@@ -19,7 +19,8 @@ from ..model import (BaseType,
 from ..lib import (walk, START_OF_SEQUENCE, END_OF_SEQUENCE, __version__,
                    NUMPY_TO_DAP2_TYPEMAP,
                    DAP2_TO_NUMPY_RESPONSE_TYPEMAP,
-                   DAP2_ARRAY_LENGTH_NUMPY_TYPE)
+                   DAP2_ARRAY_LENGTH_NUMPY_TYPE,
+                   quote_val)
 from .lib import BaseResponse
 from .dds import dds
 
@@ -203,18 +204,26 @@ def _basetype(var):
         if DAP2_dtype.char == 'S':
             for block in data:
                 for word in block.flat:
-                    length = len(word)
-                    yield tostring_with_byteorder(
-                                np.array(length),
-                                np.dtype(DAP2_ARRAY_LENGTH_NUMPY_TYPE))
                     # byteorder is not important for strings:
-                    if hasattr(word, 'encode'):
-                        yield word.encode('ascii')
-                    elif hasattr(word, 'tostring'):
-                        yield word.tostring()
-                    else:
-                        raise TypeError("Could not convert word '{0}' to bytes"
-                                        .format(word))
+                    try:
+                        enc = quote_val(word)
+                        length = len(enc)
+                        yield tostring_with_byteorder(
+                                    np.array(length),
+                                    np.dtype(DAP2_ARRAY_LENGTH_NUMPY_TYPE))
+                        yield enc
+                    except:
+                        length = len(word)
+                        yield tostring_with_byteorder(
+                                    np.array(length),
+                                    np.dtype(DAP2_ARRAY_LENGTH_NUMPY_TYPE))
+                        if hasattr(word, 'encode'):
+                            yield word.encode('ascii')
+                        elif hasattr(word, 'tostring'):
+                            yield word.tostring()
+                        else:
+                            raise TypeError("Could not convert word '{0}' to bytes"
+                                            .format(word))
                     yield (-length % 4) * b'\0'
         else:
             for block in data:
