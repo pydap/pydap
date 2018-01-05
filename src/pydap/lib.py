@@ -125,10 +125,10 @@ def quote_val(name):
        Used for attributes and values.
        Encode every cahracter which is not 7bis ASCII.
 
-        >>> quote("White space. /;")
+        >>> quote_val("White space. /;")
         'White space. /;'
-        >>> quote("<Ue>mlaut")
-        '%C3%9Cmlaut'
+        >>> quote_val("Period.")
+        'Period.'
 
     """
     safe = ''.join([chr(x) for x in range(128)])
