@@ -381,7 +381,7 @@ class StructureType(DapType, Mapping):
         """Lazy shortcut return children."""
         try:
             return self[attr]
-        except:
+        except Exception:
             return DapType.__getattr__(self, attr)
 
     def __contains__(self, key):
@@ -408,7 +408,7 @@ class StructureType(DapType, Mapping):
             if len(splitted) > 1:
                 try:
                     return self[splitted[0]]['.'.join(splitted[1:])]
-                except KeyError:
+                except (KeyError, IndexError):
                     return self['.'.join(splitted[1:])]
             else:
                 raise
@@ -454,7 +454,7 @@ class StructureType(DapType, Mapping):
         self._dict[key] = item
         # By default added keys are visible:
         self._visible_keys.append(key)
-
+  
         # Set item id.
         item.id = '%s.%s' % (self.id, item.name)
 

@@ -248,8 +248,10 @@ def test_StructureType_getitem():
     """Test item retrieval."""
     var = StructureType("var")
     child = BaseType("child")
+    child.data = np.array([[[0, 1]]])
     var["child"] = child
     assert var["child"] is child
+    assert var["child.child"] is child
     with pytest.raises(KeyError):
         var["unloved child"]
     with pytest.raises(KeyError):

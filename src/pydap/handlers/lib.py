@@ -120,7 +120,7 @@ class BaseHandler(object):
                     'Origin, X-Requested-With, Content-Type')
 
             return res(environ, start_response)
-        except:
+        except Exception:
             # should the exception be catched?
             if environ.get('x-wsgiorg.throw_errors'):
                 raise
@@ -456,7 +456,7 @@ def build_filter(expression, template):
             col = keys.index(token)
             target = target[token]
         a = operator.itemgetter(col)
-    except:
+    except Exception:
         raise ConstraintExpressionError(
             'Invalid constraint expression: "{expression}" '
             '("{id}" is not a valid variable)'.format(
@@ -474,7 +474,7 @@ def build_filter(expression, template):
 
             def b(row):
                 return value
-        except:
+        except Exception:
             raise ConstraintExpressionError(
                 'Invalid constraint expression: "{expression}" '
                 '("{id}" is not valid)'.format(

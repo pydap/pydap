@@ -125,7 +125,7 @@ def encode(obj):
     """Return an object encoded to its DAP representation."""
     try:
         return '%.6g' % obj
-    except:
+    except Exception:
         return '"{0}"'.format(obj)
 
 

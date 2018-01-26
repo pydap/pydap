@@ -155,7 +155,7 @@ def alphanum_key(s):
     def tryint(s):
         try:
             return int(s)
-        except:
+        except Exception:
             return s
     return [tryint(c) for c in re.split('([0-9]+)', s)]
 
