@@ -23,10 +23,46 @@ class TestDapHandler(unittest.TestCase):
         """Create WSGI apps"""
         self.app1 = BaseHandler(SimpleGrid)
         self.app2 = BaseHandler(SimpleSequence)
+        self.app3 = BaseHandler(SimpleGrid, gzip=True)
 
     def test_grid(self):
         """Test that dataset has the correct data proxies for grids."""
         dataset = DAPHandler("http://localhost:8001/", self.app1).dataset
+
+        self.assertEqual(list(dataset.keys()), ["SimpleGrid", "x", "y"])
+        self.assertEqual(
+            list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
+
+        # test one of the axis
+        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
+        self.assertEqual(
+            dataset.SimpleGrid.x.data.baseurl, "http://localhost:8001/")
+        self.assertEqual(dataset.SimpleGrid.x.data.id, "SimpleGrid.x")
+        self.assertEqual(dataset.SimpleGrid.x.data.dtype, np.dtype('>i4'))
+        self.assertEqual(dataset.SimpleGrid.x.data.shape, (3,))
+        self.assertEqual(
+            dataset.SimpleGrid.x.data.slice, (slice(None),))
+
+        # test the grid
+        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxy)
+        self.assertEqual(
+            dataset.SimpleGrid.SimpleGrid.data.baseurl,
+            "http://localhost:8001/")
+        self.assertEqual(
+            dataset.SimpleGrid.SimpleGrid.data.id, "SimpleGrid.SimpleGrid")
+        self.assertEqual(
+            dataset.SimpleGrid.SimpleGrid.data.dtype, np.dtype('>i4'))
+        self.assertEqual(dataset.SimpleGrid.SimpleGrid.data.shape, (2, 3))
+        self.assertEqual(
+            dataset.SimpleGrid.SimpleGrid.data.slice,
+            (slice(None), slice(None)))
+        self.assertEqual(
+                repr(dataset.SimpleGrid[:]),
+                "<GridType with array 'SimpleGrid' and maps 'x', 'y'>")
+
+    def test_grid_gzip(self):
+        """Test that dataset has the correct data proxies for grids."""
+        dataset = DAPHandler("http://localhost:8001/", self.app3).dataset
 
         self.assertEqual(list(dataset.keys()), ["SimpleGrid", "x", "y"])
         self.assertEqual(
