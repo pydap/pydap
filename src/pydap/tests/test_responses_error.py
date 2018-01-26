@@ -11,7 +11,7 @@ class TestErrorResponse(unittest.TestCase):
         # create an exception that would happen in runtime
         try:
             1/0
-        except:
+        except Exception:
             error = ErrorResponse(sys.exc_info())
 
         req = Request.blank('/')
