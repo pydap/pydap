@@ -9,7 +9,8 @@ install_requires = [
     'Jinja2',
     'docopt',
     'six >= 1.4.0',
-    'beautifulsoup4'
+    'beautifulsoup4',
+    'requests'
 ]
 
 if sys.version_info < (3, 5):
@@ -32,14 +33,13 @@ docs_extras = [
 ]
 
 cas_extras = [
-    'requests',
     'lxml'
-    ]
+]
 
 hdl_netcdf_extras = [
     'netCDF4',
     'ordereddict'
-    ]
+]
 
 tests_require = (functions_extras + cas_extras + server_extras +
                  hdl_netcdf_extras +
