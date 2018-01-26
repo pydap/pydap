@@ -454,7 +454,7 @@ class StructureType(DapType, Mapping):
         self._dict[key] = item
         # By default added keys are visible:
         self._visible_keys.append(key)
-  
+
         # Set item id.
         item.id = '%s.%s' % (self.id, item.name)
 
