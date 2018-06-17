@@ -59,12 +59,14 @@ testing_extras = tests_require + [
 if sys.version_info < (3, 3):
     testing_extras.append('mock')
 
+
 def read(filename, encoding='utf-8'):
     """read file contents"""
     full_path = os.path.join(os.path.dirname(__file__), filename)
     with io.open(full_path, encoding=encoding) as fh:
         contents = fh.read().strip()
     return contents
+
 
 def get_package_version():
     """get version from top-level package init"""
