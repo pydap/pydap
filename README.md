@@ -6,6 +6,7 @@ Pydap
 [![Python3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![documentation](https://readthedocs.org/projects/pydap/badge/?version=latest)](http://pydap.readthedocs.org/en/latest/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/Pydap/)
+[![Join the chat at https://gitter.im/pydap/pydap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pydap/pydap) 
 
 [Pydap](http://pydap.readthedocs.io/en/latest/) is an implementation of the Opendap/DODS protocol, written from scratch in pure python.  You can use Pydap to access scientific data on the internet without having to 
 download it; instead, you work with special array and iterable objects that 
