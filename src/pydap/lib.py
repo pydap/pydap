@@ -129,11 +129,11 @@ def encode(obj):
         isinstance(obj, np.ndarray) and obj.dtype.char in 'SU'
     ):
         return '"{0}"'.format(obj)
-    else:
-        try:
-            return '%.6g' % obj
-        except Exception:
-            return '"{0}"'.format(obj)
+
+    try:
+        return '%.6g' % obj
+    except Exception:
+        return '"{0}"'.format(obj)
 
 
 def fix_slice(slice_, shape):
