@@ -344,7 +344,7 @@ def unpack_sequence(stream, template):
         dtype = np.dtype([("", c.dtype, c.shape) for c in cols])
         marker = stream.read(4)
         while marker == START_OF_SEQUENCE:
-            rec = np.fromstring(stream.read(dtype.itemsize), dtype=dtype)[0]
+            rec = np.frombuffer(stream.read(dtype.itemsize), dtype=dtype)[0]
             if not sequence:
                 rec = rec[0]
             yield rec
@@ -384,14 +384,14 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
     out = []
     response_dtype = DAP2_response_dtypemap(parser_dtype)
     if shape:
-        n = np.fromstring(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
+        n = np.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
         count = response_dtype.itemsize * n
         if response_dtype.char in 'S':
             # Consider on 'S' and not 'SU' because
             # response_dtype.char should never be
             data = []
             for _ in range(n):
-                k = np.fromstring(stream.read(4),
+                k = np.frombuffer(stream.read(4),
                                   DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
                 data.append(stream.read(k))
                 stream.read(-k % 4)
@@ -401,7 +401,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
             stream.read(4)  # read additional length
             try:
                 out.append(
-                    np.fromstring(
+                    np.frombuffer(
                         stream.read(count), response_dtype)
                     .astype(parser_dtype).reshape(shape))
             except ValueError as e:
@@ -424,13 +424,13 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
         # Consider on 'S' and not 'SU' because
         # response_dtype.char should never be
         # 'U'
-        k = np.fromstring(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
+        k = np.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
         out.append(text_type(stream.read(k).decode('ascii')))
         stream.read(-k % 4)
     # usual data
     else:
         out.append(
-            np.fromstring(stream.read(response_dtype.itemsize), response_dtype)
+            np.frombuffer(stream.read(response_dtype.itemsize), response_dtype)
             .astype(parser_dtype)[0])
         if response_dtype.char == "B":
             # Unsigned Byte type is packed to multiples of 4 bytes:
