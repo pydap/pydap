@@ -124,6 +124,7 @@ def quote(name):
 
 def encode(obj):
     """Return an object encoded to its DAP representation."""
+    # fix for Python 3.5, where strings are being encoded as numbers
     if (
         isinstance(obj, string_types) or
         isinstance(obj, np.ndarray) and obj.dtype.char in 'SU'
