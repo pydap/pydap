@@ -17,8 +17,8 @@
     {% endif %}
 </ul>
 {% endblock %}
-
 {% block content %}
+<p>
 <table class="pure-table pydap-listing">
     <thead>
         <tr>
@@ -61,4 +61,6 @@
         {% endfor %}
     </tbody>
 </table>
+</p>
+<a href="{{ location }}catalog.xml" title="THREDDS Catalog XML">THREDDS Catalog XML</a>
 {% endblock %}
