@@ -183,10 +183,10 @@ def eval_function(dataset, function, functions):
             try:
                 names = re.sub(r'\[.*?\]', '', str(token)).split('.')
                 return reduce(operator.getitem, [dataset] + names)
-            except:
+            except Exception:
                 try:
                     return ast.literal_eval(token)
-                except:
+                except Exception:
                     return token
 
     args = map(parse, tokenize(args))

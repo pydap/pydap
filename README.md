@@ -6,6 +6,7 @@ Pydap
 [![Python3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![documentation](https://readthedocs.org/projects/pydap/badge/?version=latest)](http://pydap.readthedocs.org/en/latest/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/Pydap/)
+[![Join the chat at https://gitter.im/pydap/pydap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pydap/pydap) 
 
 [Pydap](http://pydap.readthedocs.io/en/latest/) is an implementation of the Opendap/DODS protocol, written from scratch in pure python.  You can use Pydap to access scientific data on the internet without having to 
 download it; instead, you work with special array and iterable objects that 
@@ -46,7 +47,7 @@ This will install Pydap together with all the required dependencies. You can now
                8.10000002e-01]]], dtype=float32), array([ 366.]), array([-69., -67., -65., -63.]), array([ 41.,  43.,  45.,  47.])]
 ```
 
-For more information, please check the documentation on [using Pydap as a client](http://pydap.readthedocs.io/en/latest/server.html). Pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/) application. To use it, you first need to install the server and optionally a data handler:
+For more information, please check the documentation on [using Pydap as a client](http://pydap.readthedocs.io/en/latest/client.html). Pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/) application. To use it, you first need to install the server and optionally a data handler:
 
 ```bash
 
