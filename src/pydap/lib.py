@@ -11,7 +11,7 @@ from .exceptions import ConstraintExpressionError
 
 
 __dap__ = '2.15'
-__version__ = get_distribution("Pydap").version
+__version__ = get_distribution("pydap").version
 
 
 START_OF_SEQUENCE = b'\x5a\x00\x00\x00'
