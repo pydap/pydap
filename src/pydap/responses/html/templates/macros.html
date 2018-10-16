@@ -1,6 +1,6 @@
 {% macro dispatch(var) %}
 {% if var.__class__.__name__ == "GridType" %}
-<label for="{{ var.id }}" class="pure-checkbox">
+<label for="{{ var.id }}">
     <input name="{{ var.id }}" id="{{ var.id }}" type="checkbox" value="on"/>
     Download this variable
 </label>
