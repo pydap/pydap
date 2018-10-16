@@ -1,16 +1,17 @@
 """Basic functions related to the DAP spec."""
 import operator
 
+import numpy as np
 from pkg_resources import get_distribution
 from six.moves.urllib.parse import quote as quote_
 from six.moves import reduce, zip_longest
-from six import binary_type, MAXSIZE
+from six import binary_type, MAXSIZE, string_types
 
 from .exceptions import ConstraintExpressionError
 
 
 __dap__ = '2.15'
-__version__ = get_distribution("Pydap").version
+__version__ = get_distribution("pydap").version
 
 
 START_OF_SEQUENCE = b'\x5a\x00\x00\x00'
@@ -123,9 +124,16 @@ def quote(name):
 
 def encode(obj):
     """Return an object encoded to its DAP representation."""
+    # fix for Python 3.5, where strings are being encoded as numbers
+    if (
+        isinstance(obj, string_types) or
+        isinstance(obj, np.ndarray) and obj.dtype.char in 'SU'
+    ):
+        return '"{0}"'.format(obj)
+
     try:
         return '%.6g' % obj
-    except:
+    except Exception:
         return '"{0}"'.format(obj)
 
 

@@ -74,12 +74,12 @@ def parse_selection(expression, dataset):
 
     try:
         id1 = get_var(dataset, id1)
-    except:
+    except Exception:
         id1 = ast.literal_eval(id1)
 
     try:
         id2 = get_var(dataset, id2)
-    except:
+    except Exception:
         id2 = ast.literal_eval(id2)
 
     return id1, op, id2

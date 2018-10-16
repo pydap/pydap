@@ -41,7 +41,6 @@ class TestASCIIResponseSequence(unittest.TestCase):
 
     def test_headers(self):
         """Test headers from the response."""
-        print(self.res.text)
         self.assertEqual(
             self.res.headers,
             ResponseHeaders([
