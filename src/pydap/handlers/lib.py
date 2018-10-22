@@ -1,6 +1,6 @@
 """Basic functions for handlers.
 
-Pydap handlers are responsible for reading data in different formats -- NetCDF,
+pydap handlers are responsible for reading data in different formats -- NetCDF,
 SQL databases, CSV files, etc. -- and convert them into the internal data model
 so that the data may be served using different responses.
 
@@ -77,7 +77,7 @@ def get_handler(filepath, handlers=None):
 
 class BaseHandler(object):
 
-    """Base class for Pydap handlers.
+    """Base class for pydap handlers.
 
     Handlers are WSGI applications that parse the client request and build the
     corresponding dataset. The dataset is passed to proper Response (DDS, DAS,

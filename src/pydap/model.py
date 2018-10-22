@@ -1,4 +1,4 @@
-"""This is the Pydap data model, an implementation of the Data Access Protocol
+"""This is the pydap data model, an implementation of the Data Access Protocol
 data model written in Python.
 
 The model is composed of a base object which represents data, the `BaseType`,
@@ -123,7 +123,7 @@ children::
     ...     ('salinity', np.float32), ('id', np.dtype('|S1'))]))
 
 Note that the data in this case is attributed to the `SequenceType`, and is
-composed of a series of values for each of the children.  Pydap `SequenceType`
+composed of a series of values for each of the children.  pydap `SequenceType`
 obects are very flexible. Data can be accessed by iterating over the object::
 
     >>> for record in cast.iterdata():
@@ -629,8 +629,8 @@ class SequenceType(StructureType):
             yield tuple(map(decode_np_strings, line))
 
     def __iter__(self):
-        # This method should be removed in Pydap 3.4
-        warnings.warn('Starting with Pydap 3.4 '
+        # This method should be removed in pydap 3.4
+        warnings.warn('Starting with pydap 3.4 '
                       '``for val in sequence: ...`` '
                       'will give children names. '
                       'To iterate over data the construct '
@@ -641,8 +641,8 @@ class SequenceType(StructureType):
         return self.iterdata()
 
     def __len__(self):
-        # This method should be removed in Pydap 3.4
-        warnings.warn('Starting with Pydap 3.4, '
+        # This method should be removed in pydap 3.4
+        warnings.warn('Starting with pydap 3.4, '
                       '``len(sequence)`` will give '
                       'the number of children and not the '
                       'length of the data.',
@@ -650,21 +650,21 @@ class SequenceType(StructureType):
         return len(self.data)
 
     def items(self):
-        # This method should be removed in Pydap 3.4
+        # This method should be removed in pydap 3.4
         for key in self._visible_keys:
             yield (key, self[key])
 
     def values(self):
-        # This method should be removed in Pydap 3.4
+        # This method should be removed in pydap 3.4
         for key in self._visible_keys:
             yield self[key]
 
     def keys(self):
-        # This method should be removed in Pydap 3.4
+        # This method should be removed in pydap 3.4
         return iter(self._visible_keys)
 
     def __contains__(self, key):
-        # This method should be removed in Pydap 3.4
+        # This method should be removed in pydap 3.4
         return (key in self._visible_keys)
 
     def __getitem__(self, key):

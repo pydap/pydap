@@ -1,7 +1,7 @@
 """A handler for remote datasets.
 
 DAP handlers convert from different data formats (NetCDF, eg) to the internal
-Pydap model. The Pydap client is just a handler that converts from a remote
+pydap model. The pydap client is just a handler that converts from a remote
 dataset to the internal model.
 
 """

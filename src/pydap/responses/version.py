@@ -1,4 +1,4 @@
-"""Response with information about Pydap version."""
+"""Response with information about pydap version."""
 
 import sys
 from six import text_type

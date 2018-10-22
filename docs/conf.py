@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Pydap documentation build configuration file, created by
+# pydap documentation build configuration file, created by
 # sphinx-quickstart on Fri May 22 10:12:59 2009.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -39,8 +39,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Pydap'
-copyright = u'2003-2017, Pydap contributors'
+project = u'pydap'
+copyright = u'2003-2017, pydap contributors'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -163,7 +163,7 @@ html_use_opensearch = 'http://pydap.org/'
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Pydapdoc'
+htmlhelp_basename = 'pydapdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -177,7 +177,7 @@ htmlhelp_basename = 'Pydapdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Pydap.tex', u'Pydap Documentation',
+  ('index', 'pydap.tex', u'pydap Documentation',
    u'Roberto De Almeida', 'manual'),
 ]
 

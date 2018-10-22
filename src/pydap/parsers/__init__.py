@@ -57,7 +57,7 @@ def parse_selection(expression, dataset):
 
     This function will parse a selection expression into three tokens: two
     variables or values and a comparison operator. Variables are returned as
-    Pydap objects from a given dataset, while values are parsed using
+    pydap objects from a given dataset, while values are parsed using
     ``ast.literal_eval``.
 
     """

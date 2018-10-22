@@ -16,7 +16,7 @@ class TestLoadResponse(unittest.TestCase):
         """Load all available responses.
 
         At least the DDS, DAS, DODS, HTML, ASC and version responses should be
-        loaded, since they are included in Pydap. Other third-party responses
+        loaded, since they are included in pydap. Other third-party responses
         may also be present.
 
         """

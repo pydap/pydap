@@ -1,4 +1,4 @@
-"""Tests for the Pydap server."""
+"""Tests for the pydap server."""
 
 import os
 import tempfile
@@ -18,7 +18,7 @@ import unittest
 
 class TestDapServer(unittest.TestCase):
 
-    """Tests for the Pydap server."""
+    """Tests for the pydap server."""
 
     def setUp(self):
         """Create an installation."""
