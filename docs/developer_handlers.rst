@@ -1,7 +1,7 @@
 Handlers
 --------
 
-Now that we saw the Pydap data model we can understand handlers: handlers are simply classes that convert data into the Pydap data model. The NetCDF handler, for example, reads a NetCDF file and builds a ``DatasetType`` object. The SQL handler reads a file describing the variables and maps them to a given table on a relational database. Pydap uses `entry points <http://peak.telecommunity.com/DevCenter/setuptools#dynamic-discovery-of-services-and-plugins>`_ in order to find handlers that are installed in the system. This means that handlers can be developed and installed separately from Pydap. Handlers are mapped to files by a regular expression that usually matches the extension of the file.
+Now that we saw the pydap data model we can understand handlers: handlers are simply classes that convert data into the pydap data model. The NetCDF handler, for example, reads a NetCDF file and builds a ``DatasetType`` object. The SQL handler reads a file describing the variables and maps them to a given table on a relational database. pydap uses `entry points <http://peak.telecommunity.com/DevCenter/setuptools#dynamic-discovery-of-services-and-plugins>`_ in order to find handlers that are installed in the system. This means that handlers can be developed and installed separately from pydap. Handlers are mapped to files by a regular expression that usually matches the extension of the file.
 
 Here is the minimal configuration for a handler that serves ``.npz`` files from Numpy:
 
@@ -47,7 +47,7 @@ So let's go over the code. Our handler has a single class called ``Handler`` tha
     [pydap.handler]
     npz = path.to.my.handler:Handler
 
-Here the name of our handler ("npz") can be anything, as long as it points to the correct class. In order for Pydap to be able to find the handler, it must be installed in the system with either a ``python setup.py install`` or, even better, ``python setup.py develop``. 
+Here the name of our handler ("npz") can be anything, as long as it points to the correct class. In order for pydap to be able to find the handler, it must be installed in the system with either a ``python setup.py install`` or, even better, ``python setup.py develop``. 
 
 The class-level attribute ``extensions`` defines a regular expression that matches the files supported by the handler. In this case, the handler will match all files ending with the ``.npz`` extension.
 

@@ -1,4 +1,4 @@
-"""Pydap handler for NetCDF3/4 files."""
+"""pydap handler for NetCDF3/4 files."""
 
 import os
 import re

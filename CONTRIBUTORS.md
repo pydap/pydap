@@ -1,4 +1,4 @@
-Pydap contributors (sorted alphabetically)
+pydap contributors (sorted alphabetically)
 ==========================================
 
 * Roberto De Almeida

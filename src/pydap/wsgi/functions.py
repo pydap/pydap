@@ -1,7 +1,7 @@
-"""Server-side functions for Pydap.
+"""Server-side functions for pydap.
 
-Pydap maps function calls in the request URL to functions defined through entry
-points. For example, Pydap defines an entry point on the group "pydap.function"
+pydap maps function calls in the request URL to functions defined through entry
+points. For example, pydap defines an entry point on the group "pydap.function"
 with the name "density"; from ``setup.py``:
 
     [pydap.function]
@@ -11,7 +11,7 @@ When a DAP client makes a request to the URL calling this function:
 
     ?cast.oxygen&density(cast.salt,cast.temp,cast.press)>1024
 
-Pydap will call the ``density`` function passing the dataset itself as the
+pydap will call the ``density`` function passing the dataset itself as the
 first argument, followed by the variables from the sequence "cast".
 
 New functions can be defined in third-party modules. Simply create a package

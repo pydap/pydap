@@ -1,7 +1,7 @@
 Templating
 ----------
 
-Pydap uses an `experimental backend-agnostic templating API <http://svn.pythonpaste.org/Paste/TemplateProposal/>`_ for rendering HTML and XML by responses. Since the API is neutral Pydap can use any templating engine, like `Mako <http://www.makotemplates.org/>`_ or `Genshi <http://genshi.edgewall.org/>`_, and templates can be loaded from disk, memory or a database. The server that comes with Pydap, for example, defines a ``renderer`` object that loads Genshi templates from a directory ``templatedir``:
+pydap uses an `experimental backend-agnostic templating API <http://svn.pythonpaste.org/Paste/TemplateProposal/>`_ for rendering HTML and XML by responses. Since the API is neutral pydap can use any templating engine, like `Mako <http://www.makotemplates.org/>`_ or `Genshi <http://genshi.edgewall.org/>`_, and templates can be loaded from disk, memory or a database. The server that comes with pydap, for example, defines a ``renderer`` object that loads Genshi templates from a directory ``templatedir``:
 
 .. code-block:: python
 

@@ -78,7 +78,7 @@ def get_package_version():
     raise RuntimeError('Unable to find version string.')
 
 
-setup(name='Pydap',
+setup(name='pydap',
       version=get_package_version(),
       description="An implementation of the Data Access Protocol.",
       long_description="",

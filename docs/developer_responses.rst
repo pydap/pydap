@@ -1,11 +1,11 @@
 Responses
 ---------
 
-If handlers are responsible for converting data into the Pydap data model, responses to the opposite: the convert from the data model to different representations. The Opendap specification defines a series of standard responses, that allow clients to introspect a dataset by downloading metadata, and later download data for the subset of interest. These standard responses are the DDS (Dataset Descriptor Structure), the DAS (Dataset Attribute Structure) and the DODS response.
+If handlers are responsible for converting data into the pydap data model, responses to the opposite: the convert from the data model to different representations. The Opendap specification defines a series of standard responses, that allow clients to introspect a dataset by downloading metadata, and later download data for the subset of interest. These standard responses are the DDS (Dataset Descriptor Structure), the DAS (Dataset Attribute Structure) and the DODS response.
 
 Apart from these, there are additional non-standard responses that add functionality to the server. The ASCII response, for example, formats the data as ASCII for quick visualization on the browser; the HTML response builds a form from which the user can select a subset of the data.
 
-Here is an example of a minimal Pydap response that returns the attributes of the dataset as JSON:
+Here is an example of a minimal pydap response that returns the attributes of the dataset as JSON:
 
 .. code-block:: python
 
@@ -74,4 +74,4 @@ Here is a simple example of a middleware that adds an attribute to a given datas
             responder = response(dataset)
             return responder(environ, start_response)
 
-The code should actually do more bookkeeping, like checking if the dataset can be retrieved from the response or updating the ``Content-Length`` header, but I wanted to keep it simple. Pydap comes with a WSGI middleware for handling server-side functions (``pydap.wsgi.ssf``) that makes heavy use of this feature. It works by removing function calls from the request, fetching the dataset from the modified request, applying the function calls and returning a new dataset.
+The code should actually do more bookkeeping, like checking if the dataset can be retrieved from the response or updating the ``Content-Length`` header, but I wanted to keep it simple. pydap comes with a WSGI middleware for handling server-side functions (``pydap.wsgi.ssf``) that makes heavy use of this feature. It works by removing function calls from the request, fetching the dataset from the modified request, applying the function calls and returning a new dataset.

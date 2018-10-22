@@ -1,4 +1,4 @@
-"""A file-based Pydap server running on Gunicorn.
+"""A file-based pydap server running on Gunicorn.
 
 Usage:
   pydap [options]
@@ -242,7 +242,7 @@ def main():  # pragma: no cover
     from docopt import docopt
     from gunicorn.app.pasterapp import PasterServerApplication
 
-    arguments = docopt(__doc__, version="Pydap %s" % __version__)
+    arguments = docopt(__doc__, version="pydap %s" % __version__)
 
     # init templates?
     if arguments["--init"]:

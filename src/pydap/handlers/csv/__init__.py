@@ -1,4 +1,4 @@
-"""A Pydap handler for CSV files."""
+"""A pydap handler for CSV files."""
 
 import os
 import csv

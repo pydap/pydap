@@ -1,4 +1,4 @@
-"""Test the server-side functions that come with Pydap."""
+"""Test the server-side functions that come with pydap."""
 
 import copy
 
