@@ -28,4 +28,4 @@ And here is how the HTML response uses the renderer: the response requests a tem
         output = renderer.render(template, context, output_format='text/html')
         return [output]
 
-(This is acutally a simplification; if you look at the code you'll notice that there's also code to fallback to a default renderer if one is not found in the ``environ``.)
+(This is actually a simplification; if you look at the code you'll notice that there's also code to fallback to a default renderer if one is not found in the ``environ``.)
