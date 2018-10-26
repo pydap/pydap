@@ -11,7 +11,6 @@ from wsgiref.simple_server import make_server
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
-from ..wsgi.ssf import ServerSideFunctions
 
 DefaultDataset = DatasetType("Default")
 DefaultDataset["byte"] = BaseType("byte", np.arange(5, dtype="B"))
@@ -42,7 +41,6 @@ def run_server_in_process(httpd, shutdown, **kwargs):
 
 def shutdown_application(environ, start_response):
     start_response('200 OK', [('Content-Type', 'text/plain')])
-    return [b'Server is shutting down.']
 
 
 class LocalTestServer:

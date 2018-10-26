@@ -1,13 +1,14 @@
-Pydap
+pydap
 =====
 
 [![Build Status](https://travis-ci.org/pydap/pydap.svg)](https://travis-ci.org/pydap/pydap)
 [![Python2](https://img.shields.io/badge/python-2-blue.svg)](https://www.python.org/downloads/)
 [![Python3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![documentation](https://readthedocs.org/projects/pydap/badge/?version=latest)](http://pydap.readthedocs.org/en/latest/)
-[![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/Pydap/)
+[![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/pydap/)
+[![Join the chat at https://gitter.im/pydap/pydap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pydap/pydap) 
 
-[Pydap](http://pydap.readthedocs.io/en/latest/) is an implementation of the Opendap/DODS protocol, written from scratch in pure python.  You can use Pydap to access scientific data on the internet without having to 
+[pydap](http://pydap.readthedocs.io/en/latest/) is an implementation of the Opendap/DODS protocol, written from scratch in pure python.  You can use pydap to access scientific data on the internet without having to 
 download it; instead, you work with special array and iterable objects that 
 download data on-the-fly as necessary, saving bandwidth and time. The module 
 also comes with a robust-but-lightweight Opendap server, implemented as a WSGI 
@@ -17,11 +18,11 @@ application.
 Quickstart
 ----------
 
-You can install the latest version using [pip](http://pypi.python.org/pypi/pip). After [installing pip](http://www.pip-installer.org/en/latest/installing.html) you can install Pydap with this command:
+You can install the latest version using [pip](http://pypi.python.org/pypi/pip). After [installing pip](http://www.pip-installer.org/en/latest/installing.html) you can install pydap with this command:
 ```bash
-    $ pip install Pydap
+    $ pip install pydap
 ```
-This will install Pydap together with all the required dependencies. You can now open any remotely served dataset, and Pydap will download the accessed data on-the-fly as needed:
+This will install pydap together with all the required dependencies. You can now open any remotely served dataset, and pydap will download the accessed data on-the-fly as needed:
 
 ```python
 
@@ -46,11 +47,11 @@ This will install Pydap together with all the required dependencies. You can now
                8.10000002e-01]]], dtype=float32), array([ 366.]), array([-69., -67., -65., -63.]), array([ 41.,  43.,  45.,  47.])]
 ```
 
-For more information, please check the documentation on [using Pydap as a client](http://pydap.readthedocs.io/en/latest/server.html). Pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/) application. To use it, you first need to install the server and optionally a data handler:
+For more information, please check the documentation on [using pydap as a client](http://pydap.readthedocs.io/en/latest/client.html). pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/) application. To use it, you first need to install the server and optionally a data handler:
 
 ```bash
 
-    $ pip install Pydap[server,handlers.netcdf]
+    $ pip install pydap[server,handlers.netcdf]
 ```
 This will install support for [netCDF](http://www.unidata.ucar.edu/software/netcdf/) files; more [handlers](http://pydap.readthedocs.io/en/latest/handlers.html) for different formats are available, if necessary. Now create a directory for your server data.
 
@@ -61,12 +62,12 @@ To run the server just issue the command:
 
     $ pydap --data ./myserver/data/ --port 8001
 ```
-This will start a standalone server running on http://localhost:8001/, serving netCDF files from ``./myserver/data/``, similar to the test server at http://test.pydap.org/. Since the server uses the [WSGI](http://wsgi.org/) standard, it can easily be run behind Apache. The [server documentation](server.html) has more information on how to better deploy Pydap.
+This will start a standalone server running on http://localhost:8001/, serving netCDF files from ``./myserver/data/``, similar to the test server at http://test.pydap.org/. Since the server uses the [WSGI](http://wsgi.org/) standard, it can easily be run behind Apache. The [server documentation](server.html) has more information on how to better deploy pydap.
 
 ## Documentation
 For more information, see [![documentation](https://readthedocs.org/projects/pydap/badge/?version=latest)](http://pydap.readthedocs.org/en/latest/)
 
 ## Help
 
-If you need any help with Pydap, please feel free to send an email to the [mailing list](http://groups.google.com/group/pydap/)
+If you need any help with pydap, please feel free to send an email to the [mailing list](http://groups.google.com/group/pydap/)
 

@@ -1,10 +1,10 @@
-"""Fundamental functions for Pydap responses.
+"""Fundamental functions for pydap responses.
 
-Pydap responses are WSGI applications that convert a dataset into different
+pydap responses are WSGI applications that convert a dataset into different
 representations, like the DDS, DAS and DODS responses described in the DAP
 specification.
 
-In addition to the official responses, Pydap also has responses that generate
+In addition to the official responses, pydap also has responses that generate
 KML, WMS, JSON, etc., installed as third-party Python packages that declare the
 "pydap.response" entry point.
 
@@ -33,16 +33,16 @@ def load_responses():
 
 class BaseResponse(object):
 
-    """A base class for Pydap responses.
+    """A base class for pydap responses.
 
-    A Pydap response is a WSGI application that converts a dataset into any
+    A pydap response is a WSGI application that converts a dataset into any
     other representation. The most know responses are the DDS, DAS and DODS
     responses from the DAP spec, which describe the dataset structure,
     attributes and data, respectively.
 
     According to the WSGI specification, WSGI applications must returned an
     iterable object when called. While this is traditionally a list of strings
-    representing an HTML response, this is not the case for Pydap. Pydap will
+    representing an HTML response, this is not the case for pydap. pydap will
     return an object (the response instance itself), which is an iterable that
     yields the corresponding output (a DDS response, eg).
 

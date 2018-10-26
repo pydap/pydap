@@ -23,8 +23,11 @@ def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT):
         _, _, path, query, fragment = urlsplit(url)
         url = urlunsplit(('', '', path, query, fragment))
 
-    return follow_redirect(url, application=application, session=session,
-                           timeout=timeout)
+    response = follow_redirect(url, application=application, session=session,
+                               timeout=timeout)
+    # Decode request response (i.e. gzip)
+    response.decode_content()
+    return response
 
 
 def raise_for_status(response):

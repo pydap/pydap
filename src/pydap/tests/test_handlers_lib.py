@@ -29,7 +29,7 @@ class TestHandlersLib(unittest.TestCase):
         """Test that handlers can be loaded correctly.
 
         We use a mock working set, since by default no handlers are installed
-        with Pydap.
+        with pydap.
 
         """
         handlers = load_handlers(MockWorkingSet())
@@ -91,7 +91,7 @@ class TestBaseHandler(unittest.TestCase):
         """
         Test exception handling.
 
-        By default Pydap will capture all exceptions and return a formatted
+        By default pydap will capture all exceptions and return a formatted
         error response.
 
         """
@@ -120,7 +120,7 @@ class TestApplySelection(unittest.TestCase):
     def setUp(self):
         """Build our own sequence.
 
-        Pydap uses lightweight copies of objects that share data. This breaks
+        pydap uses lightweight copies of objects that share data. This breaks
         unit tests since the same objects are reused for tests.
 
         """

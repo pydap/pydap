@@ -1,4 +1,4 @@
-"""Test the HTML response from Pydap."""
+"""Test the HTML response from pydap."""
 
 from webtest import TestApp as App
 from webob import Request
@@ -44,7 +44,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
                 ('XDODS-Server', 'pydap/' + __version__),
                 ('Content-description', 'dods_form'),
                 ('Content-type', 'text/html; charset=utf-8'),
-                ('Content-Length', '5215')]))
+                ('Content-Length', '5864')]))
 
     def test_body(self):
         """Test the HTML response.
@@ -122,7 +122,7 @@ class TestHTMLTemplate(unittest.TestCase):
     """Test that global environment is used if available.
 
     The HTML response has its own environment and loader, for when used in
-    standalone mode. If used with a Pydap server that defines its own
+    standalone mode. If used with a pydap server that defines its own
     environment, the HTML response will reuse the global environment after
     injecting its loader as a backup. This allows the HTML response to work in
     case the global environment does not have the HTML templates.

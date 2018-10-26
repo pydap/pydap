@@ -1,7 +1,7 @@
 Handlers
 ========
 
-Handlers are special Python modules that convert between a given data format and the data model used by Pydap (defined in the ``pydap.model`` module). They are necessary in order to Pydap be able to actually serve a dataset. There are handlers for NetCDF, HDF 4 & 5, Matlab, relational databases, Grib 1 & 2, CSV, Seabird CTD files, and a few more. 
+Handlers are special Python modules that convert between a given data format and the data model used by pydap (defined in the ``pydap.model`` module). They are necessary in order to pydap be able to actually serve a dataset. There are handlers for NetCDF, HDF 4 & 5, Matlab, relational databases, Grib 1 & 2, CSV, Seabird CTD files, and a few more. 
 
 Installing data handlers
 ------------------------
@@ -13,7 +13,7 @@ NetCDF
 
 .. code-block:: bash
 
-    $ pip install Pydap[handlers.netcdf]
+    $ pip install pydap[handlers.netcdf]
 
 This will take care of the necessary dependencies. You don't even need to have to NetCDF libraries installed, since the handler will use a pure Python NetCDF library from `scipy.io.netcdf <https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.io.netcdf.netcdf_file.html/>`_.
 
@@ -60,7 +60,7 @@ Another example: suppose we have monthly data in files ``data01.nc``, ``data02.n
     match = /path/to/data*.nc
     axis = TIME  # existing axis
 
-The handler only works with NetCDF files for now, but in the future it should be changed to work with any other Pydap-supported data format. As all handlers, it can be installed using `pip <http://pypi.python.org/pypi/pip>`_:
+The handler only works with NetCDF files for now, but in the future it should be changed to work with any other pydap-supported data format. As all handlers, it can be installed using `pip <http://pypi.python.org/pypi/pip>`_:
 
 .. code-block:: bash
 
@@ -92,7 +92,7 @@ The SQL handler reads data from a relation database, as the name suggests. It wo
 
     dataset:
         NC_GLOBAL: 
-            history: Created by the Pydap SQL handler
+            history: Created by the pydap SQL handler
             dataType: Station
             Conventions: GrADS
 
@@ -169,7 +169,7 @@ The handler works with SQLite, MySQL, PostgreSQL, Oracle, MSSQL and ODBC databas
 Proxy
 ~~~~~
 
-This is a simple handler intended to serve remote datasets locally. For example, suppose you want to serve `this dataset <http://test.opendap.org:8080/dods/dts/D1.html>`_ on your Pydap server. The URL of the dataset is::
+This is a simple handler intended to serve remote datasets locally. For example, suppose you want to serve `this dataset <http://test.opendap.org:8080/dods/dts/D1.html>`_ on your pydap server. The URL of the dataset is::
 
     http://test.opendap.org:8080/dods/dts/D1
 
@@ -181,7 +181,7 @@ So we create an INI file called, say, ``D1.url``:
     url = http://test.opendap.org:8080/dods/dts/D1
     pass = dds, das, dods
 
-The file specifies that requests for the DDS, DAS and DODS responses should be passed directly to the server (so that the data is downloaded directly from the remote server). Other requests, like for the HTML form or a WMS image are built by Pydap; in this case Pydap acts as an Opendap client, connecting to the remote server and downloading data to fulfill the request.
+The file specifies that requests for the DDS, DAS and DODS responses should be passed directly to the server (so that the data is downloaded directly from the remote server). Other requests, like for the HTML form or a WMS image are built by pydap; in this case pydap acts as an Opendap client, connecting to the remote server and downloading data to fulfill the request.
 
 CSV
 ~~~

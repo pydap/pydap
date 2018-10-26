@@ -1,9 +1,7 @@
 {% macro dispatch(var) %}
-<h2>{{ var.id|unquote }}</h2>
-
 {% if var.__class__.__name__ == "GridType" %}
-<label for="{{ var.id }}" class="pure-checkbox">
-    <input name="{{ var.id }}" id="{{ var.id }}" type="checkbox" value="on">
+<label for="{{ var.id }}">
+    <input name="{{ var.id }}" id="{{ var.id }}" type="checkbox" value="on"/>
     Download this variable
 </label>
 
@@ -11,19 +9,20 @@
 
 <fieldset>
     {% for name in var.maps %}
-    <div class="pure-control-group">
+    <div>
         <label for="{{ var.id }}[{{ loop.index0 }}]">{{ name }}</label>
+        (start:step:stop):
         <input
             id="{{ var.id }}[{{ loop.index0 }}]"
             type="text"
-            placeholder="0:1:{{ var[name].shape[0]-1 }}">
+            placeholder="0:1:{{ var[name].shape[0]-1 }}"/>
     </div>
     {% endfor %}
 </fieldset>
 
 {% elif var.__class__.__name__ == "BaseType" %}
-<label for="{{ var.id }}" class="pure-checkbox">
-    <input name="{{ var.id }}" id="{{ var.id }}" type="checkbox" value="on">
+<label for="{{ var.id }}">
+    <input name="{{ var.id }}" id="{{ var.id }}" type="checkbox" value="on"/>
     Download this variable
 </label>
 
@@ -31,16 +30,17 @@
 
 {% if var.shape %}
 <fieldset>
-    <div class="pure-control-group">
+    <div>
         {% for shp in var.shape %}
         <label for="{{ var.id }}[{{ loop.index0 }}]">{{ var.name }}[{{ loop.index0 }}]</label>
         {% if shp > 0 %}
+        (start:step:stop):
         <input
             id="{{ var.id }}[{{ loop.index0 }}]"
             type="text"
             placeholder="0:1:{{ shp - 1 }}">
         {% else %}
-        <input id="{{ var.id }}[{{ loop.index0 }}]" type="text" value="0" readonly>
+        <input id="{{ var.id }}[{{ loop.index0 }}]" type="text" value="0" readonly/>
         {% endif %}
         {% endfor %}
     </div>
@@ -51,7 +51,7 @@
 {{ attributes(var.attributes) }}
 
 <fieldset>
-    Filter where
+    Filter where:
     <select name="var1_{{ var.id }}" id="var1_{{ var.id }}">
         <option value="--" selected>--</option>
         {% for child in var.children() %}
@@ -67,8 +67,8 @@
         <option value="%3E%3D">≥</option>
         <option value="%3D%7E">≈</option>
     </select>
-    <input type="text" name="var2_{{ var.id }}" id="var2_{{ var.id }}" value="">
-<fieldset>
+    <input type="text" name="var2_{{ var.id }}" id="var2_{{ var.id }}" value=""/>
+</fieldset>
 
 {% for child in var.children() %}
 {{ dispatch(child) }}
@@ -92,14 +92,14 @@
     <dt>{{ k }}</dt>
     {% if v is mapping %}
     <dd>
-    <div class="nested">
+    <div>
     {{ attributes(v) }}
     </div>
     </dd>
     {% elif v is sequence and not v is string %}
-    <dd class="value">{{ v|join(", ") }}</dd>
+    <dd>{{ v|join(", ") }}</dd>
     {% else %}
-    <dd class="value">{{ v }}</dd>
+    <dd>{{ v }}</dd>
     {% endif %}
     {% endfor %}
 </dl>

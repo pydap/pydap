@@ -1,7 +1,7 @@
 """The ASCII response.
 
 The ASCII response is an unnoficial response used to return the data as ASCII.
-Pydap's implementation is reverse engineered from the official server.
+pydap's implementation is reverse engineered from the official server.
 
 """
 

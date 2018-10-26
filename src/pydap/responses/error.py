@@ -1,6 +1,6 @@
-"""Pydap error response.
+"""pydap error response.
 
-Pydap will capture exceptions returned by the system and return them properly
+pydap will capture exceptions returned by the system and return them properly
 formated as a DAP error response.
 
 """
