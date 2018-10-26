@@ -51,6 +51,23 @@ Here the name of our handler ("npz") can be anything, as long as it points to th
 
 The class-level attribute ``extensions`` defines a regular expression that matches the files supported by the handler. In this case, the handler will match all files ending with the ``.npz`` extension.
 
+To handle files without a distinct extension, you can define a more generic method ``can_handle``.  It should take the name of the file, and return ``True`` or ``False`` depending on whether the file is supported by the handler.  For example:
+
+.. code-block:: python
+
+    from pydap.handlers.lib import BaseHandler
+
+    class Handler(BaseHandler):
+
+        @staticmethod
+        def can_handle (filepath):
+
+            # Check for magic string at beginning of file
+            with open(filepath,'rb') as f:
+                return f.read(6) == b'XYZ123'
+
+        # ...
+
 When the handler is instantiated the complete filepath to the data file is passed in ``__init__``. With this information, our handler extracts the filename of the data file and opens it using the ``load()`` function from Numpy. The handler will be initialized for every request, and immediately its ``parse_constraints`` method is called.
 
 The ``parse_constraints`` method is responsible for building a dataset object based on information for the request available on ``environ``. In this simple handler we simply built a ``DatasetType`` object with the entirety of our dataset, i.e., we added *all data from all variables* that were available on the ``.npz`` file. Some requests will ask for only a few variables, and only a subset of their data. The easy way parsing the request is simply passing the complete dataset together with the ``QUERY_STRING`` to the ``contrain()`` function:
