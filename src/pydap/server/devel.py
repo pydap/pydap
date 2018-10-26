@@ -95,7 +95,7 @@ class LocalTestServer:
 
     def start(self):
         # Start a simple WSGI server:
-        application = ServerSideFunctions(self.application)
+        application = self.application
         address = '0.0.0.0'
         self._httpd = make_server(address, self.port, application)
         self.url = "http://{0}:{1}/".format(address, self.port)

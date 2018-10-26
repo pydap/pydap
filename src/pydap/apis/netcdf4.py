@@ -35,4 +35,6 @@ class NetCDF(Dataset):
     def close(self):
         # Shutdown server on close:
         self.server.shutdown()
-        Dataset.close(self)
+
+        # Close but without checking for error:
+        Dataset._close(self, False)
