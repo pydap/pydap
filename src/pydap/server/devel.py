@@ -11,7 +11,6 @@ from wsgiref.simple_server import make_server
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
-from ..wsgi.ssf import ServerSideFunctions
 from ..net import get_response
 
 DefaultDataset = DatasetType("Default")
@@ -98,7 +97,7 @@ class LocalTestServer(object):
 
     def start(self):
         # Start a simple WSGI server:
-        application = ServerSideFunctions(self.application)
+        application = self.application
 
         self._httpd = make_server(self._address, self.port, application)
         kwargs = {'poll_interval': 0.1}

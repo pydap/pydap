@@ -232,7 +232,7 @@ def calculate_size(dataset):
     length = 0
 
     for var in walk(dataset):
-        # Pydap can't calculate the size of sequences since the data is
+        # pydap can't calculate the size of sequences since the data is
         # streamed directly from the source. Also, strings are encoded
         # individually, so it's not possible to get their size unless we read
         # everything.

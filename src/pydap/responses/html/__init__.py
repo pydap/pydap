@@ -64,6 +64,7 @@ class HTMLResponse(BaseResponse):
             "location": req.path_url,
             "breadcrumbs": breadcrumbs,
             "dataset": self.dataset,
+            "dataurl": req.path_url.replace('.html', ''),
             "version": __version__,
         }
 

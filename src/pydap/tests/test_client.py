@@ -1,4 +1,4 @@
-"""Test the Pydap client."""
+"""Test the pydap client."""
 
 import os
 import numpy as np

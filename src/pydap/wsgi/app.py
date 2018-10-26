@@ -1,4 +1,4 @@
-"""A file-based Pydap server running on Gunicorn.
+"""A file-based pydap server running on Gunicorn.
 
 Usage:
   pydap [options]
@@ -56,6 +56,7 @@ class DapServer(object):
         # that need to render templates (like HTML, WMS, KML, etc.)
         self.env = Environment(loader=ChoiceLoader(loaders))
         self.env.filters["datetimeformat"] = datetimeformat
+        self.env.filters["datetimeformat_iso"] = datetimeformat_iso
         self.env.filters["unquote"] = unquote
 
         # cache available handlers, so we don't need to load them every request
@@ -73,6 +74,8 @@ class DapServer(object):
 
         if not path.startswith(self.path):
             return HTTPForbidden()
+        if path.endswith('catalog.xml'):
+            return self.index(os.path.dirname(path), req, catalog=True)
         elif os.path.exists(path):
             if os.path.isdir(path):
                 return self.index(path, req)
@@ -88,8 +91,12 @@ class DapServer(object):
         else:
             return HTTPNotFound(comment=path)
 
-    def index(self, directory, req):
+    def index(self, directory, req, catalog=False):
         """Return a directory listing."""
+
+        template_name = 'index.html'
+        response_content_type = 'text/html'
+
         content = [
             os.path.join(directory, name) for name in os.listdir(directory)]
 
@@ -121,10 +128,16 @@ class DapServer(object):
             "files": files,
             "version": __version__,
         }
-        template = self.env.get_template("index.html")
+
+        if catalog:
+            context['location'] = req.path.replace('catalog.xml', '')
+            template_name = 'catalog.xml'
+            response_content_type = 'application/xml'
+
+        template = self.env.get_template(template_name)
         return Response(
             body=template.render(context),
-            content_type="text/html",
+            content_type=response_content_type,
             charset="utf-8")
 
 
@@ -155,7 +168,7 @@ def alphanum_key(s):
     def tryint(s):
         try:
             return int(s)
-        except:
+        except Exception:
             return s
     return [tryint(c) for c in re.split('([0-9]+)', s)]
 
@@ -163,6 +176,11 @@ def alphanum_key(s):
 def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
     """Return a formatted datetime object."""
     return value.strftime(format)
+
+
+def datetimeformat_iso(value):
+    """Return a formatted datetime object as ISO8601 representation."""
+    return value.isoformat()
 
 
 class StaticMiddleware(object):
@@ -224,7 +242,7 @@ def main():  # pragma: no cover
     from docopt import docopt
     from gunicorn.app.pasterapp import PasterServerApplication
 
-    arguments = docopt(__doc__, version="Pydap %s" % __version__)
+    arguments = docopt(__doc__, version="pydap %s" % __version__)
 
     # init templates?
     if arguments["--init"]:

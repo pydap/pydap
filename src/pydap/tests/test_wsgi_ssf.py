@@ -34,7 +34,7 @@ class TestMiddleware(unittest.TestCase):
     def test_no_parsed_response(self):
         """Test that non-parsed responses work or raise error.
 
-        Pydap returns WSGI responses that contain the "parsed" dataset, so it
+        pydap returns WSGI responses that contain the "parsed" dataset, so it
         can be manipulated by middleware.
 
         """

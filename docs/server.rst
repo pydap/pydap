@@ -1,20 +1,20 @@
 Running a server
 ================
 
-Pydap comes with a lightweight and scalable OPeNDAP server, implemented as a `WSGI <http://wsgi.org/>`_ application. Being a WSGI `application <http://wsgi.org/wsgi/Applications>`_, Pydap can run on a variety of `servers <http://wsgi.org/wsgi/Servers>`_, and frameworks including Apache, `Nginx <https://www.nginx.com/>`_, IIS, `uWSGI <https://uwsgi-docs.readthedocs.io/en/latest/>`_, `Flask <http://flask.pocoo.org/>`_ or as a standalone Python process. It can also be seamless combined with different `middleware <http://wsgi.org/wsgi/Middleware_and_Utilities>`_ for authentication/authorization, GZip compression, and much more.
+pydap comes with a lightweight and scalable OPeNDAP server, implemented as a `WSGI <http://wsgi.org/>`_ application. Being a WSGI `application <http://wsgi.org/wsgi/Applications>`_, pydap can run on a variety of `servers <http://wsgi.org/wsgi/Servers>`_, and frameworks including Apache, `Nginx <https://www.nginx.com/>`_, IIS, `uWSGI <https://uwsgi-docs.readthedocs.io/en/latest/>`_, `Flask <http://flask.pocoo.org/>`_ or as a standalone Python process. It can also be seamless combined with different `middleware <http://wsgi.org/wsgi/Middleware_and_Utilities>`_ for authentication/authorization, GZip compression, and much more.
 
-There is no one right way to run Pydap server; your application requirements and software stack will inform your deployment decisions. In this chapter we provide a few examples to try and get you on the right track.
+There is no one right way to run pydap server; your application requirements and software stack will inform your deployment decisions. In this chapter we provide a few examples to try and get you on the right track.
 
-In order to distribute your data first you need to install a proper `handler <handlers.html>`_, that will convert the data format to the Pydap data model. 
+In order to distribute your data first you need to install a proper `handler <handlers.html>`_, that will convert the data format to the pydap data model. 
 
 Running standalone
 ------------------
 
-If you just want to quickly test the Pydap server, you can run it as a standalone Python application using the server that comes with `Python Paste <http://pythonpaste.org/>`_ and `gunicorn <http://gunicorn.org/>`_. To run the server, first make sure that you have installed Pydap with the server extras dependencies:
+If you just want to quickly test the pydap server, you can run it as a standalone Python application using the server that comes with `Python Paste <http://pythonpaste.org/>`_ and `gunicorn <http://gunicorn.org/>`_. To run the server, first make sure that you have installed pydap with the server extras dependencies:
 
 .. code-block:: bash
 
-    $ pip install Pydap[server]
+    $ pip install pydap[server]
 
 and then just run the ``pydap`` script that pip installs into your bin directory:
 
@@ -35,7 +35,7 @@ The HTML form template is fairly complex, since it contain some application logi
 WSGI Application
 ----------------
 
-Pydap follows the `WSGI specification <https://www.fullstackpython.com/wsgi-servers.html>`_, and most web servers gateways simply require a WSGI callable and a small amount of boiler plate code. Pydap provides the ``DapServer`` class which is a WSGI callable located in the ``pydap.wsgi.app`` module. A simple WSGI application script file would be something like this:
+pydap follows the `WSGI specification <https://www.fullstackpython.com/wsgi-servers.html>`_, and most web servers gateways simply require a WSGI callable and a small amount of boiler plate code. pydap provides the ``DapServer`` class which is a WSGI callable located in the ``pydap.wsgi.app`` module. A simple WSGI application script file would be something like this:
 
 .. code-block:: python
 
@@ -61,7 +61,7 @@ The `Flask <http://flask.pocoo.org/>`_ framework simply requires a couple more f
 Apache
 ------
 
-For a robust deployment you can run Pydap with Apache, using `mod_wsgi <http://modwsgi.org/>`_. After `installing mod_wsgi <http://code.google.com/p/modwsgi/wiki/InstallationInstructions>`_, create a sandbox in a directory *outside* your DocumentRoot, say ``/var/www/pydap/``, using `a virtual environment <https://docs.python.org/3/library/venv.html>`_:
+For a robust deployment you can run pydap with Apache, using `mod_wsgi <http://modwsgi.org/>`_. After `installing mod_wsgi <http://code.google.com/p/modwsgi/wiki/InstallationInstructions>`_, create a sandbox in a directory *outside* your DocumentRoot, say ``/var/www/pydap/``, using `a virtual environment <https://docs.python.org/3/library/venv.html>`_:
 
 .. code-block:: bash
 
@@ -74,12 +74,12 @@ If you want the sandbox to use your system installed packages (like Numpy, e.g.)
 
     $ python3 -m venv --system-site-packages /var/www/pydap/env
 
-Now let's activate the sandbox and install Pydap -- this way the module and its dependencies can be isolated from the system libraries:
+Now let's activate the sandbox and install pydap -- this way the module and its dependencies can be isolated from the system libraries:
 
 .. code-block:: bash
 
     $ source /var/www/pydap/env/bin/activate.sh
-    (env)$ pip install Pydap
+    (env)$ pip install pydap
 
 Create a `WSGI script file <http://modwsgi.readthedocs.io/en/develop/user-guides/quick-configuration-guide.html#mounting-the-wsgi-application>`_ somewhere convenient (e.g. /var/www/pydap/server/apache/pydap.wsgi) that reads something like this:
 
@@ -135,20 +135,20 @@ This is the file I use for the `test.pydap.org <http://test.pydap.org/>`_ virtua
         ServerSignature On
     </VirtualHost>
 
-You can find more information on the `mod_wsgi configuration guide <http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide>`_. Just remember that Pydap is a WSGI application like any other else, so any information on WSGI applications applies to it as well.
+You can find more information on the `mod_wsgi configuration guide <http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide>`_. Just remember that pydap is a WSGI application like any other else, so any information on WSGI applications applies to it as well.
 
 
 uWSGI
 -----
 
-`uWSGI <http://projects.unbit.it/uwsgi/>`_ is a "fast, self-healing and developer/sysadmin-friendly application container server coded in pure C" that can run Pydap. This is the recommended way to run Pydap if you don't have to integrate it with other web applications. Simply install uWSGI, follow the instructions in the last section in order to create a virtualenv and Pydap installation:
+`uWSGI <http://projects.unbit.it/uwsgi/>`_ is a "fast, self-healing and developer/sysadmin-friendly application container server coded in pure C" that can run pydap. This is the recommended way to run pydap if you don't have to integrate it with other web applications. Simply install uWSGI, follow the instructions in the last section in order to create a virtualenv and pydap installation:
 
 .. code-block:: bash
 
     $ mkdir /var/www/pydap
     $ python virtualenv.py /var/www/pydap/env
     $ source /var/www/pydap/env/bin/activate.sh
-    (env)$ pip install Pydap uWSGI
+    (env)$ pip install pydap uWSGI
     (env)$ cd /var/www/pydap
 
 Create a WSGI application file myapp.wsgi :ref:`as above <wsgi-application-section>`
@@ -157,7 +157,7 @@ Now create a file in ``/etc/init/pydap.conf`` with the content:
 
 .. code-block:: bash
 
-    description "uWSGI server for Pydap"
+    description "uWSGI server for pydap"
 
     start on runlevel [2345]
     stop on runlevel [!2345]
@@ -180,4 +180,4 @@ In order to make it run automatically during boot on Linux you can type:
 Docker
 ------
 
-Users have `reported success <https://github.com/pydap/pydap/issues/46>`_ deploying Pydap with a docker image built with nginx + uWSGI + Flask (based on https://hub.docker.com/r/tiangolo/uwsgi-nginx-flask/. A full configuration is somewhat beyond the scope of this documentation (since it will depend on your requirements and your software stack), but it is certainly possible.
+Users have `reported success <https://github.com/pydap/pydap/issues/46>`_ deploying pydap with a docker image built with nginx + uWSGI + Flask (based on https://hub.docker.com/r/tiangolo/uwsgi-nginx-flask/. A full configuration is somewhat beyond the scope of this documentation (since it will depend on your requirements and your software stack), but it is certainly possible.

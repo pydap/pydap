@@ -11,7 +11,7 @@ import warnings
 warnings.simplefilter('always')
 
 
-# Test the super class for Pydap types.
+# Test the super class for pydap types.
 def test_DapType_quote():
     """Test that names are properly quoted."""
     var = DapType("foo.bar[0]")
@@ -72,7 +72,7 @@ def test_DapType_children():
     assert (var.children() == ())
 
 
-# Test the base Pydap type.
+# Test the base pydap type.
 def test_BaseType_no_data():
     """Test empty data and dimensions attributes."""
     var = BaseType("var")
@@ -165,7 +165,7 @@ def test_BaseType_array():
                                   np.arange(16).reshape(2, 2, 2, 2))
 
 
-# Test Pydap structures.
+# Test pydap structures.
 def test_StructureType_init():
     """Test attributes used for dict-like behavior."""
     var = StructureType("var")
@@ -248,8 +248,10 @@ def test_StructureType_getitem():
     """Test item retrieval."""
     var = StructureType("var")
     child = BaseType("child")
+    child.data = np.array([[[0, 1]]])
     var["child"] = child
     assert var["child"] is child
+    assert var["child.child"] is child
     with pytest.raises(KeyError):
         var["unloved child"]
     with pytest.raises(KeyError):
@@ -336,7 +338,7 @@ def test_StructureType_copy():
     assert (original.name == clone.name)
 
 
-# Test a Pydap structure.
+# Test a pydap structure.
 def test_DatasetType_setitem():
     """Test item assignment."""
     dataset = DatasetType("dataset")
@@ -466,7 +468,7 @@ def test_SequenceType_copy(sequence_example):
     assert (sequence_example.data == clone.data).all()
 
 
-# Test Pydap grids.
+# Test pydap grids.
 @pytest.fixture()
 def gridtype_example():
     """Create a simple grid."""

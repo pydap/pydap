@@ -9,11 +9,11 @@ In order to do this, the specification defines a *data model* that, in theory, s
 Metadata
 ~~~~~~~~
 
-Pydap has a series of classes in the ``pydap.model`` module, representing the DAP data model.
+pydap has a series of classes in the ``pydap.model`` module, representing the DAP data model.
 The most fundamental data type is called ``BaseType``, and it represents a value or an array of values.
 Here an example of creating one of these objects:
 
-.. note:: Prior to Pydap 3.2, the name argument was optional for all date types. Since Pydap 3.2, it is mandatory.
+.. note:: Prior to pydap 3.2, the name argument was optional for all date types. Since pydap 3.2, it is mandatory.
 
 .. doctest::
 
@@ -24,7 +24,7 @@ Here an example of creating one of these objects:
     ...         data=np.array([1]),
     ...         attributes={'long_name': 'variable a'})
 
-All Pydap types have five attributes in common. The first one is the ``name`` of the variable; in this case, our variable is called "a":
+All pydap types have five attributes in common. The first one is the ``name`` of the variable; in this case, our variable is called "a":
 
 .. doctest::
 
@@ -62,7 +62,7 @@ The second attribute is called ``id``. In the examples we've seen so far, ``id``
 
 This is because the ``id`` is used to show the position of the variable in a given dataset, and in these
 examples the variables do not belong to any datasets. First let's store our variables in a container
-object called ``StructureType``. A ``StructureType`` is a special type of ordered dictionary that holds other Pydap types:
+object called ``StructureType``. A ``StructureType`` is a special type of ordered dictionary that holds other pydap types:
 
 .. doctest::
 
@@ -137,16 +137,16 @@ Use the lazy syntax only when introspecting a dataset on the Python interpreter,
 The fourth attribute is called ``data``, and it holds a representation of the actual data.
 We'll take a detailed look of this attribute in the next subsection.
 
-.. note:: Prior to Pydap 3.2, all variables had also an attribute called ``_nesting_level``.
+.. note:: Prior to pydap 3.2, all variables had also an attribute called ``_nesting_level``.
           This attribute had value 1 if the variable was inside a ``SequenceType`` object,
           0 if it's outside, and >1 if it's inside a nested sequence.
-          Since Pydap 3.2, the ``_nesting_level`` has been deprecated and there is no
+          Since pydap 3.2, the ``_nesting_level`` has been deprecated and there is no
           intrinsic way of finding the where in a deep object a variable is located.
 
 Data
 ~~~~
 
-As we saw on the last subsection, all Pydap objects have a ``data`` attribute that holds a representation of the variable data.
+As we saw on the last subsection, all pydap objects have a ``data`` attribute that holds a representation of the variable data.
 This representation will vary depending on the variable type. 
 
 ``BaseType``
@@ -165,7 +165,7 @@ though we can also use a Numpy scalar or Python number:
     >>> b.data
     array([0, 1, 2, 3])
 
-Note that starting from Pydap 3.2 the datatype is inferred from the input data:
+Note that starting from pydap 3.2 the datatype is inferred from the input data:
 
 .. doctest::
 
@@ -280,7 +280,7 @@ We can also iterate over the ``SequenceType``. In this case, it will return a se
     (2, 20)
     (3, 30)
 
-Prior to Pydap 3.2.2, this approach was not possible and one had to iterate directly over ``SequenceType``: 
+Prior to pydap 3.2.2, this approach was not possible and one had to iterate directly over ``SequenceType``: 
 
 .. doctest::
 
@@ -290,7 +290,7 @@ Prior to Pydap 3.2.2, this approach was not possible and one had to iterate dire
     (2, 20)
     (3, 30)
 
-This approach will be deprecated in Pydap 3.4.
+This approach will be deprecated in pydap 3.4.
 
 The ``SequenceType`` behaves pretty much like `record arrays <http://docs.scipy.org/doc/numpy/user/basics.rec.html>`_ from 
 Numpy, since we can reference them by column (``s['a']``) or by index:
@@ -306,7 +306,7 @@ Numpy, since we can reference them by column (``s['a']``) or by index:
 Note that these objects are also ``SequenceType`` themselves. The basic rules when working with sequence data are: 
 
 1. When a ``SequenceType`` is sliced with a string the corresponding children is returned. For example: ``s['a']`` will return child ``a``;
-2. When a ``SequenceType`` is iterated over (using ``.iterdata()`` after Pydap 3.2.2) it will return a series of tuples, each one containing the data for a record;
+2. When a ``SequenceType`` is iterated over (using ``.iterdata()`` after pydap 3.2.2) it will return a series of tuples, each one containing the data for a record;
 3. When a ``SequenceType`` is sliced with an integer, a comparison or a ``slice()`` a new ``SequenceType`` will be returned;
 4. When a ``SequenceType`` is sliced with a tuple of strings a new ``SequenceType`` will be returned, containing only the children defined in the tuple in the new order.
    For example, ``s[('c', 'a')]`` will return a sequence ``s`` with the children ``c`` and ``a``, in that order.
@@ -317,7 +317,7 @@ Now imagine that we want to add to a ``SequenceType`` data pulled from a relatio
 The easy way would be to fetch the data in the correct column order, and insert it into the sequence. 
 But what if we don't want to store the data in memory, and instead we would like to stream it directly from the database? 
 In this case we can create an object that behaves like a record array, similar to the proxy object that implements the array interface. 
-Pydap defines a "protocol" called ``IterData``, which is simply any object that:
+pydap defines a "protocol" called ``IterData``, which is simply any object that:
 
 1. Returns data when iterated over.
 2. Returns a new ``IterData`` when sliced such that:
@@ -351,7 +351,7 @@ One can also iterate directly over the ``IterData`` object to obtain the data:
     ...     print(record)
     (10, 20)
 
-This approach will not be deprecated in Pydap 3.4.
+This approach will not be deprecated in pydap 3.4.
 
 There are many implementations of classes derived from ``IterData``: ``pydap.handlers.dap.SequenceProxy`` is a proxy to 
 sequential data on Opendap servers, ``pydap.handlers.csv.CSVProxy`` wraps a CSV file, 

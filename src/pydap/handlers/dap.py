@@ -1,12 +1,13 @@
 """A handler for remote datasets.
 
 DAP handlers convert from different data formats (NetCDF, eg) to the internal
-Pydap model. The Pydap client is just a handler that converts from a remote
+pydap model. The pydap client is just a handler that converts from a remote
 dataset to the internal model.
 
 """
 
 import io
+import gzip
 import sys
 import pprint
 import copy
@@ -18,7 +19,7 @@ from itertools import chain
 import logging
 import numpy as np
 from six.moves.urllib.parse import urlsplit, urlunsplit, quote
-from six import text_type, string_types
+from six import text_type, string_types, BytesIO
 
 from pydap.model import (BaseType,
                          SequenceType, StructureType,
@@ -53,17 +54,13 @@ class DAPHandler(BaseHandler):
         r = GET(ddsurl, application, session, timeout=timeout,
                 verify=verify)
         raise_for_status(r)
-        if not r.charset:
-            r.charset = 'ascii'
-        dds = r.text
+        dds = safe_charset_text(r)
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
         r = GET(dasurl, application, session, timeout=timeout,
                 verify=verify)
         raise_for_status(r)
-        if not r.charset:
-            r.charset = 'ascii'
-        das = r.text
+        das = safe_charset_text(r)
 
         # build the dataset from the DDS and add attributes from the DAS
         self.dataset = build_dataset(dds)
@@ -102,6 +99,31 @@ class DAPHandler(BaseHandler):
         # retrieve only main variable for grid types:
         for var in walk(self.dataset, GridType):
             var.set_output_grid(output_grid)
+
+
+def get_charset(r):
+    charset = r.charset
+    if not charset:
+        charset = 'ascii'
+    return charset
+
+
+def safe_charset_text(r):
+    if r.content_encoding == 'gzip':
+        return (gzip.GzipFile(fileobj=BytesIO(r.body)).read()
+                .decode(get_charset(r)))
+    else:
+        r.charset = get_charset(r)
+        return r.text
+
+
+def safe_dds_and_data(r):
+    if r.content_encoding == 'gzip':
+        raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
+    else:
+        raw = r.body
+    dds, data = raw.split(b'\nData:\n', 1)
+    return dds.decode(get_charset(r)), data
 
 
 class BaseProxy(object):
@@ -145,8 +167,7 @@ class BaseProxy(object):
         r = GET(url, self.application, self.session, timeout=self.timeout,
                 verify=self.verify)
         raise_for_status(r)
-        dds, data = r.body.split(b'\nData:\n', 1)
-        dds = dds.decode(r.content_encoding or 'ascii')
+        dds, data = safe_dds_and_data(r)
 
         # Parse received dataset:
         dataset = build_dataset(dds)
@@ -331,7 +352,7 @@ def unpack_sequence(stream, template):
         dtype = np.dtype([("", c.dtype, c.shape) for c in cols])
         marker = stream.read(4)
         while marker == START_OF_SEQUENCE:
-            rec = np.fromstring(stream.read(dtype.itemsize), dtype=dtype)[0]
+            rec = np.frombuffer(stream.read(dtype.itemsize), dtype=dtype)[0]
             if not sequence:
                 rec = rec[0]
             yield rec
@@ -371,14 +392,14 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
     out = []
     response_dtype = DAP2_response_dtypemap(parser_dtype)
     if shape:
-        n = np.fromstring(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
+        n = np.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
         count = response_dtype.itemsize * n
         if response_dtype.char in 'S':
             # Consider on 'S' and not 'SU' because
             # response_dtype.char should never be
             data = []
             for _ in range(n):
-                k = np.fromstring(stream.read(4),
+                k = np.frombuffer(stream.read(4),
                                   DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
                 data.append(stream.read(k))
                 stream.read(-k % 4)
@@ -388,7 +409,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
             stream.read(4)  # read additional length
             try:
                 out.append(
-                    np.fromstring(
+                    np.frombuffer(
                         stream.read(count), response_dtype)
                     .astype(parser_dtype).reshape(shape))
             except ValueError as e:
@@ -411,13 +432,13 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
         # Consider on 'S' and not 'SU' because
         # response_dtype.char should never be
         # 'U'
-        k = np.fromstring(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
+        k = np.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
         out.append(text_type(stream.read(k).decode('ascii')))
         stream.read(-k % 4)
     # usual data
     else:
         out.append(
-            np.fromstring(stream.read(response_dtype.itemsize), response_dtype)
+            np.frombuffer(stream.read(response_dtype.itemsize), response_dtype)
             .astype(parser_dtype)[0])
         if response_dtype.char == "B":
             # Unsigned Byte type is packed to multiples of 4 bytes:

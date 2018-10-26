@@ -1,4 +1,4 @@
-"""Test Pydap base exception."""
+"""Test pydap base exception."""
 
 from pydap.exceptions import DapError
 import unittest
@@ -6,7 +6,7 @@ import unittest
 
 class TestExceptions(unittest.TestCase):
 
-    """Test Pydap base exception.
+    """Test pydap base exception.
 
     Other exceptions behave exactly like the superclass, differing only by
     name, so no testing is required.

@@ -1,8 +1,9 @@
-"""Tests for the Pydap server."""
+"""Tests for the pydap server."""
 
 import os
 import tempfile
 import shutil
+from xml.etree import ElementTree as etree
 
 from webtest import AppError
 from webtest import TestApp as App
@@ -17,7 +18,7 @@ import unittest
 
 class TestDapServer(unittest.TestCase):
 
-    """Tests for the Pydap server."""
+    """Tests for the pydap server."""
 
     def setUp(self):
         """Create an installation."""
@@ -69,6 +70,14 @@ class TestDapServer(unittest.TestCase):
         """Test invalid DAP requests."""
         with self.assertRaises(ExtensionNotSupportedError):
             self.app.get("/README.txt.dds")
+
+    def test_thredds_catalog_request(self):
+        """Test that THREDDS Catalog requests work."""
+        res = self.app.get("/catalog.xml")
+        self.assertEqual(res.status, "200 OK")
+        self.assertTrue(res.text.startswith('<?xml'))
+        xml = etree.fromstring(res.text)
+        self.assertEqual(xml.tag, '{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}catalog')  # noqa
 
     def test_not_found(self):
         """Test 404 responses."""

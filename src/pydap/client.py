@@ -1,5 +1,5 @@
 """
-Pydap client.
+pydap client.
 
 This module contains functions to access DAP servers. The most common use is to
 open a dataset by its canonical URL, ie, without any DAP related extensions
@@ -32,7 +32,7 @@ response:
     >>> dataset = open_file(
     ...     "/path/to/file.dods", "/path/to/file.das")  #doctest: +SKIP
 
-Remote datasets opened with `open_url` can call server functions. Pydap has a
+Remote datasets opened with `open_url` can call server functions. pydap has a
 lazy mechanism for function call, supporting any function. Eg, to call the
 `geogrid` function on the server:
 

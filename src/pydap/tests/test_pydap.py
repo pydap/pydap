@@ -1,4 +1,4 @@
-"""Test Pydap namespace."""
+"""Test pydap namespace."""
 
 import pydap
 import unittest
@@ -6,7 +6,7 @@ import unittest
 
 class TestNamespace(unittest.TestCase):
 
-    """Test Pydap namespace."""
+    """Test pydap namespace."""
 
     def test_namespace(self):
         """Test the namespace."""
