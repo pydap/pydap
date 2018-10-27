@@ -51,7 +51,7 @@ tests_extras = [
     'beautifulsoup4',
     'requests-mock',
     'WebTest',
-    'flake8'
+    'flake8',
     'werkzeug',
     'pyopenssl']
 
