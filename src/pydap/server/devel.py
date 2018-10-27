@@ -11,6 +11,7 @@ from wsgiref.simple_server import make_server
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
+from ..net import get_response
 
 DefaultDataset = DatasetType("Default")
 DefaultDataset["byte"] = BaseType("byte", np.arange(5, dtype="B"))
@@ -39,11 +40,7 @@ def run_server_in_process(httpd, shutdown, **kwargs):
     _server.join()
 
 
-def shutdown_application(environ, start_response):
-    start_response('200 OK', [('Content-Type', 'text/plain')])
-
-
-class LocalTestServer:
+class LocalTestServer(object):
     """
     Simple server instance that can be used to test pydap.
     Relies on threading and is usually slow (it has to
@@ -92,33 +89,44 @@ class LocalTestServer:
         self._wait = wait
         self._polling = polling
         self._as_process = as_process
+        self._address = '0.0.0.0'
+
+    @property
+    def url(self):
+        return "http://{0}:{1}/".format(self._address, self.port)
 
     def start(self):
         # Start a simple WSGI server:
         application = self.application
-        address = '0.0.0.0'
-        self._httpd = make_server(address, self.port, application)
-        self.url = "http://{0}:{1}/".format(address, self.port)
+
+        self._httpd = make_server(self._address, self.port, application)
+        kwargs = {'poll_interval': 0.1}
 
         if self._as_process:
             self._shutdown = multiprocessing.Event()
             self._server = (multiprocessing
                             .Process(target=run_server_in_process,
                                      args=(self._httpd, self._shutdown),
-                                     kwargs={'poll_interval': 0.1}))
+                                     kwargs=kwargs))
         else:
             self._server = (threading
                             .Thread(target=self._httpd.serve_forever,
-                                    kwargs={'poll_interval': 0.1}))
+                                    kwargs=kwargs))
 
         self._server.start()
+        self.poll_server()
+
+    def poll_server(self):
         # Poll the server
         ok = False
         for trial in range(int(math.ceil(self._wait/self._polling))):
             try:
-                resp = (Request
-                        .blank("http://0.0.0.0:%s/.dds" % self.port)
-                        .get_response())
+                # When checking whether server has started, do
+                # not verify ssl:
+                resp = get_response(
+                        Request
+                        .blank(self.url + '.dds'),
+                        None, verify=False)
                 ok = (resp.status_code == 200)
             except HTTPError:
                 pass
@@ -127,6 +135,7 @@ class LocalTestServer:
             time.sleep(self._polling)
 
         if not ok:
+            self.shutdown()
             raise Exception(('LocalTestServer did not start in {0}s. '
                              'Try using LocalTestServer(..., wait={1}')
                             .format(self._wait, 2*self._wait))
