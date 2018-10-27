@@ -21,9 +21,9 @@ addons:
 
 install:
     - pip install --upgrade pip>=8.1
-    # Always install 'tests' since this extra includes
-    # testing utilities like pytest, etc.
-    - pip install -e .[tests,$TEST_SUITE]
+    # Always install 'tests' and 'netcdf' since these extra includes
+    # testing utilities like pytest, netcdf4-python, etc.
+    - pip install -e .[tests,netcdf,$TEST_SUITE]
 
 script:
     - flake8
