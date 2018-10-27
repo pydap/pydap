@@ -18,7 +18,6 @@ from pydap.model import DatasetType, BaseType, SequenceType
 from pydap.client import open_url, open_dods
 from pydap.server.devel import LocalTestServer
 
-
 server = pytest.mark.server
 
 
@@ -48,8 +47,7 @@ def test_open(sequence_type_data):
     TestDataset = DatasetType('Test')
     TestDataset['sequence'] = sequence_type_data
     with LocalTestServer(BaseHandler(TestDataset)) as server:
-        url = ("http://0.0.0.0:%s/" % server.port)
-        dataset = open_url(url)
+        dataset = open_url(server.url)
         seq = dataset['sequence']
         retrieved_data = [line for line in seq]
 
@@ -59,6 +57,21 @@ def test_open(sequence_type_data):
                                   np.array(
                                     sequence_type_data.data[:],
                                     dtype=sequence_type_data.data.dtype))
+
+
+@server
+def test_netcdf(sequence_type_data):
+    """
+    Test that LocalTestServer works properly and that it works well with
+    netcdf4-python.
+    """
+    TestDataset = DatasetType('Test')
+    TestDataset['float'] = BaseType('float', np.array(1, dtype=np.float32))
+
+    with TestDataset.to_netcdf() as ds:
+        assert 'float' in ds.variables
+        assert ds['float'].dtype == np.float32
+        assert ds['float'][:] == np.array(1, dtype=np.float32)
 
 
 @server

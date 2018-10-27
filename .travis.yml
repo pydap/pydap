@@ -5,6 +5,7 @@ python:
     - 3.4
     - 3.5
     - 3.6
+
 addons:
   apt:
       packages:
@@ -12,7 +13,10 @@ addons:
       - libhdf5-serial-dev
       - netcdf-bin
       - libnetcdf-dev
+
 install:
+    - pip install --upgrade pip>=8.1
+    # Install the package:
     - pip install -e .[testing,functions,server,tests]
 
 script:
