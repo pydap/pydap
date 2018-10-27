@@ -42,21 +42,22 @@ hdl_netcdf_extras = [
     'ordereddict'
 ]
 
-tests_require = (functions_extras + cas_extras + server_extras +
-                 hdl_netcdf_extras +
-                 ['WebTest',
-                  'beautifulsoup4',
-                  'flake8',
-                  'werkzeug',
-                  'pyopenssl'])
-
-testing_extras = tests_require + [
+# These extras should only contain pure
+# testing packages (e.g. pytest, mock, flake8, ...)
+tests_extras = [
     'pytest>=2.8',
     'pytest-cov',
     'pytest-attrib',
+    'beautifulsoup4',
     'requests-mock',
-    'requests'
-]
+    'WebTest',
+    'flake8',
+    'werkzeug',
+    'pyopenssl']
+
+
+testing_extras = (functions_extras + cas_extras + server_extras +
+                  hdl_netcdf_extras + tests_extras)
 
 if sys.version_info < (3, 3):
     testing_extras.append('mock')
@@ -109,14 +110,16 @@ setup(name='pydap',
                           "pydap.handlers", "pydap.tests"],
       install_requires=install_requires,
       extras_require={
-            'functions': functions_extras,
-            'testing': testing_extras,
+            'client': [],
+            'tests': tests_extras,
             'docs': docs_extras,
-            'tests': tests_require,
+            'functions': functions_extras,
             'cas': cas_extras,
             'handlers.netcdf': hdl_netcdf_extras,
             'netcdf': hdl_netcdf_extras,
-            'server': server_extras
+            'server': server_extras,
+            'handlers.netcdf': hdl_netcdf_extras,
+            'testing': testing_extras
       },
       test_suite="pydap.tests",
       entry_points="""
