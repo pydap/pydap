@@ -123,6 +123,9 @@ setup(name='pydap',
       },
       test_suite="pydap.tests",
       entry_points="""
+            [pydap.handler]
+            nc = pydap.handlers.netcdf:NetCDFHandler
+
             [pydap.response]
             das = pydap.responses.das:DASResponse
             dds = pydap.responses.dds:DDSResponse
