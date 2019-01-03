@@ -298,7 +298,6 @@ You can also access the deep variables directly. When you iterate over these var
     [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]
     [5.0999999, 9.1000004, 19.4, 29.700001, 39.599998, 49.599998, 59.700001, 69.5, 79.5, 89.699997]
 
-pydap 3.0 has been rewritten to make it easier to work with Dapper datasets like this one, and it should be intuitive [1]_ to work with these variables.
 
 Authentication
 --------------
@@ -492,6 +491,3 @@ A user `has reported <http://groups.google.com/group/pydap/browse_thread/thread/
         http.request = new_request
 
 The function ``install_urllib2_client`` should then be called before doing any requests.
-
-.. [1] But please check `this quote <http://www.greenend.org.uk/rjk/2002/08/nipple.html>`_.
-
