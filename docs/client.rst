@@ -33,7 +33,7 @@ Let's work with the ``SST`` variable; we can reference it using the usual dictio
 Note that the variable is of type ``GridType``, a multidimensional array with specific axes defining each of its dimensions:
 
 .. doctest::
-    
+
     >>> sst.dimensions
     ('TIME', 'COADSY', 'COADSX')
     >>> sst.maps
@@ -298,7 +298,7 @@ You can also access the deep variables directly. When you iterate over these var
     [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]
     [5.0999999, 9.1000004, 19.4, 29.700001, 39.599998, 49.599998, 59.700001, 69.5, 79.5, 89.699997]
 
-pydap 3.0 has been rewritten to make it easier to work with Dapper datasets like this one, and it should be intuitive [1]_ to work with these variables. 
+pydap 3.0 has been rewritten to make it easier to work with Dapper datasets like this one, and it should be intuitive [1]_ to work with these variables.
 
 Authentication
 --------------
@@ -322,8 +322,8 @@ To use it, just attach a web browsing ``session`` with authentication cookies:
 
 .. code-block:: python
 
-    >>> from pydap.client import open_url  
-    >>> from pydap.cas.get_cookies import setup_session 
+    >>> from pydap.client import open_url
+    >>> from pydap.cas.get_cookies import setup_session
     >>> session = setup_session(authentication_url, username, password)
     >>> dataset = open_url('http://server.example.com/path/to/dataset', session=session)
 
@@ -336,8 +336,8 @@ Authentication is done through a ``username`` and a ``password``:
 
 .. code-block:: python
 
-    >>> from pydap.client import open_url  
-    >>> from pydap.cas.urs import setup_session 
+    >>> from pydap.client import open_url
+    >>> from pydap.cas.urs import setup_session
     >>> dataset_url = 'http://server.example.com/path/to/dataset'
     >>> session = setup_session(username, password, check_url=dataset_url)
     >>> dataset = open_url(dataset_url, session=session)
@@ -348,8 +348,8 @@ Authentication is done through an ``openid`` and a ``password``:
 
 .. code-block:: python
 
-    >>> from pydap.client import open_url  
-    >>> from pydap.cas.esgf import setup_session 
+    >>> from pydap.client import open_url
+    >>> from pydap.cas.esgf import setup_session
     >>> dataset_url = 'http://server.example.com/path/to/dataset'
     >>> session = setup_session(openid, password, check_url=dataset_url)
     >>> dataset = open_url(dataset_url, session=session)
@@ -359,8 +359,8 @@ string ``ceda.ac.uk`` authentication requires an additional ``username`` argumen
 
 .. code-block:: python
 
-    >>> from pydap.client import open_url  
-    >>> from pydap.cas.esgf import setup_session 
+    >>> from pydap.client import open_url
+    >>> from pydap.cas.esgf import setup_session
     >>> session = setup_session(openid, password, check_url=dataset_url, username=username)
     >>> dataset = open_url(dataset_url, session=session)
 
@@ -447,8 +447,8 @@ For example, the following commands would timeout after 30 seconds without recei
 
 .. code-block:: python
 
-    >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc, timeout=30)
-    >>> dataset = open_dods('http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods, timeout=30)
+    >>> dataset = open_url('http://test.opendap.org/dap/data/nc/coads_climatology.nc', timeout=30)
+    >>> dataset = open_dods('http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods', timeout=30)
 
 Configuring a proxy
 ~~~~~~~~~~~~~~~~~~~
@@ -487,7 +487,7 @@ A user `has reported <http://groups.google.com/group/pydap/browse_thread/thread/
             headers = dict(f.info().items())
             body = f.read()
             return headers, body
-                                            
+
         from pydap.util import http
         http.request = new_request
 
