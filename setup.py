@@ -45,7 +45,7 @@ hdl_netcdf_extras = [
 # These extras should only contain pure
 # testing packages (e.g. pytest, mock, flake8, ...)
 tests_extras = [
-    'pytest>=2.8',
+    'pytest',
     'pytest-cov',
     'pytest-attrib',
     'beautifulsoup4',
