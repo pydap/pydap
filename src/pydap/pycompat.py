@@ -3,9 +3,9 @@ From xarray.core.pycompat.py, under Apache 2.0 license.
 """
 
 try:
-        from contextlib import suppress
+    from contextlib import suppress
 except ImportError:
-        # Backport from CPython 3.5:
+    # Backport from CPython 3.5:
     # Used under the terms of Python's license, see licenses/PYTHON_LICENSE.
 
     class suppress:

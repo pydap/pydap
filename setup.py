@@ -45,7 +45,7 @@ hdl_netcdf_extras = [
 # These extras should only contain pure
 # testing packages (e.g. pytest, mock, flake8, ...)
 tests_extras = [
-    'pytest>=2.8',
+    'pytest>=3.6',
     'pytest-cov',
     'pytest-attrib',
     'beautifulsoup4',
@@ -89,9 +89,9 @@ setup(name='pydap',
             "Programming Language :: Python :: 2",
             "Programming Language :: Python :: 2.7",
             "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.4",
             "Programming Language :: Python :: 3.5",
             "Programming Language :: Python :: 3.6"
+            "Programming Language :: Python :: 3.7"
             # Get strings from
             # http://pypi.python.org/pypi?%3Aaction=list_classifiers
             ],

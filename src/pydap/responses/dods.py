@@ -92,16 +92,20 @@ def _sequencetype(var):
     if all(isinstance(child, BaseType) for child in var.children()):
         DAP2_types = []
         position = 0
-        for child in var.children():
-            if DAP2_response_dtypemap(child.dtype).char == 'S':
-                (DAP2_types
-                 .append(DAP2_ARRAY_LENGTH_NUMPY_TYPE))  # string length
-                DAP2_types.append('|S{%s}' % position)   # string padded to 4n
-                position += 1
-            else:
-                # Convert any numpy dtypes to numpy dtypes compatible
-                # with the DAP2 standard:
-                DAP2_types.append(DAP2_response_dtypemap(child.dtype).str)
+        try:
+            for child in var.children():
+                if DAP2_response_dtypemap(child.dtype).char == 'S':
+                    (DAP2_types
+                     .append(DAP2_ARRAY_LENGTH_NUMPY_TYPE))  # string length
+                    DAP2_types.append(
+                        '|S{%s}' % position)   # string padded to 4n
+                    position += 1
+                else:
+                    # Convert any numpy dtypes to numpy dtypes compatible
+                    # with the DAP2 standard:
+                    DAP2_types.append(DAP2_response_dtypemap(child.dtype).str)
+        except StopIteration:
+            return
         DAP2_dtype_str = ','.join(DAP2_types)
         strings = position > 0
 
