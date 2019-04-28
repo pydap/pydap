@@ -131,42 +131,42 @@ def test_combined_other(simple_array, simple_object):
 
 @pytest.fixture
 def nested_data():
-        shallow_data = [(1, 1, 1), (2, 4, 4),
-                        (3, 6, 9), (4, 8, 16)]
-        deep_data = [[(10, 11, 12), (21, 22, 23)],
-                     [(15, 16, 17)],
-                     [],
-                     [(31, 32, 33), (41, 42, 43),
-                      (51, 52, 53), (61, 62, 63)]]
-        nested = [x + (deep_data[x_id],)
-                  for x_id, x
-                  in enumerate(shallow_data)]
-        return nested
+    shallow_data = [(1, 1, 1), (2, 4, 4),
+                    (3, 6, 9), (4, 8, 16)]
+    deep_data = [[(10, 11, 12), (21, 22, 23)],
+                 [(15, 16, 17)],
+                 [],
+                 [(31, 32, 33), (41, 42, 43),
+                  (51, 52, 53), (61, 62, 63)]]
+    nested = [x + (deep_data[x_id],)
+              for x_id, x
+              in enumerate(shallow_data)]
+    return nested
 
 
 @pytest.fixture
 def nested_dtype():
-        dtype = np.dtype([('a', '<i8'), ('b', '<i8'),
-                          ('c', '<i8'),
-                          ('d', np.dtype([('e', '<i8'),
-                                          ('f', '<i8'),
-                                          ('g', '<i8')]))])
-        return dtype
+    dtype = np.dtype([('a', '<i8'), ('b', '<i8'),
+                      ('c', '<i8'),
+                      ('d', np.dtype([('e', '<i8'),
+                                      ('f', '<i8'),
+                                      ('g', '<i8')]))])
+    return dtype
 
 
 @pytest.fixture
 def nested_object(nested_data):
-        name = 'nameless'
-        dataset = DatasetType(name)
-        seq = dataset['nested'] = SequenceType('nested')
-        for var in ['a', 'b', 'c']:
-            seq[var] = BaseType(var)
-        seq['d'] = SequenceType('d')
-        for var in ['e', 'f', 'g']:
-            seq['d'][var] = BaseType(var)
+    name = 'nameless'
+    dataset = DatasetType(name)
+    seq = dataset['nested'] = SequenceType('nested')
+    for var in ['a', 'b', 'c']:
+        seq[var] = BaseType(var)
+    seq['d'] = SequenceType('d')
+    for var in ['e', 'f', 'g']:
+        seq['d'][var] = BaseType(var)
 
-        nested = IterData(nested_data, seq)
-        return nested
+    nested = IterData(nested_data, seq)
+    return nested
 
 
 def test_nested_iter(nested_data, nested_object):
