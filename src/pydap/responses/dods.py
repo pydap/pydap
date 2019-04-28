@@ -97,7 +97,8 @@ def _sequencetype(var):
                 if DAP2_response_dtypemap(child.dtype).char == 'S':
                     (DAP2_types
                      .append(DAP2_ARRAY_LENGTH_NUMPY_TYPE))  # string length
-                    DAP2_types.append('|S{%s}' % position)   # string padded to 4n
+                    DAP2_types.append(
+                        '|S{%s}' % position)   # string padded to 4n
                     position += 1
                 else:
                     # Convert any numpy dtypes to numpy dtypes compatible
