@@ -179,3 +179,15 @@ SimpleGrid["x"] = SimpleGrid["SimpleGrid"]["x"] = BaseType(
     "x", np.arange(3), axis="X", units="degrees_east")
 SimpleGrid["y"] = SimpleGrid["SimpleGrid"]["y"] = BaseType(
     "y", np.arange(2), axis="Y", units="degrees_north")
+
+
+# a faulty grid
+FaultyGrid = DatasetType(
+    "FaultyGrid", description="A faulty grid for testing.")
+FaultyGrid["FaultyGrid"] = GridType("FaultyGrid")
+FaultyGrid["FaultyGrid"]["FaultyGrid"] = BaseType(
+    "FaultyGrid", np.arange(6).reshape(2, 3), dimensions=("y", "x"))
+FaultyGrid["x"] = FaultyGrid["FaultyGrid"]["x"] = BaseType(
+    "x", np.arange(3), axis="X", code=1)
+FaultyGrid["y"] = FaultyGrid["FaultyGrid"]["y"] = BaseType(
+    "y", np.arange(2), axis="Y", code=np.int32([]))
