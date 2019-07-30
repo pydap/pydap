@@ -84,14 +84,27 @@ class NetCDFHandler(BaseHandler):
                                                         attrs(vars[grid]))
                     # add maps
                     for dim in vars[grid].dimensions:
-                        self.dataset[grid][dim] = BaseType(dim, vars[dim][:],
+                        try:
+                            data = vars[dim][:]
+                            attributes = attrs(vars[dim])
+                        except KeyError:
+                            data = np.arange(dims[dim].size, dtype='i')
+                            attributes = None
+                        self.dataset[grid][dim] = BaseType(dim, data,
                                                            None,
-                                                           attrs(vars[dim]))
+                                                           attributes)
 
                 # add dims
                 for dim in dims:
-                    self.dataset[dim] = BaseType(dim, vars[dim][:], None,
-                                                 attrs(vars[dim]))
+                    try:
+                        data = vars[dim][:]
+                        attributes = attrs(vars[dim])
+                    except KeyError:
+                        data = np.arange(dims[dim].size, dtype='i')
+                        attributes = None
+                    self.dataset[grid][dim] = BaseType(dim, data,
+                                                        None,
+                                                        attributes)
         except Exception as exc:
             raise
             message = 'Unable to open file %s: %s' % (filepath, exc)
