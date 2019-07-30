@@ -102,7 +102,7 @@ class NetCDFHandler(BaseHandler):
                     except KeyError:
                         data = np.arange(dims[dim].size, dtype='i')
                         attributes = None
-                    self.dataset[grid][dim] = BaseType(dim, data,
+                    self.dataset[dim] = BaseType(dim, data,
                                                         None,
                                                         attributes)
         except Exception as exc:
