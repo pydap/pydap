@@ -45,7 +45,7 @@ class DASResponse(BaseResponse):
         for line in das(self.dataset):
             try:
                 yield line.encode('ascii')
-            except:
+            except UnicodeDecodeError:
                 yield line.encode('UTF-8')
 
 
