@@ -103,8 +103,8 @@ class NetCDFHandler(BaseHandler):
                         data = np.arange(dims[dim].size, dtype='i')
                         attributes = None
                     self.dataset[dim] = BaseType(dim, data,
-                                                        None,
-                                                        attributes)
+                                                 None,
+                                                 attributes)
         except Exception as exc:
             raise
             message = 'Unable to open file %s: %s' % (filepath, exc)
