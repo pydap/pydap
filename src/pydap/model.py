@@ -170,9 +170,10 @@ therefore highly recommended.
 import operator
 import copy
 from six.moves import reduce, map
+from six.moves.collections_abc import Mapping
 from six import string_types
 import numpy as np
-from collections import OrderedDict, Mapping
+from collections import OrderedDict
 import warnings
 
 from .lib import quote, decode_np_strings
