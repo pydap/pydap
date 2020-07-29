@@ -26,6 +26,12 @@ DAS = """Attributes {
         Float32 COADSX 1e20;
         String COADSY "zero";
     }
+    floats {
+        Float64 a nan;
+        Float64 b -inf;
+        Float64 c inf;
+        Float64 d 17;
+    }
 }"""
 
 # It is important to add attributes that have the same
@@ -69,3 +75,10 @@ class TestParseDAS(unittest.TestCase):
         self.assertEqual(self.dataset.SPEH.attributes['TIME'], 0)
         self.assertEqual(self.dataset.SPEH.attributes['COADSX'], 1e20)
         self.assertEqual(self.dataset.SPEH.attributes['COADSY'], "zero")
+
+    def test_float_attributes(self):
+        """Test various values of float attributes."""
+        self.assertTrue(np.isnan(self.dataset.floats["a"]))
+        self.assertEqual(self.dataset.floats["b"], float("-inf"))
+        self.assertEqual(self.dataset.floats["c"], float("inf"))
+        self.assertEqual(self.dataset.floats["d"], 17.)
