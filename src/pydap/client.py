@@ -161,7 +161,7 @@ class ServerFunction(object):
         self.baseurl = baseurl
         self.name = name
         self.application = application
-        self.session = None
+        self.session = session
         self.timeout = timeout
 
     def __call__(self, *args):
