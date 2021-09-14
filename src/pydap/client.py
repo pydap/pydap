@@ -56,7 +56,7 @@ from .parsers.das import parse_das, add_attributes
 
 
 def open_url(url, application=None, session=None, output_grid=True,
-             timeout=DEFAULT_TIMEOUT, verify=True, default_charset='ascii'):
+             timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii'):
     """
     Open a remote URL, returning a dataset.
 
@@ -65,7 +65,7 @@ def open_url(url, application=None, session=None, output_grid=True,
     """
     dataset = DAPHandler(url, application, session, output_grid,
                          timeout=timeout, verify=verify,
-                         default_charset='ascii').dataset
+                         user_charset=user_charset).dataset
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session)
