@@ -46,7 +46,7 @@ class DAPHandler(BaseHandler):
     """Build a dataset from a DAP base URL."""
 
     def __init__(self, url, application=None, session=None, output_grid=True,
-                 timeout=DEFAULT_TIMEOUT, verify=True):
+                 timeout=DEFAULT_TIMEOUT, verify=True, default_charset='ascii'):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
@@ -54,13 +54,13 @@ class DAPHandler(BaseHandler):
         r = GET(ddsurl, application, session, timeout=timeout,
                 verify=verify)
         raise_for_status(r)
-        dds = safe_charset_text(r)
+        dds = safe_charset_text(r, default_charset)
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
         r = GET(dasurl, application, session, timeout=timeout,
                 verify=verify)
         raise_for_status(r)
-        das = safe_charset_text(r)
+        das = safe_charset_text(r, default_charset)
 
         # build the dataset from the DDS and add attributes from the DAS
         self.dataset = build_dataset(dds)
@@ -101,17 +101,17 @@ class DAPHandler(BaseHandler):
             var.set_output_grid(output_grid)
 
 
-def get_charset(r):
+def get_charset(r, default_charset='ascii'):
     charset = r.charset
     if not charset:
-        charset = 'ascii'
+        charset = default_charset
     return charset
 
 
-def safe_charset_text(r):
+def safe_charset_text(r, default_charset='ascii'):
     if r.content_encoding == 'gzip':
         return (gzip.GzipFile(fileobj=BytesIO(r.body)).read()
-                .decode(get_charset(r)))
+                .decode(get_charset(r, default_charset)))
     else:
         r.charset = get_charset(r)
         return r.text

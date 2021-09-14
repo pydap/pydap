@@ -56,7 +56,7 @@ from .parsers.das import parse_das, add_attributes
 
 
 def open_url(url, application=None, session=None, output_grid=True,
-             timeout=DEFAULT_TIMEOUT, verify=True):
+             timeout=DEFAULT_TIMEOUT, verify=True, default_charset='ascii'):
     """
     Open a remote URL, returning a dataset.
 
@@ -64,7 +64,8 @@ def open_url(url, application=None, session=None, output_grid=True,
     never retrieve coordinate axes.
     """
     dataset = DAPHandler(url, application, session, output_grid,
-                         timeout=timeout, verify=verify).dataset
+                         timeout=timeout, verify=verify,
+                         default_charset='ascii').dataset
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session)
