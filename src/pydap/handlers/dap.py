@@ -46,7 +46,7 @@ class DAPHandler(BaseHandler):
     """Build a dataset from a DAP base URL."""
 
     def __init__(self, url, application=None, session=None, output_grid=True,
-                 timeout=DEFAULT_TIMEOUT, verify=True, default_charset='ascii'):
+                 timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii'):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
@@ -54,13 +54,13 @@ class DAPHandler(BaseHandler):
         r = GET(ddsurl, application, session, timeout=timeout,
                 verify=verify)
         raise_for_status(r)
-        dds = safe_charset_text(r, default_charset)
+        dds = safe_charset_text(r, user_charset)
 
         dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
         r = GET(dasurl, application, session, timeout=timeout,
                 verify=verify)
         raise_for_status(r)
-        das = safe_charset_text(r, default_charset)
+        das = safe_charset_text(r, user_charset)
 
         # build the dataset from the DDS and add attributes from the DAS
         self.dataset = build_dataset(dds)
@@ -101,29 +101,29 @@ class DAPHandler(BaseHandler):
             var.set_output_grid(output_grid)
 
 
-def get_charset(r, default_charset='ascii'):
+def get_charset(r, user_charset):
     charset = r.charset
     if not charset:
-        charset = default_charset
+        charset = user_charset
     return charset
 
 
-def safe_charset_text(r, default_charset='ascii'):
+def safe_charset_text(r, user_charset):
     if r.content_encoding == 'gzip':
         return (gzip.GzipFile(fileobj=BytesIO(r.body)).read()
-                .decode(get_charset(r, default_charset)))
+                .decode(get_charset(r, user_charset)))
     else:
-        r.charset = get_charset(r)
+        r.charset = get_charset(r, user_charset)
         return r.text
 
 
-def safe_dds_and_data(r):
+def safe_dds_and_data(r, user_charset):
     if r.content_encoding == 'gzip':
         raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
     else:
         raw = r.body
     dds, data = raw.split(b'\nData:\n', 1)
-    return dds.decode(get_charset(r)), data
+    return dds.decode(get_charset(r, user_charset)), data
 
 
 class BaseProxy(object):
@@ -137,7 +137,7 @@ class BaseProxy(object):
 
     def __init__(self, baseurl, id, dtype, shape, slice_=None,
                  application=None, session=None, timeout=DEFAULT_TIMEOUT,
-                 verify=True):
+                 verify=True, user_charset='ascii'):
         self.baseurl = baseurl
         self.id = id
         self.dtype = dtype
@@ -147,13 +147,14 @@ class BaseProxy(object):
         self.session = session
         self.timeout = timeout
         self.verify = verify
+        self.user_charset = user_charset
 
     def __repr__(self):
         return 'BaseProxy(%s)' % ', '.join(
             map(repr, [
                 self.baseurl, self.id, self.dtype, self.shape, self.slice]))
 
-    def __getitem__(self, index):
+    def __getitem__(self, index, user_charset):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
         scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
@@ -167,7 +168,7 @@ class BaseProxy(object):
         r = GET(url, self.application, self.session, timeout=self.timeout,
                 verify=self.verify)
         raise_for_status(r)
-        dds, data = safe_dds_and_data(r)
+        dds, data = safe_dds_and_data(r, user_charset)
 
         # Parse received dataset:
         dataset = build_dataset(dds)
