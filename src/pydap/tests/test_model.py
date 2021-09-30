@@ -176,7 +176,10 @@ def test_StructureType_init():
 def test_StructureType_instance():
     """Test that it is a Mapping and DapType."""
     var = StructureType("var")
-    from six.moves.collections_abc import Mapping
+    try:
+        from collections.abc import Mapping
+    except ImportError:
+        from collections import Mapping
     assert isinstance(var, Mapping)
     assert isinstance(var, DapType)
 

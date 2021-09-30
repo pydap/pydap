@@ -12,9 +12,13 @@ try:
 except ImportError:
     from singledispatch import singledispatch
 
+try:
+    from collections.abc import Iterable
+except ImportError:
+    from collections import Iterable
+
 from six import string_types, integer_types
 from six.moves import map
-from six.moves.collections_abc import Iterable
 
 import numpy as np
 
