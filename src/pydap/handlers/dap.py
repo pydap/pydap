@@ -49,22 +49,26 @@ class DAPHandler(BaseHandler):
                  timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii'):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
+        use_dap4 = False
 
-        ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-        r = GET(ddsurl, application, session, timeout=timeout,
-                verify=verify)
-        raise_for_status(r)
-        dds = safe_charset_text(r, user_charset)
+        if (use_dap4):
+            print("using dap4")
+        else:
+           ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
+           r = GET(ddsurl, application, session, timeout=timeout,
+                   verify=verify)
+           raise_for_status(r)
+           dds = safe_charset_text(r, user_charset)
 
-        dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-        r = GET(dasurl, application, session, timeout=timeout,
-                verify=verify)
-        raise_for_status(r)
-        das = safe_charset_text(r, user_charset)
+           dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
+           r = GET(dasurl, application, session, timeout=timeout,
+                   verify=verify)
+           raise_for_status(r)
+           das = safe_charset_text(r, user_charset)
 
-        # build the dataset from the DDS and add attributes from the DAS
-        self.dataset = build_dataset(dds)
-        add_attributes(self.dataset, parse_das(das))
+           # build the dataset from the DDS and add attributes from the DAS
+           self.dataset = build_dataset(dds)
+           add_attributes(self.dataset, parse_das(das))
 
         # remove any projection from the url, leaving selections
         projection, selection = parse_ce(query)
