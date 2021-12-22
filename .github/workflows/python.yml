@@ -22,4 +22,4 @@ jobs:
           pip3 install -U numpy
           pip3 install -U netCDF4 pytest numpy Webob Jinja2 docopt six beautifulsoup4 requests testresources
       - name: Run tests with pytest
-        run: pytest parsers
+        run: pytest -k parsers
