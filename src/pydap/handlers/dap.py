@@ -154,7 +154,7 @@ class BaseProxy(object):
             map(repr, [
                 self.baseurl, self.id, self.dtype, self.shape, self.slice]))
 
-    def __getitem__(self, index, user_charset):
+    def __getitem__(self, index):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
         scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
@@ -168,7 +168,7 @@ class BaseProxy(object):
         r = GET(url, self.application, self.session, timeout=self.timeout,
                 verify=self.verify)
         raise_for_status(r)
-        dds, data = safe_dds_and_data(r, user_charset)
+        dds, data = safe_dds_and_data(r, self.user_charset)
 
         # Parse received dataset:
         dataset = build_dataset(dds)
