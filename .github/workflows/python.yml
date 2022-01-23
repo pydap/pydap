@@ -1,0 +1,27 @@
+name: Run Python Tests
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Python 3
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.6
+      - name: Install dependencies
+        run: |
+          pip3 install -U pip setuptools
+          pip3 install -U numpy webtest gsw coards
+          pip3 install -U netCDF4 pytest numpy Webob Jinja2 docopt six beautifulsoup4 requests testresources
+      - name: Run tests with pytest
+        run: |
+          pip install -e .[tests,netcdf,client]
+          pytest 
