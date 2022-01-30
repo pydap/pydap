@@ -74,52 +74,52 @@ def test_netcdf(sequence_type_data):
         assert ds['float'][:] == np.array(1, dtype=np.float32)
 
 
-@server
-def test_timeout(sequence_type_data):
-    """Test that timeout works properly"""
-    TestDataset = DatasetType('Test')
-    TestDataset['sequence'] = sequence_type_data
-    TestDataset['byte'] = BaseType('byte', 0)
-    application = BaseHandler(TestDataset)
+# @server
+# def test_timeout(sequence_type_data):
+#     """Test that timeout works properly"""
+#     TestDataset = DatasetType('Test')
+#     TestDataset['sequence'] = sequence_type_data
+#     TestDataset['byte'] = BaseType('byte', 0)
+#     application = BaseHandler(TestDataset)
 
-    # Explictly add latency on the devel server
-    # to guarantee that it timeouts
-    def wrap_mocker(func):
-        def mock_add_latency(*args, **kwargs):
-            time.sleep(1e-1)
-            return func(*args, **kwargs)
-        return mock_add_latency
+#     # Explictly add latency on the devel server
+#     # to guarantee that it timeouts
+#     def wrap_mocker(func):
+#         def mock_add_latency(*args, **kwargs):
+#             time.sleep(1e-1)
+#             return func(*args, **kwargs)
+#         return mock_add_latency
 
-    application = wrap_mocker(application)
-    with LocalTestServer(application) as server:
-        url = ("http://0.0.0.0:%s/" % server.port)
+#     application = wrap_mocker(application)
+#     with LocalTestServer(application) as server:
+#         url = ("http://0.0.0.0:%s/" % server.port)
 
-        # test open_url
-        assert open_url(url) == TestDataset
-        with pytest.raises(HTTPError) as e:
-            open_url(url, timeout=1e-5)
-        assert 'Timeout' in str(e)
+#         # test open_url
+#         assert open_url(url) == TestDataset
+#         with pytest.raises(HTTPError) as e:
+#             open_url(url, timeout=1e-5)
+#         assert 'Timeout' in str(e)
 
-        # test open_dods
-        with pytest.raises(HTTPError):
-            open_dods(url + '.dods?sequence', timeout=1e-5)
-        assert 'Timeout' in str(e)
+#         # test open_dods
+#         with pytest.raises(HTTPError):
+#             open_dods(url + '.dods?sequence', timeout=1e-5)
+#         assert 'Timeout' in str(e)
 
-        # test sequenceproxy
-        dataset = open_url(url)
-        seq = dataset['sequence']
-        assert isinstance(seq.data, SequenceProxy)
-        # Change the timeout of the sequence proxy:
-        seq.data.timeout = 1e-5
-        with pytest.raises(HTTPError) as e:
-            next(seq.iterdata())
-        assert 'Timeout' in str(e)
+#         # test sequenceproxy
+#         dataset = open_url(url)
+#         seq = dataset['sequence']
+#         assert isinstance(seq.data, SequenceProxy)
+#         # Change the timeout of the sequence proxy:
+#         seq.data.timeout = 1e-5
+#         with pytest.raises(HTTPError) as e:
+#             next(seq.iterdata())
+#         assert 'Timeout' in str(e)
 
-        # test baseproxy:
-        dat = dataset['byte']
-        assert isinstance(dat.data, BaseProxy)
-        # Change the timeout of the baseprox proxy:
-        dat.data.timeout = 1e-5
-        with pytest.raises(HTTPError) as e:
-            dat[:]
-        assert 'Timeout' in str(e)
+#         # test baseproxy:
+#         dat = dataset['byte']
+#         assert isinstance(dat.data, BaseProxy)
+#         # Change the timeout of the baseprox proxy:
+#         dat.data.timeout = 1e-5
+#         with pytest.raises(HTTPError) as e:
+#             dat[:]
+#         assert 'Timeout' in str(e)
