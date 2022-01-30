@@ -45,7 +45,7 @@ def tostring_with_byteorder(x, dtype):
     return (x
             .astype(dtype.str)
             .newbyteorder(dtype.byteorder)
-            .tostring())
+            .tobytes())
 
 
 class DODSResponse(BaseResponse):
@@ -140,7 +140,7 @@ def _sequencetype(var):
             # occurs naturally:
             cache[DAP2_dtype_str][:] = tuple(record)
             # byteorder was taken care of during the upconversion:
-            yield cache[DAP2_dtype_str].tostring()
+            yield cache[DAP2_dtype_str].tobytes()
 
         yield END_OF_SEQUENCE
 
@@ -214,8 +214,8 @@ def _basetype(var):
                     # byteorder is not important for strings:
                     if hasattr(word, 'encode'):
                         yield word.encode('ascii')
-                    elif hasattr(word, 'tostring'):
-                        yield word.tostring()
+                    elif hasattr(word, 'tobytes'):
+                        yield word.tobytes()
                     else:
                         raise TypeError("Could not convert word '{0}' to bytes"
                                         .format(word))
