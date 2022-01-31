@@ -68,7 +68,7 @@ def open_url(url, application=None, session=None, output_grid=True,
                          user_charset=user_charset).dataset
 
     # attach server-side functions
-    dataset.functions = Functions(url, application, session)
+    dataset.functions = Functions(url, application, session, timeout=timeout)
 
     return dataset
 
@@ -136,14 +136,16 @@ class Functions(object):
 
     """Proxy for server-side functions."""
 
-    def __init__(self, baseurl, application=None, session=None):
+    def __init__(self, baseurl, application=None, session=None,
+                 timeout=DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.application = application
         self.session = session
+        self.timeout = timeout
 
     def __getattr__(self, attr):
         return ServerFunction(self.baseurl, attr, self.application,
-                              self.session)
+                              self.session, timeout=self.timeout)
 
 
 class ServerFunction(object):
@@ -155,11 +157,13 @@ class ServerFunction(object):
 
     """
 
-    def __init__(self, baseurl, name, application=None, session=None):
+    def __init__(self, baseurl, name, application=None, session=None,
+                 timeout=DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.name = name
         self.application = application
-        self.session = None
+        self.session = session
+        self.timeout = timeout
 
     def __call__(self, *args):
         params = []
@@ -170,18 +174,20 @@ class ServerFunction(object):
                 params.append(encode(arg))
         id_ = self.name + '(' + ','.join(params) + ')'
         return ServerFunctionResult(self.baseurl, id_, self.application,
-                                    self.session)
+                                    self.session, timeout=self.timeout)
 
 
 class ServerFunctionResult(object):
 
     """A proxy for the result from a server-side function call."""
 
-    def __init__(self, baseurl, id_, application=None, session=None):
+    def __init__(self, baseurl, id_, application=None, session=None,
+                 timeout=DEFAULT_TIMEOUT):
         self.id = id_
         self.dataset = None
         self.application = application
         self.session = session
+        self.timeout = timeout
 
         scheme, netloc, path, query, fragment = urlsplit(baseurl)
         self.url = urlunsplit((scheme, netloc, path + '.dods', id_, None))
@@ -189,7 +195,7 @@ class ServerFunctionResult(object):
     def __getitem__(self, key):
         if self.dataset is None:
             self.dataset = open_dods(self.url, True, self.application,
-                                     self.session)
+                                     self.session, self.timeout)
         return self.dataset[key]
 
     def __getattr__(self, name):
