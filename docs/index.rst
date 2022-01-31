@@ -2,21 +2,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Pydap
+pydap
 =====
 
-Pydap is a pure `Python <http://python.org/>`_ library implementing the `Data Access Protocol <http://opendap.org/>`_, also known as **DODS** or **OPeNDAP**. You can use Pydap as a `client <client.html>`_ to access hundreds of scientific datasets in a transparent and efficient way through the internet; or as a server to easily `distribute <server.html>`_ your data from a `variety of formats <handlers.html>`_.
+pydap is a pure `Python <http://python.org/>`_ library implementing the `Data Access Protocol <http://opendap.org/>`_, also known as **DODS** or **OPeNDAP**. You can use pydap as a `client <client.html>`_ to access hundreds of scientific datasets in a transparent and efficient way through the internet; or as a server to easily `distribute <server.html>`_ your data from a `variety of formats <handlers.html>`_.
 
 Quickstart
 ----------
 
-You can install the latest version (|release|) using `pip <http://pypi.python.org/pypi/pip>`_. After `installing pip <http://www.pip-installer.org/en/latest/installing.html>`_ you can install Pydap with this command:
+You can install the latest version (|release|) using `pip <http://pypi.python.org/pypi/pip>`_. After `installing pip <http://www.pip-installer.org/en/latest/installing.html>`_ you can install pydap with this command:
 
 .. code-block:: bash
 
-    $ pip install Pydap
+    $ pip install pydap
 
-This will install Pydap together with all the required dependencies. You can now open any remotely served dataset, and Pydap will download the accessed data on-the-fly as needed:
+This will install pydap together with all the required dependencies. You can now open any remotely served dataset, and pydap will download the accessed data on-the-fly as needed:
 
 .. doctest:: 
 
@@ -40,11 +40,11 @@ This will install Pydap together with all the required dependencies. You can now
             [  6.38000011e-01,   8.95384610e-01,   7.21666634e-01,
                8.10000002e-01]]], dtype=float32), array([ 366.]), array([-69., -67., -65., -63.]), array([ 41.,  43.,  45.,  47.])]
 
-For more information, please check the documentation on `using Pydap as a client <client.html>`_. Pydap also comes with a simple server, implemented as a `WSGI <http://wsgi.org/>`_ application. To use it, you first need to install Pydap with the server extras dependencies. If you want to serve `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ files, install Pydap with the ``handlers.netcdf`` extra:
+For more information, please check the documentation on `using pydap as a client <client.html>`_. pydap also comes with a simple server, implemented as a `WSGI <http://wsgi.org/>`_ application. To use it, you first need to install pydap with the server extras dependencies. If you want to serve `netCDF <http://www.unidata.ucar.edu/software/netcdf/>`_ files, install pydap with the ``handlers.netcdf`` extra:
 
 .. code-block:: bash
 
-    $ pip install Pydap[server,handlers.netcdf]
+    $ pip install pydap[server,handlers.netcdf]
 
 More `handlers <handlers.html>`_ for different formats are available, if necessary. To run a simple standalone server just issue the command:
 
@@ -52,12 +52,12 @@ More `handlers <handlers.html>`_ for different formats are available, if necessa
 
     $ pydap --data ./myserver/data/ --port 8001
 
-This will start a standalone server running on http://localhost:8001/, serving netCDF files from ``./myserver/data/``, similar to the test server at http://test.pydap.org/. Since the server uses the `WSGI <http://wsgi.org/>`_ standard, it can easily be run behind Apache. The `server documentation <server.html>`_ has more information on how to better deploy Pydap.
+This will start a standalone server running on http://localhost:8001/, serving netCDF files from ``./myserver/data/``, similar to the test server at http://test.pydap.org/. Since the server uses the `WSGI <http://wsgi.org/>`_ standard, it can easily be run behind Apache. The `server documentation <server.html>`_ has more information on how to better deploy pydap.
 
 Help
 ----
 
-If you need any help with Pydap, please feel free to send an email to the `mailing list <http://groups.google.com/group/pydap/>`_.
+If you need any help with pydap, please feel free to send an email to the `mailing list <http://groups.google.com/group/pydap/>`_.
 
 Documentation
 -------------
@@ -70,7 +70,6 @@ Documentation
    handlers
    responses
    developer
-   Changelog
    license
 
 Indices and tables

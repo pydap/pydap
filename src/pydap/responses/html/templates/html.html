@@ -4,33 +4,29 @@
 {% block title %}Dataset {{ location }}{% endblock %}
 
 {% block breadcrumbs %}
-<ul>
-    {% for crumb in breadcrumbs[:-1] %}
-    <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-    <a itemprop="url" href="{{ crumb.url }}/"><span itemprop="title">{{ crumb.title }}</span></a>
-    </li>
-    <li><i class="icon-angle-right"></i></li>                                              
+<p>
+    <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        <a itemprop="url" href="{{ root }}"><span itemprop="title">Home</span></a>
+    </span>
+    {% for crumb in breadcrumbs %}
+    /<span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        <a itemprop="url" href="{{ crumb.url }}/"><span itemprop="title">{{ crumb.title }}</span></a>
+    </span>
     {% endfor %}
-    {% if breadcrumbs %}
-    <li itemscope itemtype="http://data-vocabulary.org/Breadcrumb" class="pure-menu-selected">
-    <a itemprop="url" href="{{ breadcrumbs[-1].url }}"><span itemprop="title">{{ breadcrumbs[-1].title[:-5] }}</span></a>
-    </li>
-    {% endif %}
-</ul>
+</p>
 {% endblock %}
 
 {% block content %}
-<div class="form">
-    <form class="pure-form pure-form-aligned" action="{{ location }}" method="POST">
-        <button type="submit" class="pure-button pure-button-submit">
-            <i class="icon-download-alt"></i>
-            Download data
-        </button>
+<div>
+    <form action="{{ location }}" method="POST">
+        <button type="submit">Download data</button>
+        <p>
+        <label for="dataset.url">
+            Data URL: <input name="dataset.url" id="dataset.url" type="text" value="{{ dataurl }}" size="50" readonly/>
+        </label>
+        </p>
         {{ dispatch(dataset) }}
-        <button type="submit" class="pure-button pure-button-submit">
-            <i class="icon-download-alt"></i>
-            Download data
-        </button>
+        <button type="submit">Download data</button><button type="reset">Reset</button>
     </form>
 </div>
 {% endblock %}

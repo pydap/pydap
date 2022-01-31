@@ -1,4 +1,4 @@
-"""Pydap handler for NetCDF3/4 files."""
+"""pydap handler for NetCDF3/4 files."""
 
 import os
 import re
@@ -9,23 +9,25 @@ import numpy as np
 
 from pkg_resources import get_distribution
 
-from pydap.model import DatasetType, GridType, BaseType
-from pydap.handlers.lib import BaseHandler
-from pydap.exceptions import OpenFileError
+from ...model import DatasetType, GridType, BaseType
+from ..lib import BaseHandler
+from ...exceptions import OpenFileError
+from ...pycompat import suppress
 
 from collections import OrderedDict
 
 # Check for netCDF4 presence:
-try:
-    from netCDF4 import Dataset as netcdf_file
+with suppress(ImportError):
+    try:
+        from netCDF4 import Dataset as netcdf_file
 
-    def attrs(var):
-        return dict((k, getattr(var, k)) for k in var.ncattrs())
-except ImportError:
-    from scipy.io.netcdf import netcdf_file
+        def attrs(var):
+            return dict((k, getattr(var, k)) for k in var.ncattrs())
+    except ImportError:
+        from scipy.io.netcdf import netcdf_file
 
-    def attrs(var):
-        return var._attributes
+        def attrs(var):
+            return var._attributes
 
 
 class NetCDFHandler(BaseHandler):
@@ -82,14 +84,27 @@ class NetCDFHandler(BaseHandler):
                                                         attrs(vars[grid]))
                     # add maps
                     for dim in vars[grid].dimensions:
-                        self.dataset[grid][dim] = BaseType(dim, vars[dim][:],
+                        try:
+                            data = vars[dim][:]
+                            attributes = attrs(vars[dim])
+                        except KeyError:
+                            data = np.arange(dims[dim].size, dtype='i')
+                            attributes = None
+                        self.dataset[grid][dim] = BaseType(dim, data,
                                                            None,
-                                                           attrs(vars[dim]))
+                                                           attributes)
 
                 # add dims
                 for dim in dims:
-                    self.dataset[dim] = BaseType(dim, vars[dim][:], None,
-                                                 attrs(vars[dim]))
+                    try:
+                        data = vars[dim][:]
+                        attributes = attrs(vars[dim])
+                    except KeyError:
+                        data = np.arange(dims[dim].size, dtype='i')
+                        attributes = None
+                    self.dataset[dim] = BaseType(dim, data,
+                                                 None,
+                                                 attributes)
         except Exception as exc:
             raise
             message = 'Unable to open file %s: %s' % (filepath, exc)
@@ -155,6 +170,9 @@ class LazyVariable:
 
     def __getitem__(self, key):
         with netcdf_file(self.filepath, 'r') as source:
+            # Avoid applying scale_factor, see
+            # https://github.com/pydap/pydap/issues/190
+            source.set_auto_scale(False)
             return (np.asarray(source[self.path][key])
                     .astype(self.dtype).reshape(self._reshape))
 

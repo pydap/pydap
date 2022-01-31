@@ -11,10 +11,14 @@ try:
     from functools import singledispatch
 except ImportError:
     from singledispatch import singledispatch
-from collections import Iterable
-
+try:
+    from collections.abc import Iterable
+except ImportError:
+    from collections import Iterable
 from six import string_types, integer_types
 from six.moves import map
+
+import numpy as np
 
 from ..model import (DatasetType, BaseType,
                      StructureType, SequenceType,
@@ -41,7 +45,10 @@ class DASResponse(BaseResponse):
 
     def __iter__(self):
         for line in das(self.dataset):
-            yield line.encode('ascii')
+            try:
+                yield line.encode('ascii')
+            except UnicodeDecodeError:
+                yield line.encode('UTF-8')
 
 
 @singledispatch
@@ -88,8 +95,9 @@ def _basetypegridtype(var, level=0):
 
     for attr in sorted(var.attributes.keys()):
         values = var.attributes[attr]
-        for line in build_attributes(attr, values, level+1):
-            yield line
+        if np.asarray(values).size > 0:
+            for line in build_attributes(attr, values, level+1):
+                yield line
     yield '{indent}}}\n'.format(indent=level*INDENT)
 
 

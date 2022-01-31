@@ -66,6 +66,9 @@ class TestEncode(unittest.TestCase):
         """Other objects are encoded according to their ``repr``."""
         self.assertEqual(encode({}), '"{}"')
 
+    def test_numpy_string(self):
+        self.assertEqual(encode(np.array('1', dtype='<U1')), '"1"')
+
 
 class TestFixSlice(unittest.TestCase):
 

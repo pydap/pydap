@@ -1,4 +1,4 @@
-"""A Pydap handler for CSV files."""
+"""A pydap handler for CSV files."""
 
 import os
 import csv
@@ -114,7 +114,7 @@ class CSVHandler(BaseHandler):
         BaseHandler.__init__(self)
 
         try:
-            with open(filepath, 'Ur') as fp:
+            with open(filepath, 'r') as fp:
                 reader = csv.reader(fp, quoting=csv.QUOTE_NONNUMERIC)
                 vars = next(reader)
         except Exception as exc:
@@ -257,7 +257,7 @@ class CSVData(IterData):
     def stream(self):
         """Generator that yield lines of the file."""
         try:
-            with open(self.filepath, 'Ur') as fp:
+            with open(self.filepath, 'r') as fp:
                 reader = csv.reader(fp, quoting=csv.QUOTE_NONNUMERIC)
                 next(reader)  # consume var names
                 for row in reader:

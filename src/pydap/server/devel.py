@@ -1,6 +1,7 @@
 from webob.request import Request
 from webob.exc import HTTPError
 import threading
+import multiprocessing
 import time
 import math
 import numpy as np
@@ -10,7 +11,7 @@ from wsgiref.simple_server import make_server
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
-from ..wsgi.ssf import ServerSideFunctions
+from ..net import get_response
 
 DefaultDataset = DatasetType("Default")
 DefaultDataset["byte"] = BaseType("byte", np.arange(5, dtype="B"))
@@ -29,13 +30,17 @@ def get_open_port():
     return port
 
 
-def run_simple_server(port, application):
-    application = ServerSideFunctions(application)
+def run_server_in_process(httpd, shutdown, **kwargs):
+    _server = (threading
+               .Thread(target=httpd.serve_forever,
+                       kwargs=kwargs))
+    _server.start()
+    shutdown.wait()
+    httpd.shutdown()
+    _server.join()
 
-    return make_server('0.0.0.0', port, application)
 
-
-class LocalTestServer:
+class LocalTestServer(object):
     """
     Simple server instance that can be used to test pydap.
     Relies on threading and is usually slow (it has to
@@ -78,27 +83,50 @@ class LocalTestServer:
     """
 
     def __init__(self, application=BaseHandler(DefaultDataset),
-                 port=None, wait=0.5, polling=1e-2):
+                 port=None, wait=0.5, polling=1e-2, as_process=False):
         self._port = port or get_open_port()
         self.application = application
         self._wait = wait
         self._polling = polling
+        self._as_process = as_process
+        self._address = '0.0.0.0'
+
+    @property
+    def url(self):
+        return "http://{0}:{1}/".format(self._address, self.port)
 
     def start(self):
         # Start a simple WSGI server:
-        self.httpd = run_simple_server(self.port, self.application)
-        self.server_process = (threading
-                               .Thread(target=self.httpd.serve_forever,
-                                       kwargs={'poll_interval': 1e-2}))
+        application = self.application
 
-        self.server_process.start()
+        self._httpd = make_server(self._address, self.port, application)
+        kwargs = {'poll_interval': 0.1}
+
+        if self._as_process:
+            self._shutdown = multiprocessing.Event()
+            self._server = (multiprocessing
+                            .Process(target=run_server_in_process,
+                                     args=(self._httpd, self._shutdown),
+                                     kwargs=kwargs))
+        else:
+            self._server = (threading
+                            .Thread(target=self._httpd.serve_forever,
+                                    kwargs=kwargs))
+
+        self._server.start()
+        self.poll_server()
+
+    def poll_server(self):
         # Poll the server
         ok = False
         for trial in range(int(math.ceil(self._wait/self._polling))):
             try:
-                resp = (Request
-                        .blank("http://0.0.0.0:%s/.dds" % self.port)
-                        .get_response())
+                # When checking whether server has started, do
+                # not verify ssl:
+                resp = get_response(
+                        Request
+                        .blank(self.url + '.dds'),
+                        None, verify=False)
                 ok = (resp.status_code == 200)
             except HTTPError:
                 pass
@@ -107,6 +135,7 @@ class LocalTestServer:
             time.sleep(self._polling)
 
         if not ok:
+            self.shutdown()
             raise Exception(('LocalTestServer did not start in {0}s. '
                              'Try using LocalTestServer(..., wait={1}')
                             .format(self._wait, 2*self._wait))
@@ -120,9 +149,13 @@ class LocalTestServer:
         return self
 
     def shutdown(self):
-        # Shutdown the server:
-        self.httpd.shutdown()
-        self.server_process.join()
+        # Tell the server to shutdown:
+        if self._as_process:
+            self._shutdown.set()
+        else:
+            self._httpd.shutdown()
+        self._server.join()
+        self._httpd.server_close()
 
     def __exit__(self, *_):
         self.shutdown()

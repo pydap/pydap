@@ -1,5 +1,5 @@
 """
-Pydap client.
+pydap client.
 
 This module contains functions to access DAP servers. The most common use is to
 open a dataset by its canonical URL, ie, without any DAP related extensions
@@ -32,7 +32,7 @@ response:
     >>> dataset = open_file(
     ...     "/path/to/file.dods", "/path/to/file.das")  #doctest: +SKIP
 
-Remote datasets opened with `open_url` can call server functions. Pydap has a
+Remote datasets opened with `open_url` can call server functions. pydap has a
 lazy mechanism for function call, supporting any function. Eg, to call the
 `geogrid` function on the server:
 
@@ -56,7 +56,7 @@ from .parsers.das import parse_das, add_attributes
 
 
 def open_url(url, application=None, session=None, output_grid=True,
-             timeout=DEFAULT_TIMEOUT):
+             timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii'):
     """
     Open a remote URL, returning a dataset.
 
@@ -64,10 +64,11 @@ def open_url(url, application=None, session=None, output_grid=True,
     never retrieve coordinate axes.
     """
     dataset = DAPHandler(url, application, session, output_grid,
-                         timeout).dataset
+                         timeout=timeout, verify=verify,
+                         user_charset=user_charset).dataset
 
     # attach server-side functions
-    dataset.functions = Functions(url, application, session)
+    dataset.functions = Functions(url, application, session, timeout=timeout)
 
     return dataset
 
@@ -107,7 +108,7 @@ def open_file(dods, das=None):
 
 
 def open_dods(url, metadata=False, application=None, session=None,
-              timeout=DEFAULT_TIMEOUT):
+              timeout=DEFAULT_TIMEOUT, verify=True):
     """Open a `.dods` response directly, returning a dataset."""
     r = GET(url, application, session, timeout=timeout)
     raise_for_status(r)
@@ -122,7 +123,8 @@ def open_dods(url, metadata=False, application=None, session=None,
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
             (scheme, netloc, path[:-4] + 'das', query, fragment))
-        r = GET(dasurl, application, session, timeout=timeout)
+        r = GET(dasurl, application, session, timeout=timeout,
+                verify=verify)
         raise_for_status(r)
         das = r.text
         add_attributes(dataset, parse_das(das))
@@ -134,14 +136,16 @@ class Functions(object):
 
     """Proxy for server-side functions."""
 
-    def __init__(self, baseurl, application=None, session=None):
+    def __init__(self, baseurl, application=None, session=None,
+                 timeout=DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.application = application
         self.session = session
+        self.timeout = timeout
 
     def __getattr__(self, attr):
         return ServerFunction(self.baseurl, attr, self.application,
-                              self.session)
+                              self.session, timeout=self.timeout)
 
 
 class ServerFunction(object):
@@ -153,11 +157,13 @@ class ServerFunction(object):
 
     """
 
-    def __init__(self, baseurl, name, application=None, session=None):
+    def __init__(self, baseurl, name, application=None, session=None,
+                 timeout=DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.name = name
         self.application = application
-        self.session = None
+        self.session = session
+        self.timeout = timeout
 
     def __call__(self, *args):
         params = []
@@ -168,18 +174,20 @@ class ServerFunction(object):
                 params.append(encode(arg))
         id_ = self.name + '(' + ','.join(params) + ')'
         return ServerFunctionResult(self.baseurl, id_, self.application,
-                                    self.session)
+                                    self.session, timeout=self.timeout)
 
 
 class ServerFunctionResult(object):
 
     """A proxy for the result from a server-side function call."""
 
-    def __init__(self, baseurl, id_, application=None, session=None):
+    def __init__(self, baseurl, id_, application=None, session=None,
+                 timeout=DEFAULT_TIMEOUT):
         self.id = id_
         self.dataset = None
         self.application = application
         self.session = session
+        self.timeout = timeout
 
         scheme, netloc, path, query, fragment = urlsplit(baseurl)
         self.url = urlunsplit((scheme, netloc, path + '.dods', id_, None))
@@ -187,7 +195,7 @@ class ServerFunctionResult(object):
     def __getitem__(self, key):
         if self.dataset is None:
             self.dataset = open_dods(self.url, True, self.application,
-                                     self.session)
+                                     self.session, self.timeout)
         return self.dataset[key]
 
     def __getattr__(self, name):

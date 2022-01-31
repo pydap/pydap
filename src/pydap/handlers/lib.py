@@ -1,6 +1,6 @@
 """Basic functions for handlers.
 
-Pydap handlers are responsible for reading data in different formats -- NetCDF,
+pydap handlers are responsible for reading data in different formats -- NetCDF,
 SQL databases, CSV files, etc. -- and convert them into the internal data model
 so that the data may be served using different responses.
 
@@ -85,7 +85,7 @@ def get_handler(filepath, handlers=None):
 
 class BaseHandler(object):
 
-    """Base class for Pydap handlers.
+    """Base class for pydap handlers.
 
     Handlers are WSGI applications that parse the client request and build the
     corresponding dataset. The dataset is passed to proper Response (DDS, DAS,
@@ -96,9 +96,10 @@ class BaseHandler(object):
     # load all available responses
     responses = load_responses()
 
-    def __init__(self, dataset=None):
+    def __init__(self, dataset=None, gzip=False):
         self.dataset = dataset
         self.additional_headers = []
+        self._gzip = gzip
 
     def __call__(self, environ, start_response):
         req = Request(environ)
@@ -127,8 +128,10 @@ class BaseHandler(object):
                     'Access-Control-Allow-Headers',
                     'Origin, X-Requested-With, Content-Type')
 
+            if self._gzip:
+                res.encode_content()
             return res(environ, start_response)
-        except:
+        except Exception:
             # should the exception be catched?
             if environ.get('x-wsgiorg.throw_errors'):
                 raise
@@ -464,7 +467,7 @@ def build_filter(expression, template):
             col = keys.index(token)
             target = target[token]
         a = operator.itemgetter(col)
-    except:
+    except Exception:
         raise ConstraintExpressionError(
             'Invalid constraint expression: "{expression}" '
             '("{id}" is not a valid variable)'.format(
@@ -482,7 +485,7 @@ def build_filter(expression, template):
 
             def b(row):
                 return value
-        except:
+        except Exception:
             raise ConstraintExpressionError(
                 'Invalid constraint expression: "{expression}" '
                 '("{id}" is not valid)'.format(

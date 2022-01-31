@@ -1,6 +1,6 @@
 """An implementation of server-side functions.
 
-Pydap implements DAP server-side functions throught a custom WSGI middleware.
+pydap implements DAP server-side functions throught a custom WSGI middleware.
 This simplifies writing custom handlers, since they don't need to parse and
 apply the function calls themselves.
 
@@ -47,7 +47,7 @@ class ServerSideFunctions(object):
     """A WebOb based middleware for handling server-side function calls.
 
     The middleware works by removing function calls from the request,
-    forwarding the request to Pydap, and then applying the functions calls to
+    forwarding the request to pydap, and then applying the functions calls to
     the returned dataset.
 
     """
@@ -183,10 +183,10 @@ def eval_function(dataset, function, functions):
             try:
                 names = re.sub(r'\[.*?\]', '', str(token)).split('.')
                 return reduce(operator.getitem, [dataset] + names)
-            except:
+            except Exception:
                 try:
                     return ast.literal_eval(token)
-                except:
+                except Exception:
                     return token
 
     args = map(parse, tokenize(args))
