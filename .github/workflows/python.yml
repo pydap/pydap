@@ -1,4 +1,4 @@
-name: Run Python Tests
+name: test_
 on:
   push:
     branches:
@@ -12,9 +12,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ 'ubuntu-latest', 'macos-latest' ]
-        python-version: [ '3.x', '3.6', '3.7', '3.8', '3.9' ]
-    name: Python ${{ matrix.python-version }} 
+        python-version: [ '3.x', '3.7', '3.8', '3.9' ]
+    name: Python ${{ matrix.python-version }} ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
       - name: Install Python 3
