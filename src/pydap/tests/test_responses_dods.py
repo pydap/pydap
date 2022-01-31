@@ -181,28 +181,28 @@ class TestDODSResponseStructure(unittest.TestCase):
             # -10 signed byte upconv. to Int32 for transfer
             ('b', (np.array(-10, dtype=np.byte)
                    .astype('>i')
-                   .tostring())),
+                   .tobytes())),
             # 10 usigned byte padded to multiple of 4 bytes for transfer
             ('ub', (np.array(10, dtype=np.ubyte)
-                    .tostring()) + b'\x00\x00\x00'),
+                    .tobytes()) + b'\x00\x00\x00'),
             ('i32', (np.array(-10, dtype=np.int32)
-                     .astype('>i').tostring())),
+                     .astype('>i').tobytes())),
             ('ui32', (np.array(10, dtype=np.uint32)
-                      .astype('>I').tostring())),
+                      .astype('>I').tobytes())),
             # -10 int16 upconv. to int32 for transfer
             ('i16', (np.array(-10, dtype=np.int16)
                      .astype('>i')
-                     .newbyteorder('>').tostring())),
+                     .newbyteorder('>').tobytes())),
             # 10 uint16 upconv. to uint32 for transfer
             ('ui16', (np.array(10, dtype=np.uint16)
                       .astype('>I')
-                      .tostring())),
+                      .tobytes())),
             ('f32', (np.array(100, dtype=np.float32)
                      .astype('>f')
-                     .tostring())),
+                     .tobytes())),
             ('f64', (np.array(1000, dtype=np.float64)
                      .astype('>d')
-                     .tostring())),
+                     .tobytes())),
             ('s', b'\x00\x00\x00$This is a data test string (pass 0).\x00'),
             ('u', b'\x00\x00\x13http://www.dods.org\x00'),
             ('U', b'\x00\x00\x00\x0ctest unicode')])

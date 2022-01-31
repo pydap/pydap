@@ -45,7 +45,7 @@ def tostring_with_byteorder(x, dtype):
     return (x
             .astype(dtype.str)
             .newbyteorder(dtype.byteorder)
-            .tostring())
+            .tobytes())
 
 
 class DODSResponse(BaseResponse):
@@ -92,16 +92,20 @@ def _sequencetype(var):
     if all(isinstance(child, BaseType) for child in var.children()):
         DAP2_types = []
         position = 0
-        for child in var.children():
-            if DAP2_response_dtypemap(child.dtype).char == 'S':
-                (DAP2_types
-                 .append(DAP2_ARRAY_LENGTH_NUMPY_TYPE))  # string length
-                DAP2_types.append('|S{%s}' % position)   # string padded to 4n
-                position += 1
-            else:
-                # Convert any numpy dtypes to numpy dtypes compatible
-                # with the DAP2 standard:
-                DAP2_types.append(DAP2_response_dtypemap(child.dtype).str)
+        try:
+            for child in var.children():
+                if DAP2_response_dtypemap(child.dtype).char == 'S':
+                    (DAP2_types
+                     .append(DAP2_ARRAY_LENGTH_NUMPY_TYPE))  # string length
+                    DAP2_types.append(
+                        '|S{%s}' % position)   # string padded to 4n
+                    position += 1
+                else:
+                    # Convert any numpy dtypes to numpy dtypes compatible
+                    # with the DAP2 standard:
+                    DAP2_types.append(DAP2_response_dtypemap(child.dtype).str)
+        except StopIteration:
+            return
         DAP2_dtype_str = ','.join(DAP2_types)
         strings = position > 0
 
@@ -136,7 +140,7 @@ def _sequencetype(var):
             # occurs naturally:
             cache[DAP2_dtype_str][:] = tuple(record)
             # byteorder was taken care of during the upconversion:
-            yield cache[DAP2_dtype_str].tostring()
+            yield cache[DAP2_dtype_str].tobytes()
 
         yield END_OF_SEQUENCE
 
@@ -210,8 +214,8 @@ def _basetype(var):
                     # byteorder is not important for strings:
                     if hasattr(word, 'encode'):
                         yield word.encode('ascii')
-                    elif hasattr(word, 'tostring'):
-                        yield word.tostring()
+                    elif hasattr(word, 'tobytes'):
+                        yield word.tobytes()
                     else:
                         raise TypeError("Could not convert word '{0}' to bytes"
                                         .format(word))

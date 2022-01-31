@@ -62,7 +62,7 @@ To run the server just issue the command:
 
     $ pydap --data ./myserver/data/ --port 8001
 ```
-This will start a standalone server running on http://localhost:8001/, serving netCDF files from ``./myserver/data/``, similar to the test server at http://test.pydap.org/. Since the server uses the [WSGI](http://wsgi.org/) standard, it can easily be run behind Apache. The [server documentation](server.html) has more information on how to better deploy pydap.
+This will start a standalone server running on http://localhost:8001/, serving netCDF files from ``./myserver/data/``, similar to the test server at http://test.pydap.org/. Since the server uses the [WSGI](http://wsgi.org/) standard, it can easily be run behind Apache. The [server documentation](https://pydap.readthedocs.io/en/latest/server.html) has more information on how to better deploy pydap.
 
 ## Documentation
 For more information, see [![documentation](https://readthedocs.org/projects/pydap/badge/?version=latest)](http://pydap.readthedocs.org/en/latest/)

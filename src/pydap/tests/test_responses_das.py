@@ -4,7 +4,9 @@ from webtest import TestApp as App
 from webob.headers import ResponseHeaders
 from pydap.lib import __version__
 from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
+from pydap.tests.datasets import (
+    SimpleSequence, SimpleGrid, FaultyGrid, SimpleStructure
+)
 from pydap.responses.das import das
 
 import unittest
@@ -102,6 +104,29 @@ class TestDASResponseGrid(unittest.TestCase):
     y {
         String axis "Y";
         String units "degrees_north";
+    }
+}
+""")
+
+
+class TestDASResponseFaultyGrid(unittest.TestCase):
+
+    """Test the DAS response from a grid with empty properties."""
+
+    def test_body(self):
+        """Test the generated DAS response."""
+        app = App(BaseHandler(FaultyGrid))
+        res = app.get('/.das')
+        self.assertEqual(res.text, """Attributes {
+    String description "A faulty grid for testing.";
+    FaultyGrid {
+    }
+    x {
+        String axis "X";
+        Int32 code 1;
+    }
+    y {
+        String axis "Y";
     }
 }
 """)

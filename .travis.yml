@@ -1,10 +1,12 @@
 language: python
 
+dist: xenial
+
 python:
     - 2.7
-    - 3.4
     - 3.5
     - 3.6
+    - 3.7
 
 env:
     # All tests:
@@ -27,4 +29,4 @@ install:
 
 script:
     - flake8
-    - if [ $TEST_SUITE == "testing" ]; then py.test --cov=src/pydap/; else py.test -a $TEST_SUITE; fi
+    - if [ $TEST_SUITE == "testing" ]; then pytest --cov=src/pydap/; else pytest -k $TEST_SUITE; fi

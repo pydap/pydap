@@ -23,11 +23,11 @@ def setup_session(openid, password, username=None,
 
 
 def _uri(openid):
-    '''
+    """
     Create ESGF authentication url.
     This function might be sensitive to a
     future evolution of the ESGF security.
-    '''
+    """
     def generate_url(dest_url):
         dest_node = _get_node(dest_url)
 
@@ -47,4 +47,4 @@ def _uri(openid):
 
 
 def _get_node(url):
-        return '/'.join(url.split('/')[:3]).replace('http:', 'https:')
+    return '/'.join(url.split('/')[:3]).replace('http:', 'https:')
