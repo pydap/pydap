@@ -86,12 +86,12 @@ setup(name='pydap',
       description="An implementation of the Data Access Protocol.",
       long_description="",
       classifiers=[
-            "Programming Language :: Python :: 2",
-            "Programming Language :: Python :: 2.7",
             "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.5",
-            "Programming Language :: Python :: 3.6"
+            "Programming Language :: Python :: 3.6",
             "Programming Language :: Python :: 3.7"
+            "Programming Language :: Python :: 3.8"
+            "Programming Language :: Python :: 3.9"
+            "Programming Language :: Python :: 3.10"
             # Get strings from
             # http://pypi.python.org/pypi?%3Aaction=list_classifiers
             ],
@@ -143,4 +143,4 @@ setup(name='pydap',
             [console_scripts]
             pydap = pydap.wsgi.app:main
             dods = pydap.handlers.dap:dump
-      """)
+      """, python_requires='>=3.6')
