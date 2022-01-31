@@ -81,6 +81,10 @@ class DASParser(SimpleParser):
                 value = str(value).strip('"')
             elif value.lower() in ['nan', 'nan.', '-nan']:
                 value = float('nan')
+            elif value.lower() in ['inf', 'inf.']:
+                value = float('inf')
+            elif value.lower() in ['-inf', '-inf.']:
+                value = float('-inf')
             else:
                 value = ast.literal_eval(value)
 
