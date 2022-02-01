@@ -1,4 +1,4 @@
-name: Run Python Tests
+name: Run Python Tests on MacOS
 on:
   push:
     branches:
@@ -12,7 +12,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: [ '3.x', '3.7', '3.8', '3.9' ]
+        python-version: [ '3.x', '3.7', '3.9' ]
     name: macos-latest Python ${{ matrix.python-version }} 
     steps:
       - uses: actions/checkout@v2
