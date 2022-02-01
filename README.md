@@ -2,7 +2,6 @@ pydap
 =====
 
 [![Build Status](https://travis-ci.org/pydap/pydap.svg)](https://travis-ci.org/pydap/pydap)
-[![Python2](https://img.shields.io/badge/python-2-blue.svg)](https://www.python.org/downloads/)
 [![Python3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/pydap/)
 [![Join the chat at https://gitter.im/pydap/pydap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pydap/pydap) 
@@ -90,8 +89,8 @@ more information on how to better deploy pydap.
 
 ## Documentation
 
-For more information, see
-[![documentation](https://pydap.github.io/pydap/)](https://pydap.github.io/pydap/)
+For more information, see [the pydap
+documentation](https://pydap.github.io/pydap/).
 
 ## Help
 
