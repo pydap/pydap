@@ -109,6 +109,23 @@ LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP = {
 }
 
 
+# Typemap from lower case DAP4 types to
+# numpy dtype string with specified endiannes.
+# Here, the endianness is very important:
+DAP4_TO_NUMPY_PARSER_TYPEMAP = {
+    'Float64': '>d',
+    'Float32': '>f',
+    'Int16': '>h',
+    'UInt16': '>H',
+    'Int32': '>i',
+    'UInt32': '>I',
+    'Byte': 'B',
+    'String': STRING,
+    'Url': STRING,
+    'Int8': '>i',
+    'UInt8': '>I',
+}
+
 def quote(name):
     """Return quoted name according to the DAP specification.
 

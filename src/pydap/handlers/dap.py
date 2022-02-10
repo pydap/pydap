@@ -31,6 +31,7 @@ from ..lib import (
     DEFAULT_TIMEOUT, DAP2_ARRAY_LENGTH_NUMPY_TYPE)
 from .lib import ConstraintExpression, BaseHandler, IterData
 from ..parsers.dds import build_dataset
+from ..parsers.dmr import build_dataset_dmr
 from ..parsers.das import parse_das, add_attributes
 from ..parsers import parse_ce
 from ..responses.dods import DAP2_response_dtypemap
@@ -50,21 +51,32 @@ class DAPHandler(BaseHandler):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
-        ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-        r = GET(ddsurl, application, session, timeout=timeout,
-                verify=verify)
-        raise_for_status(r)
-        dds = safe_charset_text(r, user_charset)
+        if (scheme == 'dap4'):
+           scheme = 'http'
+           
+           dmrurl = urlunsplit((scheme, netloc, path + '.dmr.xml', query, fragment))
+           r = GET(dmrurl, application, session, timeout=timeout, verify=verify)
+           raise_for_status(r)
+           dmr = safe_charset_text(r, user_charset)
+           
+           # build the dataset from the DMR.
+           self.dataset = build_dataset_dmr(dmr)
+        else:
+           ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
+           r = GET(ddsurl, application, session, timeout=timeout,
+                   verify=verify)
+           raise_for_status(r)
+           dds = safe_charset_text(r, user_charset)
+           
+           dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
+           r = GET(dasurl, application, session, timeout=timeout,
+                   verify=verify)
+           raise_for_status(r)
+           das = safe_charset_text(r, user_charset)
 
-        dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-        r = GET(dasurl, application, session, timeout=timeout,
-                verify=verify)
-        raise_for_status(r)
-        das = safe_charset_text(r, user_charset)
-
-        # build the dataset from the DDS and add attributes from the DAS
-        self.dataset = build_dataset(dds)
-        add_attributes(self.dataset, parse_das(das))
+           # build the dataset from the DDS and add attributes from the DAS
+           self.dataset = build_dataset(dds)
+           add_attributes(self.dataset, parse_das(das))
 
         # remove any projection from the url, leaving selections
         projection, selection = parse_ce(query)
