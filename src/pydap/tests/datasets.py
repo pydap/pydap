@@ -108,7 +108,7 @@ SimpleStructure['types']['s'] = BaseType(
     's', np.array("This is a data test string (pass 0)."))
 SimpleStructure['types']['u'] = BaseType('u', np.array("http://www.dods.org"))
 SimpleStructure['types']['U'] = BaseType('U', np.array(u"test unicode",
-                                                       np.unicode))
+                                                       str))
 
 
 # test grid
