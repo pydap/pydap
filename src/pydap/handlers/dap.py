@@ -52,9 +52,9 @@ class DAPHandler(BaseHandler):
         scheme, netloc, path, query, fragment = urlsplit(url)
 
         if (scheme == 'dap4'):
-           scheme = 'http'
+           tmp_scheme = 'http'
            
-           dmrurl = urlunsplit((scheme, netloc, path + '.dmr.xml', query, fragment))
+           dmrurl = urlunsplit((tmp_scheme, netloc, path + '.dmr.xml', query, fragment))
            r = GET(dmrurl, application, session, timeout=timeout, verify=verify)
            raise_for_status(r)
            dmr = safe_charset_text(r, user_charset)
@@ -137,6 +137,17 @@ def safe_dds_and_data(r, user_charset):
     dds, data = raw.split(b'\nData:\n', 1)
     return dds.decode(get_charset(r, user_charset)), data
 
+def safe_dmr_and_data(r, user_charset):
+    if r.content_encoding == 'gzip':
+        raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
+    else:
+        raw = r.body[4:]
+    import pdb;pdb.set_trace()
+    sep = b'</Dataset>\n\r\n'
+    dmr, data = raw.split(sep, 1)
+    dmr = dmr + sep
+    return dmr.decode(get_charset(r, user_charset)), data
+
 
 class BaseProxy(object):
 
@@ -170,8 +181,13 @@ class BaseProxy(object):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
         scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
+        if (scheme == 'dap4'):
+            service = '.dap'
+        else:
+            service = '.dods'
+        tmp_scheme = 'http'
         url = urlunsplit((
-            scheme, netloc, path + '.dods',
+            tmp_scheme, netloc, path + service,
             quote(self.id) + hyperslab(index) + '&' + query,
             fragment)).rstrip('&')
 
@@ -180,10 +196,15 @@ class BaseProxy(object):
         r = GET(url, self.application, self.session, timeout=self.timeout,
                 verify=self.verify)
         raise_for_status(r)
-        dds, data = safe_dds_and_data(r, self.user_charset)
-
-        # Parse received dataset:
-        dataset = build_dataset(dds)
+        import pdb; pdb.set_trace()
+        if (scheme == 'dap4'):
+            dmr, data = safe_dmr_and_data(r, self.user_charset)
+            # Parse received dataset:
+            dataset = build_dataset_dmr(dmr)
+        else:
+            dds, data = safe_dds_and_data(r, self.user_charset)
+            # Parse received dataset:
+            dataset = build_dataset(dds)
         dataset.data = unpack_data(BytesReader(data), dataset)
         return dataset[self.id].data
 
