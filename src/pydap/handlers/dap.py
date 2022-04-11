@@ -13,6 +13,7 @@ import pprint
 import copy
 import re
 from itertools import chain
+from numpy.lib.arrayterator import Arrayterator
 
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
@@ -52,15 +53,46 @@ class DAPHandler(BaseHandler):
         scheme, netloc, path, query, fragment = urlsplit(url)
 
         if (scheme == 'dap4'):
-           tmp_scheme = 'http'
+           scheme = 'http'
            
-           dmrurl = urlunsplit((tmp_scheme, netloc, path + '.dmr.xml', query, fragment))
+           # dmrurl = urlunsplit((scheme, netloc, path + '.dmr', query, fragment))
+           # r = GET(dmrurl, application, session, timeout=timeout, verify=verify)
+           # raise_for_status(r)
+           # with open('climatology.dmr', 'wb') as fh:
+           #     fh.write(r.body)
+           # dmr = safe_charset_text(r, user_charset)
+           
+           # build the dataset from the DMR.
+           # self.dataset = build_dataset_dmr(dmr)
+
+           dmrurl = urlunsplit((scheme, netloc, path + '.dap', query, fragment))
            r = GET(dmrurl, application, session, timeout=timeout, verify=verify)
            raise_for_status(r)
-           dmr = safe_charset_text(r, user_charset)
+           crlf = r.body.find('\r\n'.encode())
+           dmr = r.body[4:crlf]
+           dap_data = r.body[crlf + 4:]
+           #dmr = safe_charset_text(my_bytes, user_charset)
            
            # build the dataset from the DMR.
            self.dataset = build_dataset_dmr(dmr)
+
+           total_nelems = 1
+           for var in self.dataset:
+               print("Handling var " + self.dataset[var].name)
+               bytes_per_item = 2
+               for var_dim_size in self.dataset[var].shape:
+                   print("var_dim_size " + var_dim_size)
+                   total_nelems *= int(var_dim_size)
+               import pdb; pdb.set_trace()
+               total_data_size = total_nelems * bytes_per_item
+               self.dataset[var].data.extend(total_nelems)
+               print("total_nelems " + str(total_nelems) + " total_data_size " + str(total_data_size))
+               # Copy the data.
+#               self.dataset[var].data = Arrayterator(var.data, elements)
+#               for i in range(total_nelems):
+#                   self.dataset[var].data[i] = 42;
+
+
         else:
            ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
            r = GET(ddsurl, application, session, timeout=timeout,
@@ -137,17 +169,6 @@ def safe_dds_and_data(r, user_charset):
     dds, data = raw.split(b'\nData:\n', 1)
     return dds.decode(get_charset(r, user_charset)), data
 
-def safe_dmr_and_data(r, user_charset):
-    if r.content_encoding == 'gzip':
-        raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
-    else:
-        raw = r.body[4:]
-    import pdb;pdb.set_trace()
-    sep = b'</Dataset>\n\r\n'
-    dmr, data = raw.split(sep, 1)
-    dmr = dmr + sep
-    return dmr.decode(get_charset(r, user_charset)), data
-
 
 class BaseProxy(object):
 
@@ -181,13 +202,8 @@ class BaseProxy(object):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
         scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
-        if (scheme == 'dap4'):
-            service = '.dap'
-        else:
-            service = '.dods'
-        tmp_scheme = 'http'
         url = urlunsplit((
-            tmp_scheme, netloc, path + service,
+            scheme, netloc, path + '.dods',
             quote(self.id) + hyperslab(index) + '&' + query,
             fragment)).rstrip('&')
 
@@ -196,15 +212,10 @@ class BaseProxy(object):
         r = GET(url, self.application, self.session, timeout=self.timeout,
                 verify=self.verify)
         raise_for_status(r)
-        import pdb; pdb.set_trace()
-        if (scheme == 'dap4'):
-            dmr, data = safe_dmr_and_data(r, self.user_charset)
-            # Parse received dataset:
-            dataset = build_dataset_dmr(dmr)
-        else:
-            dds, data = safe_dds_and_data(r, self.user_charset)
-            # Parse received dataset:
-            dataset = build_dataset(dds)
+        dds, data = safe_dds_and_data(r, self.user_charset)
+
+        # Parse received dataset:
+        dataset = build_dataset(dds)
         dataset.data = unpack_data(BytesReader(data), dataset)
         return dataset[self.id].data
 
