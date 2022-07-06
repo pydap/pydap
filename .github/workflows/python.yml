@@ -12,8 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.x', '3.6', '3.7', '3.8', '3.9' ]
-    name: ubuntu-latest Python ${{ matrix.python-version }} 
+        python-version: ['3.x', '3.6', '3.7', '3.8', '3.9', '3.10']
+    name: ubuntu-latest Python ${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
       - name: Install Python 3
@@ -28,4 +28,4 @@ jobs:
       - name: Run tests with pytest
         run: |
           pip install -e .[tests,netcdf,client]
-          pytest 
+          pytest
