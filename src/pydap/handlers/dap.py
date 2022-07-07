@@ -202,7 +202,6 @@ class BaseProxy(object):
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
-        print(url)
         r = GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
         raise_for_status(r)
         dds, data = safe_dds_and_data(r, self.user_charset)
