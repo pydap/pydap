@@ -25,7 +25,6 @@ def DAP2_parser_typemap(type_string):
 
 
 class DDSParser(SimpleParser):
-
     """A parser for the DDS."""
 
     def __init__(self, dds):

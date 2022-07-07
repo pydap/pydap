@@ -36,15 +36,14 @@ from ..parsers.dmr import build_dataset_dmr
 from ..parsers.das import parse_das, add_attributes
 from ..parsers import parse_ce
 from ..responses.dods import DAP2_response_dtypemap
+
 logger = logging.getLogger('pydap')
 logger.addHandler(logging.NullHandler())
-
 
 BLOCKSIZE = 512
 
 
 class DAPHandler(BaseHandler):
-
     """Build a dataset from a DAP base URL."""
 
     def __init__(self, url, application=None, session=None, output_grid=True,
@@ -52,63 +51,58 @@ class DAPHandler(BaseHandler):
         # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
-        if (scheme == 'dap4'):
-           scheme = 'http'
-           
-           # dmrurl = urlunsplit((scheme, netloc, path + '.dmr', query, fragment))
-           # r = GET(dmrurl, application, session, timeout=timeout, verify=verify)
-           # raise_for_status(r)
-           # with open('climatology.dmr', 'wb') as fh:
-           #     fh.write(r.body)
-           # dmr = safe_charset_text(r, user_charset)
-           
-           # build the dataset from the DMR.
-           # self.dataset = build_dataset_dmr(dmr)
+        if scheme == 'dap4':
+            scheme = 'http'
 
-           dmrurl = urlunsplit((scheme, netloc, path + '.dap', query, fragment))
-           r = GET(dmrurl, application, session, timeout=timeout, verify=verify)
-           raise_for_status(r)
-           crlf = r.body.find('\r\n'.encode())
-           dmr = r.body[4:crlf]
-           dap_data = r.body[crlf + 4:]
-           #dmr = safe_charset_text(my_bytes, user_charset)
-           
-           # build the dataset from the DMR.
-           self.dataset = build_dataset_dmr(dmr)
+            # We can either grab the DRM from the DMR response, or pull it out of the DAP response
+            dmrurl = urlunsplit((scheme, netloc, path + '.dmr', query, fragment))
+            r = GET(dmrurl, application, session, timeout=timeout, verify=verify)
+            raise_for_status(r)
+            dmr = safe_charset_text(r, user_charset)
 
-           total_nelems = 1
-           for var in self.dataset:
-               print("Handling var " + self.dataset[var].name)
-               bytes_per_item = 2
-               for var_dim_size in self.dataset[var].shape:
-                   print("var_dim_size " + var_dim_size)
-                   total_nelems *= int(var_dim_size)
-               import pdb; pdb.set_trace()
-               total_data_size = total_nelems * bytes_per_item
-               self.dataset[var].data.extend(total_nelems)
-               print("total_nelems " + str(total_nelems) + " total_data_size " + str(total_data_size))
-               # Copy the data.
-#               self.dataset[var].data = Arrayterator(var.data, elements)
-#               for i in range(total_nelems):
-#                   self.dataset[var].data[i] = 42;
+            if False:
+                dapurl = urlunsplit((scheme, netloc, path + '.dap', query, fragment))
+                r = GET(dapurl, application, session, timeout=timeout, verify=verify)
+                raise_for_status(r)
+                dmr_len = r.body[0:4]
+                crlf = r.body.find('\r\n'.encode())
+                dmr = r.body[4:crlf]
+                dap_data = r.body[crlf + 4:]
 
+            # build the dataset from the DMR
+            self.dataset = build_dataset_dmr(dmr)
+
+            total_nelems = 1
+            for var in self.dataset:
+                print("Handling var " + self.dataset[var].name)
+                bytes_per_item = 2
+                for var_dim_size in self.dataset[var].shape:
+                    print(f"var_dim_size {var_dim_size}")
+                    total_nelems *= int(var_dim_size)
+
+                total_data_size = total_nelems * bytes_per_item
+                print(self.dataset)
+                #self.dataset[var].data.extend(total_nelems)
+                print("total_nelems " + str(total_nelems) + " total_data_size " + str(total_data_size))
+                # Copy the data.
+        #               self.dataset[var].data = Arrayterator(var.data, elements)
+        #               for i in range(total_nelems):
+        #                   self.dataset[var].data[i] = 42;
 
         else:
-           ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-           r = GET(ddsurl, application, session, timeout=timeout,
-                   verify=verify)
-           raise_for_status(r)
-           dds = safe_charset_text(r, user_charset)
-           
-           dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-           r = GET(dasurl, application, session, timeout=timeout,
-                   verify=verify)
-           raise_for_status(r)
-           das = safe_charset_text(r, user_charset)
+            ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
+            r = GET(ddsurl, application, session, timeout=timeout, verify=verify)
+            raise_for_status(r)
+            dds = safe_charset_text(r, user_charset)
 
-           # build the dataset from the DDS and add attributes from the DAS
-           self.dataset = build_dataset(dds)
-           add_attributes(self.dataset, parse_das(das))
+            dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
+            r = GET(dasurl, application, session, timeout=timeout, verify=verify)
+            raise_for_status(r)
+            das = safe_charset_text(r, user_charset)
+
+            # build the dataset from the DDS and add attributes from the DAS
+            self.dataset = build_dataset(dds)
+            add_attributes(self.dataset, parse_das(das))
 
         # remove any projection from the url, leaving selections
         projection, selection = parse_ce(query)
@@ -116,13 +110,10 @@ class DAPHandler(BaseHandler):
 
         # now add data proxies
         for var in walk(self.dataset, BaseType):
-            var.data = BaseProxy(url, var.id, var.dtype, var.shape,
-                                 application=application,
-                                 session=session)
+            var.data = BaseProxy(url, var.id, var.dtype, var.shape, application=application, session=session)
         for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
-            var.data = SequenceProxy(url, template, application=application,
-                                     session=session)
+            var.data = SequenceProxy(url, template, application=application, session=session)
 
         # apply projections
         for var in projection:
@@ -143,6 +134,10 @@ class DAPHandler(BaseHandler):
         # retrieve only main variable for grid types:
         for var in walk(self.dataset, GridType):
             var.set_output_grid(output_grid)
+
+
+class DAP4Handler(DAPHandler):
+    pass
 
 
 def get_charset(r, user_charset):
@@ -171,12 +166,10 @@ def safe_dds_and_data(r, user_charset):
 
 
 class BaseProxy(object):
-
     """A proxy for remote base types.
 
     This class behaves like a Numpy array, proxying the data from a base type
     on a remote dataset.
-
     """
 
     def __init__(self, baseurl, id, dtype, shape, slice_=None,
@@ -209,8 +202,8 @@ class BaseProxy(object):
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
-        r = GET(url, self.application, self.session, timeout=self.timeout,
-                verify=self.verify)
+        print(url)
+        r = GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
         raise_for_status(r)
         dds, data = safe_dds_and_data(r, self.user_charset)
 
@@ -245,8 +238,11 @@ class BaseProxy(object):
         return self[:] < other
 
 
-class SequenceProxy(object):
+class BaseProxyDap4(BaseProxy):
+    pass
 
+
+class SequenceProxy(object):
     """A proxy for remote sequences.
 
     This class behaves like a Numpy structured array, proxying the data from a
@@ -307,7 +303,7 @@ class SequenceProxy(object):
         # slice data
         else:
             if isinstance(key, int):
-                key = slice(key, key+1)
+                key = slice(key, key + 1)
             out.slice = combine_slices(self.slice, (key,))
 
         return out
@@ -462,10 +458,10 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
                     # server-side failure.
                     # it is expected that the user should be mindful of this:
                     raise RuntimeError(
-                                ('variable {0} could not be properly '
-                                 'retrieved. To avoid this '
-                                 'error consider using open_url(..., '
-                                 'output_grid=False).').format(quote(id)))
+                        ('variable {0} could not be properly '
+                         'retrieved. To avoid this '
+                         'error consider using open_url(..., '
+                         'output_grid=False).').format(quote(id)))
                 else:
                     raise
             if response_dtype.char == "B":

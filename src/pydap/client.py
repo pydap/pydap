@@ -56,16 +56,17 @@ from .parsers.das import parse_das, add_attributes
 
 
 def open_url(url, application=None, session=None, output_grid=True,
-             timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii'):
+             timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii', protocol='dap2'):
     """
     Open a remote URL, returning a dataset.
 
     set output_grid to False to retrieve only main arrays and
     never retrieve coordinate axes.
     """
-    dataset = DAPHandler(url, application, session, output_grid,
+    handler = DAPHandler(url, application, session, output_grid,
                          timeout=timeout, verify=verify,
-                         user_charset=user_charset).dataset
+                         user_charset=user_charset)
+    dataset = handler.dataset
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session, timeout=timeout)
@@ -149,7 +150,6 @@ class Functions(object):
 
 
 class ServerFunction(object):
-
     """A proxy for a server-side function.
 
     Instead of returning datasets, the function will return a proxy object,
