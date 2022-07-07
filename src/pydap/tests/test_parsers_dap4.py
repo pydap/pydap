@@ -43,7 +43,7 @@ class TestParseDMR(unittest.TestCase):
         self.dataset = build_dataset_dmr(DMR_coads_climatology2)
         self.assertEqual(self.dataset['SST'].attributes['long_name'], 'SEA SURFACE TEMPERATURE')
         self.assertEqual(self.dataset['SST'].attributes['missing_value'], '-9.99999979e+33')
-        self.assertEqual(self.dataset['AIRT'].shape, ['12', '90', '180'])
+        self.assertEqual(self.dataset['AIRT'].shape, [12, 90, 180])
         self.assertEqual(self.dataset['SPEH'].dtype.str, '>f4')
 #        import pdb; pdb.set_trace()        
         # for v in self.dataset:
