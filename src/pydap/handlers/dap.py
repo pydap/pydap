@@ -60,15 +60,6 @@ class DAPHandler(BaseHandler):
             raise_for_status(r)
             dmr = safe_charset_text(r, user_charset)
 
-            if False:
-                dapurl = urlunsplit((scheme, netloc, path + '.dap', query, fragment))
-                r = GET(dapurl, application, session, timeout=timeout, verify=verify)
-                raise_for_status(r)
-                dmr_len = r.body[0:4]
-                crlf = r.body.find('\r\n'.encode())
-                dmr = r.body[4:crlf]
-                dap_data = r.body[crlf + 4:]
-
             # build the dataset from the DMR
             self.dataset = build_dataset_dmr(dmr)
 
@@ -136,6 +127,10 @@ class DAPHandler(BaseHandler):
             var.set_output_grid(output_grid)
 
 
+class DAP2Handler(DAPHandler):
+    pass
+
+
 class DAP4Handler(DAPHandler):
     pass
 
@@ -149,8 +144,7 @@ def get_charset(r, user_charset):
 
 def safe_charset_text(r, user_charset):
     if r.content_encoding == 'gzip':
-        return (gzip.GzipFile(fileobj=BytesIO(r.body)).read()
-                .decode(get_charset(r, user_charset)))
+        return gzip.GzipFile(fileobj=BytesIO(r.body)).read().decode(get_charset(r, user_charset))
     else:
         r.charset = get_charset(r, user_charset)
         return r.text
@@ -203,6 +197,7 @@ class BaseProxy(object):
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
         r = GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
+        print(url)
         raise_for_status(r)
         dds, data = safe_dds_and_data(r, self.user_charset)
 

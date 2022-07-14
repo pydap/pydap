@@ -9,10 +9,8 @@ from six import binary_type, MAXSIZE, string_types
 
 from .exceptions import ConstraintExpressionError
 
-
 __dap__ = '2.15'
 __version__ = get_distribution("pydap").version
-
 
 START_OF_SEQUENCE = b'\x5a\x00\x00\x00'
 END_OF_SEQUENCE = b'\xa5\x00\x00\x00'
@@ -108,7 +106,6 @@ LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP = {
     'uint': '>I',
 }
 
-
 # Typemap from lower case DAP4 types to
 # numpy dtype string with specified endiannes.
 # Here, the endianness is very important:
@@ -125,6 +122,7 @@ DAP4_TO_NUMPY_PARSER_TYPEMAP = {
     'Int8': '>i',
     'UInt8': '>I',
 }
+
 
 def quote(name):
     """Return quoted name according to the DAP specification.
@@ -143,8 +141,8 @@ def encode(obj):
     """Return an object encoded to its DAP representation."""
     # fix for Python 3.5, where strings are being encoded as numbers
     if (
-        isinstance(obj, string_types) or
-        isinstance(obj, np.ndarray) and obj.dtype.char in 'SU'
+            isinstance(obj, string_types) or
+            isinstance(obj, np.ndarray) and obj.dtype.char in 'SU'
     ):
         return '"{0}"'.format(obj)
 
@@ -174,7 +172,7 @@ def fix_slice(slice_, shape):
     out = []
     for s in slice_:
         if s is Ellipsis:
-            out.extend((slice(None),) * (expand+1))
+            out.extend((slice(None),) * (expand + 1))
             expand = 0
         else:
             out.append(s)
@@ -197,7 +195,7 @@ def fix_slice(slice_, shape):
 
             j = s.stop
             if (j is None or
-               j > n):
+                    j > n):
                 j = n
             elif j < 0:
                 j += n
@@ -219,9 +217,9 @@ def combine_slices(slice1, slice2):
     for exp1, exp2 in zip_longest(
             slice1, slice2, fillvalue=slice(None)):
         if isinstance(exp1, int):
-            exp1 = slice(exp1, exp1+1)
+            exp1 = slice(exp1, exp1 + 1)
         if isinstance(exp2, int):
-            exp2 = slice(exp2, exp2+1)
+            exp2 = slice(exp2, exp2 + 1)
 
         start = (exp1.start or 0) + (exp2.start or 0)
         step = (exp1.step or 1) * (exp2.step or 1)
@@ -250,7 +248,7 @@ def hyperslab(slice_):
         slice_.pop(-1)
 
     return ''.join('[%s:%s:%s]' % (
-        s.start or 0, s.step or 1, (s.stop or MAXSIZE)-1) for s in slice_)
+        s.start or 0, s.step or 1, (s.stop or MAXSIZE) - 1) for s in slice_)
 
 
 def walk(var, type=object):
@@ -284,8 +282,8 @@ def fix_shorthand(projection, dataset):
                         raise ConstraintExpressionError(
                             'Ambiguous shorthand notation request: %s' % token)
                     var = [
-                        (parent, ()) for parent in child.id.split('.')[:-1]
-                    ] + [(token, slice_)]
+                              (parent, ()) for parent in child.id.split('.')[:-1]
+                          ] + [(token, slice_)]
         out.append(var)
     return out
 
@@ -317,7 +315,6 @@ def load_from_entry_point_relative(r, package):
 
 
 class StreamReader(object):
-
     """Class to allow reading a `urllib3.HTTPResponse`."""
 
     def __init__(self, stream):
@@ -336,7 +333,6 @@ class StreamReader(object):
 
 
 class BytesReader(object):
-
     """Class to allow reading a `bytes` object."""
 
     def __init__(self, data):

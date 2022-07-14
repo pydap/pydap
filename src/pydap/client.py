@@ -51,7 +51,7 @@ from .model import DapType
 from .lib import encode, DEFAULT_TIMEOUT
 from .net import GET, raise_for_status
 from .handlers.dap import DAPHandler, unpack_data, StreamReader
-from .parsers.dds import build_dataset
+import pydap.parsers.dds
 from .parsers.das import parse_das, add_attributes
 
 
@@ -94,7 +94,7 @@ def open_file(dods, das=None):
             if line.strip() == 'Data:':
                 break
             dds += line
-    dataset = build_dataset(dds)
+    dataset = pydap.parsers.dds.build_dataset(dds)
     pos = len(dds) + len('Data:\n')
 
     with open(dods, "rb") as f:
@@ -116,7 +116,7 @@ def open_dods(url, metadata=False, application=None, session=None,
 
     dds, data = r.body.split(b'\nData:\n', 1)
     dds = dds.decode(r.content_encoding or 'ascii')
-    dataset = build_dataset(dds)
+    dataset = pydap.parsers.dds.build_dataset(dds)
     stream = StreamReader(BytesIO(data))
     dataset.data = unpack_data(stream, dataset)
 
