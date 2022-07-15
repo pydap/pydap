@@ -12,7 +12,7 @@ DMR_single_scalar = """
 </Dataset>
 """
 
-with open(os.path.join(os.path.dirname(__file__), 'test.02.dmr'), 'r') as dap:
+with open(os.path.join(os.path.dirname(__file__), 'data/test.02.dmr'), 'r') as dap:
     DMR_coads_climatology2 = dap.read()
 
 # It is important to add attributes that have the same

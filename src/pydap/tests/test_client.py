@@ -8,8 +8,8 @@ from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 import pytest
 
 
-DODS = os.path.join(os.path.dirname(__file__), 'test.01.dods')
-DAS = os.path.join(os.path.dirname(__file__), 'test.01.das')
+DODS = os.path.join(os.path.dirname(__file__), 'data/test.01.dods')
+DAS = os.path.join(os.path.dirname(__file__), 'data/test.01.das')
 
 
 @pytest.fixture
