@@ -24,11 +24,6 @@ class TestParseDMR(unittest.TestCase):
 
     """Test DMR parser."""
 
-#    def setUp(self):
-#        """Load a dataset and apply DAS to it."""
-#        attributes = parse_das(DMR)
-#        add_attributes(self.dataset, attributes)
-
     def test_single_scalar(self):
         """Test a single scalar case."""
         self.dataset = dmr_to_dataset(DMR_single_scalar)

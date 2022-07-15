@@ -48,52 +48,28 @@ class DAPHandler(BaseHandler):
 
     def __init__(self, url, application=None, session=None, output_grid=True,
                  timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii'):
-        # download DDS/DAS
         scheme, netloc, path, query, fragment = urlsplit(url)
 
         if scheme == 'dap4':
             scheme = 'http'
-
-            # We can either grab the DRM from the DMR response, or pull it out of the DAP response
-            dmrurl = urlunsplit((scheme, netloc, path + '.dmr', query, fragment))
-            r = GET(dmrurl, application, session, timeout=timeout, verify=verify)
+            dmr_url = urlunsplit((scheme, netloc, path + '.dmr', query, fragment))
+            r = GET(dmr_url, application, session, timeout=timeout, verify=verify)
             raise_for_status(r)
             dmr = safe_charset_text(r, user_charset)
-
-            # build the dataset from the DMR
             self.dataset = dmr_to_dataset(dmr)
-
-            total_nelems = 1
-            for var in self.dataset:
-                print("Handling var " + self.dataset[var].name)
-                bytes_per_item = 2
-                for var_dim_size in self.dataset[var].shape:
-                    print(f"var_dim_size {var_dim_size}")
-                    total_nelems *= int(var_dim_size)
-
-                total_data_size = total_nelems * bytes_per_item
-                print(self.dataset)
-                #self.dataset[var].data.extend(total_nelems)
-                print("total_nelems " + str(total_nelems) + " total_data_size " + str(total_data_size))
-                # Copy the data.
-        #               self.dataset[var].data = Arrayterator(var.data, elements)
-        #               for i in range(total_nelems):
-        #                   self.dataset[var].data[i] = 42;
-
         else:
-            ddsurl = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-            r = GET(ddsurl, application, session, timeout=timeout, verify=verify)
+            dds_url = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
+            r = GET(dds_url, application, session, timeout=timeout, verify=verify)
             raise_for_status(r)
             dds = safe_charset_text(r, user_charset)
-
-            dasurl = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-            r = GET(dasurl, application, session, timeout=timeout, verify=verify)
-            raise_for_status(r)
-            das = safe_charset_text(r, user_charset)
-
-            # build the dataset from the DDS and add attributes from the DAS
             self.dataset = build_dataset(dds)
-            add_attributes(self.dataset, parse_das(das))
+
+        # Also pull the DAS and add additional attributes
+        das_url = urlunsplit((scheme, netloc, path + '.das', query, fragment))
+        r = GET(das_url, application, session, timeout=timeout, verify=verify)
+        raise_for_status(r)
+        das = safe_charset_text(r, user_charset)
+        add_attributes(self.dataset, parse_das(das))
 
         # remove any projection from the url, leaving selections
         projection, selection = parse_ce(query)
