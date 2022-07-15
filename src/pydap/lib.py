@@ -133,7 +133,7 @@ def quote(name):
         'Period%2E'
 
     """
-    safe = '%_!~*\'-"'
+    safe = '%_!~*\'-"/'
     return quote_(name.encode('utf-8'), safe=safe).replace('.', '%2E')
 
 
