@@ -3,7 +3,7 @@
 import numpy as np
 from pydap.parsers.das import add_attributes, parse_das
 #from pydap.parsers.dds import build_dataset
-from pydap.parsers.dmr import build_dataset_dmr
+from pydap.parsers.dmr import dmr_to_dataset
 from pydap.tests.test_parsers_dds import DDS
 import unittest
 import os
@@ -34,13 +34,13 @@ class TestParseDMR(unittest.TestCase):
 
     def test_single_scalar(self):
         """Test a single scalar case."""
-        self.dataset = build_dataset_dmr(DMR_single_scalar)
+        self.dataset = dmr_to_dataset(DMR_single_scalar)
 #        import pdb; pdb.set_trace()
 #        self.assertEqual(self.dataset["x"].name, 'x')
 
     def test_coads_climatology2(self):
         """Test a single scalar case."""
-        self.dataset = build_dataset_dmr(DMR_coads_climatology2)
+        self.dataset = dmr_to_dataset(DMR_coads_climatology2)
         self.assertEqual(self.dataset['SST'].attributes['long_name'], 'SEA SURFACE TEMPERATURE')
         self.assertEqual(self.dataset['SST'].attributes['missing_value'], '-9.99999979e+33')
         self.assertEqual(self.dataset['AIRT'].shape, [12, 90, 180])

@@ -32,7 +32,7 @@ from ..lib import (
     DEFAULT_TIMEOUT, DAP2_ARRAY_LENGTH_NUMPY_TYPE)
 from .lib import ConstraintExpression, BaseHandler, IterData
 from ..parsers.dds import build_dataset
-from ..parsers.dmr import build_dataset_dmr
+from ..parsers.dmr import dmr_to_dataset
 from ..parsers.das import parse_das, add_attributes
 from ..parsers import parse_ce
 from ..responses.dods import DAP2_response_dtypemap
@@ -61,7 +61,7 @@ class DAPHandler(BaseHandler):
             dmr = safe_charset_text(r, user_charset)
 
             # build the dataset from the DMR
-            self.dataset = build_dataset_dmr(dmr)
+            self.dataset = dmr_to_dataset(dmr)
 
             total_nelems = 1
             for var in self.dataset:
@@ -197,7 +197,6 @@ class BaseProxy(object):
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
         r = GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
-        print(url)
         raise_for_status(r)
         dds, data = safe_dds_and_data(r, self.user_charset)
 
