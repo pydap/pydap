@@ -195,7 +195,7 @@ class DapType(object):
     """
 
     def __init__(self, name='nameless', attributes=None, **kwargs):
-        self.name = name
+        self.name = quote(name)
         self.attributes = attributes or {}
         self.attributes.update(kwargs)
 
@@ -405,7 +405,7 @@ class StructureType(DapType, Mapping):
     def _getitem_string(self, key):
         """ Assume that key is a string type """
         try:
-            return self._dict[key]
+            return self._dict[quote(key)]
         except KeyError:
             splitted = key.split('.')
             if len(splitted) > 1:
@@ -446,7 +446,7 @@ class StructureType(DapType, Mapping):
             yield self[key]
 
     def __setitem__(self, key, item):
-        key = key
+        key = quote(key)
         if key != item.name:
             raise KeyError(
                 'Key "%s" is different from variable name "%s"!' %

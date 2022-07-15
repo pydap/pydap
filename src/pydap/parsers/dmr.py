@@ -30,6 +30,7 @@ def get_variables(element, parent_name=''):
     for atomic_type in dmr_atomic_types:
         for variable in element.findall(atomic_type, namespace):
             name = variable.attrib['name']
+            name = pydap.lib.quote(name)
             if parent_name == '':
                 # The FQN of root variables does not have leading slash
                 fqn = name
@@ -55,6 +56,7 @@ def get_dimensions(element, parent_name=''):
     dimensions_elements = element.findall('Dimension', namespace)
     for dimensions_element in dimensions_elements:
         name = dimensions_element.attrib['name']
+        name = pydap.lib.quote(name)
         if parent_name == '':
             # The FQN of root variables does not have leading slash
             fqn = name
