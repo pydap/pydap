@@ -4,6 +4,7 @@ import numpy as np
 from xml.etree import ElementTree as ET
 import pydap.model
 import pydap.lib
+import re
 
 
 constructors = ('grid', 'sequence', 'structure')
@@ -16,7 +17,7 @@ namespace = {'': "http://xml.opendap.org/ns/DAP/4.0#"}
 
 def get_group_variables(element, parent_name=''):
     variables = {}
-    group_elements = element.findall('Group', namespace)
+    group_elements = element.findall('Group')
     for group_element in group_elements:
         group_name = parent_name + '/' + group_element.get('name')
         group_variables = get_variables(group_element, group_name)
@@ -28,7 +29,7 @@ def get_group_variables(element, parent_name=''):
 def get_variables(element, parent_name=''):
     variables = {}
     for atomic_type in dmr_atomic_types:
-        for variable in element.findall(atomic_type, namespace):
+        for variable in element.findall(atomic_type):
             name = variable.attrib['name']
             name = pydap.lib.quote(name)
             if parent_name == '':
@@ -42,7 +43,7 @@ def get_variables(element, parent_name=''):
 
 def get_group_dimensions(element, parent_name=''):
     dimensions = {}
-    group_elements = element.findall('Group', namespace)
+    group_elements = element.findall('Group')
     for group_element in group_elements:
         group_name = parent_name + '/' + group_element.get('name')
         group_dimensions = get_dimensions(group_element, group_name)
@@ -53,7 +54,7 @@ def get_group_dimensions(element, parent_name=''):
 
 def get_dimensions(element, parent_name=''):
     dimensions = {}
-    dimensions_elements = element.findall('Dimension', namespace)
+    dimensions_elements = element.findall('Dimension')
     for dimensions_element in dimensions_elements:
         name = dimensions_element.attrib['name']
         name = pydap.lib.quote(name)
@@ -78,24 +79,24 @@ def dap4_to_numpy_typemap(type_string):
 
 
 def get_dtype(element):
-    prefix, separator, dtype = element.tag.partition('}')
+    dtype = element.tag
     dtype = dap4_to_numpy_typemap(dtype)
     return dtype
 
 
 def get_attributes(element):
     attributes = {}
-    attribute_elements = element.findall('Attribute', namespace)
+    attribute_elements = element.findall('Attribute')
     for attribute_element in attribute_elements:
         name = attribute_element.get('name')
-        value = attribute_element.find('Value', namespace).text
+        value = attribute_element.find('Value').text
         attributes[name] = value
     return attributes
 
 
 def get_dims(element):
     # Not to be confused with dimensions
-    dimension_elements = element.findall('Dim', namespace)
+    dimension_elements = element.findall('Dim')
     dimensions = []
     for dimension_element in dimension_elements:
         name = dimension_element.get('name')
@@ -107,7 +108,7 @@ def get_dims(element):
 
 
 def has_map(element):
-    maps = element.findall('Map', namespace)
+    maps = element.findall('Map')
     if len(maps) > 0:
         return True
     else:
@@ -133,7 +134,8 @@ def make_grid_var(dataset, variable):
 def dmr_to_dataset(dmr):
     """Return a dataset object from a DMR representation."""
 
-    # Parse the DMR.
+    # Parse the DMR. First dropping the namespace
+    dmr = re.sub(' xmlns="[^"]+"', '', dmr, count=1)
     dom_et = ET.fromstring(dmr)
 
     group_variables = get_group_variables(dom_et)

@@ -1,8 +1,5 @@
 """Test DAP4 parsing functions."""
 
-import numpy as np
-from pydap.parsers.das import add_attributes, parse_das
-#from pydap.parsers.dds import build_dataset
 from pydap.parsers.dmr import dmr_to_dataset
 
 import unittest
@@ -15,7 +12,7 @@ DMR_single_scalar = """
 </Dataset>
 """
 
-with open(os.path.join(os.path.dirname(__file__), './test.02.dap'), 'r') as dap:
+with open(os.path.join(os.path.dirname(__file__), 'test.02.dmr'), 'r') as dap:
     DMR_coads_climatology2 = dap.read()
 
 # It is important to add attributes that have the same
@@ -35,8 +32,6 @@ class TestParseDMR(unittest.TestCase):
     def test_single_scalar(self):
         """Test a single scalar case."""
         self.dataset = dmr_to_dataset(DMR_single_scalar)
-#        import pdb; pdb.set_trace()
-#        self.assertEqual(self.dataset["x"].name, 'x')
 
     def test_coads_climatology2(self):
         """Test a single scalar case."""
@@ -45,10 +40,6 @@ class TestParseDMR(unittest.TestCase):
         self.assertEqual(self.dataset['SST'].attributes['missing_value'], '-9.99999979e+33')
         self.assertEqual(self.dataset['AIRT'].shape, [12, 90, 180])
         self.assertEqual(self.dataset['SPEH'].dtype.str, '>f4')
-#        import pdb; pdb.set_trace()        
-        # for v in self.dataset:
-        #     print("dataset has " + v)
 
-#        self.assertEqual(self.dataset["x"].name, 'x')
 
 
