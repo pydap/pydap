@@ -16,8 +16,8 @@ It is also possible to download data directly from a dods (binary) response.
 This allows calling server-specific functions, like those supported by the
 Ferret and the GrADS data servers:
 
-    >>> from pydap.client import open_dods
-    >>> dataset = open_dods(
+    >>> from pydap.client import open_dods_url
+    >>> dataset = open_dods_url(
     ...     "http://test.pydap.org/coads.nc.dods",
     ...     metadata=True)
 
@@ -50,9 +50,11 @@ from six.moves.urllib.parse import urlsplit, urlunsplit
 from .model import DapType
 from .lib import encode, DEFAULT_TIMEOUT
 from .net import GET, raise_for_status
-from .handlers.dap import DAPHandler, unpack_data, StreamReader
+import pydap.handlers.dap
 import pydap.parsers.dds
+import pydap.parsers.dmr
 from .parsers.das import parse_das, add_attributes
+import numpy
 
 
 def open_url(url, application=None, session=None, output_grid=True,
@@ -60,12 +62,12 @@ def open_url(url, application=None, session=None, output_grid=True,
     """
     Open a remote URL, returning a dataset.
 
-    set output_grid to False to retrieve only main arrays and
+    set output_grid to `False` to retrieve only main arrays and
     never retrieve coordinate axes.
     """
-    handler = DAPHandler(url, application, session, output_grid,
-                         timeout=timeout, verify=verify,
-                         user_charset=user_charset)
+    handler = pydap.handlers.dap.DAPHandler(url, application, session, output_grid,
+                                            timeout=timeout, verify=verify,
+                                            user_charset=user_charset)
     dataset = handler.dataset
 
     # attach server-side functions
@@ -74,8 +76,40 @@ def open_url(url, application=None, session=None, output_grid=True,
     return dataset
 
 
-def open_file(dods, das=None):
-    """Open a file downloaded from a `.dods` response, returning a dataset.
+def open_file(file_path, das_path=None):
+    extension = file_path.split('.')[-1]
+    if extension == 'dods':
+        return open_dods_file(file_path=file_path, das_path=das_path)
+    elif extension == 'dap':
+        return open_dap_file(file_path=file_path, das_path=das_path)
+
+
+def open_dap_file(file_path, das_path=None):
+    """ Open a file downloaded from a `.dap` (dap4) response, retunring a dataset
+    Optionally, read also the `.das` response to assign attributes to the
+    dataset."""
+    with open(file_path, "rb") as f:
+        # First two bytes are CRLF
+        f.seek(2)
+        dmr_len = numpy.frombuffer(f.read(2), dtype='>u2')[0]
+
+    with open(file_path, "rt", buffering=1, encoding='ascii', newline='\n') as f:
+        # First 2 bytes are CRLF, second two bytes give the length of the DMR; we skip over them
+        f.seek(4)
+        # We read the DMR minus the CRLF and newline (3 bytes)
+        dmr = f.read(dmr_len-3)
+
+    dataset = pydap.parsers.dmr.dmr_to_dataset(dmr)
+
+    with open(file_path, "rb") as f:
+        f.seek(dmr_len+4)
+        dataset.data = pydap.handlers.dap.unpack_dap4_data(f, dataset)
+
+    return dataset
+
+
+def open_dods_file(file_path, das_path=None):
+    """Open a file downloaded from a `.dods` (dap2) response, returning a dataset.
 
     Optionally, read also the `.das` response to assign attributes to the
     dataset.
@@ -88,8 +122,7 @@ def open_file(dods, das=None):
     # actually read past the ascii part of the
     # file (despite our break from iteration) and
     # will error out on the binary data
-    with open(dods, "rt", buffering=1, encoding='ascii',
-              newline='\n', errors='ignore') as f:
+    with open(file_path, "rt", buffering=1, encoding='ascii', newline='\n', errors='ignore') as f:
         for line in f:
             if line.strip() == 'Data:':
                 break
@@ -97,28 +130,29 @@ def open_file(dods, das=None):
     dataset = pydap.parsers.dds.build_dataset(dds)
     pos = len(dds) + len('Data:\n')
 
-    with open(dods, "rb") as f:
+    with open(file_path, "rb") as f:
         f.seek(pos)
-        dataset.data = unpack_data(f, dataset)
+        dataset.data = pydap.handlers.dap.unpack_dap2_data(f, dataset)
 
-    if das is not None:
-        with open(das) as f:
+    if das_path is not None:
+        with open(das_path) as f:
             add_attributes(dataset, parse_das(f.read()))
 
     return dataset
 
 
-def open_dods(url, metadata=False, application=None, session=None,
-              timeout=DEFAULT_TIMEOUT, verify=True):
+def open_dods_url(url, metadata=False, application=None, session=None,
+                  timeout=DEFAULT_TIMEOUT, verify=True):
     """Open a `.dods` response directly, returning a dataset."""
+
     r = GET(url, application, session, timeout=timeout)
     raise_for_status(r)
 
     dds, data = r.body.split(b'\nData:\n', 1)
     dds = dds.decode(r.content_encoding or 'ascii')
     dataset = pydap.parsers.dds.build_dataset(dds)
-    stream = StreamReader(BytesIO(data))
-    dataset.data = unpack_data(stream, dataset)
+    stream = pydap.handlers.dap.StreamReader(BytesIO(data))
+    dataset.data = pydap.handlers.dap.unpack_dap2_data(stream, dataset)
 
     if metadata:
         scheme, netloc, path, query, fragment = urlsplit(url)
@@ -134,7 +168,6 @@ def open_dods(url, metadata=False, application=None, session=None,
 
 
 class Functions(object):
-
     """Proxy for server-side functions."""
 
     def __init__(self, baseurl, application=None, session=None,
@@ -178,7 +211,6 @@ class ServerFunction(object):
 
 
 class ServerFunctionResult(object):
-
     """A proxy for the result from a server-side function call."""
 
     def __init__(self, baseurl, id_, application=None, session=None,
@@ -194,8 +226,8 @@ class ServerFunctionResult(object):
 
     def __getitem__(self, key):
         if self.dataset is None:
-            self.dataset = open_dods(self.url, True, self.application,
-                                     self.session, self.timeout)
+            self.dataset = open_dods_url(self.url, True, self.application,
+                                         self.session, self.timeout)
         return self.dataset[key]
 
     def __getattr__(self, name):

@@ -35,5 +35,3 @@ def test_atl03():
 
 
 
-
-test_single_scalar()

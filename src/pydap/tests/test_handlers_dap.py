@@ -3,7 +3,7 @@
 import numpy as np
 from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
-from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy
+from pydap.handlers.dap import DAPHandler, BaseProxyDap2, SequenceProxy
 from pydap.handlers.dap import find_pattern_in_string_iter
 from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
@@ -34,7 +34,7 @@ class TestDapHandler(unittest.TestCase):
             list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
-        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.x.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.SimpleGrid.x.data.id, "SimpleGrid.x")
@@ -44,7 +44,7 @@ class TestDapHandler(unittest.TestCase):
             dataset.SimpleGrid.x.data.slice, (slice(None),))
 
         # test the grid
-        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.SimpleGrid.data.baseurl,
             "http://localhost:8001/")
@@ -69,7 +69,7 @@ class TestDapHandler(unittest.TestCase):
             list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
-        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.x.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.SimpleGrid.x.data.id, "SimpleGrid.x")
@@ -79,7 +79,7 @@ class TestDapHandler(unittest.TestCase):
             dataset.SimpleGrid.x.data.slice, (slice(None),))
 
         # test the grid
-        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.SimpleGrid.data.baseurl,
             "http://localhost:8001/")
@@ -117,7 +117,7 @@ class TestDapHandler(unittest.TestCase):
             list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
-        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.x.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.SimpleGrid.x.data.id, "SimpleGrid.x")
@@ -127,7 +127,7 @@ class TestDapHandler(unittest.TestCase):
             dataset.SimpleGrid.x.data.slice, (slice(None),))
 
         # test the grid
-        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.SimpleGrid.data.baseurl,
             "http://localhost:8001/")
@@ -249,7 +249,7 @@ class TestBaseProxy(unittest.TestCase):
         """Create a WSGI app"""
         self.app = BaseHandler(SimpleArray)
 
-        self.data = BaseProxy(
+        self.data = BaseProxyDap2(
                               "http://localhost:8001/", "byte",
                               np.dtype("B"), (5,),
                               application=self.app)
@@ -304,7 +304,7 @@ class TestBaseProxyShort(unittest.TestCase):
         """Create a WSGI app with array data"""
         self.app = BaseHandler(SimpleArray)
 
-        self.data = BaseProxy(
+        self.data = BaseProxyDap2(
                               "http://localhost:8001/", "short",
                               np.dtype(">h"), (),
                               application=self.app)
@@ -325,7 +325,7 @@ class TestBaseProxyString(unittest.TestCase):
         dataset["s"] = BaseType("s", np.array(["one", "two", "three"]))
         self.app = BaseHandler(dataset)
 
-        self.data = BaseProxy(
+        self.data = BaseProxyDap2(
                               "http://localhost:8001/", "s",
                               np.dtype("|S5"), (3,), application=self.app)
 
@@ -530,7 +530,7 @@ class TestStringBaseType(unittest.TestCase):
         dataset["s"] = BaseType("s", data)
         self.app = BaseHandler(dataset)
 
-        self.data = BaseProxy(
+        self.data = BaseProxyDap2(
                               "http://localhost:8001/", "s",
                               np.dtype("|S14"), (), application=self.app)
 

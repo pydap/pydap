@@ -19,22 +19,21 @@ from numpy.lib.arrayterator import Arrayterator
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 import logging
 import numpy as np
-from six.moves.urllib.parse import urlsplit, urlunsplit, quote
+import six.moves.urllib.parse
 from six import text_type, string_types, BytesIO
 
-from pydap.model import (BaseType,
-                         SequenceType, StructureType,
-                         GridType)
+import pydap.model
+
 from ..net import GET, raise_for_status
 from ..lib import (
     encode, combine_slices, fix_slice, hyperslab,
     START_OF_SEQUENCE, walk, StreamReader, BytesReader,
     DEFAULT_TIMEOUT, DAP2_ARRAY_LENGTH_NUMPY_TYPE)
-from .lib import ConstraintExpression, BaseHandler, IterData
+import pydap.handlers.lib
 from ..parsers.dds import build_dataset
 from ..parsers.dmr import dmr_to_dataset
 from ..parsers.das import parse_das, add_attributes
-from ..parsers import parse_ce
+import pydap.parsers
 from ..responses.dods import DAP2_response_dtypemap
 
 logger = logging.getLogger('pydap')
@@ -43,44 +42,72 @@ logger.addHandler(logging.NullHandler())
 BLOCKSIZE = 512
 
 
-class DAPHandler(BaseHandler):
+class DAPHandler(pydap.handlers.lib.BaseHandler):
     """Build a dataset from a DAP base URL."""
 
     def __init__(self, url, application=None, session=None, output_grid=True,
                  timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii'):
-        scheme, netloc, path, query, fragment = urlsplit(url)
 
-        if scheme == 'dap4':
-            scheme = 'http'
-            dmr_url = urlunsplit((scheme, netloc, path + '.dmr', query, fragment))
-            r = GET(dmr_url, application, session, timeout=timeout, verify=verify)
-            raise_for_status(r)
-            dmr = safe_charset_text(r, user_charset)
-            self.dataset = dmr_to_dataset(dmr)
+        self.application = application
+        self.session = session
+        self.output_grid = output_grid
+        self.timeout = timeout
+        self.verify = verify
+        self.user_charset = user_charset
+        self.url = url
+
+        scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.url)
+        self.scheme = scheme
+        self.netloc = netloc
+        self.path = path
+        self.query = query
+        self.fragment = fragment
+
+        self.make_dataset()
+        self.add_dap2_proxies()
+
+    def make_dataset(self,):
+        if self.scheme == 'dap4':
+            self.dataset_from_dap4()
         else:
-            dds_url = urlunsplit((scheme, netloc, path + '.dds', query, fragment))
-            r = GET(dds_url, application, session, timeout=timeout, verify=verify)
-            raise_for_status(r)
-            dds = safe_charset_text(r, user_charset)
-            self.dataset = build_dataset(dds)
+            self.dataset_from_dap2()
+        self.attach_das()
 
-        # Also pull the DAS and add additional attributes
-        das_url = urlunsplit((scheme, netloc, path + '.das', query, fragment))
-        r = GET(das_url, application, session, timeout=timeout, verify=verify)
+    def dataset_from_dap4(self):
+        scheme = 'http'
+        dmr_url = six.moves.urllib.parse.urlunsplit((scheme, self.netloc, self.path + '.dmr', self.query, self.fragment))
+        r = GET(dmr_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
         raise_for_status(r)
-        das = safe_charset_text(r, user_charset)
+        dmr = safe_charset_text(r, self.user_charset)
+        self.dataset = dmr_to_dataset(dmr)
+
+    def dataset_from_dap2(self):
+        dds_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.dds', self.query, self.fragment))
+        r = GET(dds_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
+        raise_for_status(r)
+        dds = safe_charset_text(r, self.user_charset)
+        self.dataset = build_dataset(dds)
+
+    def attach_das(self):
+        # Also pull the DAS and add additional attributes
+        das_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.das', self.query, self.fragment))
+        r = GET(das_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
+        raise_for_status(r)
+        das = safe_charset_text(r, self.user_charset)
         add_attributes(self.dataset, parse_das(das))
 
-        # remove any projection from the url, leaving selections
-        projection, selection = parse_ce(query)
-        url = urlunsplit((scheme, netloc, path, '&'.join(selection), fragment))
+    def add_dap2_proxies(self):
+        # remove any projection from the base_url, leaving selections
+        projection, selection = pydap.parsers.parse_ce(self.query)
+        base_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path, '&'.join(selection), self.fragment))
 
         # now add data proxies
-        for var in walk(self.dataset, BaseType):
-            var.data = BaseProxy(url, var.id, var.dtype, var.shape, application=application, session=session)
-        for var in walk(self.dataset, SequenceType):
+        for var in walk(self.dataset, pydap.model.BaseType):
+            var.data = BaseProxyDap2(base_url, var.id, var.dtype, var.shape,
+                                     application=self.application, session=self.session)
+        for var in walk(self.dataset, pydap.model.SequenceType):
             template = copy.copy(var)
-            var.data = SequenceProxy(url, template, application=application, session=session)
+            var.data = SequenceProxy(base_url, template, application=self.application, session=self.session)
 
         # apply projections
         for var in projection:
@@ -88,27 +115,19 @@ class DAPHandler(BaseHandler):
             while var:
                 token, index = var.pop(0)
                 target = target[token]
-                if isinstance(target, BaseType):
+                if isinstance(target, pydap.model.BaseType):
                     target.data.slice = fix_slice(index, target.shape)
-                elif isinstance(target, GridType):
+                elif isinstance(target, pydap.model.GridType):
                     index = fix_slice(index, target.array.shape)
                     target.array.data.slice = index
                     for s, child in zip(index, target.maps):
                         target[child].data.slice = (s,)
-                elif isinstance(target, SequenceType):
+                elif isinstance(target, pydap.model.SequenceType):
                     target.data.slice = index
 
         # retrieve only main variable for grid types:
-        for var in walk(self.dataset, GridType):
-            var.set_output_grid(output_grid)
-
-
-class DAP2Handler(DAPHandler):
-    pass
-
-
-class DAP4Handler(DAPHandler):
-    pass
+        for var in walk(self.dataset, pydap.model.GridType):
+            var.set_output_grid(self.output_grid)
 
 
 def get_charset(r, user_charset):
@@ -135,7 +154,7 @@ def safe_dds_and_data(r, user_charset):
     return dds.decode(get_charset(r, user_charset)), data
 
 
-class BaseProxy(object):
+class BaseProxyDap2(object):
     """A proxy for remote base types.
 
     This class behaves like a Numpy array, proxying the data from a base type
@@ -164,10 +183,10 @@ class BaseProxy(object):
     def __getitem__(self, index):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
-        scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
-        url = urlunsplit((
+        scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.baseurl)
+        url = six.moves.urllib.parse.urlunsplit((
             scheme, netloc, path + '.dods',
-            quote(self.id) + hyperslab(index) + '&' + query,
+            six.moves.urllib.parse.quote(self.id) + hyperslab(index) + '&' + query,
             fragment)).rstrip('&')
 
         # download and unpack data
@@ -179,7 +198,7 @@ class BaseProxy(object):
 
         # Parse received dataset:
         dataset = build_dataset(dds)
-        dataset.data = unpack_data(BytesReader(data), dataset)
+        dataset.data = unpack_dap2_data(BytesReader(data), dataset)
         return dataset[self.id].data
 
     def __len__(self):
@@ -208,8 +227,47 @@ class BaseProxy(object):
         return self[:] < other
 
 
-class BaseProxyDap4(BaseProxy):
-    pass
+class BaseProxyDap4(BaseProxyDap2):
+
+    def __init__(self, baseurl, id, dtype, shape, slice_=None,
+                 application=None, session=None, timeout=DEFAULT_TIMEOUT,
+                 verify=True, user_charset='ascii'):
+        self.baseurl = baseurl
+        self.id = id
+        self.dtype = dtype
+        self.shape = shape
+        self.slice = slice_ or tuple(slice(None) for s in self.shape)
+        self.application = application
+        self.session = session
+        self.timeout = timeout
+        self.verify = verify
+        self.user_charset = user_charset
+
+    def __repr__(self):
+        return 'Dap4BaseProxy(%s)' % ', '.join(
+            map(repr, [
+                self.baseurl, self.id, self.dtype, self.shape, self.slice]))
+
+    def __getitem__(self, index):
+        # build download url
+        index = combine_slices(self.slice, fix_slice(index, self.shape))
+        scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.baseurl)
+        url = six.moves.urllib.parse.urlunsplit((
+            scheme, netloc, path + '.dap',
+            six.moves.urllib.parse.quote(self.id) + hyperslab(index) + '&' + query,
+            fragment)).rstrip('&')
+
+        # download and unpack data
+        logger.info("Fetching URL: %s" % url)
+        r = GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
+
+        raise_for_status(r)
+        dds, data = safe_dds_and_data(r, self.user_charset)
+
+        # Parse received dataset:
+        dataset = build_dataset(dds)
+        dataset.data = unpack_dap2_data(BytesReader(data), dataset)
+        return dataset[self.id].data
 
 
 class SequenceProxy(object):
@@ -267,7 +325,7 @@ class SequenceProxy(object):
             out.template._visible_keys = key
 
         # return a copy with the added constraints
-        elif isinstance(key, ConstraintExpression):
+        elif isinstance(key, pydap.handlers.lib.ConstraintExpression):
             out.selection.extend(str(key).split('&'))
 
         # slice data
@@ -281,8 +339,8 @@ class SequenceProxy(object):
     @property
     def url(self):
         """Return url from where data is fetched."""
-        scheme, netloc, path, query, fragment = urlsplit(self.baseurl)
-        url = urlunsplit((
+        scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.baseurl)
+        url = six.moves.urllib.parse.urlunsplit((
             scheme, netloc, path + '.dods',
             self.id + hyperslab(self.slice) + '&' +
             '&'.join(self.selection), fragment)).rstrip('&')
@@ -294,9 +352,9 @@ class SequenceProxy(object):
         """Return the id of this sequence."""
         if self.sub_children:
             id_ = ','.join(
-                quote(child.id) for child in self.template.children())
+                six.moves.urllib.parse.quote(child.id) for child in self.template.children())
         else:
-            id_ = quote(self.template.id)
+            id_ = six.moves.urllib.parse.quote(self.template.id)
         return id_
 
     def __iter__(self):
@@ -328,35 +386,35 @@ class SequenceProxy(object):
         return unpack_sequence(stream, self.template)
 
     def __eq__(self, other):
-        return ConstraintExpression('%s=%s' % (self.id, encode(other)))
+        return pydap.handlers.lib.ConstraintExpression('%s=%s' % (self.id, encode(other)))
 
     def __ne__(self, other):
-        return ConstraintExpression('%s!=%s' % (self.id, encode(other)))
+        return pydap.handlers.lib.ConstraintExpression('%s!=%s' % (self.id, encode(other)))
 
     def __ge__(self, other):
-        return ConstraintExpression('%s>=%s' % (self.id, encode(other)))
+        return pydap.handlers.lib.ConstraintExpression('%s>=%s' % (self.id, encode(other)))
 
     def __le__(self, other):
-        return ConstraintExpression('%s<=%s' % (self.id, encode(other)))
+        return pydap.handlers.lib.ConstraintExpression('%s<=%s' % (self.id, encode(other)))
 
     def __gt__(self, other):
-        return ConstraintExpression('%s>%s' % (self.id, encode(other)))
+        return pydap.handlers.lib.ConstraintExpression('%s>%s' % (self.id, encode(other)))
 
     def __lt__(self, other):
-        return ConstraintExpression('%s<%s' % (self.id, encode(other)))
+        return pydap.handlers.lib.ConstraintExpression('%s<%s' % (self.id, encode(other)))
 
 
 def unpack_sequence(stream, template):
     """Unpack data from a sequence, yielding records."""
     # is this a sequence or a base type?
-    sequence = isinstance(template, SequenceType)
+    sequence = isinstance(template, pydap.model.SequenceType)
 
     # if there are no children, we use the template as the only column
     cols = list(template.children()) or [template]
 
     # if there are no strings and no nested sequences we can unpack record by
     # record easily
-    simple = all(isinstance(c, BaseType) and c.dtype.char not in "SU"
+    simple = all(isinstance(c, pydap.model.BaseType) and c.dtype.char not in "SU"
                  for c in cols)
 
     if simple:
@@ -387,9 +445,9 @@ def unpack_children(stream, template):
     out = []
     for col in cols:
         # sequences and other structures
-        if isinstance(col, SequenceType):
-            out.append(IterData(list(unpack_sequence(stream, col)), col))
-        elif isinstance(col, StructureType):
+        if isinstance(col, pydap.model.SequenceType):
+            out.append(pydap.handlers.lib.IterData(list(unpack_sequence(stream, col)), col))
+        elif isinstance(col, pydap.model.StructureType):
             out.append(tuple(unpack_children(stream, col)))
 
         # unpack arrays
@@ -431,7 +489,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
                         ('variable {0} could not be properly '
                          'retrieved. To avoid this '
                          'error consider using open_url(..., '
-                         'output_grid=False).').format(quote(id)))
+                         'output_grid=False).').format(six.moves.urllib.parse.quote(id)))
                 else:
                     raise
             if response_dtype.char == "B":
@@ -457,9 +515,13 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
     return out
 
 
-def unpack_data(xdr_stream, dataset):
+def unpack_dap2_data(xdr_stream, dataset):
     """Unpack a string of encoded data, returning data as lists."""
     return unpack_children(xdr_stream, dataset)
+
+
+def unpack_dap4_data(xdr_stream, dataset):
+    pass
 
 
 def find_pattern_in_string_iter(pattern, i):
@@ -483,7 +545,5 @@ def dump():  # pragma: no cover
     dds, xdrdata = dods.split(b'\nData:\n', 1)
     dataset = build_dataset(dds)
     xdr_stream = io.BytesIO(xdrdata)
-    data = unpack_data(xdr_stream, dataset)
-    data = dataset.data
-
+    data = unpack_dap2_data(xdr_stream, dataset)
     pprint.pprint(data)
