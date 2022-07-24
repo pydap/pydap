@@ -6,7 +6,6 @@ import pydap.model
 import pydap.lib
 import re
 
-
 constructors = ('grid', 'sequence', 'structure')
 name_regexp = r'[\w%!~"\'\*-]+'
 dmr_atomic_types = ('Int8', 'UInt8', 'Byte', 'Char', 'Int16', 'UInt16', 'Int32', 'UInt32',
@@ -31,7 +30,7 @@ def get_variables(element, parent_name=''):
     for atomic_type in dmr_atomic_types:
         for variable in element.findall(atomic_type):
             name = variable.attrib['name']
-            #name = pydap.lib.quote(name).replace('%2F', '/')
+            # name = pydap.lib.quote(name).replace('%2F', '/')
             if parent_name == '':
                 # The FQN of root variables does not have leading slash
                 fqn = name
@@ -57,7 +56,7 @@ def get_dimensions(element, parent_name=''):
     dimensions_elements = element.findall('Dimension')
     for dimensions_element in dimensions_elements:
         name = dimensions_element.attrib['name']
-        #name = pydap.lib.quote(name).replace('%2F', '/')
+        # name = pydap.lib.quote(name).replace('%2F', '/')
         if parent_name == '':
             # The FQN of root variables does not have leading slash
             fqn = name
@@ -100,6 +99,8 @@ def get_dims(element):
     dimensions = []
     for dimension_element in dimension_elements:
         name = dimension_element.get('name')
+        if name is None:
+            return dimensions
         if name.find('/', 1) == -1:
             # If this is a root Dimension, we remove the leading slash
             name = name.replace('/', '')
@@ -129,6 +130,24 @@ def make_grid_var(dataset, variable):
     for dim in variable['dims']:
         var[dim] = dataset[dim]
     return var
+
+
+def get_variable_order(node, prefix=''):
+    variables = []
+    group_name = node.get('name')
+    if group_name is None:
+        return variables
+    if node.tag != 'Dataset':
+        prefix = prefix + '/' + group_name
+
+    for subnode in node:
+        if subnode.tag in dmr_atomic_types:
+            name = subnode.get('name')
+            if prefix != '':
+                name = prefix + '/' + name
+            variables.append(name)
+        variables += get_variable_order(subnode, prefix)
+    return variables
 
 
 def dmr_to_dataset(dmr):
@@ -167,7 +186,14 @@ def dmr_to_dataset(dmr):
         variable['attributes'] = get_attributes(variable['element'])
         variable['dtype'] = get_dtype(variable['element'])
         variable['dims'] = get_dims(variable['element'])
-        variable['shape'] = get_shape(dimensions, variable)
+        if len(variable['dims']) == 0:
+            # If we requested only a variable dimension, we might end up with an unnamed dimension
+            shape = []
+            for dim in variable['element'].findall('Dim'):
+                shape.append(int(dim.attrib['size']))
+            variable['shape'] = tuple(shape)
+        else:
+            variable['shape'] = get_shape(dimensions, variable)
 
         if has_map(variable['element']):
             var = make_grid_var(dataset, variable)
@@ -177,11 +203,16 @@ def dmr_to_dataset(dmr):
         var.attributes = variable['attributes']
         dataset[var.name] = var
 
-    return dataset
+    order_dataset = pydap.model.DatasetType('')
+    for var_name in get_variable_order(dom_et):
+        order_dataset[var_name] = dataset[var_name]
+
+    return order_dataset
 
 
 class DMRParser:
     """A parser for the DMR."""
+
     def __init__(self, dmr):
         self.dmr = dmr
 
@@ -193,7 +224,7 @@ class DummyData(object):
 
 
 if __name__ == '__main__':
-    #fname = '/home/griessbaum/Dropbox/UCSB/pydap_cpt/pydap_notebooks/ATL03_20181228015957_13810110_003_01.2var.h5.dmrpp.dmr'
+    # fname = '/home/griessbaum/Dropbox/UCSB/pydap_cpt/pydap_notebooks/ATL03_20181228015957_13810110_003_01.2var.h5.dmrpp.dmr'
     fname = '/home/griessbaum/Dropbox/UCSB/pydap_cpt/pydap_notebooks/coads_climatology.nc.dmr'
     with open(fname, 'rb') as dmr_file:
         dmr = dmr_file.read()

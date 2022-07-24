@@ -84,27 +84,43 @@ def open_file(file_path, das_path=None):
         return open_dap_file(file_path=file_path, das_path=das_path)
 
 
+def get_dmr_length(file_path):
+    with open(file_path, "rb") as f:
+        # First two bytes are CRLF
+        if f.peek()[0:2] == b'\x04\x00':
+            f.seek(2)
+            dmr_len = numpy.frombuffer(f.read(2), dtype='>u2')[0]
+        else:
+            dap = f.read()
+            dmr = dap.split(b'</Dataset>')[0] + b'</Dataset>'
+            dmr_len = len(dmr)
+    return dmr_len
+
+
+def read_dmr(file_path, dmr_len):
+    with open(file_path, "rb") as f:
+        if f.peek()[0:2] == b'\x04\x00':
+            # First 2 bytes are CRLF, second two bytes give the length of the DMR; we skip over them
+            f.seek(4)
+            # We read the DMR minus the CRLF and newline (3 bytes)
+        dmr = f.read(dmr_len)
+    dmr = dmr.decode('ascii')
+    return dmr
+
+
 def open_dap_file(file_path, das_path=None):
     """ Open a file downloaded from a `.dap` (dap4) response, retunring a dataset
     Optionally, read also the `.das` response to assign attributes to the
     dataset."""
-    with open(file_path, "rb") as f:
-        # First two bytes are CRLF
-        f.seek(2)
-        dmr_len = numpy.frombuffer(f.read(2), dtype='>u2')[0]
 
-    with open(file_path, "rt", buffering=1, encoding='ascii', newline='\n') as f:
-        # First 2 bytes are CRLF, second two bytes give the length of the DMR; we skip over them
-        f.seek(4)
-        # We read the DMR minus the CRLF and newline (3 bytes)
-        dmr = f.read(dmr_len-3)
-
+    dmr_len = get_dmr_length(file_path)
+    dmr = read_dmr(file_path, dmr_len)
     dataset = pydap.parsers.dmr.dmr_to_dataset(dmr)
 
     with open(file_path, "rb") as f:
-        f.seek(dmr_len+4)
-        dataset.data = pydap.handlers.dap.unpack_dap4_data(f, dataset)
-
+        f.seek(dmr_len)
+        crlf = f.read(4)
+        pydap.handlers.dap.unpack_dap4_data(f, dataset)
     return dataset
 
 
@@ -127,7 +143,7 @@ def open_dods_file(file_path, das_path=None):
             if line.strip() == 'Data:':
                 break
             dds += line
-    dataset = pydap.parsers.dds.build_dataset(dds)
+    dataset = pydap.parsers.dds.dds_to_dataset(dds)
     pos = len(dds) + len('Data:\n')
 
     with open(file_path, "rb") as f:
@@ -150,7 +166,7 @@ def open_dods_url(url, metadata=False, application=None, session=None,
 
     dds, data = r.body.split(b'\nData:\n', 1)
     dds = dds.decode(r.content_encoding or 'ascii')
-    dataset = pydap.parsers.dds.build_dataset(dds)
+    dataset = pydap.parsers.dds.dds_to_dataset(dds)
     stream = pydap.handlers.dap.StreamReader(BytesIO(data))
     dataset.data = pydap.handlers.dap.unpack_dap2_data(stream, dataset)
 

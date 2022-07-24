@@ -151,7 +151,7 @@ class DDSParser(SimpleParser):
         return grid
 
 
-def build_dataset(dds):
+def dds_to_dataset(dds):
     """Return a dataset object from a DDS representation."""
     return DDSParser(dds).parse()
 

@@ -18,7 +18,7 @@ from numpy.lib.arrayterator import Arrayterator
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 import logging
-import numpy as np
+import numpy
 import six.moves.urllib.parse
 from six import text_type, string_types, BytesIO
 
@@ -30,7 +30,7 @@ from ..lib import (
     START_OF_SEQUENCE, walk, StreamReader, BytesReader,
     DEFAULT_TIMEOUT, DAP2_ARRAY_LENGTH_NUMPY_TYPE)
 import pydap.handlers.lib
-from ..parsers.dds import build_dataset
+from ..parsers.dds import dds_to_dataset
 from ..parsers.dmr import dmr_to_dataset
 from ..parsers.das import parse_das, add_attributes
 import pydap.parsers
@@ -57,25 +57,32 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         self.url = url
 
         scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.url)
+        if scheme == 'dap4':
+            self.protocol = 'dap4'
+            scheme = 'http'
+        else:
+            self.protocol = 'dap2'
         self.scheme = scheme
         self.netloc = netloc
         self.path = path
         self.query = query
         self.fragment = fragment
+        self.projection, self.selection = pydap.parsers.parse_ce(self.query)
+        arg = (self.scheme, self.netloc, self.path, '&'.join(self.selection), self.fragment)
+        self.base_url = six.moves.urllib.parse.urlunsplit(arg)
 
         self.make_dataset()
-        self.add_dap2_proxies()
+        self.add_proxies()
 
     def make_dataset(self,):
-        if self.scheme == 'dap4':
+        if self.protocol == 'dap4':
             self.dataset_from_dap4()
         else:
             self.dataset_from_dap2()
         self.attach_das()
 
     def dataset_from_dap4(self):
-        scheme = 'http'
-        dmr_url = six.moves.urllib.parse.urlunsplit((scheme, self.netloc, self.path + '.dmr', self.query, self.fragment))
+        dmr_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.dmr', self.query, self.fragment))
         r = GET(dmr_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
         raise_for_status(r)
         dmr = safe_charset_text(r, self.user_charset)
@@ -86,7 +93,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         r = GET(dds_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
         raise_for_status(r)
         dds = safe_charset_text(r, self.user_charset)
-        self.dataset = build_dataset(dds)
+        self.dataset = dds_to_dataset(dds)
 
     def attach_das(self):
         # Also pull the DAS and add additional attributes
@@ -96,21 +103,28 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         das = safe_charset_text(r, self.user_charset)
         add_attributes(self.dataset, parse_das(das))
 
-    def add_dap2_proxies(self):
-        # remove any projection from the base_url, leaving selections
-        projection, selection = pydap.parsers.parse_ce(self.query)
-        base_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path, '&'.join(selection), self.fragment))
+    def add_proxies(self):
+        if self.protocol == 'dap4':
+            self.add_dap4_proxies()
+        else:
+            self.add_dap2_proxies()
 
+    def add_dap4_proxies(self):
+        # remove any projection from the base_url, leaving selections
+        for var in walk(self.dataset, pydap.model.BaseType):
+            var.data = BaseProxyDap4(self.base_url, var.id, var.dtype, var.shape, application=self.application, session=self.session)
+
+    def add_dap2_proxies(self):
         # now add data proxies
         for var in walk(self.dataset, pydap.model.BaseType):
-            var.data = BaseProxyDap2(base_url, var.id, var.dtype, var.shape,
+            var.data = BaseProxyDap2(self.base_url, var.id, var.dtype, var.shape,
                                      application=self.application, session=self.session)
         for var in walk(self.dataset, pydap.model.SequenceType):
             template = copy.copy(var)
-            var.data = SequenceProxy(base_url, template, application=self.application, session=self.session)
+            var.data = SequenceProxy(self.base_url, template, application=self.application, session=self.session)
 
         # apply projections
-        for var in projection:
+        for var in self.projection:
             target = self.dataset
             while var:
                 token, index = var.pop(0)
@@ -152,6 +166,18 @@ def safe_dds_and_data(r, user_charset):
         raw = r.body
     dds, data = raw.split(b'\nData:\n', 1)
     return dds.decode(get_charset(r, user_charset)), data
+
+
+def safe_dmr_and_data(r, user_charset):
+    if r.content_encoding == 'gzip':
+        raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
+    else:
+        raw = r.body
+    dmr, data = raw.split(b'</Dataset>', 1)
+    dmr = dmr[4:] + b'</Dataset>'
+    dmr = dmr.decode(get_charset(r, user_charset))
+    data = data[3:]
+    return dmr, data
 
 
 class BaseProxyDap2(object):
@@ -197,7 +223,7 @@ class BaseProxyDap2(object):
         dds, data = safe_dds_and_data(r, self.user_charset)
 
         # Parse received dataset:
-        dataset = build_dataset(dds)
+        dataset = dds_to_dataset(dds)
         dataset.data = unpack_dap2_data(BytesReader(data), dataset)
         return dataset[self.id].data
 
@@ -252,21 +278,22 @@ class BaseProxyDap4(BaseProxyDap2):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
         scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.baseurl)
-        url = six.moves.urllib.parse.urlunsplit((
-            scheme, netloc, path + '.dap',
-            six.moves.urllib.parse.quote(self.id) + hyperslab(index) + '&' + query,
-            fragment)).rstrip('&')
+        ce = 'dap4.ce=/' + six.moves.urllib.parse.quote(self.id) + hyperslab(index) + query
+        url = six.moves.urllib.parse.urlunsplit((scheme, netloc, path + '.dap', ce, fragment)).rstrip('&')
 
+        print(url)
         # download and unpack data
+
         logger.info("Fetching URL: %s" % url)
+
         r = GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
 
         raise_for_status(r)
-        dds, data = safe_dds_and_data(r, self.user_charset)
+        dmr, data = safe_dmr_and_data(r, self.user_charset)
 
         # Parse received dataset:
-        dataset = build_dataset(dds)
-        dataset.data = unpack_dap2_data(BytesReader(data), dataset)
+        dataset = dmr_to_dataset(dmr)
+        unpack_dap4_data(BytesReader(data), dataset)
         return dataset[self.id].data
 
 
@@ -414,14 +441,13 @@ def unpack_sequence(stream, template):
 
     # if there are no strings and no nested sequences we can unpack record by
     # record easily
-    simple = all(isinstance(c, pydap.model.BaseType) and c.dtype.char not in "SU"
-                 for c in cols)
+    simple = all(isinstance(c, pydap.model.BaseType) and c.dtype.char not in "SU" for c in cols)
 
     if simple:
-        dtype = np.dtype([("", c.dtype, c.shape) for c in cols])
+        dtype = numpy.dtype([("", c.dtype, c.shape) for c in cols])
         marker = stream.read(4)
         while marker == START_OF_SEQUENCE:
-            rec = np.frombuffer(stream.read(dtype.itemsize), dtype=dtype)[0]
+            rec = numpy.frombuffer(stream.read(dtype.itemsize), dtype=dtype)[0]
             if not sequence:
                 rec = rec[0]
             yield rec
@@ -452,8 +478,7 @@ def unpack_children(stream, template):
 
         # unpack arrays
         else:
-            out.extend(convert_stream_to_list(stream, col.dtype, col.shape,
-                                              col.id))
+            out.extend(convert_stream_to_list(stream, col.dtype, col.shape, col.id))
     return out
 
 
@@ -461,26 +486,21 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
     out = []
     response_dtype = DAP2_response_dtypemap(parser_dtype)
     if shape:
-        n = np.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
+        n = numpy.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
         count = response_dtype.itemsize * n
         if response_dtype.char in 'S':
             # Consider on 'S' and not 'SU' because
             # response_dtype.char should never be
             data = []
             for _ in range(n):
-                k = np.frombuffer(stream.read(4),
-                                  DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
+                k = numpy.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
                 data.append(stream.read(k))
                 stream.read(-k % 4)
-            out.append(np.array([text_type(x.decode('ascii'))
-                                 for x in data], 'S').reshape(shape))
+            out.append(numpy.array([text_type(x.decode('ascii')) for x in data], 'S').reshape(shape))
         else:
             stream.read(4)  # read additional length
             try:
-                out.append(
-                    np.frombuffer(
-                        stream.read(count), response_dtype)
-                    .astype(parser_dtype).reshape(shape))
+                out.append(numpy.frombuffer(stream.read(count), response_dtype).astype(parser_dtype).reshape(shape))
             except ValueError as e:
                 if str(e) == 'total size of new array must be unchanged':
                     # server-side failure.
@@ -501,13 +521,13 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
         # Consider on 'S' and not 'SU' because
         # response_dtype.char should never be
         # 'U'
-        k = np.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
+        k = numpy.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
         out.append(text_type(stream.read(k).decode('ascii')))
         stream.read(-k % 4)
     # usual data
     else:
         out.append(
-            np.frombuffer(stream.read(response_dtype.itemsize), response_dtype)
+            numpy.frombuffer(stream.read(response_dtype.itemsize), response_dtype)
             .astype(parser_dtype)[0])
         if response_dtype.char == "B":
             # Unsigned Byte type is packed to multiples of 4 bytes:
@@ -520,8 +540,72 @@ def unpack_dap2_data(xdr_stream, dataset):
     return unpack_children(xdr_stream, dataset)
 
 
+def decode_chunktype(chunk_type):
+    encoding = '{0:03b}'.format(chunk_type)
+    if sys.byteorder == 'little':
+        # If our machine's byteorder is little, we need to swap since the chunk_type is always big endian
+        encoding = encoding[::-1]
+    last_chunk = bool(int(encoding[0]))
+    error = bool(int(encoding[1]))
+    endian = {'0': '>', '1': '<'}[encoding[2]]
+    return last_chunk, error, endian
+
+
+def get_count(variable):
+    count = numpy.array(variable.shape).prod()
+    item_size = numpy.dtype(variable.dtype).itemsize
+    count = count * item_size
+    return count
+
+
+def decode_variable(buffer, start, stop, variable, endian):
+    dtype = variable.dtype
+    dtype = dtype.newbyteorder(endian)
+    data = numpy.frombuffer(buffer[start:stop], dtype=dtype).astype(dtype)
+    data = data.reshape(variable.shape)
+    return data
+
+
+def stream2bytearray(xdr_stream):
+    last = False
+    buffer = bytearray()
+    while not last:
+        chunk = numpy.frombuffer(xdr_stream.read(4), dtype='>u4')
+        chunk_size = (chunk & 0x00ffffff)[0]
+        chunk_type = ((chunk >> 24) & 0xff)[0]
+        last, error, endian = decode_chunktype(chunk_type)
+        buffer.extend(xdr_stream.read(chunk_size))
+    return buffer
+
+
+def get_endianness(xdr_stream):
+    chunk_header = xdr_stream.peek(4)[0:4]
+    chunk_header = numpy.frombuffer(chunk_header, dtype='>u4')[0]
+    chunk_type = ((chunk_header >> 24) & 0xff)
+    last, error, endian = decode_chunktype(chunk_type)
+    return endian
+
+
 def unpack_dap4_data(xdr_stream, dataset):
-    pass
+    endian = get_endianness(xdr_stream)
+    checksum_dtype = numpy.dtype(endian + 'u4')
+    buffer = stream2bytearray(xdr_stream)
+
+    start = 0
+    for variable_name in dataset:
+        variable = dataset[variable_name]
+
+        length = get_count(variable)
+        stop = start + length
+        data = decode_variable(buffer, start=start, stop=stop, variable=variable, endian=endian)
+        checksum = numpy.frombuffer(buffer[stop:stop + 4], dtype=checksum_dtype).byteswap('=')
+        if isinstance(variable, pydap.model.BaseType):
+            variable._set_data(data)
+        elif isinstance(variable, pydap.model.GridType):
+            variable._set_data([data])
+        variable.attributes['checksum'] = checksum
+        # Jump over the 4 byte chunk_header
+        start = stop + 4
 
 
 def find_pattern_in_string_iter(pattern, i):
@@ -538,12 +622,13 @@ def find_pattern_in_string_iter(pattern, i):
 def dump():  # pragma: no cover
     """Unpack dods response into lists.
 
+
     Return pretty-printed data.
 
     """
     dods = sys.stdin.read()
     dds, xdrdata = dods.split(b'\nData:\n', 1)
-    dataset = build_dataset(dds)
+    dataset = dds_to_dataset(dds)
     xdr_stream = io.BytesIO(xdrdata)
     data = unpack_dap2_data(xdr_stream, dataset)
     pprint.pprint(data)

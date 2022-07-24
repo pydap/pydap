@@ -2,7 +2,7 @@
 
 import numpy as np
 from pydap.parsers.das import add_attributes, parse_das
-from pydap.parsers.dds import build_dataset
+from pydap.parsers.dds import dds_to_dataset
 from pydap.tests.test_parsers_dds import DDS
 import unittest
 
@@ -45,7 +45,7 @@ class TestParseDAS(unittest.TestCase):
 
     def setUp(self):
         """Load a dataset and apply DAS to it."""
-        self.dataset = build_dataset(DDS)
+        self.dataset = dds_to_dataset(DDS)
         attributes = parse_das(DAS)
         add_attributes(self.dataset, attributes)
 

@@ -512,7 +512,7 @@ class DatasetType(StructureType):
     def __setitem__(self, key, item):
         StructureType.__setitem__(self, key, item)
 
-        # The dataset name does not goes into the children ids.
+        # The dataset name does not go into the children ids.
         item.id = item.name
 
     def _set_id(self, id):
@@ -529,6 +529,9 @@ class DatasetType(StructureType):
         except ImportError:
             raise NotImplementedError('.to_netcdf requires the netCDF4 '
                                       'package.')
+
+    def change_order(self, order):
+        self._dict = OrderedDict((k, self._dict[k]) for k in order)
 
 
 class SequenceType(StructureType):
