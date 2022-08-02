@@ -28,8 +28,8 @@ If the dods response has already been downloaded, it is possible to open it as
 if it were a remote dataset. Optionally, it is also possible to specify a das
 response:
 
-    >>> from pydap.client import open_file
-    >>> dataset = open_file(
+    >>> from pydap.client import read_file
+    >>> dataset = read_file(
     ...     "/path/to/file.dods", "/path/to/file.das")  #doctest: +SKIP
 
 Remote datasets opened with `open_url` can call server functions. pydap has a
@@ -47,18 +47,22 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
-from .model import DapType
-from .lib import encode, DEFAULT_TIMEOUT
-from .net import GET, raise_for_status
+#from .model import DapType
+import pydap.model
+import pydap.lib
+#from .lib import encode, DEFAULT_TIMEOUT
+import pydap.net
+#from .net import GET, raise_for_status
 import pydap.handlers.dap
 import pydap.parsers.dds
 import pydap.parsers.dmr
-from .parsers.das import parse_das, add_attributes
+import pydap.parsers.das
+#from .parsers.das import parse_das, add_attributes
 import numpy
 
 
 def open_url(url, application=None, session=None, output_grid=True,
-             timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii', protocol='dap2'):
+             timeout=pydap.lib.DEFAULT_TIMEOUT, verify=True, user_charset='ascii', protocol='dap2'):
     """
     Open a remote URL, returning a dataset.
 
@@ -76,12 +80,16 @@ def open_url(url, application=None, session=None, output_grid=True,
     return dataset
 
 
-def open_file(file_path, das_path=None):
+def read_file(file_path, das_path=None):
     extension = file_path.split('.')[-1]
     if extension == 'dods':
-        return open_dods_file(file_path=file_path, das_path=das_path)
+        return read_dods_file(file_path=file_path, das_path=das_path)
     elif extension == 'dap':
-        return open_dap_file(file_path=file_path, das_path=das_path)
+        return read_dap_file(file_path=file_path, das_path=das_path)
+    elif extension == 'dds':
+        pass
+    elif extension == 'dmr':
+        return read_dmr_file(file_path=file_path)
 
 
 def get_dmr_length(file_path):
@@ -97,7 +105,8 @@ def get_dmr_length(file_path):
     return dmr_len
 
 
-def read_dmr(file_path, dmr_len):
+def read_dmr_file(file_path):
+    dmr_len = get_dmr_length(file_path)
     with open(file_path, "rb") as f:
         if f.peek()[0:2] == b'\x04\x00':
             # First 2 bytes are CRLF, second two bytes give the length of the DMR; we skip over them
@@ -105,26 +114,26 @@ def read_dmr(file_path, dmr_len):
             # We read the DMR minus the CRLF and newline (3 bytes)
         dmr = f.read(dmr_len)
     dmr = dmr.decode('ascii')
-    return dmr
+    dataset = pydap.parsers.dmr.dmr_to_dataset(dmr)
+    return dataset
 
 
-def open_dap_file(file_path, das_path=None):
+def read_dap_file(file_path, das_path=None):
     """ Open a file downloaded from a `.dap` (dap4) response, retunring a dataset
     Optionally, read also the `.das` response to assign attributes to the
     dataset."""
 
-    dmr_len = get_dmr_length(file_path)
-    dmr = read_dmr(file_path, dmr_len)
-    dataset = pydap.parsers.dmr.dmr_to_dataset(dmr)
+    dataset = read_dmr_file(file_path)
 
     with open(file_path, "rb") as f:
+        dmr_len = get_dmr_length(file_path)
         f.seek(dmr_len)
         crlf = f.read(4)
         pydap.handlers.dap.unpack_dap4_data(f, dataset)
     return dataset
 
 
-def open_dods_file(file_path, das_path=None):
+def read_dods_file(file_path, das_path=None):
     """Open a file downloaded from a `.dods` (dap2) response, returning a dataset.
 
     Optionally, read also the `.das` response to assign attributes to the
@@ -152,17 +161,18 @@ def open_dods_file(file_path, das_path=None):
 
     if das_path is not None:
         with open(das_path) as f:
-            add_attributes(dataset, parse_das(f.read()))
+            das = pydap.parsers.das.parse_das(f.read())
+            pydap.parsers.das.add_attributes(dataset, das)
 
     return dataset
 
 
 def open_dods_url(url, metadata=False, application=None, session=None,
-                  timeout=DEFAULT_TIMEOUT, verify=True):
+                  timeout=pydap.lib.DEFAULT_TIMEOUT, verify=True):
     """Open a `.dods` response directly, returning a dataset."""
 
-    r = GET(url, application, session, timeout=timeout)
-    raise_for_status(r)
+    r = pydap.net.GET(url, application, session, timeout=timeout)
+    pydap.net.raise_for_status(r)
 
     dds, data = r.body.split(b'\nData:\n', 1)
     dds = dds.decode(r.content_encoding or 'ascii')
@@ -174,11 +184,11 @@ def open_dods_url(url, metadata=False, application=None, session=None,
         scheme, netloc, path, query, fragment = urlsplit(url)
         dasurl = urlunsplit(
             (scheme, netloc, path[:-4] + 'das', query, fragment))
-        r = GET(dasurl, application, session, timeout=timeout,
+        r = pydap.net.GET(dasurl, application, session, timeout=timeout,
                 verify=verify)
-        raise_for_status(r)
-        das = r.text
-        add_attributes(dataset, parse_das(das))
+        pydap.net.raise_for_status(r)
+        das = pydap.parsers.das.parse_das(r.text)
+        pydap.parsers.das.add_attributes(dataset, das)
 
     return dataset
 
@@ -187,7 +197,7 @@ class Functions(object):
     """Proxy for server-side functions."""
 
     def __init__(self, baseurl, application=None, session=None,
-                 timeout=DEFAULT_TIMEOUT):
+                 timeout=pydap.lib.DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.application = application
         self.session = session
@@ -207,7 +217,7 @@ class ServerFunction(object):
     """
 
     def __init__(self, baseurl, name, application=None, session=None,
-                 timeout=DEFAULT_TIMEOUT):
+                 timeout=pydap.lib.DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.name = name
         self.application = application
@@ -217,10 +227,10 @@ class ServerFunction(object):
     def __call__(self, *args):
         params = []
         for arg in args:
-            if isinstance(arg, (DapType, ServerFunctionResult)):
+            if isinstance(arg, (pydap.model.DapType, ServerFunctionResult)):
                 params.append(arg.id)
             else:
-                params.append(encode(arg))
+                params.append(pydap.lib.encode(arg))
         id_ = self.name + '(' + ','.join(params) + ')'
         return ServerFunctionResult(self.baseurl, id_, self.application,
                                     self.session, timeout=self.timeout)
@@ -230,7 +240,7 @@ class ServerFunctionResult(object):
     """A proxy for the result from a server-side function call."""
 
     def __init__(self, baseurl, id_, application=None, session=None,
-                 timeout=DEFAULT_TIMEOUT):
+                 timeout=pydap.lib.DEFAULT_TIMEOUT):
         self.id = id_
         self.dataset = None
         self.application = application
@@ -248,3 +258,11 @@ class ServerFunctionResult(object):
 
     def __getattr__(self, name):
         return self[name]
+
+
+if __name__ == '__main__':
+    # fname = '/home/griessbaum/Dropbox/UCSB/pydap_cpt/pydap_notebooks/ATL03_20181228015957_13810110_003_01.2var.h5.dmrpp.dmr'
+    fname = '/home/griessbaum/Dropbox/UCSB/pydap_cpt/pydap_notebooks/data/coads_climatology.nc.dmr'
+    ds = read_file(fname)
+    print(ds)
+

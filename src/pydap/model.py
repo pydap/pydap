@@ -212,6 +212,7 @@ class DapType(object):
 
         # Update children id.
         for child in self.children():
+            #pass
             child.id = '%s.%s' % (id, child.name)
 
     def _get_id(self):
@@ -707,7 +708,6 @@ class SequenceType(StructureType):
 
 
 class GridType(StructureType):
-
     """A Grid container.
 
     The Grid is a Structure with an array and the corresponding axes.
@@ -791,3 +791,7 @@ class GridType(StructureType):
     def dimensions(self):
         """Return the name of the axes."""
         return tuple(list(self.keys())[1:])
+
+
+class MapType(StructureType):
+    pass

@@ -5,6 +5,7 @@ from xml.etree import ElementTree as ET
 import pydap.model
 import pydap.lib
 import re
+import copy
 
 constructors = ('grid', 'sequence', 'structure')
 name_regexp = r'[\w%!~"\'\*-]+'
@@ -128,7 +129,8 @@ def make_grid_var(dataset, variable):
     var = pydap.model.GridType(name=variable['name'])
     var[variable['name']] = pydap.model.BaseType(name=variable['name'], data=data, dimensions=variable['dims'])
     for dim in variable['dims']:
-        var[dim] = dataset[dim]
+        # If we don't copy the dimensions, their ID will get updated (prepended with the variables ID)
+        var[dim] = copy.copy(dataset[dim])
     return var
 
 
@@ -164,7 +166,7 @@ def dmr_to_dataset(dmr):
     dimensions = {**root_dimensions, **group_dimensions}
     variables = {**root_variables, **group_variables}
 
-    dataset = pydap.model.DatasetType('')
+    dataset = pydap.model.DatasetType('nameless')
 
     for dimension in dimensions.values():
         dimension_name = dimension['name']
@@ -196,6 +198,7 @@ def dmr_to_dataset(dmr):
             variable['shape'] = get_shape(dimensions, variable)
 
         if has_map(variable['element']):
+            # If the variable has a map, we create a grid variable
             var = make_grid_var(dataset, variable)
         else:
             data = DummyData(dtype=variable['dtype'], shape=variable['shape'])
@@ -206,6 +209,8 @@ def dmr_to_dataset(dmr):
     order_dataset = pydap.model.DatasetType('')
     for var_name in get_variable_order(dom_et):
         order_dataset[var_name] = dataset[var_name]
+
+    dataset._set_id(dataset.name)
 
     return order_dataset
 
@@ -221,12 +226,3 @@ class DummyData(object):
     def __init__(self, dtype, shape):
         self.dtype = dtype
         self.shape = shape
-
-
-if __name__ == '__main__':
-    # fname = '/home/griessbaum/Dropbox/UCSB/pydap_cpt/pydap_notebooks/ATL03_20181228015957_13810110_003_01.2var.h5.dmrpp.dmr'
-    fname = '/home/griessbaum/Dropbox/UCSB/pydap_cpt/pydap_notebooks/coads_climatology.nc.dmr'
-    with open(fname, 'rb') as dmr_file:
-        dmr = dmr_file.read()
-    ds = dmr_to_dataset(dmr)
-    print(ds)

@@ -3,7 +3,7 @@
 import os
 import numpy as np
 from pydap.handlers.lib import BaseHandler
-from pydap.client import open_url, open_dods_url, open_file
+from pydap.client import open_url, open_dods_url, read_file
 from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 import pytest
 
@@ -32,7 +32,7 @@ def test_open_url(sequence_app):
 @pytest.mark.client
 def test_open_dods():
     """Open a file downloaded from the test server with the DAS."""
-    dataset = open_file(DODS)
+    dataset = read_file(DODS)
 
     # test data
     assert dataset.data == [
@@ -50,7 +50,7 @@ def test_open_dods():
 @pytest.mark.client
 def test_open_dods_das():
     """Open a file downloaded from the test server with the DAS."""
-    dataset = open_file(DODS, DAS)
+    dataset = read_file(DODS, DAS)
 
     # test data
     assert dataset.data == [

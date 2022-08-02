@@ -622,7 +622,6 @@ def find_pattern_in_string_iter(pattern, i):
 def dump():  # pragma: no cover
     """Unpack dods response into lists.
 
-
     Return pretty-printed data.
 
     """
