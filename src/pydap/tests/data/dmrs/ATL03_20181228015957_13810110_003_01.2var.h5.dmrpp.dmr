@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#" xml:base="http://test.opendap.org:8080/opendap/dmrpp_test_files/ATL03_20181228015957_13810110_003_01.2var.h5.dmrpp" dapVersion="4.0" dmrVersion="1.0" name="ATL03_20181228015957_13810110_003_01.h5">
+    <Group name="gt1r">
+        <Attribute name="Description" type="String">
+            <Value>Each group contains the segments for one Ground Track. As ICESat-2 orbits the earth, sequential transmit pulses illuminate six ground tracks on the surface of the earth.  The track width is approximately 14m.  Each ground track is numbered, according to the laser spot number that generates a given ground track.  Ground tracks are numbered from the left to the right in the direction of spacecraft travel as: 1L, 1R in the left-most pair of beams; 2L, 2R for the center pair of beams; and 3L, 3R for the right-most pair of beams.</Value>
+        </Attribute>
+        <Attribute name="atlas_pce" type="String">
+            <Value>pce3</Value>
+        </Attribute>
+        <Attribute name="atlas_beam_type" type="String">
+            <Value>strong</Value>
+        </Attribute>
+        <Attribute name="groundtrack_id" type="String">
+            <Value>gt1r</Value>
+        </Attribute>
+        <Attribute name="atmosphere_profile" type="String">
+            <Value>profile_1</Value>
+        </Attribute>
+        <Attribute name="atlas_spot_number" type="String">
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="sc_orientation" type="String">
+            <Value>Forward</Value>
+        </Attribute>
+        <Group name="bckgrd_atlas">
+            <Dimension name="delta_time" size="89490"/>
+            <Float32 name="bckgrd_int_height">
+                <Dim name="/gt1r/bckgrd_atlas/delta_time"/>
+                <Attribute name="contentType" type="String">
+                    <Value>modelResult</Value>
+                </Attribute>
+                <Attribute name="coordinates" type="String">
+                    <Value>delta_time</Value>
+                </Attribute>
+                <Attribute name="description" type="String">
+                    <Value>The height of the altimetric range window.  This is the height over which the 50-shot sum is generated.  Parameter is ingested at 50-Hz, and values are repeated to form a 200-Hz array.</Value>
+                </Attribute>
+                <Attribute name="long_name" type="String">
+                    <Value>Altimetric range window width</Value>
+                </Attribute>
+                <Attribute name="source" type="String">
+                    <Value>ATL03 ATBD Section 7.3</Value>
+                </Attribute>
+                <Attribute name="units" type="String">
+                    <Value>meters</Value>
+                </Attribute>
+            </Float32>
+            <Float64 name="delta_time">
+                <Dim name="/gt1r/bckgrd_atlas/delta_time"/>
+                <Attribute name="description" type="String">
+                    <Value>Elapsed GPS Seconds from the ATLAS SDP GPS Epoch, referenced to the start of the 50-shot sum. This is based on every fiftieth laser fire time, which leads to a very close alignment with major frame boundaries (+/- 1 shot). The ATLAS Standard Data Products (SDP) epoch offset is defined within /ancillary_data/atlas_sdp_gps_epoch as the number of GPS seconds between the GPS epoch (1980-01-06T00:00:00.000000Z UTC) and the ATLAS SDP epoch. By adding the offset contained within atlas_sdp_gps_epoch to delta time parameters, the time in gps_seconds relative to the GPS epoch can be computed.</Value>
+                </Attribute>
+                <Attribute name="long_name" type="String">
+                    <Value>Time at the start of ATLAS 50-shot sum</Value>
+                </Attribute>
+                <Attribute name="source" type="String">
+                    <Value>ATL02</Value>
+                </Attribute>
+                <Attribute name="standard_name" type="String">
+                    <Value>time</Value>
+                </Attribute>
+                <Attribute name="units" type="String">
+                    <Value>seconds since 2018-01-01</Value>
+                </Attribute>
+            </Float64>
+        </Group>
+        <Group name="heights">
+            <Dimension name="delta_time" size="4102521"/>
+            <Float64 name="lat_ph">
+                <Dim name="/gt1r/heights/delta_time"/>
+                <Attribute name="coordinates" type="String">
+                    <Value>delta_time lon_ph</Value>
+                </Attribute>
+                <Attribute name="description" type="String">
+                    <Value>Latitude of each received photon. Computed from the ECF Cartesian coordinates of the bounce point.</Value>
+                </Attribute>
+                <Attribute name="long_name" type="String">
+                    <Value>Latitude</Value>
+                </Attribute>
+                <Attribute name="source" type="String">
+                    <Value>ATL03g ATBD, Section 3.4</Value>
+                </Attribute>
+                <Attribute name="standard_name" type="String">
+                    <Value>latitude</Value>
+                </Attribute>
+                <Attribute name="units" type="String">
+                    <Value>degrees_north</Value>
+                </Attribute>
+                <Attribute name="valid_max" type="Float64">
+                    <Value>90.</Value>
+                </Attribute>
+                <Attribute name="valid_min" type="Float64">
+                    <Value>-90.</Value>
+                </Attribute>
+            </Float64>
+            <Float64 name="delta_time">
+                <Dim name="/gt1r/heights/delta_time"/>
+                <Attribute name="contentType" type="String">
+                    <Value>referenceInformation</Value>
+                </Attribute>
+                <Attribute name="coordinates" type="String">
+                    <Value>lat_ph lon_ph</Value>
+                </Attribute>
+                <Attribute name="description" type="String">
+                    <Value>The transmit time of a given photon, measured in seconds from the ATLAS Standard Data Product Epoch. Note that multiple received photons associated with a single transmit pulse will have the same delta_time. The ATLAS Standard Data Products (SDP) epoch offset is defined within /ancillary_data/atlas_sdp_gps_epoch as the number of GPS seconds between the GPS epoch (1980-01-06T00:00:00.000000Z UTC) and the ATLAS SDP epoch. By adding the offset contained within atlas_sdp_gps_epoch to delta time parameters, the time in gps_seconds relative to the GPS epoch can be computed.</Value>
+                </Attribute>
+                <Attribute name="long_name" type="String">
+                    <Value>Elapsed GPS seconds</Value>
+                </Attribute>
+                <Attribute name="source" type="String">
+                    <Value>Operations</Value>
+                </Attribute>
+                <Attribute name="standard_name" type="String">
+                    <Value>time</Value>
+                </Attribute>
+                <Attribute name="units" type="String">
+                    <Value>seconds since 2018-01-01</Value>
+                </Attribute>
+            </Float64>
+        </Group>
+    </Group>
+</Dataset>

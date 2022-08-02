@@ -121,7 +121,12 @@ def dmr_to_dataset(dmr):
 
     # Add size entry for dimension variables
     for name, size in dimension_sizes.items():
-        variables[name]['size'] = size
+        if name in variables:
+            variables[name]['size'] = size
+        else:
+            # We might have dimensions that only have a declaration, so we need to add them to the variables
+            variables[name] = {'name': name, 'size': size, 'dims': [name],
+                               'dtype': 'int', 'has_map': False, 'attributes': {}, 'shape': []}
 
     # Add shape element to variables
     for name, variable in variables.items():
