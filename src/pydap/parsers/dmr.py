@@ -6,6 +6,7 @@ import pydap.model
 import pydap.lib
 import re
 import copy
+import collections
 
 constructors = ('grid', 'sequence', 'structure')
 name_regexp = r'[\w%!~"\'\*-]+'
@@ -13,59 +14,6 @@ dmr_atomic_types = ('Int8', 'UInt8', 'Byte', 'Char', 'Int16', 'UInt16', 'Int32',
                     'Int64', 'UInt64', 'Float32', 'Float64')
 
 namespace = {'': "http://xml.opendap.org/ns/DAP/4.0#"}
-
-
-def get_group_variables(element, parent_name=''):
-    variables = {}
-    group_elements = element.findall('Group')
-    for group_element in group_elements:
-        group_name = parent_name + '/' + group_element.get('name')
-        group_variables = get_variables(group_element, group_name)
-        subgroup_variables = get_group_variables(group_element, group_name)
-        variables = {**variables, **group_variables, **subgroup_variables}
-    return variables
-
-
-def get_variables(element, parent_name=''):
-    variables = {}
-    for atomic_type in dmr_atomic_types:
-        for variable in element.findall(atomic_type):
-            name = variable.attrib['name']
-            # name = pydap.lib.quote(name).replace('%2F', '/')
-            if parent_name == '':
-                # The FQN of root variables does not have leading slash
-                fqn = name
-            else:
-                fqn = parent_name + '/' + name
-            variables[fqn] = {'name': fqn, 'element': variable}
-    return variables
-
-
-def get_group_dimensions(element, parent_name=''):
-    dimensions = {}
-    group_elements = element.findall('Group')
-    for group_element in group_elements:
-        group_name = parent_name + '/' + group_element.get('name')
-        group_dimensions = get_dimensions(group_element, group_name)
-        subgroup_dimensions = get_group_dimensions(group_element, group_name)
-        dimensions = {**dimensions, **group_dimensions, **subgroup_dimensions}
-    return dimensions
-
-
-def get_dimensions(element, parent_name=''):
-    dimensions = {}
-    dimensions_elements = element.findall('Dimension')
-    for dimensions_element in dimensions_elements:
-        name = dimensions_element.attrib['name']
-        # name = pydap.lib.quote(name).replace('%2F', '/')
-        if parent_name == '':
-            # The FQN of root variables does not have leading slash
-            fqn = name
-        else:
-            fqn = parent_name + '/' + name
-        size = dimensions_element.attrib['size']
-        dimensions[fqn] = {'name': fqn, 'size': int(size)}
-    return dimensions
 
 
 def dap4_to_numpy_typemap(type_string):
@@ -76,6 +24,40 @@ def dap4_to_numpy_typemap(type_string):
     """
     dtype_str = pydap.lib.DAP4_TO_NUMPY_PARSER_TYPEMAP[type_string]
     return np.dtype(dtype_str)
+
+
+def get_variables(node, prefix=''):
+    variables = collections.OrderedDict()
+    group_name = node.get('name')
+    if group_name is None:
+        return variables
+    if node.tag != 'Dataset':
+        prefix = prefix + '/' + group_name
+    for subnode in node:
+        if subnode.tag in dmr_atomic_types:
+            name = subnode.get('name')
+            if prefix != '':
+                name = prefix + '/' + name
+            variables[name] = {'element': subnode}
+        variables.update(get_variables(subnode, prefix))
+    return variables
+
+
+def get_dimension_sizes(node, prefix=''):
+    dimensions = {}
+    group_name = node.get('name')
+    if group_name is None:
+        return dimensions
+    if node.tag != 'Dataset':
+        prefix = prefix + '/' + group_name
+    for subnode in node:
+        if subnode.tag == 'Dimension':
+            name = subnode.get('name')
+            if prefix != '':
+                name = prefix + '/' + name
+            dimensions[name] = int(subnode.attrib['size'])
+        dimensions.update(get_dimension_sizes(subnode, prefix))
+    return dimensions
 
 
 def get_dtype(element):
@@ -117,41 +99,6 @@ def has_map(element):
         return False
 
 
-def get_shape(dimensions, variable):
-    shape = []
-    for dim_name in variable['dims']:
-        shape.append(dimensions[dim_name]['size'])
-    return shape
-
-
-def make_grid_var(dataset, variable):
-    data = DummyData(dtype=variable['dtype'], shape=variable['shape'])
-    var = pydap.model.GridType(name=variable['name'])
-    var[variable['name']] = pydap.model.BaseType(name=variable['name'], data=data, dimensions=variable['dims'])
-    for dim in variable['dims']:
-        # If we don't copy the dimensions, their ID will get updated (prepended with the variables ID)
-        var[dim] = copy.copy(dataset[dim])
-    return var
-
-
-def get_variable_order(node, prefix=''):
-    variables = []
-    group_name = node.get('name')
-    if group_name is None:
-        return variables
-    if node.tag != 'Dataset':
-        prefix = prefix + '/' + group_name
-
-    for subnode in node:
-        if subnode.tag in dmr_atomic_types:
-            name = subnode.get('name')
-            if prefix != '':
-                name = prefix + '/' + name
-            variables.append(name)
-        variables += get_variable_order(subnode, prefix)
-    return variables
-
-
 def dmr_to_dataset(dmr):
     """Return a dataset object from a DMR representation."""
 
@@ -159,60 +106,45 @@ def dmr_to_dataset(dmr):
     dmr = re.sub(' xmlns="[^"]+"', '', dmr, count=1)
     dom_et = ET.fromstring(dmr)
 
-    group_variables = get_group_variables(dom_et)
-    group_dimensions = get_group_dimensions(dom_et)
-    root_variables = get_variables(dom_et, '')
-    root_dimensions = get_dimensions(dom_et, '')
-    dimensions = {**root_dimensions, **group_dimensions}
-    variables = {**root_variables, **group_variables}
+    variables = get_variables(dom_et)
+    dimension_sizes = get_dimension_sizes(dom_et)
 
-    dataset = pydap.model.DatasetType('nameless')
-
-    for dimension in dimensions.values():
-        dimension_name = dimension['name']
-        dimension_variable = variables[dimension_name]['element']
-
-        dimension['element'] = dimension_variable
-        dimension['attributes'] = get_attributes(dimension_variable)
-        dimension['dtype'] = get_dtype(dimension_variable)
-
-        dim_data = DummyData(dimension['dtype'], shape=(dimension['size'],))
-        var = pydap.model.BaseType(dimension_name, dim_data)
-        var.attributes = dimension['attributes']
-        dataset[var.name] = var
-
-    for variable in variables.values():
-        if variable['name'] in dimensions.keys():
-            continue
-
+    # Bootstrap variables
+    for name, variable in variables.items():
+        variable['name'] = name
         variable['attributes'] = get_attributes(variable['element'])
         variable['dtype'] = get_dtype(variable['element'])
         variable['dims'] = get_dims(variable['element'])
-        if len(variable['dims']) == 0:
-            # If we requested only a variable dimension, we might end up with an unnamed dimension
-            shape = []
-            for dim in variable['element'].findall('Dim'):
-                shape.append(int(dim.attrib['size']))
-            variable['shape'] = tuple(shape)
-        else:
-            variable['shape'] = get_shape(dimensions, variable)
+        variable['has_map'] = has_map(variable['element'])
+        variable['size'] = None
+        variable['shape'] = []
 
-        if has_map(variable['element']):
-            # If the variable has a map, we create a grid variable
-            var = make_grid_var(dataset, variable)
+    # Add size entry for dimension variables
+    for name, size in dimension_sizes.items():
+        variables[name]['size'] = size
+
+    # Add shape element to variables
+    for name, variable in variables.items():
+        for dim in variable['dims']:
+            variable['shape'] += [variables[dim]['size'],]
+
+    # Convert the ordered dictionary to dataset
+    dataset_name = dom_et.attrib['name']
+    dataset = pydap.model.DatasetType(dataset_name)
+    for name, variable in variables.items():
+        data = DummyData(dtype=variable['dtype'], shape=variable['shape'])
+        array = pydap.model.BaseType(name=variable['name'], data=data, dimensions=variable['dims'])
+        if variable['has_map']:
+            var = pydap.model.GridType(name=variable['name'])
+            var[name] = array
+            for dim in variable['dims']:
+                var[dim] = copy.copy(dataset[dim])
         else:
-            data = DummyData(dtype=variable['dtype'], shape=variable['shape'])
-            var = pydap.model.BaseType(name=variable['name'], data=data, dimensions=variable['dims'])
+            var = array
         var.attributes = variable['attributes']
         dataset[var.name] = var
 
-    order_dataset = pydap.model.DatasetType('')
-    for var_name in get_variable_order(dom_et):
-        order_dataset[var_name] = dataset[var_name]
-
-    dataset._set_id(dataset.name)
-
-    return order_dataset
+    return dataset
 
 
 class DMRParser:
