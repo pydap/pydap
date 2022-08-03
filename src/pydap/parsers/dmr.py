@@ -76,19 +76,32 @@ def get_attributes(element):
     return attributes
 
 
-def get_dims(element):
+def get_dim_names(element):
+    n_unnamed = 0
     # Not to be confused with dimensions
     dimension_elements = element.findall('Dim')
     dimensions = []
     for dimension_element in dimension_elements:
         name = dimension_element.get('name')
         if name is None:
+            # We might have unnamed dimensions
             return dimensions
         if name.find('/', 1) == -1:
             # If this is a root Dimension, we remove the leading slash
             name = name.replace('/', '')
         dimensions.append(name)
     return dimensions
+
+
+def get_dim_sizes(element):
+    dimension_elements = element.findall('Dim')
+    dimension_sizes = ()
+    for dimension_element in dimension_elements:
+        name = dimension_element.get('name')
+        if name is None:
+            size = int(dimension_element.get('size'))
+            dimension_sizes += (size,)
+    return dimension_sizes
 
 
 def has_map(element):
@@ -114,10 +127,10 @@ def dmr_to_dataset(dmr):
         variable['name'] = name
         variable['attributes'] = get_attributes(variable['element'])
         variable['dtype'] = get_dtype(variable['element'])
-        variable['dims'] = get_dims(variable['element'])
+        variable['dims'] = get_dim_names(variable['element'])
         variable['has_map'] = has_map(variable['element'])
         variable['size'] = None
-        variable['shape'] = []
+        variable['shape'] = get_dim_sizes(variable['element'])
 
     # Add size entry for dimension variables
     for name, size in dimension_sizes.items():
@@ -126,12 +139,12 @@ def dmr_to_dataset(dmr):
         else:
             # We might have dimensions that only have a declaration, so we need to add them to the variables
             variables[name] = {'name': name, 'size': size, 'dims': [name],
-                               'dtype': 'int', 'has_map': False, 'attributes': {}, 'shape': []}
+                               'dtype': 'int', 'has_map': False, 'attributes': {}, 'shape': ()}
 
     # Add shape element to variables
     for name, variable in variables.items():
         for dim in variable['dims']:
-            variable['shape'] += [variables[dim]['size'],]
+            variable['shape'] += (variables[dim]['size'],)
 
     # Convert the ordered dictionary to dataset
     dataset_name = dom_et.attrib['name']

@@ -24,7 +24,7 @@ from six import text_type, string_types, BytesIO
 
 import pydap.model
 
-from ..net import GET, raise_for_status
+import pydap.net
 from ..lib import (
     encode, combine_slices, fix_slice, hyperslab,
     START_OF_SEQUENCE, walk, StreamReader, BytesReader,
@@ -83,23 +83,23 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
 
     def dataset_from_dap4(self):
         dmr_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.dmr', self.query, self.fragment))
-        r = GET(dmr_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
-        raise_for_status(r)
+        r = pydap.net.GET(dmr_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
+        pydap.net.raise_for_status(r)
         dmr = safe_charset_text(r, self.user_charset)
         self.dataset = dmr_to_dataset(dmr)
 
     def dataset_from_dap2(self):
         dds_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.dds', self.query, self.fragment))
-        r = GET(dds_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
-        raise_for_status(r)
+        r = pydap.net.GET(dds_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
+        pydap.net.raise_for_status(r)
         dds = safe_charset_text(r, self.user_charset)
         self.dataset = dds_to_dataset(dds)
 
     def attach_das(self):
         # Also pull the DAS and add additional attributes
         das_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.das', self.query, self.fragment))
-        r = GET(das_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
-        raise_for_status(r)
+        r = pydap.net.GET(das_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
+        pydap.net.raise_for_status(r)
         das = safe_charset_text(r, self.user_charset)
         add_attributes(self.dataset, parse_das(das))
 
@@ -112,7 +112,10 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
     def add_dap4_proxies(self):
         # remove any projection from the base_url, leaving selections
         for var in walk(self.dataset, pydap.model.BaseType):
-            var.data = BaseProxyDap4(self.base_url, var.id, var.dtype, var.shape, application=self.application, session=self.session)
+            var.data = BaseProxyDap4(self.base_url, var.name, var.dtype, var.shape,
+                                     application=self.application, session=self.session)
+        for var in walk(self.dataset, pydap.model.GridType):
+            var.set_output_grid(self.output_grid)
 
     def add_dap2_proxies(self):
         # now add data proxies
@@ -142,6 +145,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         # retrieve only main variable for grid types:
         for var in walk(self.dataset, pydap.model.GridType):
             var.set_output_grid(self.output_grid)
+
 
 
 def get_charset(r, user_charset):
@@ -202,12 +206,11 @@ class BaseProxyDap2(object):
         self.user_charset = user_charset
 
     def __repr__(self):
-        return 'BaseProxy(%s)' % ', '.join(
-            map(repr, [
-                self.baseurl, self.id, self.dtype, self.shape, self.slice]))
+        return 'BaseProxy(%s)' % ', '.join(map(repr, [self.baseurl, self.id, self.dtype, self.shape, self.slice]))
 
     def __getitem__(self, index):
         # build download url
+
         index = combine_slices(self.slice, fix_slice(index, self.shape))
         scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.baseurl)
         url = six.moves.urllib.parse.urlunsplit((
@@ -217,9 +220,9 @@ class BaseProxyDap2(object):
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
-        r = GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
+        r = pydap.net.GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
 
-        raise_for_status(r)
+        pydap.net.raise_for_status(r)
         dds, data = safe_dds_and_data(r, self.user_charset)
 
         # Parse received dataset:
@@ -271,8 +274,7 @@ class BaseProxyDap4(BaseProxyDap2):
 
     def __repr__(self):
         return 'Dap4BaseProxy(%s)' % ', '.join(
-            map(repr, [
-                self.baseurl, self.id, self.dtype, self.shape, self.slice]))
+            map(repr, [self.baseurl, self.id, self.dtype, self.shape, self.slice]))
 
     def __getitem__(self, index):
         # build download url
@@ -281,14 +283,12 @@ class BaseProxyDap4(BaseProxyDap2):
         ce = 'dap4.ce=/' + six.moves.urllib.parse.quote(self.id) + hyperslab(index) + query
         url = six.moves.urllib.parse.urlunsplit((scheme, netloc, path + '.dap', ce, fragment)).rstrip('&')
 
-        print(url)
         # download and unpack data
-
         logger.info("Fetching URL: %s" % url)
 
-        r = GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
+        r = pydap.net.GET(url, self.application, self.session, timeout=self.timeout, verify=self.verify)
 
-        raise_for_status(r)
+        pydap.net.raise_for_status(r)
         dmr, data = safe_dmr_and_data(r, self.user_charset)
 
         # Parse received dataset:
@@ -386,9 +386,9 @@ class SequenceProxy(object):
 
     def __iter__(self):
         # download and unpack data
-        r = GET(self.url, self.application, self.session, timeout=self.timeout,
+        r = pydap.net.GET(self.url, self.application, self.session, timeout=self.timeout,
                 verify=self.verify)
-        raise_for_status(r)
+        pydap.net.raise_for_status(r)
 
         i = r.app_iter
         if not hasattr(i, '__next__'):
@@ -552,7 +552,7 @@ def decode_chunktype(chunk_type):
 
 
 def get_count(variable):
-    count = numpy.array(variable.shape).prod()
+    count = int(numpy.array(variable.shape).prod())
     item_size = numpy.dtype(variable.dtype).itemsize
     count = count * item_size
     return count
@@ -595,8 +595,8 @@ def unpack_dap4_data(xdr_stream, dataset):
     for variable_name in dataset:
         variable = dataset[variable_name]
 
-        length = get_count(variable)
-        stop = start + length
+        count = get_count(variable)
+        stop = start + count
         data = decode_variable(buffer, start=start, stop=stop, variable=variable, endian=endian)
         checksum = numpy.frombuffer(buffer[stop:stop + 4], dtype=checksum_dtype).byteswap('=')
         if isinstance(variable, pydap.model.BaseType):

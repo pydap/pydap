@@ -11,7 +11,7 @@ import numpy as np
 from pydap.model import (DatasetType, BaseType,
                          SequenceType, GridType, StructureType)
 from pydap.handlers.lib import IterData
-from pydap.client import read_file
+from pydap.client import open_file
 
 from collections import OrderedDict
 
@@ -65,7 +65,7 @@ SimpleArray["short"] = BaseType("short", np.array(1, dtype="h"))
 
 DODS = os.path.join(os.path.dirname(__file__), 'data/rainfall_time_malaysia.cdp.dods')
 DAS = os.path.join(os.path.dirname(__file__), 'data/rainfall_time_malaysia.cdp.das')
-dapper = read_file(DODS, DAS)
+dapper = open_file(DODS, DAS)
 
 
 # dataset from http://test.opendap.org:8080/dods/dts/D1.asc

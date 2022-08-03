@@ -28,8 +28,8 @@ If the dods response has already been downloaded, it is possible to open it as
 if it were a remote dataset. Optionally, it is also possible to specify a das
 response:
 
-    >>> from pydap.client import read_file
-    >>> dataset = read_file(
+    >>> from pydap.client import open_file
+    >>> dataset = open_file(
     ...     "/path/to/file.dods", "/path/to/file.das")  #doctest: +SKIP
 
 Remote datasets opened with `open_url` can call server functions. pydap has a
@@ -47,17 +47,13 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 from io import open, BytesIO
 from six.moves.urllib.parse import urlsplit, urlunsplit
 
-#from .model import DapType
 import pydap.model
 import pydap.lib
-#from .lib import encode, DEFAULT_TIMEOUT
 import pydap.net
-#from .net import GET, raise_for_status
 import pydap.handlers.dap
 import pydap.parsers.dds
 import pydap.parsers.dmr
 import pydap.parsers.das
-#from .parsers.das import parse_das, add_attributes
 import numpy
 
 
@@ -80,16 +76,16 @@ def open_url(url, application=None, session=None, output_grid=True,
     return dataset
 
 
-def read_file(file_path, das_path=None):
+def open_file(file_path, das_path=None):
     extension = file_path.split('.')[-1]
     if extension == 'dods':
-        return read_dods_file(file_path=file_path, das_path=das_path)
+        return open_dods_file(file_path=file_path, das_path=das_path)
     elif extension == 'dap':
-        return read_dap_file(file_path=file_path, das_path=das_path)
+        return open_dap_file(file_path=file_path, das_path=das_path)
     elif extension == 'dds':
         pass
     elif extension == 'dmr':
-        return read_dmr_file(file_path=file_path)
+        return open_dmr_file(file_path=file_path)
 
 
 def get_dmr_length(file_path):
@@ -100,12 +96,14 @@ def get_dmr_length(file_path):
             dmr_len = numpy.frombuffer(f.read(2), dtype='>u2')[0]
         else:
             dap = f.read()
-            dmr = dap.split(b'</Dataset>')[0] + b'</Dataset>'
+            dmr = b'<?xml' + dap.split(b'<?xml')[1]
+            dmr = dmr.split(b'</Dataset>')[0] + b'</Dataset>\n\r\n'
+            print(dmr)
             dmr_len = len(dmr)
     return dmr_len
 
 
-def read_dmr_file(file_path):
+def open_dmr_file(file_path):
     dmr_len = get_dmr_length(file_path)
     with open(file_path, "rb") as f:
         if f.peek()[0:2] == b'\x04\x00':
@@ -118,22 +116,23 @@ def read_dmr_file(file_path):
     return dataset
 
 
-def read_dap_file(file_path, das_path=None):
+def open_dap_file(file_path, das_path=None):
     """ Open a file downloaded from a `.dap` (dap4) response, retunring a dataset
     Optionally, read also the `.das` response to assign attributes to the
     dataset."""
 
-    dataset = read_dmr_file(file_path)
+    dataset = open_dmr_file(file_path)
 
     with open(file_path, "rb") as f:
         dmr_len = get_dmr_length(file_path)
+        print(dmr_len)
         f.seek(dmr_len)
         crlf = f.read(4)
         pydap.handlers.dap.unpack_dap4_data(f, dataset)
     return dataset
 
 
-def read_dods_file(file_path, das_path=None):
+def open_dods_file(file_path, das_path=None):
     """Open a file downloaded from a `.dods` (dap2) response, returning a dataset.
 
     Optionally, read also the `.das` response to assign attributes to the
@@ -263,6 +262,6 @@ class ServerFunctionResult(object):
 if __name__ == '__main__':
     # fname = '/home/griessbaum/Dropbox/UCSB/pydap_cpt/pydap_notebooks/ATL03_20181228015957_13810110_003_01.2var.h5.dmrpp.dmr'
     fname = '/home/griessbaum/Dropbox/UCSB/pydap_cpt/pydap_notebooks/data/coads_climatology.nc.dmr'
-    ds = read_file(fname)
+    ds = open_file(fname)
     print(ds)
 
