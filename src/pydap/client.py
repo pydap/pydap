@@ -98,7 +98,6 @@ def get_dmr_length(file_path):
             dap = f.read()
             dmr = b'<?xml' + dap.split(b'<?xml')[1]
             dmr = dmr.split(b'</Dataset>')[0] + b'</Dataset>\n\r\n'
-            print(dmr)
             dmr_len = len(dmr)
     return dmr_len
 
@@ -125,7 +124,6 @@ def open_dap_file(file_path, das_path=None):
 
     with open(file_path, "rb") as f:
         dmr_len = get_dmr_length(file_path)
-        print(dmr_len)
         f.seek(dmr_len)
         crlf = f.read(4)
         pydap.handlers.dap.unpack_dap4_data(f, dataset)
