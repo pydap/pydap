@@ -1,6 +1,7 @@
 import os
 import numpy
 import pydap.client
+import pytest
 
 
 def load_dap(file_path):
@@ -32,3 +33,13 @@ def test_coads():
     expected = numpy.array([0.12833333, -0.05000002, -0.06363636], dtype='float32')
     numpy.testing.assert_almost_equal(values, expected)
 
+
+def test_my1qnd1():
+    fname = 'data/daps/MY1DQND1.sst.ADD2005001.040.2006011070802.hdf.dap'
+    load_dap(fname)
+
+
+if __name__ == '__main__':
+    pass
+    # test_my1qnd1()
+    # test_coads()

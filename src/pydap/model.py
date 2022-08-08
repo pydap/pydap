@@ -322,6 +322,8 @@ class BaseType(DapType):
     def __getitem__(self, index):
         out = copy.copy(self)
         out.data = self._get_data_index(index)
+        if type(self.data).__name__ == 'BaseProxyDap4':
+            out.attributes['checksum'] = self.data.checksum
         return out
 
     def __len__(self):
@@ -347,8 +349,7 @@ class BaseType(DapType):
         return self._get_data_index()
 
     def _get_data_index(self, index=Ellipsis):
-        if (self._is_string_dtype and
-           isinstance(self._data, np.ndarray)):
+        if self._is_string_dtype and isinstance(self._data, np.ndarray):
             return np.vectorize(decode_np_strings)(self._data[index])
         else:
             return self._data[index]
@@ -428,9 +429,7 @@ class StructureType(DapType, Mapping):
     def __getitem__(self, key):
         if isinstance(key, string_types):
             return self._getitem_string(key)
-        elif (isinstance(key, tuple) and
-              all(isinstance(name, string_types)
-                  for name in key)):
+        elif isinstance(key, tuple) and all(isinstance(name, string_types) for name in key):
             out = copy.copy(self)
             out._visible_keys = list(key)
             return out
@@ -730,9 +729,7 @@ class GridType(StructureType):
             return self._getitem_string(key)
 
         # Return a new `GridType` with part of the data.
-        elif (isinstance(key, tuple) and
-              all(isinstance(name, string_types)
-                  for name in key)):
+        elif isinstance(key, tuple) and all(isinstance(name, string_types) for name in key):
             out = self._getitem_string_tuple(key)
             for var in out.children():
                 var.data = self[var.name].data
@@ -746,6 +743,8 @@ class GridType(StructureType):
 
             out = copy.copy(self)
             for var, slice_ in zip(out.children(), [key] + list(key)):
+                if type(self.data).__name__ == 'BaseProxyDap4':
+                    pass
                 var.data = self[var.name].data[slice_]
             return out
 

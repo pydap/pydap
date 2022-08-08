@@ -43,7 +43,7 @@ def get_variables(node, prefix=''):
     return variables
 
 
-def get_dimension_sizes(node, prefix=''):
+def get_named_dimensions(node, prefix=''):
     dimensions = {}
     group_name = node.get('name')
     if group_name is None:
@@ -56,7 +56,7 @@ def get_dimension_sizes(node, prefix=''):
             if prefix != '':
                 name = prefix + '/' + name
             dimensions[name] = int(subnode.attrib['size'])
-        dimensions.update(get_dimension_sizes(subnode, prefix))
+        dimensions.update(get_named_dimensions(subnode, prefix))
     return dimensions
 
 
@@ -120,7 +120,12 @@ def dmr_to_dataset(dmr):
     dom_et = ET.fromstring(dmr)
 
     variables = get_variables(dom_et)
-    dimension_sizes = get_dimension_sizes(dom_et)
+    named_dimensions = get_named_dimensions(dom_et)
+
+    # Add size entry for dimension variables
+    for name, size in named_dimensions.items():
+        if name in variables:
+            variables[name]['size'] = size
 
     # Bootstrap variables
     for name, variable in variables.items():
@@ -129,14 +134,11 @@ def dmr_to_dataset(dmr):
         variable['dtype'] = get_dtype(variable['element'])
         variable['dims'] = get_dim_names(variable['element'])
         variable['has_map'] = has_map(variable['element'])
-        variable['size'] = None
         variable['shape'] = get_dim_sizes(variable['element'])
 
     # Add size entry for dimension variables
-    for name, size in dimension_sizes.items():
-        if name in variables:
-            variables[name]['size'] = size
-        else:
+    for name, size in named_dimensions.items():
+        if name not in variables:
             # We might have dimensions that only have a declaration, so we need to add them to the variables
             variables[name] = {'name': name, 'size': size, 'dims': [name],
                                'dtype': 'int', 'has_map': False, 'attributes': {}, 'shape': ()}

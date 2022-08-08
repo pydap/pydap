@@ -46,7 +46,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
     """Build a dataset from a DAP base URL."""
 
     def __init__(self, url, application=None, session=None, output_grid=True,
-                 timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii'):
+                 timeout=DEFAULT_TIMEOUT, verify=True, user_charset='ascii', protocol=None):
 
         self.application = application
         self.session = session
@@ -57,22 +57,37 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         self.url = url
 
         scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.url)
-        if scheme == 'dap4':
-            self.protocol = 'dap4'
-            scheme = 'http'
-        else:
-            self.protocol = 'dap2'
         self.scheme = scheme
         self.netloc = netloc
         self.path = path
         self.query = query
         self.fragment = fragment
+
+        self.protocol = self.determine_protocol(protocol)
+
         self.projection, self.selection = pydap.parsers.parse_ce(self.query)
         arg = (self.scheme, self.netloc, self.path, '&'.join(self.selection), self.fragment)
         self.base_url = six.moves.urllib.parse.urlunsplit(arg)
-
         self.make_dataset()
         self.add_proxies()
+
+    def determine_protocol(self, protocol):
+        if protocol == 'dap4':
+            self.scheme = 'http'
+            return protocol
+        elif protocol == 'dap2':
+            return protocol
+        elif self.scheme == 'dap4':
+            self.scheme = 'http'
+            return 'dap4'
+        else:
+            extension = self.path.split('.')[-1]
+            if extension in ['dmr', 'dap']:
+                return 'dap4'
+            elif extension in ['dds', 'dods']:
+                return 'dap2'
+            else:
+                return 'dap2'
 
     def make_dataset(self,):
         if self.protocol == 'dap4':
@@ -145,7 +160,6 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         # retrieve only main variable for grid types:
         for var in walk(self.dataset, pydap.model.GridType):
             var.set_output_grid(self.output_grid)
-
 
 
 def get_charset(r, user_charset):
@@ -280,7 +294,7 @@ class BaseProxyDap4(BaseProxyDap2):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
         scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.baseurl)
-        ce = 'dap4.ce=/' + six.moves.urllib.parse.quote(self.id) + hyperslab(index) + query
+        ce = 'dap4.ce=' + six.moves.urllib.parse.quote(self.id) + hyperslab(index) + query
         url = six.moves.urllib.parse.urlunsplit((scheme, netloc, path + '.dap', ce, fragment)).rstrip('&')
 
         # download and unpack data
@@ -293,8 +307,11 @@ class BaseProxyDap4(BaseProxyDap2):
 
         # Parse received dataset:
         dataset = dmr_to_dataset(dmr)
-        unpack_dap4_data(BytesReader(data), dataset)
-        return dataset[self.id].data
+        dataset = unpack_dap4_data(BytesReader(data), dataset)
+
+        self.checksum = dataset[self.id].attributes['checksum']
+        self.data = dataset[self.id].data
+        return self.data
 
 
 class SequenceProxy(object):
@@ -594,7 +611,6 @@ def unpack_dap4_data(xdr_stream, dataset):
     start = 0
     for variable_name in dataset:
         variable = dataset[variable_name]
-
         count = get_count(variable)
         stop = start + count
         data = decode_variable(buffer, start=start, stop=stop, variable=variable, endian=endian)
@@ -602,10 +618,11 @@ def unpack_dap4_data(xdr_stream, dataset):
         if isinstance(variable, pydap.model.BaseType):
             variable._set_data(data)
         elif isinstance(variable, pydap.model.GridType):
-            variable._set_data([data])
+            variable._set_data([data.data])
         variable.attributes['checksum'] = checksum
         # Jump over the 4 byte chunk_header
         start = stop + 4
+    return dataset
 
 
 def find_pattern_in_string_iter(pattern, i):
@@ -631,3 +648,5 @@ def dump():  # pragma: no cover
     xdr_stream = io.BytesIO(xdrdata)
     data = unpack_dap2_data(xdr_stream, dataset)
     pprint.pprint(data)
+
+

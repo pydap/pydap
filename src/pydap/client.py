@@ -58,7 +58,7 @@ import numpy
 
 
 def open_url(url, application=None, session=None, output_grid=True,
-             timeout=pydap.lib.DEFAULT_TIMEOUT, verify=True, user_charset='ascii', protocol='dap2'):
+             timeout=pydap.lib.DEFAULT_TIMEOUT, verify=True, user_charset='ascii', protocol=None):
     """
     Open a remote URL, returning a dataset.
 
@@ -67,7 +67,7 @@ def open_url(url, application=None, session=None, output_grid=True,
     """
     handler = pydap.handlers.dap.DAPHandler(url, application, session, output_grid,
                                             timeout=timeout, verify=verify,
-                                            user_charset=user_charset)
+                                            user_charset=user_charset, protocol=protocol)
     dataset = handler.dataset
 
     # attach server-side functions
@@ -124,6 +124,7 @@ def open_dap_file(file_path, das_path=None):
 
     with open(file_path, "rb") as f:
         dmr_len = get_dmr_length(file_path)
+        #if f.peek()[0:2] == b'\x04\x00':
         f.seek(dmr_len)
         crlf = f.read(4)
         pydap.handlers.dap.unpack_dap4_data(f, dataset)
