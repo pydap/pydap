@@ -16,12 +16,6 @@ logging.basicConfig(filename='dap4_access_test.log',
 
 logger = logging.getLogger(__name__)
 
-# Set up the EDL username and password. 
-config = configparser.ConfigParser()
-config.read('user.config')
-username = config['user']['user']
-password = config['user']['pwd']
-
 
 class SessionEarthData(requests.Session):
     AUTH_HOST = 'urs.earthdata.nasa.gov'
@@ -43,30 +37,38 @@ class SessionEarthData(requests.Session):
         return
 
 
-session = SessionEarthData(username=username, password=password)
+def main():
+    config = configparser.ConfigParser()
+    config.read('user.config')
+    username = config['user']['user']
+    password = config['user']['pwd']
+    session = SessionEarthData(username=username, password=password)
 
-# Setup the DAP2 and DAP4 URLs
-dap4_schema = 'dap4'
+    dap4_schema = 'dap4'
 
-host = 'opendap.earthdata.nasa.gov'
-path = '/collections/C1996881146-POCLOUD/granules/'
-dataset = '20220531090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1'
+    host = 'opendap.earthdata.nasa.gov'
+    path = '/collections/C1996881146-POCLOUD/granules/'
+    dataset = '20220531090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1'
 
-dap4_url = f'{dap4_schema}://{host}{path}{dataset}'
+    dap4_url = f'{dap4_schema}://{host}{path}{dataset}'
 
-# open the dap4 URL
-print(f'Open this URL: {dap4_url}')
-i = 0
-while True:
-    start = time.time()
-    pydap_ds = pydap.client.open_url(dap4_url, session=session)
+    # open the dap4 URL
+    print(f'Open this URL: {dap4_url}')
+    i = 0
+    while True:
+        start = time.time()
+        pydap_ds = pydap.client.open_url(dap4_url, session=session)
 
-    print(f'The attributes:')
-    print(pydap_ds['sea_ice_fraction'].attributes)
-    i += 1
-    print(f'Call {i}')
-    variable = pydap_ds['sea_ice_fraction'][0, 1700:1799:10, 1800:1900:10]
-    print(f'Time for request: {time.time()-start}')
-    print(f'A subset of the "sea_ice_fraction" variable')
-    print(variable.data)
+        print(f'The attributes:')
+        print(pydap_ds['sea_ice_fraction'].attributes)
+        i += 1
+        print(f'Call {i}')
+        variable = pydap_ds['sea_ice_fraction'][0, 1700:1799:10, 1800:1900:10]
+        print(f'Time for request: {time.time()-start}')
+        print(f'A subset of the "sea_ice_fraction" variable')
+        print(variable.data)
+
+
+if __name__ == '__main__':
+    main()
 

@@ -39,3 +39,5 @@ nosetests.xml
 
 .cache
 __pycache__
+/src/pydap/tests/dap_4_access/user.config
+/src/pydap/tests/dap_4_access/dap4_access_test.log
