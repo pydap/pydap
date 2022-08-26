@@ -36,7 +36,7 @@ from ..parsers.das import parse_das, add_attributes
 import pydap.parsers
 from ..responses.dods import DAP2_response_dtypemap
 
-logger = logging.getLogger('pydap')
+logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 BLOCKSIZE = 512
@@ -191,7 +191,11 @@ def safe_dmr_and_data(r, user_charset):
         raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
     else:
         raw = r.body
-    dmr, data = raw.split(b'</Dataset>', 1)
+    logger.info("Saving and splitting dmr+")
+    try:
+        dmr, data = raw.split(b'</Dataset>', 1)
+    except ValueError:
+        logger.exception('Failed to split the following DMR+ \n %s' % raw)
     dmr = dmr[4:] + b'</Dataset>'
     dmr = dmr.decode(get_charset(r, user_charset))
     data = data[3:]

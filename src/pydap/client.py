@@ -180,10 +180,8 @@ def open_dods_url(url, metadata=False, application=None, session=None,
 
     if metadata:
         scheme, netloc, path, query, fragment = urlsplit(url)
-        dasurl = urlunsplit(
-            (scheme, netloc, path[:-4] + 'das', query, fragment))
-        r = pydap.net.GET(dasurl, application, session, timeout=timeout,
-                verify=verify)
+        dasurl = urlunsplit((scheme, netloc, path[:-4] + 'das', query, fragment))
+        r = pydap.net.GET(dasurl, application, session, timeout=timeout, verify=verify)
         pydap.net.raise_for_status(r)
         das = pydap.parsers.das.parse_das(r.text)
         pydap.parsers.das.add_attributes(dataset, das)
@@ -194,8 +192,7 @@ def open_dods_url(url, metadata=False, application=None, session=None,
 class Functions(object):
     """Proxy for server-side functions."""
 
-    def __init__(self, baseurl, application=None, session=None,
-                 timeout=pydap.lib.DEFAULT_TIMEOUT):
+    def __init__(self, baseurl, application=None, session=None, timeout=pydap.lib.DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.application = application
         self.session = session
@@ -214,8 +211,7 @@ class ServerFunction(object):
 
     """
 
-    def __init__(self, baseurl, name, application=None, session=None,
-                 timeout=pydap.lib.DEFAULT_TIMEOUT):
+    def __init__(self, baseurl, name, application=None, session=None, timeout=pydap.lib.DEFAULT_TIMEOUT):
         self.baseurl = baseurl
         self.name = name
         self.application = application
@@ -230,15 +226,13 @@ class ServerFunction(object):
             else:
                 params.append(pydap.lib.encode(arg))
         id_ = self.name + '(' + ','.join(params) + ')'
-        return ServerFunctionResult(self.baseurl, id_, self.application,
-                                    self.session, timeout=self.timeout)
+        return ServerFunctionResult(self.baseurl, id_, self.application, self.session, timeout=self.timeout)
 
 
 class ServerFunctionResult(object):
     """A proxy for the result from a server-side function call."""
 
-    def __init__(self, baseurl, id_, application=None, session=None,
-                 timeout=pydap.lib.DEFAULT_TIMEOUT):
+    def __init__(self, baseurl, id_, application=None, session=None, timeout=pydap.lib.DEFAULT_TIMEOUT):
         self.id = id_
         self.dataset = None
         self.application = application
@@ -250,8 +244,7 @@ class ServerFunctionResult(object):
 
     def __getitem__(self, key):
         if self.dataset is None:
-            self.dataset = open_dods_url(self.url, True, self.application,
-                                         self.session, self.timeout)
+            self.dataset = open_dods_url(self.url, True, self.application, self.session, self.timeout)
         return self.dataset[key]
 
     def __getattr__(self, name):
