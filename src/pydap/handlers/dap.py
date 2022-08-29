@@ -197,7 +197,8 @@ def safe_dmr_and_data(r, user_charset):
     except ValueError:
         logger.exception('Failed to split the following DMR+ \n %s' % raw)
         import pickle, codecs
-        logger.exception('pickled response object: \n ----BEGIN PICKLE----- \n %s -----END PICKLE-----' % str(codecs.encode(pickle.dumps(r), "base64").decode()))
+        picked_response = str(codecs.encode(pickle.dumps(r), "base64").decode())
+        logger.exception('pickled response (base64): \n ----BEGIN PICKLE----- \n %s -----END PICKLE-----' % picked_response)
 
     dmr = dmr[4:] + b'</Dataset>'
     dmr = dmr.decode(get_charset(r, user_charset))

@@ -14,6 +14,11 @@ def main():
     response = pickle.loads(codecs.decode(p.encode('utf-8'), "base64"))
 
     print(dict(response.headers))
+    with open('out.html', 'w') as f:
+        f.write(response.text)
+
+    with open('response.pickle', 'wb') as f:
+        pickle.dump(response, f)
 
 
 if __name__ == '__main__':
