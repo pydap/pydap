@@ -74,11 +74,14 @@ class DAPHandler(BaseHandler):
         for var in walk(self.dataset, BaseType):
             var.data = BaseProxy(url, var.id, var.dtype, var.shape,
                                  application=application,
-                                 session=session)
+                                 session=session,
+                                 timeout=timeout)
         for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
-            var.data = SequenceProxy(url, template, application=application,
-                                     session=session)
+            var.data = SequenceProxy(url, template,
+                                     application=application,
+                                     session=session,
+                                     timeout=timeout)
 
         # apply projections
         for var in projection:
