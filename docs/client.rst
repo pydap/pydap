@@ -414,6 +414,10 @@ The client module has a special function called ``open_dods``, used to access ra
 .. doctest::
 
     >>> from pydap.client import open_dods
+        >>> dataset = open_dods_url(
+        ...     'http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods?SST[0:3:11][0:1:89][0:1:179]')
+
+    This function allows you to access raw data from any URL, including appending expressions to
     >>> dataset = open_dods(
     ...     'http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods?SST[0:3:11][0:1:89][0:1:179]')
 

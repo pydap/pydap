@@ -63,9 +63,8 @@ SimpleArray["string"] = BaseType("string", np.array(["one", "two"]))
 SimpleArray["short"] = BaseType("short", np.array(1, dtype="h"))
 
 
-DODS = os.path.join(
-    os.path.dirname(__file__), 'rainfall_time_malaysia.cdp.dods')
-DAS = os.path.join(os.path.dirname(__file__), 'rainfall_time_malaysia.cdp.das')
+DODS = os.path.join(os.path.dirname(__file__), 'data/rainfall_time_malaysia.cdp.dods')
+DAS = os.path.join(os.path.dirname(__file__), 'data/rainfall_time_malaysia.cdp.das')
 dapper = open_file(DODS, DAS)
 
 

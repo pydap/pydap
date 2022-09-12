@@ -13,9 +13,9 @@ import time
 
 from webob.exc import HTTPError
 from pydap.handlers.lib import BaseHandler
-from pydap.handlers.dap import SequenceProxy, BaseProxy
+from pydap.handlers.dap import SequenceProxy, BaseProxyDap2
 from pydap.model import DatasetType, BaseType, SequenceType
-from pydap.client import open_url, open_dods
+from pydap.client import open_url, open_dods_url
 from pydap.server.devel import LocalTestServer
 
 server = pytest.mark.server
