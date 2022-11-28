@@ -1,7 +1,7 @@
 """Test DDS parsing functions."""
 
 import numpy as np
-from pydap.parsers.dds import build_dataset
+from pydap.parsers.dds import dds_to_dataset
 from pydap.model import (BaseType,
                          StructureType)
 import unittest
@@ -43,7 +43,7 @@ class TestBuildDataset(unittest.TestCase):
 
     def setUp(self):
         """Parse the whole dataset."""
-        self.dataset = build_dataset(DDS)
+        self.dataset = dds_to_dataset(DDS)
 
     def test_structure(self):
         """Test the structure."""

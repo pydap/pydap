@@ -89,6 +89,7 @@ class BaseHandler(object):
     """
 
     # load all available responses
+#    import pdb; pdb.set_trace()
     responses = load_responses()
 
     def __init__(self, dataset=None, gzip=False):

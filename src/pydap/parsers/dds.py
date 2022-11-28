@@ -25,7 +25,6 @@ def DAP2_parser_typemap(type_string):
 
 
 class DDSParser(SimpleParser):
-
     """A parser for the DDS."""
 
     def __init__(self, dds):
@@ -152,7 +151,7 @@ class DDSParser(SimpleParser):
         return grid
 
 
-def build_dataset(dds):
+def dds_to_dataset(dds):
     """Return a dataset object from a DDS representation."""
     return DDSParser(dds).parse()
 
