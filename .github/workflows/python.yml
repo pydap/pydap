@@ -12,8 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.7', '3.8', '3.9', '3.10' ]
-        # '3.x', ..., '3.11'
+        python-version: [ '3.7', '3.8', '3.9', '3.10', '3.11', '3.x']
     name: ubuntu-latest Python ${{ matrix.python-version }} 
     steps:
       - uses: actions/checkout@v2
@@ -24,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip3 install -U pip setuptools
-          pip3 install -U "werkzeug<2.1"
+          pip3 install -U "werkzeug>=2.2.2" cryptography
           pip3 install -U numpy webtest gsw coards
           pip3 install -U netCDF4 pytest numpy Webob Jinja2 docopt six beautifulsoup4 requests testresources
       - name: Run tests with pytest

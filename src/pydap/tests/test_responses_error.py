@@ -1,3 +1,4 @@
+import re
 import sys
 from webob import Request
 
@@ -34,11 +35,15 @@ class TestErrorResponse(unittest.TestCase):
                          'pydap/' + __version__)
 
     def test_body(self):
-        self.assertRegex(self.res.text, r"""Error {
+        self.assertRegex(self.res.text, re.compile(r"""Error {
     code = -1;
     message = "Traceback \(most recent call last\):
   File .*
-    1/0
+    1/0(\n    ~\^~)?
 ZeroDivisionError:( integer)? division( or modulo)? by zero
 ";
-}""")
+}"""), re.DOTALL)
+
+
+if __name__ == '__main__':
+    pass
