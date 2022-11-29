@@ -26,7 +26,14 @@ jobs:
           pip3 install -U "werkzeug>=2.2.2" cryptography
           pip3 install -U numpy webtest gsw coards
           pip3 install -U netCDF4 pytest numpy Webob Jinja2 docopt six beautifulsoup4 requests testresources
-      - name: Run tests with pytest
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
+      #if: ${{ github.event_name == 'pull_request' && inputs.debug_enabled }}
+      #if: ${{ failure() }}
+      timeout-minutes: 15
+      - name: Install pydap
         run: |
           pip install -e .[tests,netcdf,client]
-          pytest 
+      - name: Run tests with pytest
+        run: |
+          pytest
