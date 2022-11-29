@@ -30,7 +30,6 @@ jobs:
         uses: mxschmitt/action-tmate@v3
       #if: ${{ github.event_name == 'pull_request' && inputs.debug_enabled }}
       #if: ${{ failure() }}
-      timeout-minutes: 15
       - name: Install pydap
         run: |
           pip install -e .[tests,netcdf,client]
