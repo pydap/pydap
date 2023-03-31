@@ -94,7 +94,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             self.dataset_from_dap4()
         else:
             self.dataset_from_dap2()
-        self.attach_das()
+            self.attach_das()
 
     def dataset_from_dap4(self):
         dmr_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.dmr', self.query, self.fragment))
