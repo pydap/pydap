@@ -34,11 +34,12 @@ class TestErrorResponse(unittest.TestCase):
                          'pydap/' + __version__)
 
     def test_body(self):
-        self.assertRegexpMatches(self.res.text, r"""Error {
+        self.assertRegex(self.res.text, r"""Error {
     code = -1;
     message = "Traceback \(most recent call last\):
   File .*
-    1/0
-ZeroDivisionError:( integer)? division( or modulo)? by zero
+    1\/0
+(    \~\^\~
+)?ZeroDivisionError:( integer)? division( or modulo)? by zero
 ";
 }""")

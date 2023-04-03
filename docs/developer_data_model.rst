@@ -196,8 +196,20 @@ Here's an example:
 
 .. doctest::
 
-    >>> from pydap.handlers.dap import BaseProxy
-    >>> pseudo_array = BaseProxy(
+    >>> from pydap.handlers.dap import BaseProxyDap2
+        >>> pseudo_array = BaseProxyDap2(
+        ...         'http://test.opendap.org/dap/data/nc/coads_climatology.nc',
+        ...         'SST.SST',
+        ...         np.float64,
+        ...         (12, 90, 180))
+        >>> print(pseudo_array[0, 10:14, 10:14])  # download the corresponding data #doctest: +SKIP
+        [[[ -1.26285708e+00  -9.99999979e+33  -9.99999979e+33  -9.99999979e+33]
+          [ -7.69166648e-01  -7.79999971e-01  -6.75454497e-01  -5.95714271e-01]
+          [  1.28333330e-01  -5.00000156e-02  -6.36363626e-02  -1.41666666e-01]
+          [  6.38000011e-01   8.95384610e-01   7.21666634e-01   8.10000002e-01]]]
+
+    In the example above, the data is only downloaded in the last line, when the pseudo array is sliced. The object will construct the appropriate DAP URL, request the data, unpack it and return a Numpy array.
+    >>> pseudo_array = BaseProxyDap2(
     ...         'http://test.opendap.org/dap/data/nc/coads_climatology.nc',
     ...         'SST.SST',
     ...         np.float64,

@@ -1,0 +1,685 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#" xml:base="http://test.opendap.org/opendap/hyrax/data/stare/MOD05_L2.A2019336.2315.061.2019337071952.hdf" dapVersion="4.0" dmrVersion="1.0" name="MOD05_L2.A2019336.2315.061.2019337071952.hdf">
+    <Dimension name="Cell_Along_Swath_5km" size="406"/>
+    <Dimension name="Cell_Across_Swath_5km" size="270"/>
+    <Dimension name="Cell_Along_Swath_1km" size="2030"/>
+    <Dimension name="Cell_Across_Swath_1km" size="1354"/>
+    <Dimension name="QA_Bytes_NIR" size="1"/>
+    <Dimension name="QA_Bytes_IR" size="5"/>
+    <Float64 name="Scan_Start_Time">
+        <Dim name="/Cell_Along_Swath_5km"/>
+        <Dim name="/Cell_Across_Swath_5km"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude Longitude</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Float64">
+            <Value>0.0000000000000000</Value>
+            <Value>3155800064.0000000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Float64">
+            <Value>-999.90002441406250</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>TAI time at start of scan replicated across the swath</Value>
+        </Attribute>
+        <Attribute name="units" type="String">
+            <Value>seconds since 1993-1-1 00:00:00.0 0</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>MODIS Input</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>2028</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>1348</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>1.0000000000000000</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Float64>
+    <Int16 name="Solar_Zenith">
+        <Dim name="/Cell_Along_Swath_5km"/>
+        <Dim name="/Cell_Across_Swath_5km"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude Longitude</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int16">
+            <Value>0</Value>
+            <Value>18000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int16">
+            <Value>-32768</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Solar Zenith Angle, Cell to Sun</Value>
+        </Attribute>
+        <Attribute name="units" type="String">
+            <Value>degrees</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>MODIS Input</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>2028</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>1348</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>0.0099999997764825821</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int16>
+    <Int16 name="Solar_Azimuth">
+        <Dim name="/Cell_Along_Swath_5km"/>
+        <Dim name="/Cell_Across_Swath_5km"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude Longitude</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int16">
+            <Value>-18000</Value>
+            <Value>18000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int16">
+            <Value>-32768</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Solar Azimuth Angle, Cell to Sun</Value>
+        </Attribute>
+        <Attribute name="units" type="String">
+            <Value>degrees</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>MODIS Input</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>2028</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>1348</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>0.0099999997764825821</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int16>
+    <Int16 name="Sensor_Zenith">
+        <Dim name="/Cell_Along_Swath_5km"/>
+        <Dim name="/Cell_Across_Swath_5km"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude Longitude</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int16">
+            <Value>0</Value>
+            <Value>18000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int16">
+            <Value>-32768</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Sensor Zenith Angle, Cell to Sensor</Value>
+        </Attribute>
+        <Attribute name="units" type="String">
+            <Value>degrees</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>MODIS Input</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>2028</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>1348</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>0.0099999997764825821</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int16>
+    <Int16 name="Sensor_Azimuth">
+        <Dim name="/Cell_Along_Swath_5km"/>
+        <Dim name="/Cell_Across_Swath_5km"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude Longitude</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int16">
+            <Value>-18000</Value>
+            <Value>18000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int16">
+            <Value>-32768</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Sensor Azimuth Angle, Cell to Sensor</Value>
+        </Attribute>
+        <Attribute name="units" type="String">
+            <Value>degrees</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>MODIS Input</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>2028</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>1348</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>0.0099999997764825821</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int16>
+    <Int32 name="Cloud_Mask_QA">
+        <Dim name="/Cell_Along_Swath_1km"/>
+        <Dim name="/Cell_Across_Swath_1km"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude_1 Longitude_1</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>MODIS Cloud Mask, First Byte</Value>
+        </Attribute>
+        <Attribute name="unit" type="String">
+            <Value>none</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>MODIS Input</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>1</Value>
+            <Value>2030</Value>
+            <Value>1</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>1</Value>
+            <Value>1354</Value>
+            <Value>1</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>External MODIS geolocation product</Value>
+        </Attribute>
+        <Attribute name="description" type="String">
+            <Value>
+                                                                 
+ bit field   Description                     Key                 
+ ---------   -----------                     ---                 
+                                                                 
+ 0           Cloud Mask Flag                 0 = not determined  
+                                             1 = determined      
+                                                                 
+ 1-2         Unobstructed FOV Quality Flag   00 = cloud          
+                                             01 = 66% prob.      
+                                                    clear        
+                                             10 = 95% prob.      
+                                                    clear        
+                                             11 = 99% prob.      
+                                                    clear        
+             PROCESSING PATH FLAGS                               
+             ---------------------                               
+ 3           Day / Night Flag                0 = Night / 1 = Day 
+ 4           Sunglint Flag                   0 = Yes / 1 = No    
+ 5           Snow / Ice Background Flag      0 = Yes / 1 = No    
+ 6-7         Land / Water Flag               00=Water/01=Coastal 
+                                             10=Desert/11=Land   
+</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int32">
+            <Value>0</Value>
+            <Value>-1</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int32">
+            <Value>0</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>1.0000000000000000</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int32>
+    <Int16 name="Water_Vapor_Near_Infrared">
+        <Dim name="/Cell_Along_Swath_1km"/>
+        <Dim name="/Cell_Across_Swath_1km"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude_1 Longitude_1</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Total Column Precipitable Water Vapor - Near Infrared Retrieval</Value>
+        </Attribute>
+        <Attribute name="unit" type="String">
+            <Value>cm</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>Output</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>1</Value>
+            <Value>2030</Value>
+            <Value>1</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>1</Value>
+            <Value>1354</Value>
+            <Value>1</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int16">
+            <Value>0</Value>
+            <Value>20000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int16">
+            <Value>-9999</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>0.0010000000474974513</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int16>
+    <Int16 name="Water_Vapor_Correction_Factors">
+        <Dim name="/Cell_Along_Swath_1km"/>
+        <Dim name="/Cell_Across_Swath_1km"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude_1 Longitude_1</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Aerosol Correction Factor for Water Vapor - Near Infrared Retrieval</Value>
+        </Attribute>
+        <Attribute name="unit" type="String">
+            <Value>none</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>Output</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>1</Value>
+            <Value>2030</Value>
+            <Value>1</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>1</Value>
+            <Value>1354</Value>
+            <Value>1</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int16">
+            <Value>0</Value>
+            <Value>20000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int16">
+            <Value>-9999</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>0.0010000000474974513</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int16>
+    <Int16 name="Water_Vapor_Infrared">
+        <Dim name="/Cell_Along_Swath_5km"/>
+        <Dim name="/Cell_Across_Swath_5km"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude Longitude</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int16">
+            <Value>0</Value>
+            <Value>20000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int16">
+            <Value>-9999</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Total Column Precipitable Water Vapor - IR Retrieval</Value>
+        </Attribute>
+        <Attribute name="units" type="String">
+            <Value>cm</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>Output</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>2028</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>1348</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>0.0010000000474974513</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int16>
+    <Int32 name="Quality_Assurance_Near_Infrared">
+        <Dim name="/Cell_Along_Swath_1km"/>
+        <Dim name="/Cell_Across_Swath_1km"/>
+        <Dim name="/QA_Bytes_NIR"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude_1 Longitude_1 QA_Bytes_NIR</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Run time QA flags</Value>
+        </Attribute>
+        <Attribute name="unit" type="String">
+            <Value>none</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>Output</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>1</Value>
+            <Value>2030</Value>
+            <Value>1</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>1</Value>
+            <Value>1354</Value>
+            <Value>1</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>External MODIS geolocation product</Value>
+        </Attribute>
+        <Attribute name="description" type="String">
+            <Value>See MODIS atmosphere QA plan for details</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int32">
+            <Value>0</Value>
+            <Value>-1</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int32">
+            <Value>0</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>1.0000000000000000</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int32>
+    <Int32 name="Quality_Assurance_Infrared">
+        <Dim name="/Cell_Along_Swath_5km"/>
+        <Dim name="/Cell_Across_Swath_5km"/>
+        <Dim name="/QA_Bytes_IR"/>
+        <Attribute name="coordinates" type="String">
+            <Value>Latitude Longitude QA_Bytes_IR</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Int32">
+            <Value>0</Value>
+            <Value>-1</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Int32">
+            <Value>0</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Run time QA flags</Value>
+        </Attribute>
+        <Attribute name="units" type="String">
+            <Value>none</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>Output</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>2028</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>1348</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+        <Attribute name="description" type="String">
+            <Value>\n                                                                                  
+                                                                                    
+  Water Vapor IR product and Optional run time QA flags                             
+                                                                                    
+                   Product run time QA flags                                        
+ QA Flag Name     Number of     Bit Value   Description                             
+                    Bits                                                            
+ -------------------------------------------------------------                      
+ IR Water Vapor       1             0       not useful                              
+   QA                               1       useful                                  
+                                                                                    
+ IR Water Vapor       2            0-3      4 confidence                            
+   Confidence QA                              levels                                
+                                                                                    
+ Spares               5                                                             
+ ---------------------- 1 byte total -------------------------                      
+                                                                                    
+   Optional run time QA flags - processing path flags                               
+ QA Flag Name     Number of     Bit Value   Description                             
+                    Bits                                                            
+ -------------------------------------------------------------                      
+ Number of            8            0-25                                             
+   Cloudy Pixels                                                                    
+   within 5x5 km                                                                    
+   box                                                                              
+                                                                                    
+ Number of            8            0-25                                             
+   Clear Pixels                                                                     
+   within 5x5 km                                                                    
+   box                                                                              
+                                                                                    
+ Number of            8            0-25                                             
+   Missing                                                                          
+   Pixels within                                                                    
+   5x5 km box                                                                       
+                                                                                    
+ IR Water Vapor       2             0      Split Window (11- 12) technique          
+   Retrieval                        1      Integration of moisture  profile         
+   Method Used                      2      Other                                    
+                                    3      No Retrieval                             
+                                                                                    
+ Spares               6                                                             
+ ---------------------- 4 bytes total -----------------------                       
+</Value>
+        </Attribute>
+        <Attribute name="scale_factor" type="Float64">
+            <Value>1.0000000000000000</Value>
+        </Attribute>
+        <Attribute name="add_offset" type="Float64">
+            <Value>0.0000000000000000</Value>
+        </Attribute>
+    </Int32>
+    <Float32 name="Latitude">
+        <Dim name="/Cell_Along_Swath_5km"/>
+        <Dim name="/Cell_Across_Swath_5km"/>
+        <Attribute name="units" type="String">
+            <Value>degrees_north</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Float32">
+            <Value>-90.00000000</Value>
+            <Value>90.00000000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Float32">
+            <Value>-999.9000244</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Geodetic Latitude</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>MODIS Input</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>2028</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>1348</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+    </Float32>
+    <Float32 name="Longitude">
+        <Dim name="/Cell_Along_Swath_5km"/>
+        <Dim name="/Cell_Across_Swath_5km"/>
+        <Attribute name="units" type="String">
+            <Value>degrees_east</Value>
+        </Attribute>
+        <Attribute name="valid_range" type="Float32">
+            <Value>-180.0000000</Value>
+            <Value>180.0000000</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="Float32">
+            <Value>-999.9000244</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Geodetic Longitude</Value>
+        </Attribute>
+        <Attribute name="Parameter_Type" type="String">
+            <Value>MODIS Input</Value>
+        </Attribute>
+        <Attribute name="Cell_Along_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>2028</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Cell_Across_Swath_Sampling" type="Int32">
+            <Value>3</Value>
+            <Value>1348</Value>
+            <Value>5</Value>
+        </Attribute>
+        <Attribute name="Geolocation_Pointer" type="String">
+            <Value>Internal geolocation arrays</Value>
+        </Attribute>
+    </Float32>
+    <Float32 name="Latitude_1">
+        <Dim name="/Cell_Along_Swath_1km"/>
+        <Dim name="/Cell_Across_Swath_1km"/>
+        <Attribute name="units" type="String">
+            <Value>degrees_north</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Latitude_1</Value>
+        </Attribute>
+    </Float32>
+    <Float32 name="Longitude_1">
+        <Dim name="/Cell_Along_Swath_1km"/>
+        <Dim name="/Cell_Across_Swath_1km"/>
+        <Attribute name="units" type="String">
+            <Value>degrees_east</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>Longitude_1</Value>
+        </Attribute>
+    </Float32>
+    <Int32 name="QA_Bytes_IR">
+        <Dim name="/QA_Bytes_IR"/>
+        <Attribute name="units" type="String">
+            <Value>level</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>QA_Bytes_IR(fake)</Value>
+        </Attribute>
+    </Int32>
+    <Int32 name="QA_Bytes_NIR">
+        <Dim name="/QA_Bytes_NIR"/>
+        <Attribute name="units" type="String">
+            <Value>level</Value>
+        </Attribute>
+        <Attribute name="long_name" type="String">
+            <Value>QA_Bytes_NIR(fake)</Value>
+        </Attribute>
+    </Int32>
+    <Attribute name="HDF_GLOBAL" type="Container">
+        <Attribute name="HDFEOSVersion" type="String">
+            <Value>HDFEOS_V2.19</Value>
+        </Attribute>
+        <Attribute name="Maximum_Number_of_1km_Frames" type="Int32">
+            <Value>1354</Value>
+        </Attribute>
+        <Attribute name="Number_of_Instrument_Scans" type="Int32">
+            <Value>203</Value>
+        </Attribute>
+        <Attribute name="title" type="String">
+            <Value>
+ MODIS HDF File Specification MOD05_L2: MODIS Level 2 NIR and IR Total Precipitable Water 
+</Value>
+        </Attribute>
+        <Attribute name="Slope_and_Offset_Usage" type="String">
+            <Value>
+The local SDS scale_factor and add_offset attributes are used for the      
+conversion of stored integer data to geophysical floating point numbers.   
+The implementation follows conventional HDF usage (See HDF Users Guide):   
+                                                                           
+      float value = scale_factor*(stored integer - add_offset)             
+                                                                           
+The unit of the derived floating point value is indicated in the 'units'   
+local attribute which is also provided.                                    
+</Value>
+        </Attribute>
+        <Attribute name="identifier_product_doi" type="String">
+            <Value>10.5067/MODIS/MOD05_L2.061</Value>
+        </Attribute>
+        <Attribute name="identifier_product_doi_authority" type="String">
+            <Value>http://dx.doi.org</Value>
+        </Attribute>
+    </Attribute>
+</Dataset>
