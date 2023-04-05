@@ -140,4 +140,4 @@ setup(name='pydap',
             [console_scripts]
             pydap = pydap.wsgi.app:main
             dods = pydap.handlers.dap:dump
-      """, python_requires='>=3.9')
+      """, python_requires='>=3.7')
