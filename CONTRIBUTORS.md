@@ -2,17 +2,36 @@ pydap contributors (sorted alphabetically)
 ==========================================
 
 * Roberto De Almeida
-* Michael Bunsen
-* James Gallagher
+
 * Aleksandar Jelenak
+* Amanda Yoshiizumi  
+* Beto Dealmeida, Roberto De Almeida
+* Christian Skarby  
 * Daniel Gray
-* James Hiebert
-* Stephan Hoyer
-* [SiggyF](https://github.com/SiggyF)
-* Aleksandar Jelenak
-* [Tom Kralidis](https://github.com/tomkralidis)
-* Frederic Laliberte
-* Mike McCann
+* Danny  
+* Edward Hartnett  
+* Frédéric Laliberté  
+* Ghislain Antony Vaillant  
+* Hugo  
+* James Gallagher  
+* James Hiebert  
+* Juan Luis Cano Rodríguez  
 * Lewis John McGibbney
+* Michael Bunsen  
+* Mike McCann
+* Nathan Potter  
+* Niklas Griessbaum
+* Ray Bell  
+* Rich Signell  
+* Ryan Abernathey  
+* Sebastian Krieger  
+* Shreyas Cholia  
+* Stephan Hoyer
+* Tobias Kölling  
+* Tom Kralidis  
+* Will Holmgren  
+* [SiggyF](https://github.com/SiggyF)
 * [ocefpaf](https://github.com/ocefpaf)
-* Ghislain Antony Vaillant
+* anthonybaxter  
+* epifanio  
+* nathanlcarlson  
