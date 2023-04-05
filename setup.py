@@ -86,16 +86,13 @@ setup(name='pydap',
       description="An implementation of the Data Access Protocol.",
       long_description="",
       classifiers=[
-            "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.6",
-            "Programming Language :: Python :: 3.7"
-            "Programming Language :: Python :: 3.8"
-            "Programming Language :: Python :: 3.9"
-            "Programming Language :: Python :: 3.10"
+            "Programming Language :: Python :: 3.9",
+            "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11"
             # Get strings from
             # http://pypi.python.org/pypi?%3Aaction=list_classifiers
             ],
-      keywords='opendap dods dap science data',
+      keywords='opendap dods dap dap2 dap4 science data',
       author='Roberto De Almeida',
       author_email='roberto@dealmeida.net',
       maintainer='James Hiebert',
@@ -143,4 +140,4 @@ setup(name='pydap',
             [console_scripts]
             pydap = pydap.wsgi.app:main
             dods = pydap.handlers.dap:dump
-      """, python_requires='>=3.6')
+      """, python_requires='>=3.7')
