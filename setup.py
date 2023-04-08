@@ -1,5 +1,6 @@
 import io
 import os
+from pathlib import Path
 import re
 from setuptools import setup, find_packages
 import sys
@@ -81,10 +82,16 @@ def get_package_version():
     raise RuntimeError('Unable to find version string.')
 
 
+def get_long_description():
+    """ Return contents of README.md as the long_description. """
+    return (Path(__file__).parent / "README.md" ).read_text()
+
+
 setup(name='pydap',
       version=get_package_version(),
       description="An implementation of the Data Access Protocol.",
-      long_description="",
+      long_description=get_long_description(),
+      long_description_content_type='text/markdown',
       classifiers=[
             "Programming Language :: Python :: 3.9",
             "Programming Language :: Python :: 3.10",
