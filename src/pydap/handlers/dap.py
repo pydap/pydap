@@ -128,7 +128,8 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         # remove any projection from the base_url, leaving selections
         for var in walk(self.dataset, pydap.model.BaseType):
             var.data = BaseProxyDap4(self.base_url, var.name, var.dtype, var.shape,
-                                     application=self.application, session=self.session)
+                                     application=self.application, session=self.session,
+                                     timeout=self.timeout)
         for var in walk(self.dataset, pydap.model.GridType):
             var.set_output_grid(self.output_grid)
 
