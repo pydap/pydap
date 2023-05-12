@@ -63,9 +63,8 @@ SimpleArray["string"] = BaseType("string", np.array(["one", "two"]))
 SimpleArray["short"] = BaseType("short", np.array(1, dtype="h"))
 
 
-DODS = os.path.join(
-    os.path.dirname(__file__), 'rainfall_time_malaysia.cdp.dods')
-DAS = os.path.join(os.path.dirname(__file__), 'rainfall_time_malaysia.cdp.das')
+DODS = os.path.join(os.path.dirname(__file__), 'data/rainfall_time_malaysia.cdp.dods')
+DAS = os.path.join(os.path.dirname(__file__), 'data/rainfall_time_malaysia.cdp.das')
 dapper = open_file(DODS, DAS)
 
 
@@ -108,7 +107,7 @@ SimpleStructure['types']['s'] = BaseType(
     's', np.array("This is a data test string (pass 0)."))
 SimpleStructure['types']['u'] = BaseType('u', np.array("http://www.dods.org"))
 SimpleStructure['types']['U'] = BaseType('U', np.array(u"test unicode",
-                                                       np.unicode))
+                                                       str))
 
 
 # test grid
