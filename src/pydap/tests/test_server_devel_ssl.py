@@ -79,8 +79,7 @@ def test_verify_open_url(sequence_type_data):
         with pytest.raises(requests.exceptions.SSLError):
             open_url(server.url, session=requests.Session())
 
-        if not (sys.version_info >= (3, 0) and
-                sys.version_info < (3, 4, 4)):
+        if not (sys.version_info >= (3, 0) and sys.version_info < (3, 4, 4)):
             # verify is disabled by default for python 3 before 3.4.4:
             with pytest.raises(requests.exceptions.SSLError):
                 open_url(server.url)

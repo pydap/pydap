@@ -27,9 +27,10 @@ def run_simple_server(application=BaseHandler(DefaultDataset),
 
 
 def shutdown_server(environ):
-    if 'werkzeug.server.shutdown' not in environ:
-        raise RuntimeError('Not running the development server')
-    environ['werkzeug.server.shutdown']()
+    pass
+    #if 'werkzeug.server.shutdown' not in environ:
+    #    raise RuntimeError('Not running the development server')
+    #environ['werkzeug.server.shutdown']()
 
 
 def shutdown_application(environ, start_response):
@@ -53,20 +54,12 @@ class LocalTestServerSSL(LocalTestServer):
     >>> DefaultDataset["short"] = BaseType("short", np.array(1, dtype="h"))
     >>> DefaultDataset
     <DatasetType with children 'byte', 'string', 'short'>
-    >>> application = BaseHandler(DefaultDataset)
-    >>> from pydap.client import open_url
 
     As an instance:
+    >>> from pydap.client import open_url
+    >>> application = BaseHandler(DefaultDataset)
     >>> with LocalTestServerSSL(application) as server:
     ...     dataset = open_url("http://localhost:%s" % server.port)
-    ...     dataset
-    ...     print(dataset['byte'].data[:])
-    ...     print(dataset['string'].data[:])
-    ...     print(dataset['short'].data[:])
-    <DatasetType with children 'byte', 'string', 'short'>
-    [0 1 2 3 4]
-    [b'one' b'two']
-    1
 
     Or by managing connection and deconnection:
     >>> server = LocalTestServerSSL(application)
@@ -76,6 +69,10 @@ class LocalTestServerSSL(LocalTestServer):
     <DatasetType with children 'byte', 'string', 'short'>
     >>> print(dataset['byte'].data[:])
     [0 1 2 3 4]
+    >>> print(dataset['string'].data[:])
+    [b'one' b'two']
+    >>> print(dataset['short'].data[:])
+    1
     >>> server.shutdown()
     """
     def __init__(self, application=BaseHandler(DefaultDataset),
@@ -94,11 +91,8 @@ class LocalTestServerSSL(LocalTestServer):
 
     def start(self):
         # Start a simple WSGI server:
-        self._server = (multiprocessing
-                        .Process(target=run_simple_server,
-                                 args=(self.application,
-                                       self.port,
-                                       self._ssl_context)))
+        self._server = multiprocessing.Process(target=run_simple_server,
+                                               args=(self.application, self.port, self._ssl_context))
         self._server.start()
         # Wait a little while for the server to start:
         self.poll_server()
@@ -112,5 +106,6 @@ class LocalTestServerSSL(LocalTestServer):
             warnings.simplefilter('ignore')
             requests.head(url % self.port, verify=False)
         time.sleep(self._wait)
-        self._server.join()
+        #self._server.join()
+        self._server.terminate()  # https://werkzeug.palletsprojects.com/en/2.2.x/serving/#shutting-down-the-server
         del(self._server)
