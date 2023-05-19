@@ -94,7 +94,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             self.dataset_from_dap4()
         else:
             self.dataset_from_dap2()
-        self.attach_das()
+            self.attach_das()
 
     def dataset_from_dap4(self):
         dmr_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.dmr', self.query, self.fragment))
@@ -128,7 +128,8 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         # remove any projection from the base_url, leaving selections
         for var in walk(self.dataset, pydap.model.BaseType):
             var.data = BaseProxyDap4(self.base_url, var.name, var.dtype, var.shape,
-                                     application=self.application, session=self.session)
+                                     application=self.application, session=self.session,
+                                     timeout=self.timeout)
         for var in walk(self.dataset, pydap.model.GridType):
             var.set_output_grid(self.output_grid)
 
@@ -136,10 +137,15 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         # now add data proxies
         for var in walk(self.dataset, pydap.model.BaseType):
             var.data = BaseProxyDap2(self.base_url, var.id, var.dtype, var.shape,
-                                     application=self.application, session=self.session)
+                                     application=self.application, session=self.session,
+                                     timeout=self.timeout)
         for var in walk(self.dataset, pydap.model.SequenceType):
             template = copy.copy(var)
-            var.data = SequenceProxy(self.base_url, template, application=self.application, session=self.session)
+            var.data = SequenceProxy(self.base_url,
+                                     template,
+                                     application=self.application,
+                                     session=self.session,
+                                     timeout=self.timeout)
 
         # apply projections
         for var in self.projection:

@@ -39,8 +39,9 @@ class TestErrorResponse(unittest.TestCase):
     code = -1;
     message = "Traceback \(most recent call last\):
   File .*
-    1/0(\n    ~\^~)?
-ZeroDivisionError:( integer)? division( or modulo)? by zero
+    1\/0
+(    \~\^\~
+)?ZeroDivisionError:( integer)? division( or modulo)? by zero
 ";
 }"""), re.DOTALL)
 
