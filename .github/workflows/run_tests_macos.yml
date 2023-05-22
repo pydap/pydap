@@ -1,4 +1,4 @@
-name: Run Python Tests
+name: Run Python Tests on MacOS
 on:
   push:
     branches:
@@ -9,30 +9,27 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     strategy:
       matrix:
         python-version: [ '3.x', '3.9', '3.10', '3.11' ]
-    name: ubuntu-latest Python ${{ matrix.python-version }} 
+    name: macos-latest Python ${{ matrix.python-version }} 
     steps:
       - uses: actions/checkout@v3
       - name: Install Python 3
-        # if: success() || failure() removed jhrg 5/19/23
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
-        if: success() || failure()
+      - name: install hdf5
         run: |
-          python -m pip install --upgrade pip
+          brew install hdf5
+      - name: Install dependencies
+        run: |
           pip3 install -U pip setuptools
-          pip3 install -U "werkzeug>=2.2.2" cryptography
+          pip3 install -U "werkzeug<2.1"
           pip3 install -U numpy webtest gsw coards
           pip3 install -U netCDF4 pytest numpy Webob Jinja2 docopt six beautifulsoup4 requests testresources
       - name: Run tests with pytest
-        if: success() || failure()
         run: |
           pip install -e .[tests,netcdf,client]
-      - name: Run tests with pytest
-        run: |
-          pytest
+          pytest 
