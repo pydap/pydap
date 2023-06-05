@@ -11,10 +11,8 @@ try:
     from functools import singledispatch
 except ImportError:
     from singledispatch import singledispatch
-try:
-    from collections.abc import Iterable
-except ImportError:
-    from collections import Iterable
+
+from collections.abc import Iterable
 from six import string_types, integer_types
 from six.moves import map
 
