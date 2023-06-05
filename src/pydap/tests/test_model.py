@@ -1,12 +1,14 @@
 """Test the data model."""
-
+from collections.abc import Mapping
 import copy
+import warnings
+
 import numpy as np
+import pytest
+
 from pydap.model import (DatasetType, BaseType,
                          SequenceType, StructureType,
                          GridType, DapType)
-import pytest
-import warnings
 
 warnings.simplefilter('always')
 
@@ -176,10 +178,6 @@ def test_StructureType_init():
 def test_StructureType_instance():
     """Test that it is a Mapping and DapType."""
     var = StructureType("var")
-    try:
-       from collections.abc import Mapping
-    except ImportError:
-       from collections import Mapping
     assert isinstance(var, Mapping)
     assert isinstance(var, DapType)
 
