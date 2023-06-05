@@ -1,5 +1,6 @@
 import io
 import os
+from pathlib import Path
 import re
 from setuptools import setup, find_packages
 import sys
@@ -81,21 +82,24 @@ def get_package_version():
     raise RuntimeError('Unable to find version string.')
 
 
+def get_long_description():
+    """ Return contents of README.md as the long_description. """
+    return (Path(__file__).parent / "README.md" ).read_text()
+
+
 setup(name='pydap',
       version=get_package_version(),
       description="An implementation of the Data Access Protocol.",
-      long_description="",
+      long_description=get_long_description(),
+      long_description_content_type='text/markdown',
       classifiers=[
-            "Programming Language :: Python :: 3",
-            "Programming Language :: Python :: 3.6",
-            "Programming Language :: Python :: 3.7"
-            "Programming Language :: Python :: 3.8"
-            "Programming Language :: Python :: 3.9"
-            "Programming Language :: Python :: 3.10"
+            "Programming Language :: Python :: 3.9",
+            "Programming Language :: Python :: 3.10",
+            "Programming Language :: Python :: 3.11"
             # Get strings from
             # http://pypi.python.org/pypi?%3Aaction=list_classifiers
             ],
-      keywords='opendap dods dap science data',
+      keywords='opendap dods dap dap2 dap4 science data',
       author='Roberto De Almeida',
       author_email='roberto@dealmeida.net',
       maintainer='James Hiebert',
@@ -143,4 +147,4 @@ setup(name='pydap',
             [console_scripts]
             pydap = pydap.wsgi.app:main
             dods = pydap.handlers.dap:dump
-      """, python_requires='>=3.6')
+      """, python_requires='>=3.7')
