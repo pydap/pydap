@@ -21,6 +21,7 @@ import mimetypes
 from datetime import datetime
 import shutil
 
+from gunicorn.app.wsgiapp import WSGIApplication
 from jinja2 import Environment, PackageLoader, FileSystemLoader, ChoiceLoader
 from webob import Response
 from webob.dec import wsgify
@@ -234,12 +235,31 @@ def init(directory):
         shutil.copy(path, directory)
 
 
+class PyDapApplication(WSGIApplication):
+
+    def __init__(self, app, **local_config):
+
+        self._app = app
+        self._config = local_config
+        self._config['bind'] = '%s:%s' % (
+            local_config.pop("host", ""),
+            local_config.pop("port", ""))
+
+        WSGIApplication.__init__(self)
+
+    def load_config(self):
+        for k, v in self._config.items():
+            if v is not None:
+                self.cfg.set(k.lower(), v)
+
+    def load(self):
+        return self._app
+
 def main():  # pragma: no cover
     """Run server from the command line."""
     import multiprocessing
 
     from docopt import docopt
-    from gunicorn.app.pasterapp import PasterServerApplication
 
     arguments = docopt(__doc__, version="pydap %s" % __version__)
 
@@ -261,13 +281,15 @@ def main():  # pragma: no cover
     app = StaticMiddleware(app, static)
 
     # configure WSGI server
-    workers = multiprocessing.cpu_count() * 2 + 1
-    PasterServerApplication(
+    pydap_app = PyDapApplication(
         app,
         host=arguments["--bind"],
         port=int(arguments["--port"]),
-        workers=workers,
-        worker_class=arguments["--worker-class"]).run()
+        workers=multiprocessing.cpu_count() * 2 + 1,
+        worker_class=arguments["--worker-class"])
+
+    pydap_app.run()
+
 
 
 if __name__ == "__main__":
