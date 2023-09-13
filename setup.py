@@ -53,8 +53,7 @@ tests_extras = [
     'requests-mock',
     'WebTest',
     'flake8',
-    'werkzeug',
-    'pyopenssl']
+    'werkzeug']
 
 
 testing_extras = (functions_extras + cas_extras + server_extras +
