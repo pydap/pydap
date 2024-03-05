@@ -12,6 +12,7 @@ import pytest
 import sys
 import requests
 import ssl
+import unittest
 import warnings
 
 from pydap.handlers.lib import BaseHandler
@@ -47,17 +48,21 @@ def test_open(sequence_type_data):
     """Test that LocalTestServerSSL works properly"""
     TestDataset = DatasetType('Test')
     TestDataset['sequence'] = sequence_type_data
-    with LocalTestServerSSL(BaseHandler(TestDataset)) as server:
-        dataset = open_url(server.url)
-        seq = dataset['sequence']
-        retrieved_data = [line for line in seq]
+    if sys.platform == 'darwin':
+        raise unittest.SkipTest("test may crash on macOS (#292)")
+    else:
+        with LocalTestServerSSL(BaseHandler(TestDataset)) as server:
+            dataset = open_url(server.url)
+            seq = dataset['sequence']
+            retrieved_data = [line for line in seq]
 
-    np.testing.assert_array_equal(np.array(
-                                    retrieved_data,
-                                    dtype=sequence_type_data.data.dtype),
-                                  np.array(
-                                    sequence_type_data.data[:],
-                                    dtype=sequence_type_data.data.dtype))
+        np.testing.assert_array_equal(np.array(
+                                        retrieved_data,
+                                        dtype=sequence_type_data.data.dtype),
+                                      np.array(
+                                        sequence_type_data.data[:],
+                                        dtype=sequence_type_data.data.dtype))
+
 
 
 @server
@@ -69,17 +74,19 @@ def test_verify_open_url(sequence_type_data):
     TestDataset['sequence'] = sequence_type_data
     TestDataset['byte'] = BaseType('byte', 0)
     application = BaseHandler(TestDataset)
+    if sys.platform == 'darwin':
+        raise unittest.SkipTest("test may crash on macOS (#292)")
+    else:
+        with LocalTestServerSSL(application, ssl_context='adhoc') as server:
+            try:
+                open_url(server.url, verify=False, session=requests.Session())
+            except (ssl.SSLError, requests.exceptions.SSLError):
+                pytest.fail("SSLError should not be raised.")
 
-    with LocalTestServerSSL(application, ssl_context='adhoc') as server:
-        try:
-            open_url(server.url, verify=False, session=requests.Session())
-        except (ssl.SSLError, requests.exceptions.SSLError):
-            pytest.fail("SSLError should not be raised.")
-
-        with pytest.raises(requests.exceptions.SSLError):
-            open_url(server.url, session=requests.Session())
-
-        if not (sys.version_info >= (3, 0) and sys.version_info < (3, 4, 4)):
-            # verify is disabled by default for python 3 before 3.4.4:
             with pytest.raises(requests.exceptions.SSLError):
-                open_url(server.url)
+                open_url(server.url, session=requests.Session())
+
+            if not (sys.version_info >= (3, 0) and sys.version_info < (3, 4, 4)):
+                # verify is disabled by default for python 3 before 3.4.4:
+                with pytest.raises(requests.exceptions.SSLError):
+                    open_url(server.url)
