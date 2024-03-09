@@ -1,6 +1,7 @@
 import multiprocessing
 import time
 import requests
+import sys
 import warnings
 
 from werkzeug.serving import run_simple
@@ -90,9 +91,17 @@ class LocalTestServerSSL(LocalTestServer):
             return "https://{0}:{1}/".format(self._address, self.port)
 
     def start(self):
+        if sys.platform in ['darwin', 'win32']:
+            # see https://github.com/python/cpython/issues/77906
+            # no long term solution, simply temporaty fix
+            ctx = multiprocessing.get_context('fork')
+            Process = ctx.Process
+        else:
+            Process =  multiprocessing.Process
+
         # Start a simple WSGI server:
-        self._server = multiprocessing.Process(target=run_simple_server,
-                                               args=(self.application, self.port, self._ssl_context))
+        self._server = Process(target=run_simple_server,
+                                args=(self.application, self.port, self._ssl_context))
         self._server.start()
         # Wait a little while for the server to start:
         self.poll_server()
