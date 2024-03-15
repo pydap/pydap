@@ -47,40 +47,40 @@ class LocalTestServer(object):
     Relies on threading and is usually slow (it has to
     start and shutdown which typically takes ~2 sec).
 
-    # Usage:
-    # >>> import numpy as np
-    # >>> from pydap.handlers.lib import BaseHandler
-    # >>> from pydap.model import DatasetType, BaseType
-    # >>> DefaultDataset = DatasetType("Default")
-    # >>> DefaultDataset["byte"] = BaseType("byte", np.arange(5, dtype="B"))
-    # >>> DefaultDataset["string"] = BaseType("string", np.array(["one", "two"]))
-    # >>> DefaultDataset["short"] = BaseType("short", np.array(1, dtype="h"))
-    # >>> DefaultDataset
-    # <DatasetType with children 'byte', 'string', 'short'>
-    # >>> application = BaseHandler(DefaultDataset)
-    # >>> from pydap.client import open_url
+    Usage:
+    >>> import numpy as np
+    >>> from pydap.handlers.lib import BaseHandler
+    >>> from pydap.model import DatasetType, BaseType
+    >>> DefaultDataset = DatasetType("Default")
+    >>> DefaultDataset["byte"] = BaseType("byte", np.arange(5, dtype="B"))
+    >>> DefaultDataset["string"] = BaseType("string", np.array(["one", "two"]))
+    >>> DefaultDataset["short"] = BaseType("short", np.array(1, dtype="h"))
+    >>> DefaultDataset
+    <DatasetType with children 'byte', 'string', 'short'>
+    >>> application = BaseHandler(DefaultDataset)
+    >>> from pydap.client import open_url
 
-    # As an instance:
-    # >>> with LocalTestServer(application) as server:
-    # ...     dataset = open_url("http://localhost:%s" % server.port)
-    # ...     dataset
-    # ...     print(dataset['byte'].data[:])
-    # ...     print(dataset['string'].data[:])
-    # ...     print(dataset['short'].data[:])
-    # <DatasetType with children 'byte', 'string', 'short'>
-    # [0 1 2 3 4]
-    # [b'one' b'two']
-    # 1
+    As an instance:
+    >>> with LocalTestServer(application) as server:
+    ...     dataset = open_url("http://localhost:%s" % server.port)
+    ...     dataset
+    ...     print(dataset['byte'].data[:])
+    ...     print(dataset['string'].data[:])
+    ...     print(dataset['short'].data[:])
+    <DatasetType with children 'byte', 'string', 'short'>
+    [0 1 2 3 4]
+    [b'one' b'two']
+    1
 
-    # Or by managing connection and deconnection:
-    # >>> server = LocalTestServer(application)
-    # >>> server.start()
-    # >>> dataset = open_url("http://localhost:%s" % server.port)
-    # >>> dataset
-    # <DatasetType with children 'byte', 'string', 'short'>
-    # >>> print(dataset['byte'].data[:])
-    # [0 1 2 3 4]
-    # >>> server.shutdown()
+    Or by managing connection and deconnection:
+    >>> server = LocalTestServer(application)
+    >>> server.start()
+    >>> dataset = open_url("http://localhost:%s" % server.port)
+    >>> dataset
+    <DatasetType with children 'byte', 'string', 'short'>
+    >>> print(dataset['byte'].data[:])
+    [0 1 2 3 4]
+    >>> server.shutdown()
     """
 
     def __init__(self, application=BaseHandler(DefaultDataset),
