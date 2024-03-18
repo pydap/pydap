@@ -9,7 +9,7 @@ install_requires = [
     'numpy',
     'Webob',
     'Jinja2',
-    'docopt',
+    'docopt-ng',
     'six >= 1.4.0',
     'beautifulsoup4',
     'requests'
