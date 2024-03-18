@@ -8,6 +8,7 @@ dependencies:
 - pytest-cov
 - pytest-env
 - codecov
+- pydap
 - pip
 - pip:
   - setuptools
@@ -16,12 +17,5 @@ dependencies:
   - webtest
   - gsw
   - coards
-  - Webob
-  - Jinja2
-  - docopt-ng
-  - six
-  - docopt-ng
-  - beautifulsoup4
-  - requests
   - testresources
   - requests-mock
