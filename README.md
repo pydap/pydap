@@ -4,7 +4,8 @@ pydap
 [![Build Status](https://travis-ci.org/pydap/pydap.svg)](https://travis-ci.org/pydap/pydap)
 [![Python3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/pydap/)
-[![Join the chat at https://gitter.im/pydap/pydap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pydap/pydap) 
+[![conda forge](https://anaconda.org/conda-forge/pydap/badges/version.svg)](https://anaconda.org/conda-forge/pydap)
+[![Join the chat at https://gitter.im/pydap/pydap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pydap/pydap)
 
 [pydap](https://pydap.github.io/pydap/) is an implementation of the
 Opendap/DODS protocol, written from scratch in pure python.  You can
@@ -17,7 +18,8 @@ server, implemented as a WSGI application.
 
 Quickstart
 ----------
-
+pydap is a lighweight python package that you can use in either
+of the two modalities: a client and as a server.
 You can install the latest version using
 [pip](http://pypi.python.org/pypi/pip). After [installing
 pip](http://www.pip-installer.org/en/latest/installing.html) you can
@@ -26,10 +28,20 @@ install pydap with this command:
 ```bash
     $ pip install pydap
 ```
-
 This will install pydap together with all the required
-dependencies. You can now open any remotely served dataset, and pydap
-will download the accessed data on-the-fly as needed:
+dependencies. You can also install pydap using an Anaconda conda-forge
+channel (this requires having an installed Miniconda or Anaconda). 
+Below we install pydap and all required dependencies, along with 
+additional packages for interactive analysis and visualization:
+```bash
+$ mamba create -n pydap -c conda-forge python=3.10 pydap numpy jupyterlab ipython netCDF4 scipy matplotlib
+```
+Now you simply activate the pydap environment:
+```bash
+mamba activate pydap
+```
+You can now use pydap as a client and open any remotely  served
+dataset, and pydap will download the accessed data on-the-fly as needed:
 
 ```python
 
@@ -55,14 +67,14 @@ will download the accessed data on-the-fly as needed:
 ```
 
 For more information, please check the documentation on [using pydap
-as a client](https://pydap.github.io/pydap/client.html). pydap also
-comes with a simple server, implemented as a [WSGI]( http://wsgi.org/)
+as a client](https://pydap.github.io/pydap/client.html). 
+
+pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/)
 application. To use it, you first need to install the server and
 optionally a data handler:
 
 ```bash
-
-    $ pip install pydap[server,handlers.netcdf]
+    $ pip install "pydap[server,handlers.netcdf]"
 ```
 
 This will install support for
@@ -70,7 +82,6 @@ This will install support for
 [handlers](https://pydap.github.io/pydap/handlers.html) for
 different formats are available, if necessary. Now create a directory
 for your server data.
-
 
 To run the server just issue the command:
 
