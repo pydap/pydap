@@ -3,6 +3,10 @@ from webob.exc import HTTPError
 from contextlib import closing
 import requests
 import ssl
+try:
+    from urllib import quote  # Python 2.x
+except ImportError:
+    from urllib.parse import quote  # Python 3
 from requests.exceptions import (MissingSchema, InvalidSchema,
                                  Timeout)
 
@@ -24,6 +28,10 @@ def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT,
     if application:
         _, _, path, query, fragment = urlsplit(url)
         url = urlunsplit(('', '', path, query, fragment))
+
+    scheme, host, path, query, fragment = urlsplit(url)
+    query = quote(query)
+    url = urlunsplit((scheme, host, path, query, fragment))
 
     response = follow_redirect(url, application=application, session=session,
                                timeout=timeout, verify=verify)
