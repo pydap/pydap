@@ -3,13 +3,13 @@
 import os
 import numpy as np
 from pydap.handlers.lib import BaseHandler
-from pydap.client import open_url, open_dods, open_file
+from pydap.client import open_url, open_dods_url, open_file
 from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
 import pytest
 
 
-DODS = os.path.join(os.path.dirname(__file__), 'test.01.dods')
-DAS = os.path.join(os.path.dirname(__file__), 'test.01.das')
+DODS = os.path.join(os.path.dirname(__file__), 'data/test.01.dods')
+DAS = os.path.join(os.path.dirname(__file__), 'data/test.01.das')
 
 
 @pytest.fixture
@@ -84,7 +84,7 @@ def test_open_dods_16bits(sequence_app):
     contains int16 values which are transmitted as int32 in the DAP spec.
 
     """
-    dataset = open_dods('.dods', application=sequence_app)
+    dataset = open_dods_url('.dods', application=sequence_app)
     assert (
         list(dataset.data) == [[
             ('1', 100, -10, 0, -1, 21, 35, 0),
@@ -98,7 +98,7 @@ def test_open_dods_16bits(sequence_app):
 @pytest.mark.client
 def test_open_dods_with_attributes(sequence_app):
     """Open the dods response together with the das response."""
-    dataset = open_dods('.dods', metadata=True, application=sequence_app)
+    dataset = open_dods_url('.dods', metadata=True, application=sequence_app)
     assert (dataset.NC_GLOBAL == {})
     assert (dataset.DODS_EXTRA == {})
     assert (

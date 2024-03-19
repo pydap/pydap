@@ -96,7 +96,6 @@ class DapServer(object):
 
         template_name = 'index.html'
         response_content_type = 'text/html'
-
         content = [
             os.path.join(directory, name) for name in os.listdir(directory)]
 
@@ -148,7 +147,7 @@ def supported(filepath, handlers=None):
 
     """
     try:
-        get_handler(filepath, handlers)
+        get_handler(filepath, handlers, instantiate=False)
         return True
     except ExtensionNotSupportedError:
         return False

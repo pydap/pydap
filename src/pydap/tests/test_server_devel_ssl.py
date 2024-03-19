@@ -9,9 +9,10 @@ it could work with more data formats.
 
 import numpy as np
 import pytest
-import sys
 import requests
 import ssl
+import unittest
+import sys
 import warnings
 
 from pydap.handlers.lib import BaseHandler
@@ -60,6 +61,7 @@ def test_open(sequence_type_data):
                                     dtype=sequence_type_data.data.dtype))
 
 
+
 @server
 def test_verify_open_url(sequence_type_data):
     """Test that open_url raises the correct SSLError"""
@@ -69,7 +71,6 @@ def test_verify_open_url(sequence_type_data):
     TestDataset['sequence'] = sequence_type_data
     TestDataset['byte'] = BaseType('byte', 0)
     application = BaseHandler(TestDataset)
-
     with LocalTestServerSSL(application, ssl_context='adhoc') as server:
         try:
             open_url(server.url, verify=False, session=requests.Session())
@@ -79,8 +80,7 @@ def test_verify_open_url(sequence_type_data):
         with pytest.raises(requests.exceptions.SSLError):
             open_url(server.url, session=requests.Session())
 
-        if not (sys.version_info >= (3, 0) and
-                sys.version_info < (3, 4, 4)):
+        if not (sys.version_info >= (3, 0) and sys.version_info < (3, 4, 4)):
             # verify is disabled by default for python 3 before 3.4.4:
             with pytest.raises(requests.exceptions.SSLError):
                 open_url(server.url)

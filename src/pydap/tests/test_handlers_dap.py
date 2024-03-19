@@ -1,10 +1,11 @@
 """Test the DAP handler, which forms the core of the client."""
 
 import numpy as np
+import pydap.model
 from pydap.model import StructureType, GridType, DatasetType, BaseType
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
-from pydap.handlers.dap import DAPHandler, BaseProxy, SequenceProxy
-from pydap.handlers.dap import find_pattern_in_string_iter
+from pydap.handlers.dap import DAPHandler, BaseProxyDap2, SequenceProxy
+from pydap.handlers.dap import find_pattern_in_string_iter, walk
 from pydap.tests.datasets import (
     SimpleSequence, SimpleGrid, SimpleArray, VerySimpleSequence)
 
@@ -34,7 +35,7 @@ class TestDapHandler(unittest.TestCase):
             list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
-        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.x.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.SimpleGrid.x.data.id, "SimpleGrid.x")
@@ -44,7 +45,7 @@ class TestDapHandler(unittest.TestCase):
             dataset.SimpleGrid.x.data.slice, (slice(None),))
 
         # test the grid
-        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.SimpleGrid.data.baseurl,
             "http://localhost:8001/")
@@ -69,7 +70,7 @@ class TestDapHandler(unittest.TestCase):
             list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
-        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.x.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.SimpleGrid.x.data.id, "SimpleGrid.x")
@@ -79,7 +80,7 @@ class TestDapHandler(unittest.TestCase):
             dataset.SimpleGrid.x.data.slice, (slice(None),))
 
         # test the grid
-        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.SimpleGrid.data.baseurl,
             "http://localhost:8001/")
@@ -117,7 +118,7 @@ class TestDapHandler(unittest.TestCase):
             list(dataset.SimpleGrid.keys()), ["SimpleGrid", "x", "y"])
 
         # test one of the axis
-        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.x.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.x.data.baseurl, "http://localhost:8001/")
         self.assertEqual(dataset.SimpleGrid.x.data.id, "SimpleGrid.x")
@@ -127,7 +128,7 @@ class TestDapHandler(unittest.TestCase):
             dataset.SimpleGrid.x.data.slice, (slice(None),))
 
         # test the grid
-        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxy)
+        self.assertIsInstance(dataset.SimpleGrid.SimpleGrid.data, BaseProxyDap2)
         self.assertEqual(
             dataset.SimpleGrid.SimpleGrid.data.baseurl,
             "http://localhost:8001/")
@@ -240,6 +241,44 @@ class TestDapHandler(unittest.TestCase):
             [tuple(row) for row in dataset.cast.iterdata()], [
                 ('2', 200, 10, 500, 1, 15, 35, 100)])
 
+    def test_custom_timeout_BaseProxyDap2(self):
+        dataset = DAPHandler("http://localhost:8001/",
+                             self.app1,
+                             timeout=300).dataset
+
+        for var in walk(dataset, pydap.model.BaseType):
+            assert var.data.timeout == 300
+
+    def test_custom_timeout_SequenceProxy(self):
+        dataset = DAPHandler("http://localhost:8001/",
+                             self.app2,
+                             timeout=300).dataset
+        for var in walk(dataset, pydap.model.SequenceType):
+            assert var.data.timeout == 300
+
+    def test_custom_timeout_BaseProxyDap4(self):
+
+        # monkeypatch DAP4 dataset init (since there is
+        # no DAP4 test dataset available, we only
+        # need the DAP4 proxy to be instantiated as such
+        # to test assignment of custom timeout).
+        # See DAPHandler.make_dataset call in __init__
+        # We only need DAPHandler.add_proxies to handle
+        # case add_dap4_proxies for the timeout test
+        # ToDo: This hack should be removed once a proper DAP4 test setup
+        # is in place
+        from _pytest.monkeypatch import MonkeyPatch
+        mp = MonkeyPatch()
+        mp.setattr(DAPHandler, "dataset_from_dap4",
+                   DAPHandler.dataset_from_dap2)
+
+        dataset = DAPHandler("http://localhost:8001/",
+                             self.app1,
+                             timeout=300,
+                             protocol='dap4').dataset
+
+        for var in walk(dataset, pydap.model.BaseType):
+            assert var.data.timeout == 300
 
 class TestBaseProxy(unittest.TestCase):
 
@@ -249,7 +288,7 @@ class TestBaseProxy(unittest.TestCase):
         """Create a WSGI app"""
         self.app = BaseHandler(SimpleArray)
 
-        self.data = BaseProxy(
+        self.data = BaseProxyDap2(
                               "http://localhost:8001/", "byte",
                               np.dtype("B"), (5,),
                               application=self.app)
@@ -304,7 +343,7 @@ class TestBaseProxyShort(unittest.TestCase):
         """Create a WSGI app with array data"""
         self.app = BaseHandler(SimpleArray)
 
-        self.data = BaseProxy(
+        self.data = BaseProxyDap2(
                               "http://localhost:8001/", "short",
                               np.dtype(">h"), (),
                               application=self.app)
@@ -325,7 +364,7 @@ class TestBaseProxyString(unittest.TestCase):
         dataset["s"] = BaseType("s", np.array(["one", "two", "three"]))
         self.app = BaseHandler(dataset)
 
-        self.data = BaseProxy(
+        self.data = BaseProxyDap2(
                               "http://localhost:8001/", "s",
                               np.dtype("|S5"), (3,), application=self.app)
 
@@ -530,7 +569,7 @@ class TestStringBaseType(unittest.TestCase):
         dataset["s"] = BaseType("s", data)
         self.app = BaseHandler(dataset)
 
-        self.data = BaseProxy(
+        self.data = BaseProxyDap2(
                               "http://localhost:8001/", "s",
                               np.dtype("|S14"), (), application=self.app)
 

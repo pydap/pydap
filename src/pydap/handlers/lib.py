@@ -63,12 +63,15 @@ def load_handlers(working_set=pkg_resources.working_set):
     return base_dict.values()
 
 
-def get_handler(filepath, handlers=None):
+def get_handler(filepath, handlers=None, instantiate=True):
     """Given a filepath, return the corresponding instantiated handler."""
     # Check each handler to see which one handles this file.
     for handler in handlers or load_handlers():
         p = re.compile(handler.extensions)
         if p.match(filepath):
+            # only check if extension is supported - don't return instance
+            if not instantiate:
+                return None
             return handler(filepath)
 
     raise ExtensionNotSupportedError(
@@ -86,6 +89,7 @@ class BaseHandler(object):
     """
 
     # load all available responses
+#    import pdb; pdb.set_trace()
     responses = load_responses()
 
     def __init__(self, dataset=None, gzip=False):

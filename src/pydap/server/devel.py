@@ -6,6 +6,7 @@ import time
 import math
 import numpy as np
 import socket
+import sys
 
 from wsgiref.simple_server import make_server
 
@@ -104,8 +105,14 @@ class LocalTestServer(object):
 
         if self._as_process:
             self._shutdown = multiprocessing.Event()
-            self._server = (multiprocessing
-                            .Process(target=run_server_in_process,
+            if sys.platform in ['darwin', 'win32']:
+                # see https://github.com/python/cpython/issues/77906
+                # no long term solution, simply temporaty fix
+                ctx = multiprocessing.get_context('fork') 
+                Process = ctx.Process
+            else:
+                Process =  multiprocessing.Process
+            self._server = (Process(target=run_server_in_process,
                                      args=(self._httpd, self._shutdown),
                                      kwargs=kwargs))
         else:

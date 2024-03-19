@@ -10,12 +10,13 @@ it could work with more data formats.
 import numpy as np
 import pytest
 import time
+import unittest
 
 from webob.exc import HTTPError
 from pydap.handlers.lib import BaseHandler
-from pydap.handlers.dap import SequenceProxy, BaseProxy
+from pydap.handlers.dap import SequenceProxy, BaseProxyDap2
 from pydap.model import DatasetType, BaseType, SequenceType
-from pydap.client import open_url, open_dods
+from pydap.client import open_url, open_dods_url
 from pydap.server.devel import LocalTestServer
 
 server = pytest.mark.server
@@ -67,7 +68,6 @@ def test_netcdf(sequence_type_data):
     """
     TestDataset = DatasetType('Test')
     TestDataset['float'] = BaseType('float', np.array(1, dtype=np.float32))
-
     with TestDataset.to_netcdf() as ds:
         assert 'float' in ds.variables
         assert ds['float'].dtype == np.float32

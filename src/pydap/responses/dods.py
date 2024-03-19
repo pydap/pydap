@@ -172,7 +172,7 @@ def _basetype(var):
 
     if data.shape:
         # pack length for arrays
-        length = np.prod(data.shape).astype(np.int)
+        length = np.prod(data.shape).astype(int)
 
         # send length twice at the begining of an array...
         factor = 2
@@ -196,7 +196,7 @@ def _basetype(var):
 
     # unsigned bytes are padded up to 4n
     if DAP2_dtype == np.ubyte:
-        length = np.prod(data.shape).astype(np.int)
+        length = np.prod(data.shape).astype(int)
         for block in data:
             yield tostring_with_byteorder(block, DAP2_dtype)
         yield (-length % 4) * b'\0'
