@@ -29,10 +29,10 @@ install pydap with this command:
     $ pip install pydap
 ```
 This will install pydap together with all the required
-dependencies. You can also install pydap using an Anaconda conda-forge
-channel (this requires having an installed Miniconda or Anaconda). 
-Below we install pydap and all required dependencies, along with 
-additional packages for interactive analysis and visualization:
+dependencies. pydap is also available through [Anaconda](https://www.anaconda.com/).
+Below we install pydap and its required dependencies, along with common 
+additional packages in a fresh conda environment named pydap:
+
 ```bash
 $ mamba create -n pydap -c conda-forge python=3.10 pydap numpy jupyterlab ipython netCDF4 scipy matplotlib
 ```
@@ -40,7 +40,8 @@ Now you simply activate the pydap environment:
 ```bash
 mamba activate pydap
 ```
-You can now use pydap as a client and open any remotely  served
+
+You can now use pydap as a client and open any remotely served
 dataset, and pydap will download the accessed data on-the-fly as needed:
 
 ```python
@@ -78,7 +79,7 @@ optionally a data handler:
 ```
 
 This will install support for
-[netCDF](http://www.unidata.ucar.edu/software/netcdf/) files; more
+[netCDF](https://www.unidata.ucar.edu/software/netcdf/) files; more
 [handlers](https://pydap.github.io/pydap/handlers.html) for
 different formats are available, if necessary. Now create a directory
 for your server data.
