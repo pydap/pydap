@@ -1,7 +1,7 @@
 Using the client
 ================
 
-pydap can be used as a client to inspect and retrieve data from any of the `hundreds of scientific datasets <http://www.opendap.org/data/datasets.cgi?xmlfilename=datasets.xml&exfunction=none>`_ available on the internet on `OPeNDAP <http://opendap.org/>`_ servers. This way, it's possible to instrospect and manipulate a dataset as if it were stored locally, with data being downloaded on-the-fly as necessary.
+pydap can be used as a client to inspect and retrieve data from any of the thousands of scientific datasets available on the internet on `OPeNDAP <http://opendap.org/>`_ servers. This way, it's possible to instrospect and manipulate a dataset as if it were stored locally, with data being downloaded on-the-fly as necessary.
 
 Accessing gridded data
 ----------------------
@@ -132,9 +132,9 @@ the coordinate axes of a variable. The work around is to simply disable the retr
 
 
 Accessing sequential in situ data
--------------------------
+---------------------------------
 
-Now let's see an example of accessing sequential data. Sequential data consists of one or more records of related variables, such as a simultaneous measurements of temperature and wind velocity, for example. In this example we're going to access data from the `glider <https://oceanservice.noaa.gov/facts/ocean-gliders.html>`_DAC found at the `Integrated Ocean Observing System <https://data.ioos.us/organization/glider-dac>`_. The data can be accessed through an OPeNDAP server, as well as the `ERRDAP <https://gliders.ioos.us/erddap/index.html>`_ server. In the example below we demostrate ERRDAP of glidder data from a Deep-Pelagic Nekton study.
+Now let's see an example of accessing sequential data. Sequential data consists of one or more records of related variables, such as a simultaneous measurements of temperature and wind velocity, for example. In this example we're going to access data from the `glider <https://oceanservice.noaa.gov/facts/ocean-gliders.html>`_ DAC found at the `Integrated Ocean Observing System <https://data.ioos.us/organization/glider-dac>`_ . The data can be accessed through an OPeNDAP server, as well as the `ERRDAP <https://gliders.ioos.us/erddap/index.html>`_ server. In the example below we demostrate how to access glider data from a Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through ERRDAP.
 
 .. doctest:: python
 
@@ -144,26 +144,54 @@ Now let's see an example of accessing sequential data. Sequential data consists 
     >>> type(dataset)
     pydap.model.SequenceType
 
-ERRDAP adds a parent 's' variable, and below this is a fairly complex sequential array with many in situ variables for the entire deployment. We can see the number of glider data by looking at the profile id, a
-value that is unique for each of them
+
+ERRDAP adds a parent `s` variable, and below this is a fairly complex sequential array with many in situ variables for the entire deployment. We quickly inspect some of the variables in the sequence array
 
 .. doctest:: python
+
     >>> print([key for key in dataset.keys()][2::4])
     ['profile_id', 'depth', 'density_qc', 'lat_uv', 'lon_uv_qc', 'precise_time', 'profile_lon_qc', 'salinity_qc', 'time_uv', 'v']
     >>> len([id_ for id_ in dataset['profile_id']])
     189
 
-The first thing we'd like to do is limit our very simply analysis. We consider only a single glider and
-inspect the variables 'depth' and 'temperature'. There is a simple logic for that shown below
+We can identify each individual glider data by looking at the profile id, a value that is unique for each of them. You can inspect the raw values are follows
 
 .. doctest:: python
+
+    >>> dataset['profile_id.'] # note the use of `.` 
+    <BaseType with data SequenceProxy('https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355', <BaseType with data <IterData to stream [(1,), (2,), (3,),(4,), (5,), (6,), (7,), (8,), (9,), (10,), (11,), (12,), (13,), (14,), (15,), (16,), (17,), (18,), (19,), (20,), (21,), (22,), (23,), (24,), (25,), (26,), (27,), (28,), (29,), (30,), (31,), (32,), (33,), (34,), (35,), (36,), (37,), (38,), (39,), (40,), (41,), (42,), (43,), (44,), (45,), (46,), (47,), (48,), (49,),(50,), (51,), (52,), (53,), (54,), (55,), (56,), (57,), (58,), (59,), (60,), (61,), (62,), (63,), (64,), (65,), (66,), (67,), (68,), (69,), (70,), (71,), (72,), (73,), (74,), (75,), (76,), (77,), (78,), (79,), (80,), (81,), (82,), (83,), (84,), (85,), (86,), (87,), (88,), (89,), (90,), (91,), (92,), (93,), (94,),(95,), (96,), (97,), (98,), (99,), (100,), (101,), (102,), (103,), (104,), (105,), (106,), (107,), (108,), (109,), (110,), (111,), (112,), (113,), (114,), (115,), (116,), (117,), (118,), (119,), (120,), (121,), (122,), (123,), (124,), (125,), (126,), (127,), (128,), (129,), (130,), (131,), (132,), (133,), (134,), (135,), (136,), (137,), (138,), (139,), (140,), (141,), (142,), (143,), (144,), (145,), (146,), (147,), (148,), (149,), (150,), (151,), (152,), (153,), (154,),(155,), (156,), (157,), (158,), (159,), (160,), (161,), (162,), (163,), (164,), (165,), (166,), (167,), (168,), (169,), (170,), (171,), (172,), (173,), (174,),(175,), (176,), (177,), (178,), (179,), (180,), (181,), (182,), (183,), (184,), (185,), (186,), (187,), (188,), (189,)]>>, [], (slice(None, None, None),))>
+
+
+These datasets are rich in metadata, which can be accessed through the attributes property as follows
+
+.. doctest:: python
+
+    >>> dataset['profile_id'].attributes
+    {'_FillValue': -1,
+     'actual_range': [1, 189],
+     'cf_role': 'profile_id',
+     'comment': 'Sequential profile number within the trajectory.  This value is unique in each file that is part of a single trajectory/deployment.',
+     'ioos_category': 'Identifier',
+     'long_name': 'Profile ID',
+     'valid_max': 2147483647,
+     'valid_min': 1}
+
+
+The first thing we'd like to do is limit our very simple analysis. We consider only a single glider and
+only inspect the variables `depth` and `temperature`. To accomplish that we use pydap's simple logic as
+follows
+
+.. doctest:: python
+
     >>> seq = dataset[('profile_id', 'depth', 'temperature')]
     >>> glid5 = seq[('profile_id', 'depth', 'temperature')].data[seq['profile_id.']==5]
     >>> type(glid5)
     pydap.handlers.dap.SequenceProxy
 
-We can now unpack the values for each variables with common pythonc syntax
+We can now unpack the values for each variables with common pythonic syntax
+
 .. doctest:: python
+
     >>> Depths = np.array([depth for depth in glid5['depth']])
     >>> IDs = np.array([id_ for id_ in glid5['profile_id']])
     >>> Temps = np.array([temp for temp in glid5['temperature']])
@@ -173,6 +201,7 @@ We can now unpack the values for each variables with common pythonc syntax
 An similarly for glider with `id=6`
 
 .. doctest:: python
+
     >>> glid6 = seq[('profile_id', 'depth', 'temperature')].data[seq['profile_id.']==6]
     >>> Depths = np.array([depth for depth in glid6['depth']])
     >>> IDs = np.array([id_ for id_ in glid6['profile_id']])
@@ -180,8 +209,7 @@ An similarly for glider with `id=6`
     >>> print([(list(IDs), Depths[i], Temps[i]) for i in range(5)])
     [([6], 10.013372, 30.1366), ([6], 12.850507, 30.1172), ([6], 14.958507, 30.092), ([6], 16.944101, 30.0838), ([6], 17.751884, 30.0753)]
 
-The glider profiles could be easily plotted using `matplotlib <https://matplotlib.org/>`_:
-
+The glider profiles could be easily plotted using `matplotlib <https://matplotlib.org/stable/users/index>`_:
 
 
 Authentication

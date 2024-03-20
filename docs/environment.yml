@@ -1,0 +1,11 @@
+name: pydap_docs
+channels:
+- conda-forge
+dependencies:
+- python=3.10
+- pandoc
+- sphinx
+- sphinx_rtd_theme
+- nbsphinx
+- numpydoc
+- pydap
