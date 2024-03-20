@@ -16,7 +16,20 @@ You can install the latest version (|release|) using `pip <http://pypi.python.or
 
     $ pip install pydap
 
-This will install pydap together with all the required dependencies. You can now open any remotely served dataset, and pydap will download the accessed data on-the-fly as needed:
+This will install pydap together with all the required dependencies. 
+
+pydap is also available through `Anaconda <https://www.anaconda.com/>`_, we recommend the conda-forge channel, 
+and setting up a fresh conda environment. Below we install pydap and its required dependencies, along with common additional packages in a fresh conda environment named pydap:
+
+```bash
+$ mamba create -n pydap -c conda-forge python=3.10 pydap numpy jupyterlab ipython netCDF4 scipy matplotlib
+```
+Now you simply activate the pydap environment:
+```bash
+mamba activate pydap
+```
+
+You can now open any remotely served dataset, and pydap will download the accessed data on-the-fly as needed:
 
 .. doctest:: 
 
