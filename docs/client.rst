@@ -6,7 +6,7 @@ pydap can be used as a client to inspect and retrieve data from any of the `hund
 Accessing gridded data
 ----------------------
 
-Let's start accessing gridded data, i.e., data that is stored as a regular multidimensional array. Here's a simple example where we access the `COADS <http://www.ncdc.noaa.gov/oa/climate/coads/>`_ climatology from the official OPeNDAP server:
+Let's start accessing gridded data, i.e., data that is stored as a regular multidimensional array. Here's a simple example where we access the `COADS <https://icoads.noaa.gov/>`_ climatology from the official OPeNDAP test server:
 
 .. doctest::
 
@@ -73,7 +73,7 @@ We can also introspect the variable attributes; they are stored in an attribute 
     >>> sst.units
     'Deg C'
 
-Finally, we can also download some data. To download data we simply access it like we would access a `Numpy <http://numpy.scipy.org/>`_ array, and the data for the corresponding subset will be dowloaded on the fly from the server:
+Finally, we can also download some data. To download data we simply access it like we would access a `Numpy <https://numpy.org/doc/stable/>`_ array, and the data for the corresponding subset will be dowloaded on the fly from the server:
 
 .. doctest::
 
@@ -131,172 +131,57 @@ the coordinate axes of a variable. The work around is to simply disable the retr
     <GridType with array 'SST' and maps 'TIME', 'COADSY', 'COADSX'>
 
 
-Accessing sequential data
+Accessing sequential in situ data
 -------------------------
 
-Now let's see an example of accessing sequential data. Sequential data consists of one or more records of related variables, such as a simultaneous measurements of temperature and wind velocity, for example. In this example we're going to access data from the `Argo project <http://www.argo.ucsd.edu/>`_, consisting of profiles made by autonomous buoys drifting on the ocean:
+Now let's see an example of accessing sequential data. Sequential data consists of one or more records of related variables, such as a simultaneous measurements of temperature and wind velocity, for example. In this example we're going to access data from the `glider <https://oceanservice.noaa.gov/facts/ocean-gliders.html>`_DAC found at the `Integrated Ocean Observing System <https://data.ioos.us/organization/glider-dac>`_. The data can be accessed through an OPeNDAP server, as well as the `ERRDAP <https://gliders.ioos.us/erddap/index.html>`_ server. In the example below we demostrate ERRDAP of glidder data from a Deep-Pelagic Nekton study.
 
 .. doctest:: python
 
     >>> from pydap.client import open_url
-    >>> dataset = open_url('http://dapper.pmel.noaa.gov/dapper/argo/argo_all.cdp')
+    >>> url = "https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355.html" # this URL takes you to the ERDDAP data access form
+    >>> dataset = open_url(url)['s']
+    >>> type(dataset)
+    pydap.model.SequenceType
 
-This dataset is fairly complex, with several variables representing heterogeneous 4D data. The layout of the dataset follows the `Dapper in-situ conventions <http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/conventions/>`_, consisting of two nested sequences: the outer sequence contains, in this case, a latitude, longitude and time variable, while the inner sequence contains measurements along a z axis.
-
-The first thing we'd like to do is limit our region; let's work with a small region in the Tropical Atlantic:
-
-.. doctest:: python
-
-    >>> type(dataset.location)
-    <class 'pydap.model.SequenceType'>
-    >>> dataset.location.keys()
-    ['LATITUDE', 'JULD', 'LONGITUDE', '_id', 'profile', 'attributes', 'variable_attributes']
-    >>> my_location = dataset.location[
-    ...         (dataset.location.LATITUDE > -2) &
-    ...         (dataset.location.LATITUDE < 2) &
-    ...         (dataset.location.LONGITUDE > 320) &
-    ...         (dataset.location.LONGITUDE < 330)]
-
-Note that the variable ``dataset.location`` is of type ``SequenceType`` -- also a Structure that holds other variables. Here we're limiting the sequence ``dataset.location`` to measurements between given latitude and longitude boundaries. Let's access the identification number of the first 10-or-so profiles:
-
-.. code-block:: python
-
-    >>> for i, id_ in enumerate(my_location['_id'].iterdata()):
-    ...     print(id_)
-    ...     if i == 10:
-    ...         print('...')
-    ...         break
-    1125393
-    835304
-    839894
-    875344
-    110975
-    864748
-    832685
-    887712
-    962673
-    881368
-    1127922
-    ...
-    >>> len(my_location['_id'].iterdata())
-    623
-
-Note that calculating the length of a sequence takes some time, since the client has to download all the data and do the calculation locally. This is why you should use ``len(my_location['_id'])`` instead of ``len(my_location)``. Both should give the same result (unless the dataset changes between requests), but the former retrieves only data for the ``_id`` variable, while the later retrives data for all variables.
-
-We can explicitly select just the first 5 profiles from our sequence:
+ERRDAP adds a parent 's' variable, and below this is a fairly complex sequential array with many in situ variables for the entire deployment. We can see the number of glider data by looking at the profile id, a
+value that is unique for each of them
 
 .. doctest:: python
+    >>> print([key for key in dataset.keys()][2::4])
+    ['profile_id', 'depth', 'density_qc', 'lat_uv', 'lon_uv_qc', 'precise_time', 'profile_lon_qc', 'salinity_qc', 'time_uv', 'v']
+    >>> len([id_ for id_ in dataset['profile_id']])
+    189
 
-    >>> my_location = my_location[:5]
-    >>> len(my_location['_id'].iterdata())
-    5
+The first thing we'd like to do is limit our very simply analysis. We consider only a single glider and
+inspect the variables 'depth' and 'temperature'. There is a simple logic for that shown below
 
-And we can print the temperature profiles at each location. We're going to use the `coards <http://pypi.python.org/pypi/coards>`_ module to convert the time to a Python ``datetime`` object:
+.. doctest:: python
+    >>> seq = dataset[('profile_id', 'depth', 'temperature')]
+    >>> glid5 = seq[('profile_id', 'depth', 'temperature')].data[seq['profile_id.']==5]
+    >>> type(glid5)
+    pydap.handlers.dap.SequenceProxy
 
-.. code-block:: python
+We can now unpack the values for each variables with common pythonc syntax
+.. doctest:: python
+    >>> Depths = np.array([depth for depth in glid5['depth']])
+    >>> IDs = np.array([id_ for id_ in glid5['profile_id']])
+    >>> Temps = np.array([temp for temp in glid5['temperature']])
+    >>> print([(list(IDs), Depths[i], Temps[i]) for i in range(5)])
+    [([5], 10.95661, 30.1331), ([5], 12.547435, 30.1232), ([5], 14.361932, 30.1104), ([5], 15.034961, 30.0979), ([5], 17.547983, 30.0903)]
 
-    >>> from coards import from_udunits
-    >>> for position in my_location.iterdata():
-    ...     date = from_udunits(position.JULD.data, position.JULD.units.replace('GMT', '+0:00'))
-    ...     print(position.LATITUDE.data, position.LONGITUDE.data, date)
-    ...     print('=' * 40)
-    ...     i = 0
-    ...     for pressure, temperature in zip(position.profile.PRES, position.profile.TEMP):
-    ...         print(pressure, temperature)
-    ...         if i == 10:
-    ...             print('...')
-    ...             break
-    ...         i += 1
-    -1.01 320.019 2009-05-03 11:42:34+00:00
-    ========================================
-    5.0 28.59
-    10.0 28.788
-    15.0 28.867
-    20.0 28.916
-    25.0 28.94
-    30.0 28.846
-    35.0 28.566
-    40.0 28.345
-    45.0 28.05
-    50.0 27.595
-    55.0 27.061
-    ...
-    -0.675 320.027 2006-12-25 13:24:11+00:00
-    ========================================
-    5.0 27.675
-    10.0 27.638
-    15.0 27.63
-    20.0 27.616
-    25.0 27.617
-    30.0 27.615
-    35.0 27.612
-    40.0 27.612
-    45.0 27.605
-    50.0 27.577
-    55.0 27.536
-    ...
-    -0.303 320.078 2007-01-12 11:30:31.001000+00:00
-    ========================================
-    5.0 27.727
-    10.0 27.722
-    15.0 27.734
-    20.0 27.739
-    25.0 27.736
-    30.0 27.718
-    35.0 27.694
-    40.0 27.697
-    45.0 27.698
-    50.0 27.699
-    55.0 27.703
-    ...
-    -1.229 320.095 2007-04-22 13:03:35.002000+00:00
-    ========================================
-    5.0 28.634
-    10.0 28.71
-    15.0 28.746
-    20.0 28.758
-    25.0 28.755
-    30.0 28.747
-    35.0 28.741
-    40.0 28.737
-    45.0 28.739
-    50.0 28.748
-    55.0 28.806
-    ...
-    -1.82 320.131 2003-04-09 13:20:03+00:00
-    ========================================
-    5.1 28.618
-    9.1 28.621
-    19.4 28.637
-    29.7 28.662
-    39.6 28.641
-    49.6 28.615
-    59.7 27.6
-    69.5 26.956
-    79.5 26.133
-    89.7 23.937
-    99.2 22.029
-    ...
+An similarly for glider with `id=6`
 
-These profiles could be easily plotted using `matplotlib <http://matplotlib.sf.net/>`_:
+.. doctest:: python
+    >>> glid6 = seq[('profile_id', 'depth', 'temperature')].data[seq['profile_id.']==6]
+    >>> Depths = np.array([depth for depth in glid6['depth']])
+    >>> IDs = np.array([id_ for id_ in glid6['profile_id']])
+    >>> Temps = np.array([temp for temp in glid6['temperature']])
+    >>> print([(list(IDs), Depths[i], Temps[i]) for i in range(5)])
+    [([6], 10.013372, 30.1366), ([6], 12.850507, 30.1172), ([6], 14.958507, 30.092), ([6], 16.944101, 30.0838), ([6], 17.751884, 30.0753)]
 
-.. code-block:: python
+The glider profiles could be easily plotted using `matplotlib <https://matplotlib.org/>`_:
 
-    >>> for position in my_location.iterdata():
-    ...     plot(position.profile.TEMP, position.profile.PRES)
-    >>> show()
-
-You can also access the deep variables directly. When you iterate over these variables the client will download the data as nested lists:
-
-.. code-block:: python
-
-    >>> for value in my_location.profile.PRES.iterdata():
-    ...     print(value[:10])
-    [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]
-    [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]
-    [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]
-    [5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0]
-    [5.0999999, 9.1000004, 19.4, 29.700001, 39.599998, 49.599998, 59.700001, 69.5, 79.5, 89.699997]
 
 
 Authentication
