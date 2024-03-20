@@ -12,7 +12,8 @@ install_requires = [
     'docopt-ng',
     'six >= 1.4.0',
     'beautifulsoup4',
-    'requests'
+    'requests',
+    'scipy',
 ]
 
 if sys.version_info < (3, 5):
