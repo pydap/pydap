@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Templating &mdash; pydap 3.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=26f62d79"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within pydap 3.3 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pydap
+          </a>
+              <div class="version">
+                3.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Using the client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pydap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Templating</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/developer_templating.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="templating">
+<h1>Templating<a class="headerlink" href="#templating" title="Link to this heading">¶</a></h1>
+<p>pydap uses an <a class="reference external" href="http://svn.pythonpaste.org/Paste/TemplateProposal/">experimental backend-agnostic templating API</a> for rendering HTML and XML by responses. Since the API is neutral pydap can use any templating engine, like <a class="reference external" href="http://www.makotemplates.org/">Mako</a> or <a class="reference external" href="http://genshi.edgewall.org/">Genshi</a>, and templates can be loaded from disk, memory or a database. The server that comes with pydap, for example, defines a <code class="docutils literal notranslate"><span class="pre">renderer</span></code> object that loads Genshi templates from a directory <code class="docutils literal notranslate"><span class="pre">templatedir</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydap.util.template</span> <span class="kn">import</span> <span class="n">FileLoader</span><span class="p">,</span> <span class="n">GenshiRenderer</span>
+
+<span class="k">class</span> <span class="nc">FileServer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">templatedir</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">FileLoader</span><span class="p">(</span><span class="n">templatedir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span> <span class="o">=</span> <span class="n">GenshiRenderer</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{},</span> <span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">)</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+        <span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;pydap.renderer&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="p">)</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>And here is how the HTML response uses the renderer: the response requests a template called <code class="docutils literal notranslate"><span class="pre">html.html</span></code>, that is loaded from the directory by the <code class="docutils literal notranslate"><span class="pre">FileLoader</span></code> object, and renders it by passing the context:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">renderer</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;pydap.renderer&#39;</span><span class="p">]</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">loader</span><span class="p">(</span><span class="s1">&#39;html.html&#39;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s1">&#39;text/html&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">output</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>(This is actually a simplification; if you look at the code you’ll notice that there’s also code to fallback to a default renderer if one is not found in the <code class="docutils literal notranslate"><span class="pre">environ</span></code>.)</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2003-2017, pydap contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

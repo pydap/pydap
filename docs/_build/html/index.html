@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pydap &mdash; pydap 3.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=26f62d79"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within pydap 3.3 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Using the client" href="client.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            pydap
+          </a>
+              <div class="version">
+                3.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Using the client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">pydap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">pydap</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pydap">
+<h1>pydap<a class="headerlink" href="#pydap" title="Link to this heading">¶</a></h1>
+<p>pydap is a pure <a class="reference external" href="http://python.org/">Python</a> library implementing the <a class="reference external" href="http://opendap.org/">Data Access Protocol</a>, also known as <strong>DODS</strong> or <strong>OPeNDAP</strong>. You can use pydap as a <a class="reference external" href="client.html">client</a> to access hundreds of scientific datasets in a transparent and efficient way through the internet; or as a server to easily <a class="reference external" href="server.html">distribute</a> your data from a <a class="reference external" href="handlers.html">variety of formats</a>.</p>
+<section id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Link to this heading">¶</a></h2>
+<p>You can install the latest version (3.3) using <a class="reference external" href="http://pypi.python.org/pypi/pip">pip</a>. After <a class="reference external" href="http://www.pip-installer.org/en/latest/installing.html">installing pip</a> you can install pydap with this command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pydap
+</pre></div>
+</div>
+<p>This will install pydap together with all the required dependencies.</p>
+<p>pydap is also available through <a class="reference external" href="https://www.anaconda.com/">Anaconda</a>, we recommend the conda-forge channel,
+and setting up a fresh conda environment. Below we install pydap and its required dependencies, along with common additional packages in a fresh conda environment named pydap:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap<span class="w"> </span>numpy<span class="w"> </span>jupyterlab<span class="w"> </span>ipython<span class="w"> </span>netCDF4<span class="w"> </span>scipy<span class="w"> </span>matplotlib
+</pre></div>
+</div>
+<p>Now you simply activate the pydap environment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mamba<span class="w"> </span>activate<span class="w"> </span>pydap
+</pre></div>
+</div>
+<p>You can now open any remotely served dataset, and pydap will download the accessed data on-the-fly as needed:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pydap.client</span> <span class="kn">import</span> <span class="n">open_url</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SST&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(12, 90, 180)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">var</span><span class="o">.</span><span class="n">dtype</span>
+<span class="go">dtype(&#39;&gt;f4&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">:</span><span class="mi">14</span><span class="p">,</span><span class="mi">10</span><span class="p">:</span><span class="mi">14</span><span class="p">]</span>  <span class="c1"># this will download data from the server</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span>
+<span class="go">&lt;GridType with array &#39;SST&#39; and maps &#39;TIME&#39;, &#39;COADSY&#39;, &#39;COADSX&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[array([[[ -1.26285708e+00,  -9.99999979e+33,  -9.99999979e+33,</span>
+<span class="go">          -9.99999979e+33],</span>
+<span class="go">        [ -7.69166648e-01,  -7.79999971e-01,  -6.75454497e-01,</span>
+<span class="go">          -5.95714271e-01],</span>
+<span class="go">        [  1.28333330e-01,  -5.00000156e-02,  -6.36363626e-02,</span>
+<span class="go">          -1.41666666e-01],</span>
+<span class="go">        [  6.38000011e-01,   8.95384610e-01,   7.21666634e-01,</span>
+<span class="go">           8.10000002e-01]]], dtype=float32), array([ 366.]), array([-69., -67., -65., -63.]), array([ 41.,  43.,  45.,  47.])]</span>
+</pre></div>
+</div>
+<p>For more information, please check the documentation on <a class="reference external" href="client.html">using pydap as a client</a>. pydap also comes with a simple server, implemented as a <a class="reference external" href="http://wsgi.org/">WSGI</a> application. To use it, you first need to install pydap with the server extras dependencies. If you want to serve <a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/">netCDF</a> files, install pydap with the <code class="docutils literal notranslate"><span class="pre">handlers.netcdf</span></code> extra:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[server,handlers.netcdf]&quot;</span>
+</pre></div>
+</div>
+<p>More <a class="reference external" href="handlers.html">handlers</a> for different formats are available, if necessary. To run a simple standalone server just issue the command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pydap<span class="w"> </span>--data<span class="w"> </span>./myserver/data/<span class="w"> </span>--port<span class="w"> </span><span class="m">8001</span>
+</pre></div>
+</div>
+<p>This will start a standalone server running on <a class="reference external" href="http://localhost:8001/">http://localhost:8001/</a>, serving netCDF files from <code class="docutils literal notranslate"><span class="pre">./myserver/data/</span></code>, similar to the test server at <a class="reference external" href="http://test.pydap.org/">http://test.pydap.org/</a>. Since the server uses the <a class="reference external" href="http://wsgi.org/">WSGI</a> standard, it can easily be run behind Apache. The <a class="reference external" href="server.html">server documentation</a> has more information on how to better deploy pydap.</p>
+</section>
+<section id="help">
+<h2>Help<a class="headerlink" href="#help" title="Link to this heading">¶</a></h2>
+<p>If you need any help with pydap, please feel free to send an email to the <a class="reference external" href="http://groups.google.com/group/pydap/">mailing list</a>.</p>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="client.html">Using the client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="client.html#accessing-gridded-data">Accessing gridded data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html#accessing-sequential-in-situ-data">Accessing sequential in situ data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html#authentication">Authentication</a></li>
+<li class="toctree-l2"><a class="reference internal" href="client.html#advanced-features">Advanced features</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Running a server</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="server.html#running-standalone">Running standalone</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#wsgi-application">WSGI Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#id1">Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#apache">Apache</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#id3">uWSGI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="server.html#docker">Docker</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="handlers.html#installing-data-handlers">Installing data handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="responses.html#installing-additional-responses">Installing additional responses</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#contributing-to-the-code">Contributing to the code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#using-git-and-github">Using Git and GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#contributing-to-the-documentation">Contributing to the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#the-dap-data-model">The DAP data model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#handlers">Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#responses">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="developer.html#templating">Templating</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="client.html" class="btn btn-neutral float-right" title="Using the client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2003-2017, pydap contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

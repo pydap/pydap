@@ -145,7 +145,7 @@ Now let's see an example of accessing sequential data. Sequential data consists 
     pydap.model.SequenceType
 
 
-ERRDAP adds a parent ``s`` variable, and below this is a fairly complex sequential array with many in situ variables for the entire deployment. We quickly inspect some of the variables in the sequence array
+ERRDAP adds a parent `s` variable, and below this is a fairly complex sequential array with many in situ variables for the entire deployment. We quickly inspect some of the variables in the sequence array
 
 .. doctest:: python
 
@@ -154,7 +154,7 @@ ERRDAP adds a parent ``s`` variable, and below this is a fairly complex sequenti
     >>> len([id_ for id_ in dataset['profile_id']])
     189
 
-We can identify each individual glider data by looking at ``profile_id``, a value that is unique for each of them. You can inspect the raw values are follows
+We can identify each individual glider data by looking at the profile id, a value that is unique for each of them. You can inspect the raw values are follows
 
 .. doctest:: python
 
@@ -178,7 +178,7 @@ These datasets are rich in metadata, which can be accessed through the attribute
 
 
 The first thing we'd like to do is limit our very simple analysis. We consider only a single glider and
-only inspect the variables ``depth`` and ``temperature``. To accomplish that we use pydap's simple logic as
+only inspect the variables `depth` and `temperature`. To accomplish that we use pydap's simple logic as
 follows
 
 .. doctest:: python
@@ -218,7 +218,7 @@ An similarly for glider with `id=6`
     [[6], 14.958507, 30.092]
     [[6], 16.944101, 30.0838]
     [[6], 17.751884, 30.0753]
-
+    
 
 The glider profiles could be easily plotted using `matplotlib <https://matplotlib.org/stable/users/index>`_:
 

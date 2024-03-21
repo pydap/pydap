@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Developer documentation &mdash; pydap 3.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/documentation_options.js?v=26f62d79"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="search" type="application/opensearchdescription+xml"
+          title="Search within pydap 3.3 documentation"
+          href="_static/opensearch.xml"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="License" href="license.html" />
+    <link rel="prev" title="Responses" href="responses.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            pydap
+          </a>
+              <div class="version">
+                3.3.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="client.html">Using the client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Developer documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-to-the-code">Contributing to the code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-git-and-github">Using Git and GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing-to-the-documentation">Contributing to the documentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#the-dap-data-model">The DAP data model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metadata">Metadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data">Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#basetype"><code class="docutils literal notranslate"><span class="pre">BaseType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#structuretype"><code class="docutils literal notranslate"><span class="pre">StructureType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sequencetype"><code class="docutils literal notranslate"><span class="pre">SequenceType</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gridtype"><code class="docutils literal notranslate"><span class="pre">GridType</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#handlers">Handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#responses">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#templating">Templating</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">pydap</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Developer documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/developer.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="developer-documentation">
+<h1>Developer documentation<a class="headerlink" href="#developer-documentation" title="Link to this heading">¶</a></h1>
+<p>This documentation is intended for other developers that would like to contribute with the development of pydap, or extend it in new ways. It assumes that you have a basic knowledge of Python and HTTP, and
+understands how data is stored in different formats.
+It also assumes some familiarity with the <a class="reference external" href="http://opendap.org/">Data Access Protocol</a>,
+though a lot of its inner workings will be explained in detail here.</p>
+<section id="contributing-to-the-code">
+<h2>Contributing to the code<a class="headerlink" href="#contributing-to-the-code" title="Link to this heading">¶</a></h2>
+<p>Report bugs and submit feedback at the <a class="reference external" href="https://github.com/pydap/pydap/issues">Issue Tracker</a>.</p>
+</section>
+<section id="using-git-and-github">
+<h2>Using Git and GitHub<a class="headerlink" href="#using-git-and-github" title="Link to this heading">¶</a></h2>
+<p>Assuming familiarity with git and version control, and that you have an account in GITHUB,
+the following is a step-by-step guide for contributing to pydap.</p>
+<p>1. Create your own fork of the project on GITHUB if you don’t have one already. If you already
+have one, then make sure your fork’s main branch is up-to-date.</p>
+<p><strong>On your local computer terminal</strong>:</p>
+<ol class="arabic" start="2">
+<li><p>If you don’t have one already (otherwise skip to step 4.), clone your fork into your computer:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/your_username_here/pydap.git
+</pre></div>
+</div>
+</li>
+<li><p>Move into the local repository and set the remote that points to the original</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>pydap
+$<span class="w"> </span>git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>https://github.com/pydap/pydap.git
+</pre></div>
+</div>
+</li>
+<li><p>Update your local repository’s main branch to make sure you are completely synced</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>main
+$<span class="w"> </span>git<span class="w"> </span>pull
+</pre></div>
+</div>
+</li>
+<li><p>Create a new branch from the up-to-date main branch</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>name_of_branch
+</pre></div>
+</div>
+</li>
+<li><p>Edit or add new files as needed. Stage and commit them</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>add<span class="w"> </span>.
+$<span class="w"> </span>git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s1">&#39;minimally describe changes&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Push your branch online</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>push<span class="w"> </span>-u<span class="w"> </span>origin<span class="w"> </span>name_of_your_branch<span class="w"> </span><span class="c1"># `git push` if you have made previous contributions</span>
+</pre></div>
+</div>
+</li>
+</ol>
+<p>8. Tests your new branch, making sure that the new changes do not brake any existing tests. If you
+have added new features make sure. To test your branch, activate the test environment as follows</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mamba<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>ci/environment.yml
+$<span class="w"> </span>mamba<span class="w"> </span>activate<span class="w"> </span>pydap_tests
+</pre></div>
+</div>
+</div></blockquote>
+<ol class="arabic" start="9">
+<li><p>Install pydap in development mode, along with the required extras for testing</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[tests,netcdf,client]&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p>Run the tests</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pytest
+</pre></div>
+</div>
+</li>
+</ol>
+<p>11. Make edits/commits as necessary, and push. Once ready, go to your pydap fork repository and click on
+<code class="docutils literal notranslate"><span class="pre">Compare</span> <span class="pre">and</span> <span class="pre">Pull</span></code>.</p>
+<ol class="arabic simple" start="12">
+<li><p>Finally, if your branch has no conclicts, click on <code class="docutils literal notranslate"><span class="pre">Send</span> <span class="pre">Pull</span> <span class="pre">Request</span></code> to finish sending the PR.</p></li>
+</ol>
+</section>
+<section id="contributing-to-the-documentation">
+<h2>Contributing to the documentation<a class="headerlink" href="#contributing-to-the-documentation" title="Link to this heading">¶</a></h2>
+<p>The documentation is built with <a class="reference external" href="https://www.sphinx-doc.org/en/master/">sphinx</a> and hosted by
+<a class="reference external" href="https://about.readthedocs.com/">Read the Docs</a>. To contribute to the documentation follow the
+next steps.</p>
+<ol class="arabic">
+<li><p>Within your development branch, move into the documentation directory of the project.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>pydap/docs
+</pre></div>
+</div>
+</li>
+<li><p>Create the mamba environment <code class="docutils literal notranslate"><span class="pre">pydap_docs</span></code> to build the documentation defined within the yml-file.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mamba<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
+$<span class="w"> </span>mamba<span class="w"> </span>deactivate
+$<span class="w"> </span>mamba<span class="w"> </span>activate<span class="w"> </span>pydap_docs
+</pre></div>
+</div>
+</li>
+<li><p>Edit/commit files and stage them.</p></li>
+<li><p>Build the html files.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>make<span class="w"> </span>clean
+$<span class="w"> </span>make<span class="w"> </span>html
+</pre></div>
+</div>
+</li>
+<li><p>You can inspect the files. For example to see a new build from <cite>client.rst</cite>.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>open<span class="w"> </span>_build/html/client.html
+</pre></div>
+</div>
+</li>
+<li><p>When satisfied, send a pull request.</p></li>
+</ol>
+</section>
+<section id="the-dap-data-model">
+<h2>The DAP data model<a class="headerlink" href="#the-dap-data-model" title="Link to this heading">¶</a></h2>
+<p>The DAP is a protocol designed for the efficient transmission of scientific data over the internet.
+In order to transmit data from the server to a client, both must agree on a way to represent data:
+<em>is it an array of integers?</em>, <em>a multi-dimensional grid?</em>
+In order to do this, the specification defines a <em>data model</em> that, in theory, should be able to represent any existing dataset.</p>
+<section id="metadata">
+<h3>Metadata<a class="headerlink" href="#metadata" title="Link to this heading">¶</a></h3>
+<p>pydap has a series of classes in the <code class="docutils literal notranslate"><span class="pre">pydap.model</span></code> module, representing the DAP data model.
+The most fundamental data type is called <code class="docutils literal notranslate"><span class="pre">BaseType</span></code>, and it represents a value or an array of values.
+Here an example of creating one of these objects:</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Prior to pydap 3.2, the name argument was optional for all date types. Since pydap 3.2, it is mandatory.</p>
+</div>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pydap.model</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">]),</span>
+<span class="gp">... </span>        <span class="n">attributes</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;long_name&#39;</span><span class="p">:</span> <span class="s1">&#39;variable a&#39;</span><span class="p">})</span>
+</pre></div>
+</div>
+<p>All pydap types have five attributes in common. The first one is the <code class="docutils literal notranslate"><span class="pre">name</span></code> of the variable; in this case, our variable is called “a”:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;a&#39;</span>
+</pre></div>
+</div>
+<p>Note that there’s a difference between the variable name (the local name <code class="docutils literal notranslate"><span class="pre">a</span></code>) and its attribute <code class="docutils literal notranslate"><span class="pre">name</span></code>; in this example they are equal, but we could reference our object using any other name:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">a</span>  <span class="c1"># b now points to a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;a&#39;</span>
+</pre></div>
+</div>
+<p>We can use special characters for the variable names; they will be quoted accordingly:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;long &amp; complicated&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;long%20%26%20complicated&#39;</span>
+</pre></div>
+</div>
+<p>The second attribute is called <code class="docutils literal notranslate"><span class="pre">id</span></code>. In the examples we’ve seen so far, <code class="docutils literal notranslate"><span class="pre">id</span></code> and <code class="docutils literal notranslate"><span class="pre">name</span></code> are equal:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;a&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">id</span>
+<span class="go">&#39;a&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;long%20%26%20complicated&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">id</span>
+<span class="go">&#39;long%20%26%20complicated&#39;</span>
+</pre></div>
+</div>
+<p>This is because the <code class="docutils literal notranslate"><span class="pre">id</span></code> is used to show the position of the variable in a given dataset, and in these
+examples the variables do not belong to any datasets. First let’s store our variables in a container
+object called <code class="docutils literal notranslate"><span class="pre">StructureType</span></code>. A <code class="docutils literal notranslate"><span class="pre">StructureType</span></code> is a special type of ordered dictionary that holds other pydap types:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">StructureType</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+<span class="gt">Traceback (most recent call last):</span>
+<span class="w">    </span><span class="o">...</span>
+<span class="gr">KeyError</span>: <span class="n">&#39;Key &quot;c&quot; is different from variable name &quot;long%20%26%20complicated&quot;!&#39;</span>
+</pre></div>
+</div>
+<p>Note that the variable name has to be used as its key on the <code class="docutils literal notranslate"><span class="pre">StructureType</span></code>. This can be easily remedied:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+</pre></div>
+</div>
+<p>There is a special derivative of the <code class="docutils literal notranslate"><span class="pre">StructureType</span></code> called <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code>, which represent the dataset.
+The difference between the two is that there should be only one <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code>, but
+it may contain any number of <code class="docutils literal notranslate"><span class="pre">StructureType</span></code> objects, which can be deeply nested. Let’s create our dataset object:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">DatasetType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;example&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">id</span>
+<span class="go">&#39;example&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+<span class="go">&#39;s&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">][</span><span class="s1">&#39;a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+<span class="go">&#39;s.a&#39;</span>
+</pre></div>
+</div>
+<p>Note that for objects on the first level of the dataset, like <code class="docutils literal notranslate"><span class="pre">s</span></code>, the id is identical to the name.
+Deeper objects, like <code class="docutils literal notranslate"><span class="pre">a</span></code> which is stored in <code class="docutils literal notranslate"><span class="pre">s</span></code>, have their id calculated by joining the names of the
+variables with a period. One detail is that we can access variables stored in a structure using a “lazy” syntax like this:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span><span class="o">.</span><span class="n">s</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">id</span>
+<span class="go">&#39;s.a&#39;</span>
+</pre></div>
+</div>
+<p>The third common attribute that variables share is called <code class="docutils literal notranslate"><span class="pre">attributes</span></code>, which hold most of its metadata.
+This attribute is a dictionary of keys and values, and the values themselves can also be dictionaries.
+For our variable <code class="docutils literal notranslate"><span class="pre">a</span></code> we have:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">attributes</span>
+<span class="go">{&#39;long_name&#39;: &#39;variable a&#39;}</span>
+</pre></div>
+</div>
+<p>These attributes can be accessed lazily directly from the variable:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">long_name</span>
+<span class="go">&#39;variable a&#39;</span>
+</pre></div>
+</div>
+<p>But if you want to create a new attribute you’ll have to insert it directly into <code class="docutils literal notranslate"><span class="pre">attributes</span></code>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">history</span> <span class="o">=</span> <span class="s1">&#39;Created by me&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">attributes</span>
+<span class="go">{&#39;long_name&#39;: &#39;variable a&#39;}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;history&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;Created by me&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">sorted</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">attributes</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+<span class="go">[(&#39;history&#39;, &#39;Created by me&#39;),</span>
+<span class="go">(&#39;long_name&#39;, &#39;variable a&#39;)]</span>
+</pre></div>
+</div>
+<p>It’s always better to use the correct syntax instead of the lazy one when writing code.
+Use the lazy syntax only when introspecting a dataset on the Python interpreter, to save a few keystrokes.</p>
+<p>The fourth attribute is called <code class="docutils literal notranslate"><span class="pre">data</span></code>, and it holds a representation of the actual data.
+We’ll take a detailed look of this attribute in the next subsection.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Prior to pydap 3.2, all variables had also an attribute called <code class="docutils literal notranslate"><span class="pre">_nesting_level</span></code>.
+This attribute had value 1 if the variable was inside a <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> object,
+0 if it’s outside, and &gt;1 if it’s inside a nested sequence.
+Since pydap 3.2, the <code class="docutils literal notranslate"><span class="pre">_nesting_level</span></code> has been deprecated and there is no
+intrinsic way of finding the where in a deep object a variable is located.</p>
+</div>
+</section>
+<section id="data">
+<h3>Data<a class="headerlink" href="#data" title="Link to this heading">¶</a></h3>
+<p>As we saw on the last subsection, all pydap objects have a <code class="docutils literal notranslate"><span class="pre">data</span></code> attribute that holds a representation of the variable data.
+This representation will vary depending on the variable type.</p>
+<section id="basetype">
+<h4><code class="docutils literal notranslate"><span class="pre">BaseType</span></code><a class="headerlink" href="#basetype" title="Link to this heading">¶</a></h4>
+<p>For the simple <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> objects the <code class="docutils literal notranslate"><span class="pre">data</span></code> attributes is usually a Numpy array,
+though we can also use a Numpy scalar or Python number:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">data</span>
+<span class="go">array(1)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">data</span>
+<span class="go">array([0, 1, 2, 3])</span>
+</pre></div>
+</div>
+<p>Note that starting from pydap 3.2 the datatype is inferred from the input data:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span>
+<span class="go">dtype(&#39;int64&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span>
+<span class="go">dtype(&#39;int64&#39;)</span>
+</pre></div>
+</div>
+<p>When you <em>slice</em> a <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> array, the slice is simply passed onto the data attribute. So we may have:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="go">&lt;BaseType with data array(3)&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="go">array(3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+<span class="go">&lt;BaseType with data array([0, 1])&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="go">array([0, 1])</span>
+</pre></div>
+</div>
+<p>You can think of a <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> object as a thin layer around Numpy arrays,
+until you realize that the <code class="docutils literal notranslate"><span class="pre">data</span></code> attribute can be <em>any</em> object implementing the array interface!
+This is how the DAP client works – instead of assigning an array with data directly to the attribute,
+we assign a special object which behaves like an array and acts as a <em>proxy</em> to a remote dataset.</p>
+<p>Here’s an example:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pydap.handlers.dap</span> <span class="kn">import</span> <span class="n">BaseProxyDap2</span>
+<span class="go">    &gt;&gt;&gt; pseudo_array = BaseProxyDap2(</span>
+<span class="go">    ...         &#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;,</span>
+<span class="go">    ...         &#39;SST.SST&#39;,</span>
+<span class="go">    ...         np.float64,</span>
+<span class="go">    ...         (12, 90, 180))</span>
+<span class="go">    &gt;&gt;&gt; print(pseudo_array[0, 10:14, 10:14])  # download the corresponding data </span>
+<span class="go">    [[[ -1.26285708e+00  -9.99999979e+33  -9.99999979e+33  -9.99999979e+33]</span>
+<span class="go">      [ -7.69166648e-01  -7.79999971e-01  -6.75454497e-01  -5.95714271e-01]</span>
+<span class="go">      [  1.28333330e-01  -5.00000156e-02  -6.36363626e-02  -1.41666666e-01]</span>
+<span class="go">      [  6.38000011e-01   8.95384610e-01   7.21666634e-01   8.10000002e-01]]]</span>
+
+<span class="go">In the example above, the data is only downloaded in the last line, when the pseudo array is sliced. The object will construct the appropriate DAP URL, request the data, unpack it and return a Numpy array.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pseudo_array</span> <span class="o">=</span> <span class="n">BaseProxyDap2</span><span class="p">(</span>
+<span class="gp">... </span>        <span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="s1">&#39;SST.SST&#39;</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span>
+<span class="gp">... </span>        <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="mi">180</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">pseudo_array</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span><span class="mi">14</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span><span class="mi">14</span><span class="p">])</span>  <span class="c1"># download the corresponding data </span>
+<span class="go">[[[ -1.26285708e+00  -9.99999979e+33  -9.99999979e+33  -9.99999979e+33]</span>
+<span class="go">  [ -7.69166648e-01  -7.79999971e-01  -6.75454497e-01  -5.95714271e-01]</span>
+<span class="go">  [  1.28333330e-01  -5.00000156e-02  -6.36363626e-02  -1.41666666e-01]</span>
+<span class="go">  [  6.38000011e-01   8.95384610e-01   7.21666634e-01   8.10000002e-01]]]</span>
+</pre></div>
+</div>
+<p>In the example above, the data is only downloaded in the last line, when the pseudo array is sliced. The object will construct the appropriate DAP URL, request the data, unpack it and return a Numpy array.</p>
+</section>
+<section id="structuretype">
+<h4><code class="docutils literal notranslate"><span class="pre">StructureType</span></code><a class="headerlink" href="#structuretype" title="Link to this heading">¶</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">StructureType</span></code> holds no data; instead, its <code class="docutils literal notranslate"><span class="pre">data</span></code> attribute is a property that collects data from the children variables:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">StructureType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">b</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">data</span>
+<span class="go">array(1)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span><span class="o">.</span><span class="n">data</span>
+<span class="go">array([0, 1, 2, 3])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[array(1), array([0, 1, 2, 3])]</span>
+</pre></div>
+</div>
+<p>The opposite is also true; it’s possible to specify the structure data and have it propagated to the children:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">a</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">b</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+<p>The same is true for objects of <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code>, since the dataset is simply the root structure.</p>
+</section>
+<section id="sequencetype">
+<h4><code class="docutils literal notranslate"><span class="pre">SequenceType</span></code><a class="headerlink" href="#sequencetype" title="Link to this heading">¶</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> object is a special kind of <code class="docutils literal notranslate"><span class="pre">StructureType</span></code> holding sequential data.
+Here’s an example of a sequence holding the variables <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">c</span></code> that we created before:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">SequenceType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;s&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+</pre></div>
+</div>
+<p>Let’s add some data to our sequence. This can be done by setting a structured numpy array to the data attribute:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="go">&lt;SequenceType with children &#39;a&#39;, &#39;long%20%26%20complicated&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">test_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+<span class="gp">... </span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">30</span><span class="p">)],</span>
+<span class="gp">... </span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([</span>
+<span class="gp">... </span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;long</span><span class="si">%20%</span><span class="s1">26</span><span class="si">%20c</span><span class="s1">omplicated&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">test_data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[(1, 10) (2, 20) (3, 30)]</span>
+</pre></div>
+</div>
+<p>Note that the data for the sequence is an aggregation of the children data, similar to Python’s <code class="docutils literal notranslate"><span class="pre">zip()</span></code> builtin.
+This will be more complicated when encountering nested sequences, but for flat sequences they behave the same.</p>
+<p>We can also iterate over the <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code>. In this case, it will return a series of tuples with the data:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">s</span><span class="o">.</span><span class="n">iterdata</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+<span class="go">(1, 10)</span>
+<span class="go">(2, 20)</span>
+<span class="go">(3, 30)</span>
+</pre></div>
+</div>
+<p>Prior to pydap 3.2.2, this approach was not possible and one had to iterate directly over <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code>:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">s</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+<span class="go">(1, 10)</span>
+<span class="go">(2, 20)</span>
+<span class="go">(3, 30)</span>
+</pre></div>
+</div>
+<p>This approach will be deprecated in pydap 3.4.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> behaves pretty much like <a class="reference external" href="https://numpy.org/doc/stable/user/basics.rec.html">structured arrays</a> from
+Numpy, since we can reference them by column (<code class="docutils literal notranslate"><span class="pre">s['a']</span></code>) or by index:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="go">(2, 20)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="p">[</span> <span class="n">s</span><span class="o">.</span><span class="n">a</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="p">]</span><span class="o">.</span><span class="n">data</span>
+<span class="go">array([(1, 10), (2, 20)],</span>
+<span class="go">      dtype=[(&#39;a&#39;, &#39;&lt;i4&#39;), (&#39;long%20%26%20complicated&#39;, &#39;&lt;i2&#39;)])</span>
+</pre></div>
+</div>
+<p>Note that these objects are also <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> themselves. The basic rules when working with sequence data are:</p>
+<ol class="arabic simple">
+<li><p>When a <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> is sliced with a string the corresponding children is returned. For example: <code class="docutils literal notranslate"><span class="pre">s['a']</span></code> will return child <code class="docutils literal notranslate"><span class="pre">a</span></code>;</p></li>
+<li><p>When a <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> is iterated over (using <code class="docutils literal notranslate"><span class="pre">.iterdata()</span></code> after pydap 3.2.2) it will return a series of tuples, each one containing the data for a record;</p></li>
+<li><p>When a <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> is sliced with an integer, a comparison or a <code class="docutils literal notranslate"><span class="pre">slice()</span></code> a new <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> will be returned;</p></li>
+<li><p>When a <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> is sliced with a tuple of strings a new <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> will be returned, containing only the children defined in the tuple in the new order.
+For example, <code class="docutils literal notranslate"><span class="pre">s[('c',</span> <span class="pre">'a')]</span></code> will return a sequence <code class="docutils literal notranslate"><span class="pre">s</span></code> with the children <code class="docutils literal notranslate"><span class="pre">c</span></code> and <code class="docutils literal notranslate"><span class="pre">a</span></code>, in that order.</p></li>
+</ol>
+<p>Note that except for rule 4 <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> mimics the behavior of Numpy structure arrays.</p>
+<p>Now imagine that we want to add to a <code class="docutils literal notranslate"><span class="pre">SequenceType</span></code> data pulled from a relational database.
+The easy way would be to fetch the data in the correct column order, and insert it into the sequence.
+But what if we don’t want to store the data in memory, and instead we would like to stream it directly from the database?
+In this case we can create an object that behaves like a structure array, similar to the proxy object that implements the array interface.
+pydap defines a “protocol” called <code class="docutils literal notranslate"><span class="pre">IterData</span></code>, which is simply any object that:</p>
+<ol class="arabic simple">
+<li><p>Returns data when iterated over.</p></li>
+<li><p>Returns a new <code class="docutils literal notranslate"><span class="pre">IterData</span></code> when sliced such that:</p>
+<ol class="loweralpha simple">
+<li><p>if the slice is a string the new <code class="docutils literal notranslate"><span class="pre">IterData</span></code> contains data only for that children;</p></li>
+<li><p>if the slice is a tuple of strings the object contains only those children, in that order;</p></li>
+<li><p>if the slice is an integer, a <code class="docutils literal notranslate"><span class="pre">slice()</span></code> or a comparison, the data is filter accordingly.</p></li>
+</ol>
+</li>
+</ol>
+<p>The base implementation works by wrapping data from a basic Numpy array.
+And here is an example of how we would use it:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pydap.handlers.lib</span> <span class="kn">import</span> <span class="n">IterData</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">IterData</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)]),</span> <span class="n">s</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+<span class="go">&lt;SequenceType with children &#39;a&#39;, &#39;long%20%26%20complicated&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s2</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">data</span><span class="p">[</span> <span class="n">s</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+<span class="go">&lt;IterData to stream array([[ 1,  2],</span>
+<span class="go">       [10, 20]])&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">s2</span><span class="o">.</span><span class="n">iterdata</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+<span class="go">(10, 20)</span>
+</pre></div>
+</div>
+<p>One can also iterate directly over the <code class="docutils literal notranslate"><span class="pre">IterData</span></code> object to obtain the data:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">s2</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
+<span class="go">(10, 20)</span>
+</pre></div>
+</div>
+<p>This approach will not be deprecated in pydap 3.4.</p>
+<p>There are many implementations of classes derived from <code class="docutils literal notranslate"><span class="pre">IterData</span></code>: <code class="docutils literal notranslate"><span class="pre">pydap.handlers.dap.SequenceProxy</span></code> is a proxy to
+sequential data on Opendap servers, <code class="docutils literal notranslate"><span class="pre">pydap.handlers.csv.CSVProxy</span></code> wraps a CSV file,
+and <code class="docutils literal notranslate"><span class="pre">pydap.handlers.sql.SQLProxy</span></code> works as a stream to a relational database.</p>
+</section>
+<section id="gridtype">
+<h4><code class="docutils literal notranslate"><span class="pre">GridType</span></code><a class="headerlink" href="#gridtype" title="Link to this heading">¶</a></h4>
+<p>A <code class="docutils literal notranslate"><span class="pre">GridType</span></code> is a special kind of object that behaves like an array and a <code class="docutils literal notranslate"><span class="pre">StructureType</span></code>.
+The class is derived from <code class="docutils literal notranslate"><span class="pre">StructureType</span></code>; the major difference is that the first defined variable is a multidimensional array,
+while subsequent children are vector maps that define the axes of the array. This way, the <code class="docutils literal notranslate"><span class="pre">data</span></code> attribute on a <code class="docutils literal notranslate"><span class="pre">GridType</span></code>
+returns the data of all its children: the n-dimensional array followed by <em>n</em> maps.</p>
+<p>Here is a simple example:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">GridType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,),</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,),</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">data</span>
+<span class="go">[array([[0, 1, 2],</span>
+<span class="go">           [3, 4, 5]]), array([0, 1]), array([0, 1, 2])]</span>
+</pre></div>
+</div>
+<p>Grid behave like arrays in that they can be sliced. When this happens, a new <code class="docutils literal notranslate"><span class="pre">GridType</span></code> is returned with the proper data and axes:</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="go">&lt;GridType with array &#39;a&#39; and maps &#39;x&#39;, &#39;y&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">&lt;GridType with array &#39;a&#39; and maps &#39;x&#39;, &#39;y&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[array([0, 1, 2]), array(0), array([0, 1, 2])]</span>
+</pre></div>
+</div>
+<p>It is possible to disable this feature (some older servers might not handle it nicely):</p>
+<div class="highlight-pycon notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">GridType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">set_output_grid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">dimensions</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,),</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,),</span> <span class="nb">type</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">data</span>
+<span class="go">[array([[0, 1, 2],</span>
+<span class="go">       [3, 4, 5]]), array([0, 1]), array([0, 1, 2])]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<span class="go">&lt;GridType with array &#39;a&#39; and maps &#39;x&#39;, &#39;y&#39;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="go">&lt;BaseType with data array([0, 1, 2])&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="go">a</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">g</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="go">[0  1  2]</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="handlers">
+<h2>Handlers<a class="headerlink" href="#handlers" title="Link to this heading">¶</a></h2>
+<p>Now that we saw the pydap data model we can understand handlers: handlers are simply classes that convert data into the pydap data model. The NetCDF handler, for example, reads a NetCDF file and builds a <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> object. The SQL handler reads a file describing the variables and maps them to a given table on a relational database. pydap uses <a class="reference external" href="http://peak.telecommunity.com/DevCenter/setuptools#dynamic-discovery-of-services-and-plugins">entry points</a> in order to find handlers that are installed in the system. This means that handlers can be developed and installed separately from pydap. Handlers are mapped to files by a regular expression that usually matches the extension of the file.</p>
+<p>Here is the minimal configuration for a handler that serves <code class="docutils literal notranslate"><span class="pre">.npz</span></code> files from Numpy:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="kn">from</span> <span class="nn">pydap.model</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">pydap.handlers.lib</span> <span class="kn">import</span> <span class="n">BaseHandler</span>
+<span class="kn">from</span> <span class="nn">pydap.handlers.helper</span> <span class="kn">import</span> <span class="n">constrain</span>
+
+<span class="k">class</span> <span class="nc">Handler</span><span class="p">(</span><span class="n">BaseHandler</span><span class="p">):</span>
+
+    <span class="n">extensions</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^.*\.npz$&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">filepath</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">parse_constraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">):</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">DatasetType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">f</span><span class="p">[</span><span class="n">name</span><span class="p">][:]</span>
+            <span class="n">dataset</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseType</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">char</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">constrain</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;QUERY_STRING&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">from</span> <span class="nn">paste.httpserver</span> <span class="kn">import</span> <span class="n">serve</span>
+
+    <span class="n">application</span> <span class="o">=</span> <span class="n">Handler</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">serve</span><span class="p">(</span><span class="n">application</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8001</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>So let’s go over the code. Our handler has a single class called <code class="docutils literal notranslate"><span class="pre">Handler</span></code> that should be configured as an entry point in the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file for the handler:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[pydap.handler]</span>
+<span class="na">npz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">path.to.my.handler:Handler</span>
+</pre></div>
+</div>
+<p>Here the name of our handler (“npz”) can be anything, as long as it points to the correct class. In order for pydap to be able to find the handler, it must be installed in the system with either a <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">install</span></code> or, even better, <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">develop</span></code>.</p>
+<p>The class-level attribute <code class="docutils literal notranslate"><span class="pre">extensions</span></code> defines a regular expression that matches the files supported by the handler. In this case, the handler will match all files ending with the <code class="docutils literal notranslate"><span class="pre">.npz</span></code> extension.</p>
+<p>When the handler is instantiated the complete filepath to the data file is passed in <code class="docutils literal notranslate"><span class="pre">__init__</span></code>. With this information, our handler extracts the filename of the data file and opens it using the <code class="docutils literal notranslate"><span class="pre">load()</span></code> function from Numpy. The handler will be initialized for every request, and immediately its <code class="docutils literal notranslate"><span class="pre">parse_constraints</span></code> method is called.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">parse_constraints</span></code> method is responsible for building a dataset object based on information for the request available on <code class="docutils literal notranslate"><span class="pre">environ</span></code>. In this simple handler we simply built a <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> object with the entirety of our dataset, i.e., we added <em>all data from all variables</em> that were available on the <code class="docutils literal notranslate"><span class="pre">.npz</span></code> file. Some requests will ask for only a few variables, and only a subset of their data. The easy way parsing the request is simply passing the complete dataset together with the <code class="docutils literal notranslate"><span class="pre">QUERY_STRING</span></code> to the <code class="docutils literal notranslate"><span class="pre">contrain()</span></code> function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">return</span> <span class="n">constrain</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;QUERY_STRING&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>This will take care of filtering our dataset according to the request, although it may not be very efficient. For this reason, handlers usually implement their own parsing of the Opendap constraint expression. The SQL handler, for example, will translate the query string into an SQL expression that filters the data on the database, and not on Python.</p>
+<p>Finally, note that the handler is a WSGI application: we can initialize it with a filepath and pass it to a WSGI server. This enables us to quickly test the handler, by checking the different responses at <code class="docutils literal notranslate"><span class="pre">http://localhost:8001/.dds</span></code>, for example. It also means that it is very easy to dinamically serve datasets by plugging them to a route dispatcher.</p>
+</section>
+<section id="responses">
+<h2>Responses<a class="headerlink" href="#responses" title="Link to this heading">¶</a></h2>
+<p>If handlers are responsible for converting data into the pydap data model, responses to the opposite: the convert from the data model to different representations. The Opendap specification defines a series of standard responses, that allow clients to introspect a dataset by downloading metadata, and later download data for the subset of interest. These standard responses are the DDS (Dataset Descriptor Structure), the DAS (Dataset Attribute Structure) and the DODS response.</p>
+<p>Apart from these, there are additional non-standard responses that add functionality to the server. The ASCII response, for example, formats the data as ASCII for quick visualization on the browser; the HTML response builds a form from which the user can select a subset of the data.</p>
+<p>Here is an example of a minimal pydap response that returns the attributes of the dataset as JSON:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">simplejson</span> <span class="kn">import</span> <span class="n">dumps</span>
+
+<span class="kn">from</span> <span class="nn">pydap.responses.lib</span> <span class="kn">import</span> <span class="n">BaseResponse</span>
+<span class="kn">from</span> <span class="nn">pydap.lib</span> <span class="kn">import</span> <span class="n">walk</span>
+
+<span class="k">class</span> <span class="nc">JSONResponse</span><span class="p">(</span><span class="n">BaseResponse</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">):</span>
+        <span class="n">BaseResponse</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dataset</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;Content-type&#39;</span><span class="p">,</span> <span class="s1">&#39;application/json&#39;</span><span class="p">))</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+        <span class="n">attributes</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="n">walk</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+            <span class="n">attributes</span><span class="p">[</span><span class="n">child</span><span class="o">.</span><span class="n">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">child</span><span class="o">.</span><span class="n">attributes</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">&#39;close&#39;</span><span class="p">):</span>
+            <span class="n">dataset</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">dumps</span><span class="p">(</span><span class="n">attributes</span><span class="p">)]</span>
+</pre></div>
+</div>
+<p>This response is mapped to a specific extension defined in its entry point:</p>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="k">[pydap.response]</span>
+<span class="na">json</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">path.to.my.response:JSONResponse</span>
+</pre></div>
+</div>
+<p>In this example the response will be called when the <code class="docutils literal notranslate"><span class="pre">.json</span></code> extension is appended to any dataset.</p>
+<p>The most important method in the response is the <code class="docutils literal notranslate"><span class="pre">serialize</span></code> method, which is responsible for serializing the dataset into the external format. The method should be a generator or return a list of strings, like in this example. Note that the method is responsible for calling <code class="docutils literal notranslate"><span class="pre">dataset.close()</span></code>, if available, since some handlers use this for closing file handlers or database connections.</p>
+<p>One important thing about the responses is that, like handlers, they are also WSGI applications. WSGI applications should return an iterable when called; usually this is a list of strings corresponding to the output from the application. The <code class="docutils literal notranslate"><span class="pre">BaseResponse</span></code> application, however, returns a special iterable that contains both the <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> object and its serialization function. This means that WSGI middleware that manipulate the response have direct access to the dataset, avoiding the need for deserialization/serialization of the dataset in order to change it.</p>
+<p>Here is a simple example of a middleware that adds an attribute to a given dataset:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">webob</span> <span class="kn">import</span> <span class="n">Request</span>
+
+<span class="kn">from</span> <span class="nn">pydap.model</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">pydap.handlers.lib</span> <span class="kn">import</span> <span class="n">BaseHandler</span>
+
+<span class="k">class</span> <span class="nc">AttributeMiddleware</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+        <span class="c1"># say that we want the parsed response</span>
+        <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;x-wsgiorg.want_parsed_response&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># call the app with the original request and get the response</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">environ</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">req</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">)</span>
+
+        <span class="c1"># get the dataset from the response and set attribute</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">app_iter</span><span class="o">.</span><span class="n">x_wsgiorg_parsed_response</span><span class="p">(</span><span class="n">DatasetType</span><span class="p">)</span>
+        <span class="n">dataset</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s1">&#39;foo&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
+
+        <span class="c1"># return original response</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">BaseHandler</span><span class="o">.</span><span class="n">response_map</span><span class="p">[</span> <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;pydap.response&#39;</span><span class="p">]</span> <span class="p">]</span>
+        <span class="n">responder</span> <span class="o">=</span> <span class="n">response</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">responder</span><span class="p">(</span><span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The code should actually do more bookkeeping, like checking if the dataset can be retrieved from the response or updating the <code class="docutils literal notranslate"><span class="pre">Content-Length</span></code> header, but I wanted to keep it simple. pydap comes with a WSGI middleware for handling server-side functions (<code class="docutils literal notranslate"><span class="pre">pydap.wsgi.ssf</span></code>) that makes heavy use of this feature. It works by removing function calls from the request, fetching the dataset from the modified request, applying the function calls and returning a new dataset.</p>
+</section>
+<section id="templating">
+<h2>Templating<a class="headerlink" href="#templating" title="Link to this heading">¶</a></h2>
+<p>pydap uses an <a class="reference external" href="http://svn.pythonpaste.org/Paste/TemplateProposal/">experimental backend-agnostic templating API</a> for rendering HTML and XML by responses. Since the API is neutral pydap can use any templating engine, like <a class="reference external" href="http://www.makotemplates.org/">Mako</a> or <a class="reference external" href="http://genshi.edgewall.org/">Genshi</a>, and templates can be loaded from disk, memory or a database. The server that comes with pydap, for example, defines a <code class="docutils literal notranslate"><span class="pre">renderer</span></code> object that loads Genshi templates from a directory <code class="docutils literal notranslate"><span class="pre">templatedir</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydap.util.template</span> <span class="kn">import</span> <span class="n">FileLoader</span><span class="p">,</span> <span class="n">GenshiRenderer</span>
+
+<span class="k">class</span> <span class="nc">FileServer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">templatedir</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+        <span class="n">loader</span> <span class="o">=</span> <span class="n">FileLoader</span><span class="p">(</span><span class="n">templatedir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span> <span class="o">=</span> <span class="n">GenshiRenderer</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="p">{},</span> <span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">)</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">environ</span><span class="p">,</span> <span class="n">start_response</span><span class="p">):</span>
+        <span class="n">environ</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s1">&#39;pydap.renderer&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">renderer</span><span class="p">)</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+<p>And here is how the HTML response uses the renderer: the response requests a template called <code class="docutils literal notranslate"><span class="pre">html.html</span></code>, that is loaded from the directory by the <code class="docutils literal notranslate"><span class="pre">FileLoader</span></code> object, and renders it by passing the context:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+    <span class="o">...</span>
+    <span class="n">renderer</span> <span class="o">=</span> <span class="n">environ</span><span class="p">[</span><span class="s1">&#39;pydap.renderer&#39;</span><span class="p">]</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">loader</span><span class="p">(</span><span class="s1">&#39;html.html&#39;</span><span class="p">)</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">renderer</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">output_format</span><span class="o">=</span><span class="s1">&#39;text/html&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">output</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>(This is actually a simplification; if you look at the code you’ll notice that there’s also code to fallback to a default renderer if one is not found in the <code class="docutils literal notranslate"><span class="pre">environ</span></code>.)</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="responses.html" class="btn btn-neutral float-left" title="Responses" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="license.html" class="btn btn-neutral float-right" title="License" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2003-2017, pydap contributors.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
