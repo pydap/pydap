@@ -61,19 +61,18 @@ have one, then make sure your fork's main branch is up-to-date.
 
     .. code-block:: bash
 
-     # if you have not create the environment do:
+     # if you have not created the environment do:
      $ mamba create -n pydap_tests -c conda-forge python=3.10
      $ mamba env update -n pydap_tests -f ci/environment.yml
 
-     # if you alread have created the environment just activate it
+     # if you already have created the environment simply activate it
      $ mamba activate pydap_tests
 
-
-9. Install pydap in development mode, along with the required extras for testing
+9. Install ``pydap`` in development mode
 
     .. code-block:: bash
 
-     $ pip install -e
+     $ pip install -e .
 
 10. Run the tests
 
