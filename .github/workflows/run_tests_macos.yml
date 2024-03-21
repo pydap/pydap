@@ -28,7 +28,7 @@ jobs:
 
       - name: Set up conda environment
         run: |
-          pip install -e .
+          python -m pip install -e .
           conda list
 
       - name: Run tests with pytest
