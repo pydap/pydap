@@ -8,23 +8,23 @@ on:
       - master
 
 jobs:
-  pytest:
+  build:
     runs-on: macos-latest
     strategy:
       matrix:
         python-version: [ '3.x', '3.9', '3.10', '3.11' ]
     name: macos-latest Python ${{ matrix.python-version }} 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Install Conda environment with Micromamba
-      uses: mamba-org/setup-micromamba@v1
-      with:
-        environment-file: ci/environment.yml
-        environment-name: pydap_test
-        create-args: >-
-          python=${{ matrix.python-version }}
-        cache-environment: true
+      - name: Install Conda environment with Micromamba
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: ci/environment.yml
+          environment-name: pydap_test
+          create-args: >-
+            python=${{ matrix.python-version }}
+          cache-environment: true
 
       - name: install hdf5
         run: |
