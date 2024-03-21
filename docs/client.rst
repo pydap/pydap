@@ -195,8 +195,13 @@ We can now unpack the values for each variables with common pythonic syntax
     >>> Depths = np.array([depth for depth in glid5['depth']])
     >>> IDs = np.array([id_ for id_ in glid5['profile_id']])
     >>> Temps = np.array([temp for temp in glid5['temperature']])
-    >>> print([(list(IDs), Depths[i], Temps[i]) for i in range(5)])
-    [([5], 10.95661, 30.1331), ([5], 12.547435, 30.1232), ([5], 14.361932, 30.1104), ([5], 15.034961, 30.0979), ([5], 17.547983, 30.0903)]
+    >>> for i in range(5):
+        print([list(IDs), Depths[i], Temps[i]])
+    [[5], 10.95661, 30.1331]
+    [[5], 12.547435, 30.1232]
+    [[5], 14.361932, 30.1104]
+    [[5], 15.034961, 30.0979]
+    [[5], 17.547983, 30.0903]
 
 An similarly for glider with `id=6`
 
@@ -206,8 +211,14 @@ An similarly for glider with `id=6`
     >>> Depths = np.array([depth for depth in glid6['depth']])
     >>> IDs = np.array([id_ for id_ in glid6['profile_id']])
     >>> Temps = np.array([temp for temp in glid6['temperature']])
-    >>> print([(list(IDs), Depths[i], Temps[i]) for i in range(5)])
-    [([6], 10.013372, 30.1366), ([6], 12.850507, 30.1172), ([6], 14.958507, 30.092), ([6], 16.944101, 30.0838), ([6], 17.751884, 30.0753)]
+    >>> for i in range(5):
+        print([list(IDs), Depths[i], Temps[i]])
+    [[6], 10.013372, 30.1366]
+    [[6], 12.850507, 30.1172]
+    [[6], 14.958507, 30.092]
+    [[6], 16.944101, 30.0838]
+    [[6], 17.751884, 30.0753]
+    
 
 The glider profiles could be easily plotted using `matplotlib <https://matplotlib.org/stable/users/index>`_:
 
