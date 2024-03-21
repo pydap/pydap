@@ -7,29 +7,38 @@ on:
     branches:
       - master
 
+defaults:
+  run:
+    shell: bash -l {0}
+
 jobs:
-  build:
+  pytest:
     runs-on: macos-latest
     strategy:
       matrix:
         python-version: [ '3.x', '3.9', '3.10', '3.11' ]
     name: macos-latest Python ${{ matrix.python-version }} 
     steps:
-      - uses: actions/checkout@v3
-      - name: Install Python 3
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
+    - uses: actions/checkout@v4
+
+    - name: Install Conda environment with Micromamba
+      uses: mamba-org/setup-micromamba@v1
+      with:
+        environment-file: ci/environment.yml
+        environment-name: pydap_test
+        create-args: >-
+          python=${{ matrix.python-version }}
+        cache-environment: true
+
       - name: install hdf5
         run: |
           brew install hdf5
-      - name: Install dependencies
-        run: |
-          pip3 install -U pip setuptools
-          pip3 install -U "werkzeug<2.1"
-          pip3 install -U numpy webtest gsw coards
-          pip3 install -U netCDF4 pytest numpy Webob Jinja2 docopt six beautifulsoup4 requests testresources
-      - name: Run tests with pytest
+
+      - name: Set up conda environment
         run: |
           pip install -e .[tests,netcdf,client]
+          conda list
+
+      - name: Run tests with pytest
+        run: |
           pytest 
