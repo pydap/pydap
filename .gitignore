@@ -47,3 +47,6 @@ __pycache__
 
 # IDEA Projects
 .idea
+
+# Sphinx documentation
+docs/_build/
