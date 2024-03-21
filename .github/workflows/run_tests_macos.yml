@@ -26,10 +26,6 @@ jobs:
             python=${{ matrix.python-version }}
           cache-environment: true
 
-      - name: install hdf5
-        run: |
-          brew install hdf5
-
       - name: Set up conda environment
         run: |
           pip install -e .[tests,netcdf,client]
