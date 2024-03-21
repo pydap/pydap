@@ -37,7 +37,6 @@ dependencies = [
 	"six >= 1.4.0",
 	"beautifulsoup4",
 	"requests",
-	"scipy",
 ]
 
 [project.optional-dependencies]
