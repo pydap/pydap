@@ -57,19 +57,23 @@ have one, then make sure your fork's main branch is up-to-date.
     $ git push -u origin name_of_your_branch # `git push` if you have made previous contributions
 
 
-8. Tests your new branch, making sure that the new changes do not brake any existing tests. If you
-have added new features make sure. To test your branch, activate the test environment as follows
+8. Tests your new branch, making sure that the new changes do not brake any existing tests. If you have added new features make sure. To test your branch, create and activate the test environment ``pydap_tests`` as follows (with ``python=3.10``)
 
     .. code-block:: bash
 
-     $ mamba env create -f ci/environment.yml 
+     # if you have not create the environment do:
+     $ mamba create -n pydap_tests -c conda-forge python=3.10
+     $ mamba env update -n pydap_tests -f ci/environment.yml
+
+     # if you alread have created the environment just activate it
      $ mamba activate pydap_tests
+
 
 9. Install pydap in development mode, along with the required extras for testing
 
     .. code-block:: bash
 
-     $ pip install -e ".[tests,netcdf,client]"
+     $ pip install -e
 
 10. Run the tests
 
