@@ -41,7 +41,6 @@ cas_extras = [
 
 hdl_netcdf_extras = [
     'netCDF4',
-    'ordereddict'
 ]
 
 # These extras should only contain pure
@@ -56,7 +55,6 @@ tests_extras = [
     'flake8',
     'werkzeug',
     'pyopenssl']
-
 
 testing_extras = (functions_extras + cas_extras + server_extras +
                   hdl_netcdf_extras + tests_extras)
