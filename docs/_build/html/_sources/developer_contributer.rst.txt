@@ -4,8 +4,8 @@ Contributing to the code
 Report bugs and submit feedback at the `Issue Tracker <https://github.com/pydap/pydap/issues>`_.
 
 
-Using Git and GitHub
---------------------
+**Using Git and GitHub**
+
 Assuming familiarity with git and version control, and that you have an account in GITHUB, 
 the following is a step-by-step guide for contributing to pydap.
 
