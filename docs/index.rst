@@ -59,7 +59,7 @@ For more information, please check the documentation on `using pydap as a client
 
 .. code-block:: bash
 
-    $ pip install pydap[server,handlers.netcdf]
+    $ pip install "pydap[server,handlers.netcdf]"
 
 More `handlers <handlers.html>`_ for different formats are available, if necessary. To run a simple standalone server just issue the command:
 
