@@ -8,7 +8,6 @@ dependencies:
 - pytest-cov
 - pytest-env
 - codecov
-- pydap
 - pip
 - pip:
   - setuptools
