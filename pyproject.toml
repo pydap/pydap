@@ -59,28 +59,27 @@ netcdf = ['netCDF4']
 server = ['gunicorn', 'PasteDeploy']
 
 
+# [tool.entry-points."pydap.handler"]
+# nc = "pydap.handlers.netcdf:NetCDFHandler"
 
-[tool.entrypoints."pydap.handler"]
-nc = "pydap.handlers.netcdf:NetCDFHandler"
+# [tool.entrypoints."pydap.response"]
+# das = "pydap.responses.das:DASResponse"
+# dds = "pydap.responses.dds:DDSResponse"
+# dods = "pydap.responses.dods:DODSResponse"
+# html = "pydap.responses.html:HTMLResponse"
+# asc = "pydap.responses.ascii:ASCIIResponse"
+# ascii = "pydap.responses.ascii:ASCIIResponse"
+# ver = "pydap.responses.version:VersionResponse"
 
-[tool.entrypoints."pydap.response"]
-das = "pydap.responses.das:DASResponse"
-dds = "pydap.responses.dds:DDSResponse"
-dods = "pydap.responses.dods:DODSResponse"
-html = "pydap.responses.html:HTMLResponse"
-asc = "pydap.responses.ascii:ASCIIResponse"
-ascii = "pydap.responses.ascii:ASCIIResponse"
-ver = "pydap.responses.version:VersionResponse"
-
-[tool.entrypoints."pydap.function"]
-bounds = "pydap.wsgi.functions:bounds"
-mean = "pydap.wsgi.functions:mean"
-density = "pydap.wsgi.functions:density"
+# [tool.entry-points."pydap.function"]
+# bounds = "pydap.wsgi.functions:bounds"
+# mean = "pydap.wsgi.functions:mean"
+# density = "pydap.wsgi.functions:density"
 
 
-[tool.entrypoints."console_scripts"]
-pydap = "pydap.wsgi.app:main"
-dods = "pydap.handlers.dap:dump"
+#[tools.entry-points."console_scripts"]
+#pydap = "pydap.wsgi.app:main"
+# dods = "pydap.handlers.dap:dump"
 
 [tool.pytest.ini_options]
 addopts = "-v --cov"
@@ -88,8 +87,8 @@ testpaths = ["/src/pydap/tests"]
 
 
 [tool.setuptools]
-[tool.setuptools.packages.find]
-where = ["src/pydap"]
+package-dir = {"" = "src"}
+
 
 [tool.setuptools_scm]
 write_to = "src/pydap/version.py"
