@@ -50,6 +50,3 @@ __pycache__
 
 # Sphinx documentation
 docs/_build/
-
-# setuptools-scm
-version.py
