@@ -48,7 +48,6 @@ tests = [
 	'WebTest',
 	'flake8',
 	'werkzeug>= 2.2.2',
-	'pyopenssl',
 ]
 
 docs = ['Sphinx', "pandoc", "sphinx_rtd_theme", "nbsphinx", "numpydoc"]
