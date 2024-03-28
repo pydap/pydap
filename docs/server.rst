@@ -14,7 +14,7 @@ If you just want to quickly test the pydap server, you can run it as a standalon
 
 .. code-block:: bash
 
-    $ pip install pydap[server]
+    $ pip install "pydap[server]"
 
 and then just run the ``pydap`` script that pip installs into your bin directory:
 

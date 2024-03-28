@@ -9,7 +9,7 @@ install_requires = [
     'numpy',
     'Webob',
     'Jinja2',
-    'docopt',
+    'docopt-ng',
     'six >= 1.4.0',
     'beautifulsoup4',
     'requests'
@@ -40,7 +40,6 @@ cas_extras = [
 
 hdl_netcdf_extras = [
     'netCDF4',
-    'ordereddict'
 ]
 
 # These extras should only contain pure
@@ -102,8 +101,8 @@ setup(name='pydap',
       keywords='opendap dods dap dap2 dap4 science data',
       author='Roberto De Almeida',
       author_email='roberto@dealmeida.net',
-      maintainer='James Hiebert',
-      maintainer_email='james@hiebert.name',
+      maintainer='Miguel A Jimenez-Urias',
+      maintainer_email='mjimenez@opendap.org',
       url='http://pydap.org/',
       license='MIT',
       packages=find_packages('src'),

@@ -1,0 +1,20 @@
+name: pydap_tests
+channels:
+- conda-forge
+dependencies:
+- numpy
+- netCDF4
+- pytest
+- pytest-cov
+- pytest-env
+- codecov
+- scipy
+- pip
+- pip:
+  - werkzeug >= 2.2.2
+  - cryptography
+  - webtest
+  - gsw
+  - coards
+  - testresources
+  - requests-mock

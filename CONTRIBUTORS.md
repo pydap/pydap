@@ -22,7 +22,8 @@ pydap contributors (sorted alphabetically)
 * Juan Luis Cano Rodríguez  
 * Lewis John McGibbney
 * [Massimo Di Stefano](epifanio)
-* Michael Bunsen  
+* Michael Bunsen
+* [Miguel A. Jimenez-Urias](https://github.com/Mikejmnez)
 * Mike McCann
 * [Nathan Carlson](nathanlcarlson)
 * Nathan Potter  
