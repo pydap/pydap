@@ -13,9 +13,9 @@ NetCDF
 
 .. code-block:: bash
 
-    $ pip install pydap[handlers.netcdf]
+    $ pip install "pydap[handlers.netcdf]"
 
-This will take care of the necessary dependencies. You don't even need to have to NetCDF libraries installed, since the handler will use a pure Python NetCDF library from `scipy.io.netcdf <https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.io.netcdf.netcdf_file.html/>`_.
+This will take care of the necessary dependencies. You don't even need to have to NetCDF libraries installed, since the handler will use a pure Python NetCDF library from `scipy.io.netcdf <https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.netcdf_file.html#scipy.io.netcdf_file>`_
 
 The NetCDF handler uses a buffered reader that access the data in contiguous blocks from disk, avoiding reading everything into memory at once. You can configure the size of the buffer by specifying a key in the ``server.ini`` file:
 
@@ -64,16 +64,16 @@ The handler only works with NetCDF files for now, but in the future it should be
 
 .. code-block:: bash
 
-    $ pip install pydap.handlers.nca
+    $ pip install "pydap[handlers.nca]"
 
 CDMS
 ~~~~
 
-This is a handler that uses the ``cdms2.open`` function from `CDAT <http://www2-pcmdi.llnl.gov/cdat>`_/`CdatLite <http://proj.badc.rl.ac.uk/ndg/wiki/CdatLite>`_ to read files in any of the self-describing formats netCDF, HDF, GrADS/GRIB (GRIB with a GrADS control file), or PCMDI DRS. It can be installed using `pip <http://pypi.python.org/pypi/pip>`_:
+This is a handler that uses the ``cdms2.open`` function from `CDAT <https://cdat.llnl.gov/>`_ to read files in any of the self-describing formats netCDF, HDF, GrADS/GRIB (GRIB with a GrADS control file), or PCMDI DRS. It can be installed using `pip <http://pypi.python.org/pypi/pip>`_:
 
 .. code-block:: bash
 
-    $ pip install pydap.handlers.cdms
+    $ pip install "pydap[handlers.cdms]"
 
 The handler will automatically install ``CdatLite``, which requires the NetCDF libraries to be installed on the system.
 
@@ -160,7 +160,7 @@ The handler works with SQLite, MySQL, PostgreSQL, Oracle, MSSQL and ODBC databas
 
 .. code-block:: bash
 
-    $ pip install pydap.handlers.sql
+    $ pip install "pydap[handlers.sql]"
     $ pip install "pydap.handlers.sql[oracle]"
     $ pip install "pydap.handlers.sql[postgresql]"
     $ pip install "pydap.handlers.sql[mysql]"
@@ -190,16 +190,16 @@ This is a handler for files with comma separated values. The first column should
 
 .. code-block:: bash
 
-    $ pip install pydap.handlers.csv
+    $ pip install "pydap[handlers.csv]"
 
 HDF5
 ~~~~
 
-A handler for HDF5 files, based on `h5py <http://code.google.com/p/h5py/>`_. In order to install it:
+A handler for HDF5 files, based on `h5py <http://www.h5py.org/>`_. In order to install it:
 
 .. code-block:: bash
 
-    $ pip install pydap.handlers.hdf5
+    $ pip install "pydap[handlers.hdf5]"
 
 SQLite
 ~~~~~~

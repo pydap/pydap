@@ -19,13 +19,13 @@ You can install the WMS response using `pip <http://pypi.python.org/pypi/pip>`_:
 
 .. code-block:: bash
 
-    $ pip install pydap.responses.wms
+    $ pip install "pydap[responses.wms]"
 
-This will take care of the necessary dependencies, which include `Matplotlib <http://matplotlib.sf.net/>`_ and pydap itself. Once the response is installed you can introspect the available layers at the URL::
+This will take care of the necessary dependencies, which include `Matplotlib <https://matplotlib.org/>`_ and pydap itself. Once the response is installed you can introspect the available layers at the URL::
 
     http://server.example.com/dataset.wms?REQUEST=GetCapabilities
 
-The response will create valid layers from any `COARDS <http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html>`_ compliant datasets, ie, grids with properly defined latitude and longitude axes. If the data is not two-dimensional it will be averaged along each axis except for the last two, so the map represents a time and/or level average of the data. Keep in mind that Opendap constraint expressions apply before the map is generated, so it's possible to create a map of a specific level (or time) by constraining the variable on the URL::
+The response will create valid layers from any `COARDS <https://ferret.pmel.noaa.gov/Ferret/documentation/coards-netcdf-conventions>`_ compliant datasets, ie, grids with properly defined latitude and longitude axes. If the data is not two-dimensional it will be averaged along each axis except for the last two, so the map represents a time and/or level average of the data. Keep in mind that OPeNDAP constraint expressions apply before the map is generated, so it's possible to create a map of a specific level (or time) by constraining the variable on the URL::
 
     http://server.example.com/dataset.wms?var3d[0]&REQUEST=GetCapabilities
 
@@ -48,13 +48,13 @@ This response converts a pydap dataset to a `KML <http://code.google.com/apis/km
 
 .. code-block:: bash
 
-    $ pip install pydap.responses.kml
+    $ pip install "pydap[responses.kml]"
 
 And open a URL by appending the ``.kml`` extension to the dataset, say::
 
     http://server.example.com/dataset.kml
 
-For now, the KML response will only return datasets that have a valid WMS representation. These datasets can be overlayed as layers on top of Google Earth, and are presented with a nice colorbar. In the future, `Dapper <http://www.epic.noaa.gov/epic/software/dapper/dapperdocs/conventions/>`_-compliant datasets should be supported too.
+For now, the KML response will only return datasets that have a valid WMS representation. These datasets can be overlayed as layers on top of Google Earth, and are presented with a nice colorbar.
 
 NetCDF
 ~~~~~~
@@ -63,7 +63,7 @@ This response allows data to be downloaded as a NetCDF file; it works better wit
 
 .. code-block:: bash
 
-    $ pip install pydap.responses.netcdf
+    $ pip install "pydap[responses.netcdf]"
 
 And try to append the extension ``.nc`` to a request. The data will be converted on-the-fly to a NetCDF file.
 
@@ -74,7 +74,7 @@ The Matlab response returns data in a Matlab v5 file. It is returned when the fi
 
 .. code-block:: bash
 
-    $ pip install pydap.responses.matlab
+    $ pip install "pydap[responses.matlab]"
 
 Excel spreadsheet
 ~~~~~~~~~~~~~~~~~
@@ -83,4 +83,4 @@ This response returns sequential data as an Excel spreadsheet when ``.xls`` is a
 
 .. code-block:: bash
 
-    $ pip install pydap.responses.xls
+    $ pip install "pydap[responses.xls]"

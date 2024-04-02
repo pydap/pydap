@@ -304,7 +304,7 @@ Prior to pydap 3.2.2, this approach was not possible and one had to iterate dire
 
 This approach will be deprecated in pydap 3.4.
 
-The ``SequenceType`` behaves pretty much like `record arrays <http://docs.scipy.org/doc/numpy/user/basics.rec.html>`_ from 
+The ``SequenceType`` behaves pretty much like `structured arrays <https://numpy.org/doc/stable/user/basics.rec.html>`_ from 
 Numpy, since we can reference them by column (``s['a']``) or by index:
 
 .. doctest::
@@ -323,12 +323,12 @@ Note that these objects are also ``SequenceType`` themselves. The basic rules wh
 4. When a ``SequenceType`` is sliced with a tuple of strings a new ``SequenceType`` will be returned, containing only the children defined in the tuple in the new order.
    For example, ``s[('c', 'a')]`` will return a sequence ``s`` with the children ``c`` and ``a``, in that order.
 
-Note that except for rule 4 ``SequenceType`` mimics the behavior of Numpy record arrays.
+Note that except for rule 4 ``SequenceType`` mimics the behavior of Numpy structure arrays.
 
 Now imagine that we want to add to a ``SequenceType`` data pulled from a relational database. 
 The easy way would be to fetch the data in the correct column order, and insert it into the sequence. 
 But what if we don't want to store the data in memory, and instead we would like to stream it directly from the database? 
-In this case we can create an object that behaves like a record array, similar to the proxy object that implements the array interface. 
+In this case we can create an object that behaves like a structure array, similar to the proxy object that implements the array interface. 
 pydap defines a "protocol" called ``IterData``, which is simply any object that:
 
 1. Returns data when iterated over.
