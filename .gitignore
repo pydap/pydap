@@ -21,6 +21,9 @@ lib64
 # Installer logs
 pip-log.txt
 
+# setuptools-scm
+version.py
+
 # Unit test / coverage reports
 .coverage
 .tox
