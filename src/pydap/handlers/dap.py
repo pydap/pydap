@@ -20,7 +20,7 @@ from numpy.lib.arrayterator import Arrayterator
 import logging
 import numpy
 from requests.utils import urlparse, urlunparse, quote
-from six import text_type, string_types, BytesIO
+from six import text_type, BytesIO
 
 import pydap.model
 
@@ -376,7 +376,7 @@ class SequenceProxy(object):
         out = copy.copy(self)
 
         # return the data for a children
-        if isinstance(key, string_types):
+        if isinstance(key, str):
             out.template = out.template[key]
 
         # return a new object with requested columns

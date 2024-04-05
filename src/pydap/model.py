@@ -171,7 +171,6 @@ import operator
 import copy
 from six.moves import map
 from functools import reduce
-from six import string_types
 import numpy as np
 from collections import OrderedDict
 import warnings
@@ -425,9 +424,9 @@ class StructureType(DapType, Mapping):
         return out
 
     def __getitem__(self, key):
-        if isinstance(key, string_types):
+        if isinstance(key, str):
             return self._getitem_string(key)
-        elif isinstance(key, tuple) and all(isinstance(name, string_types) for name in key):
+        elif isinstance(key, tuple) and all(isinstance(name, str) for name in key):
             out = copy.copy(self)
             out._visible_keys = list(key)
             return out
@@ -681,7 +680,7 @@ class SequenceType(StructureType):
 
     def __getitem__(self, key):
         # If key is a string, return child with the corresponding data.
-        if isinstance(key, string_types):
+        if isinstance(key, str):
             return self._getitem_string(key)
 
         # If it's a tuple, return a new `SequenceType` with selected children.
@@ -723,11 +722,11 @@ class GridType(StructureType):
 
     def __getitem__(self, key):
         # Return a child.
-        if isinstance(key, string_types):
+        if isinstance(key, str):
             return self._getitem_string(key)
 
         # Return a new `GridType` with part of the data.
-        elif isinstance(key, tuple) and all(isinstance(name, string_types) for name in key):
+        elif isinstance(key, tuple) and all(isinstance(name, str) for name in key):
             out = self._getitem_string_tuple(key)
             for var in out.children():
                 var.data = self[var.name].data

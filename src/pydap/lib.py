@@ -6,7 +6,7 @@ from pkg_resources import get_distribution
 from requests.utils import quote as quote_
 from functools import reduce
 from itertools import zip_longest
-from six import binary_type, MAXSIZE, string_types
+from six import binary_type, MAXSIZE
 
 from .exceptions import ConstraintExpressionError
 
@@ -145,7 +145,7 @@ def encode(obj):
     """Return an object encoded to its DAP representation."""
     # fix for Python 3.5, where strings are being encoded as numbers
     if (
-            isinstance(obj, string_types) or
+            isinstance(obj, str) or
             isinstance(obj, np.ndarray) and obj.dtype.char in 'SU'
     ):
         return '"{0}"'.format(obj)
