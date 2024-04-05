@@ -1,7 +1,7 @@
 """Test the basic DAP functions."""
 
 import numpy as np
-from six import MAXSIZE
+from sys import maxsize as MAXSIZE
 from pydap.model import (DatasetType, BaseType,
                          StructureType)
 from pydap.exceptions import ConstraintExpressionError

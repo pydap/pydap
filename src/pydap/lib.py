@@ -6,7 +6,7 @@ from pkg_resources import get_distribution
 from requests.utils import quote as quote_
 from functools import reduce
 from itertools import zip_longest
-from six import binary_type, MAXSIZE
+from sys import maxsize as MAXSIZE
 
 from .exceptions import ConstraintExpressionError
 
@@ -300,7 +300,7 @@ def get_var(dataset, id_):
 
 def decode_np_strings(numpy_var):
     """Given a fixed-width numpy string, decode it to a unicode type"""
-    if isinstance(numpy_var, binary_type) and hasattr(numpy_var, 'tobytes'):
+    if isinstance(numpy_var, bytes) and hasattr(numpy_var, 'tobytes'):
         return numpy_var.tobytes().decode('utf-8')
     else:
         return numpy_var
