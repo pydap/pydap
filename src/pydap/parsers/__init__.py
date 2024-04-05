@@ -11,8 +11,6 @@ import ast
 
 from requests.utils import unquote
 
-from six.moves import map
-
 from ..exceptions import ConstraintExpressionError
 from ..lib import get_var
 

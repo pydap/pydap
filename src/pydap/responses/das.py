@@ -13,7 +13,6 @@ except ImportError:
     from singledispatch import singledispatch
 
 from collections.abc import Iterable
-from six.moves import map
 
 import numpy as np
 

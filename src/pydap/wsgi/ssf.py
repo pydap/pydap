@@ -13,7 +13,7 @@ import ast
 from webob import Request
 from pkg_resources import iter_entry_points
 import numpy as np
-from six.moves import reduce, map
+from six.moves import reduce
 
 from ..model import DatasetType, SequenceType
 from ..parsers import parse_ce
