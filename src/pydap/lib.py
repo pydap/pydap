@@ -10,8 +10,9 @@ from sys import maxsize as MAXSIZE
 
 from .exceptions import ConstraintExpressionError
 
+from .version import __version__
+
 __dap__ = '2.15'
-__version__ = get_distribution("pydap").version
 
 START_OF_SEQUENCE = b'\x5a\x00\x00\x00'
 END_OF_SEQUENCE = b'\xa5\x00\x00\x00'
