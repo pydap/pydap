@@ -27,7 +27,7 @@ from webob.dec import wsgify
 from webob.exc import HTTPNotFound, HTTPForbidden
 from webob.static import FileApp, DirectoryApp
 import pkg_resources
-from six.moves.urllib.parse import unquote
+from requests.utils import unquote
 from six import string_types
 
 from ..lib import __version__
