@@ -19,8 +19,8 @@ from numpy.lib.arrayterator import Arrayterator
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 import logging
 import numpy
-import six.moves.urllib.parse
-from six import text_type, string_types, BytesIO
+from requests.utils import urlparse, urlunparse, quote
+from io import BytesIO
 
 import pydap.model
 
@@ -56,7 +56,9 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         self.user_charset = user_charset
         self.url = url
 
-        scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.url)
+        # urlparse returns an additional var compared to
+        # urlsplit: `param`. Will toss it.
+        scheme, netloc, path, _, query, fragment = urlparse(self.url)
         self.scheme = scheme
         self.netloc = netloc
         self.path = path
@@ -66,8 +68,8 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         self.protocol = self.determine_protocol(protocol)
 
         self.projection, self.selection = pydap.parsers.parse_ce(self.query)
-        arg = (self.scheme, self.netloc, self.path, '&'.join(self.selection), self.fragment)
-        self.base_url = six.moves.urllib.parse.urlunsplit(arg)
+        arg = (self.scheme, self.netloc, self.path, '','&'.join(self.selection), self.fragment)
+        self.base_url = urlunparse(arg)
         self.make_dataset()
         self.add_proxies()
 
@@ -97,14 +99,14 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             self.attach_das()
 
     def dataset_from_dap4(self):
-        dmr_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.dmr', self.query, self.fragment))
+        dmr_url = urlunparse((self.scheme, self.netloc, self.path + '.dmr', '', self.query, self.fragment))
         r = pydap.net.GET(dmr_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
         pydap.net.raise_for_status(r)
         dmr = safe_charset_text(r, self.user_charset)
         self.dataset = dmr_to_dataset(dmr)
 
     def dataset_from_dap2(self):
-        dds_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.dds', self.query, self.fragment))
+        dds_url = urlunparse((self.scheme, self.netloc, self.path + '.dds', '',self.query, self.fragment))
         r = pydap.net.GET(dds_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
         pydap.net.raise_for_status(r)
         dds = safe_charset_text(r, self.user_charset)
@@ -112,7 +114,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
 
     def attach_das(self):
         # Also pull the DAS and add additional attributes
-        das_url = six.moves.urllib.parse.urlunsplit((self.scheme, self.netloc, self.path + '.das', self.query, self.fragment))
+        das_url = urlunparse((self.scheme, self.netloc, self.path + '.das', '', self.query, self.fragment))
         r = pydap.net.GET(das_url, self.application, self.session, timeout=self.timeout, verify=self.verify)
         pydap.net.raise_for_status(r)
         das = safe_charset_text(r, self.user_charset)
@@ -240,10 +242,10 @@ class BaseProxyDap2(object):
         # build download url
 
         index = combine_slices(self.slice, fix_slice(index, self.shape))
-        scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.baseurl)
-        url = six.moves.urllib.parse.urlunsplit((
-            scheme, netloc, path + '.dods',
-            six.moves.urllib.parse.quote(self.id) + hyperslab(index) + '&' + query,
+        scheme, netloc, path, params ,query, fragment = urlparse(self.baseurl)
+        url = urlunparse((
+            scheme, netloc, path + '.dods', '',
+            quote(self.id) + hyperslab(index) + '&' + query,
             fragment)).rstrip('&')
 
         # download and unpack data
@@ -307,9 +309,9 @@ class BaseProxyDap4(BaseProxyDap2):
     def __getitem__(self, index):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
-        scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.baseurl)
-        ce = 'dap4.ce=' + six.moves.urllib.parse.quote(self.id) + hyperslab(index) + query
-        url = six.moves.urllib.parse.urlunsplit((scheme, netloc, path + '.dap', ce, fragment)).rstrip('&')
+        scheme, netloc, path, params, query, fragment = urlparse(self.baseurl)
+        ce = 'dap4.ce=' + quote(self.id) + hyperslab(index) + query
+        url = urlunparse((scheme, netloc, path + '.dap', '', ce, fragment)).rstrip('&')
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
@@ -374,7 +376,7 @@ class SequenceProxy(object):
         out = copy.copy(self)
 
         # return the data for a children
-        if isinstance(key, string_types):
+        if isinstance(key, str):
             out.template = out.template[key]
 
         # return a new object with requested columns
@@ -397,9 +399,9 @@ class SequenceProxy(object):
     @property
     def url(self):
         """Return url from where data is fetched."""
-        scheme, netloc, path, query, fragment = six.moves.urllib.parse.urlsplit(self.baseurl)
-        url = six.moves.urllib.parse.urlunsplit((
-            scheme, netloc, path + '.dods',
+        scheme, netloc, path, params, query, fragment = urlparse(self.baseurl)
+        url = urlunparse((
+            scheme, netloc, path + '.dods', '',
             self.id + hyperslab(self.slice) + '&' +
             '&'.join(self.selection), fragment)).rstrip('&')
 
@@ -410,9 +412,9 @@ class SequenceProxy(object):
         """Return the id of this sequence."""
         if self.sub_children:
             id_ = ','.join(
-                six.moves.urllib.parse.quote(child.id) for child in self.template.children())
+                quote(child.id) for child in self.template.children())
         else:
-            id_ = six.moves.urllib.parse.quote(self.template.id)
+            id_ = quote(self.template.id)
         return id_
 
     def __iter__(self):
@@ -527,7 +529,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
                 k = numpy.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
                 data.append(stream.read(k))
                 stream.read(-k % 4)
-            out.append(numpy.array([text_type(x.decode('ascii')) for x in data], 'S').reshape(shape))
+            out.append(numpy.array([str(x.decode('ascii')) for x in data], 'S').reshape(shape))
         else:
             stream.read(4)  # read additional length
             try:
@@ -540,7 +542,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
                         ('variable {0} could not be properly '
                          'retrieved. To avoid this '
                          'error consider using open_url(..., '
-                         'output_grid=False).').format(six.moves.urllib.parse.quote(id)))
+                         'output_grid=False).').format(quote(id)))
                 else:
                     raise
             if response_dtype.char == "B":
@@ -553,7 +555,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
         # response_dtype.char should never be
         # 'U'
         k = numpy.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
-        out.append(text_type(stream.read(k).decode('ascii')))
+        out.append(str(stream.read(k).decode('ascii')))
         stream.read(-k % 4)
     # usual data
     else:

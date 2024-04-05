@@ -6,7 +6,8 @@ import ssl
 from requests.exceptions import (MissingSchema, InvalidSchema,
                                  Timeout)
 
-from six.moves.urllib.parse import urlsplit, urlunsplit
+from requests.utils import urlparse, urlunparse
+
 
 from .lib import DEFAULT_TIMEOUT
 
@@ -22,8 +23,8 @@ def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT,
     Optionally open a URL to a local WSGI application
     """
     if application:
-        _, _, path, query, fragment = urlsplit(url)
-        url = urlunsplit(('', '', path, query, fragment))
+        _, _, path, _, query, fragment = urlparse(url)
+        url = urlunparse(('', '', path, '', query, fragment))
 
     response = follow_redirect(url, application=application, session=session,
                                timeout=timeout, verify=verify)

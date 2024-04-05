@@ -1,4 +1,4 @@
-from six.moves.urllib.parse import quote_plus
+from urllib.parse import quote_plus
 from . import get_cookies
 
 

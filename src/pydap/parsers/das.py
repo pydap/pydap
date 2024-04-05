@@ -10,7 +10,7 @@ import re
 import ast
 import operator
 
-from six.moves import reduce
+from functools import reduce
 
 from . import SimpleParser
 from ..lib import walk

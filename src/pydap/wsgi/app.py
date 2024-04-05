@@ -27,8 +27,7 @@ from webob.dec import wsgify
 from webob.exc import HTTPNotFound, HTTPForbidden
 from webob.static import FileApp, DirectoryApp
 import pkg_resources
-from six.moves.urllib.parse import unquote
-from six import string_types
+from requests.utils import unquote
 
 from ..lib import __version__
 from ..handlers.lib import get_handler, load_handlers
@@ -204,7 +203,7 @@ class StaticMiddleware(object):
         req.path_info_pop()
 
         # statically serve the directory
-        if isinstance(self.static, string_types):
+        if isinstance(self.static, str):
             return req.get_response(DirectoryApp(self.static))
 
         # otherwise, load resource from package

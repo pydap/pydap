@@ -1,7 +1,6 @@
 """Test basic handler functions."""
 
 import copy
-from six import text_type
 
 from webtest import AppError
 from webtest import TestApp as App
@@ -238,7 +237,7 @@ class TestConstraintExpression(unittest.TestCase):
     def test_unicode(self):
         """Test unicode representation."""
         ce = ConstraintExpression("a>1")
-        self.assertEqual(text_type(ce), "a>1")
+        self.assertEqual(str(ce), "a>1")
 
     def test_and(self):
         """Test CE addition."""

@@ -13,8 +13,6 @@ except ImportError:
     from singledispatch import singledispatch
 
 from collections.abc import Iterable
-from six import string_types, integer_types
-from six.moves import map
 
 import numpy as np
 
@@ -113,7 +111,7 @@ def build_attributes(attr, values, level=0):
         type = get_type(values)
 
         # encode values
-        if (isinstance(values, string_types) or
+        if (isinstance(values, str) or
            not isinstance(values, Iterable) or
            getattr(values, 'shape', None) == ()):
             values = [encode(values)]
@@ -136,7 +134,7 @@ def get_type(values):
     """
     if hasattr(values, 'dtype'):
         return NUMPY_TO_DAP2_TYPEMAP[values.dtype.char]
-    elif isinstance(values, string_types) or not isinstance(values, Iterable):
+    elif isinstance(values, str) or not isinstance(values, Iterable):
         return type_convert(values)
     else:
         # if there are several values, they may have different types, so we
@@ -155,7 +153,7 @@ def type_convert(obj):
     """
     if isinstance(obj, float):
         return 'Float64'
-    elif isinstance(obj, integer_types):
+    elif isinstance(obj, int):
         return 'Int32'
     else:
         return 'String'

@@ -9,8 +9,7 @@ import re
 import operator
 import ast
 
-from six.moves.urllib.parse import unquote
-from six.moves import map
+from requests.utils import unquote
 
 from ..exceptions import ConstraintExpressionError
 from ..lib import get_var

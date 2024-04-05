@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
-from six.moves.urllib.parse import urlsplit, urlunsplit
+from requests.utils import urlparse, urlunparse
+
 import warnings
 import requests
 from requests.packages.urllib3.exceptions import (InsecureRequestWarning,
@@ -124,11 +125,11 @@ def soup_login(session, url, username, password,
     login_form = soup.select('form')[0]
 
     def get_to_url(current_url, to_url):
-        split_current = urlsplit(current_url)
-        split_to = urlsplit(to_url)
+        split_current = urlparse(current_url)
+        split_to = urlparse(to_url)
         comb = [val2 if val1 == '' else val1
                 for val1, val2 in zip(split_to, split_current)]
-        return urlunsplit(comb)
+        return urlunparse(comb)
     to_url = get_to_url(resp.url, login_form.get('action'))
 
     session.headers['Referer'] = resp.url

@@ -9,7 +9,7 @@ from jinja2 import Environment, PackageLoader, ChoiceLoader
 from webob import Response
 from webob.dec import wsgify
 from webob.exc import HTTPSeeOther
-from six.moves.urllib.parse import unquote
+from requests.utils import unquote
 
 from ..lib import BaseResponse
 from ...lib import __version__

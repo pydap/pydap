@@ -1,7 +1,6 @@
 """Response with information about pydap version."""
 
 import sys
-from six import text_type
 
 from webob import Response
 from json import dumps
@@ -42,7 +41,7 @@ class VersionResponse(object):
 
     def __call__(self, environ, start_response):
         res = Response()
-        res.text = text_type(self.body)
+        res.text = str(self.body)
         res.status = '200 OK'
         res.content_type = 'application/json'
         res.charset = 'utf-8'

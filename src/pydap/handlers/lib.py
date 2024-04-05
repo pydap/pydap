@@ -19,8 +19,6 @@ import numpy as np
 from webob import Request
 import pkg_resources
 from numpy.lib.arrayterator import Arrayterator
-from six.moves import filter, map
-from six import string_types, next
 
 from ..responses.lib import load_responses
 from ..responses.error import ErrorResponse
@@ -350,7 +348,7 @@ class IterData(object):
 
         # return a child, and adjust the data so that only the corresponding
         # column is returned
-        if isinstance(key, string_types):
+        if isinstance(key, str):
             try:
                 col = list(self.template._all_keys()).index(key)
             except ValueError:

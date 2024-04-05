@@ -45,7 +45,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 """
 
 from io import open, BytesIO
-from six.moves.urllib.parse import urlsplit, urlunsplit
+from requests.utils import urlparse, urlunparse
 
 import pydap.model
 import pydap.lib
@@ -179,8 +179,8 @@ def open_dods_url(url, metadata=False, application=None, session=None,
     dataset.data = pydap.handlers.dap.unpack_dap2_data(stream, dataset)
 
     if metadata:
-        scheme, netloc, path, query, fragment = urlsplit(url)
-        dasurl = urlunsplit((scheme, netloc, path[:-4] + 'das', query, fragment))
+        scheme, netloc, path, params, query, fragment = urlparse(url)
+        dasurl = urlunparse((scheme, netloc, path[:-4] + 'das', params, query, fragment))
         r = pydap.net.GET(dasurl, application, session, timeout=timeout, verify=verify)
         pydap.net.raise_for_status(r)
         das = pydap.parsers.das.parse_das(r.text)
@@ -239,8 +239,8 @@ class ServerFunctionResult(object):
         self.session = session
         self.timeout = timeout
 
-        scheme, netloc, path, query, fragment = urlsplit(baseurl)
-        self.url = urlunsplit((scheme, netloc, path + '.dods', id_, None))
+        scheme, netloc, path, params, query, fragment = urlparse(baseurl)
+        self.url = urlunparse((scheme, netloc, path + '.dods', params, id_, None))
 
     def __getitem__(self, key):
         if self.dataset is None:

@@ -13,8 +13,6 @@ try:
 except ImportError:
     from singledispatch import singledispatch
 
-from six.moves import map, zip
-
 from ..model import (DatasetType, BaseType,
                      SequenceType, StructureType,
                      GridType)

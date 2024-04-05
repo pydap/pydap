@@ -12,7 +12,6 @@ except ImportError:
 import copy
 
 import numpy as np
-from six.moves import zip
 
 from ..model import (BaseType,
                      SequenceType, StructureType)

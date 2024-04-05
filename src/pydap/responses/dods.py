@@ -12,7 +12,6 @@ uses Numpy directly since it's faster.
 import copy
 
 import numpy as np
-from six import string_types
 
 from ..model import (BaseType,
                      SequenceType, StructureType)
@@ -120,7 +119,7 @@ def _sequencetype(var):
                 out = []
                 padded = []
                 for value in record:
-                    if isinstance(value, string_types):
+                    if isinstance(value, str):
                         length = len(value) or 1
                         out.append(length)
                         padded.append(length + (-length % 4))
