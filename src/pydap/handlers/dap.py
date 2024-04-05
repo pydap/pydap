@@ -20,7 +20,7 @@ from numpy.lib.arrayterator import Arrayterator
 import logging
 import numpy
 from requests.utils import urlparse, urlunparse, quote
-from six import text_type, BytesIO
+from six import BytesIO
 
 import pydap.model
 
@@ -529,7 +529,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
                 k = numpy.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
                 data.append(stream.read(k))
                 stream.read(-k % 4)
-            out.append(numpy.array([text_type(x.decode('ascii')) for x in data], 'S').reshape(shape))
+            out.append(numpy.array([str(x.decode('ascii')) for x in data], 'S').reshape(shape))
         else:
             stream.read(4)  # read additional length
             try:
@@ -555,7 +555,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
         # response_dtype.char should never be
         # 'U'
         k = numpy.frombuffer(stream.read(4), DAP2_ARRAY_LENGTH_NUMPY_TYPE)[0]
-        out.append(text_type(stream.read(k).decode('ascii')))
+        out.append(str(stream.read(k).decode('ascii')))
         stream.read(-k % 4)
     # usual data
     else:
