@@ -10,7 +10,6 @@ install_requires = [
     'Webob',
     'Jinja2',
     'docopt-ng',
-    'six >= 1.4.0',
     'beautifulsoup4',
     'requests'
 ]
