@@ -169,7 +169,8 @@ therefore highly recommended.
 
 import operator
 import copy
-from six.moves import reduce, map
+from six.moves import map
+from functools import reduce
 from six import string_types
 import numpy as np
 from collections import OrderedDict

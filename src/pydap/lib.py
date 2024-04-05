@@ -3,8 +3,9 @@ import operator
 
 import numpy as np
 from pkg_resources import get_distribution
-from six.moves.urllib.parse import quote as quote_
-from six.moves import reduce, zip_longest
+from requests.utils import quote as quote_
+from functools import reduce
+from itertools import zip_longest
 from six import binary_type, MAXSIZE, string_types
 
 from .exceptions import ConstraintExpressionError
