@@ -1,7 +1,6 @@
 """Test the DAP handler, which forms the core of the client."""
 
 import numpy as np
-from six.moves import zip
 from pydap.handlers.dap import DAPHandler
 import pytest
 
