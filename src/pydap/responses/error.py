@@ -8,7 +8,7 @@ formated as a DAP error response.
 from traceback import print_exception
 
 from webob import Response
-from six import StringIO
+from io import StringIO
 
 from ..lib import encode, __version__
 
