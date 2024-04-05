@@ -1,7 +1,6 @@
 """Tests for the server-side function WSGI middleware."""
 
 import sys
-from six import next
 
 from webtest import TestApp as App
 import numpy as np
