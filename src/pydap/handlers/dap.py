@@ -20,7 +20,7 @@ from numpy.lib.arrayterator import Arrayterator
 import logging
 import numpy
 from requests.utils import urlparse, urlunparse, quote
-from six import BytesIO
+from io import BytesIO
 
 import pydap.model
 
