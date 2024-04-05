@@ -19,7 +19,6 @@ import numpy as np
 from webob import Request
 import pkg_resources
 from numpy.lib.arrayterator import Arrayterator
-from six.moves import filter
 
 from ..responses.lib import load_responses
 from ..responses.error import ErrorResponse
