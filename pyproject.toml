@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 61.0", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools >= 61.2", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -59,10 +59,11 @@ netcdf = ['netCDF4']
 server = ['gunicorn', 'PasteDeploy']
 
 
-[tool.entry-points."pydap.handler"]
+[project.entry-points."pydap.handler"]
 nc = "pydap.handlers.netcdf:NetCDFHandler"
 
-[tool.entry-points."pydap.response"]
+
+[project.entry-points."pydap.response"]
 das = "pydap.responses.das:DASResponse"
 dds = "pydap.responses.dds:DDSResponse"
 dods = "pydap.responses.dods:DODSResponse"
@@ -71,13 +72,13 @@ asc = "pydap.responses.ascii:ASCIIResponse"
 ascii = "pydap.responses.ascii:ASCIIResponse"
 ver = "pydap.responses.version:VersionResponse"
 
-[tool.entry-points."pydap.function"]
+[project.entry-points."pydap.function"]
 bounds = "pydap.wsgi.functions:bounds"
 mean = "pydap.wsgi.functions:mean"
 density = "pydap.wsgi.functions:density"
 
 
-[tools.entry-points."console_scripts"]
+[project.entry-points."console_scripts"]
 pydap = "pydap.wsgi.app:main"
 dods = "pydap.handlers.dap:dump"
 
