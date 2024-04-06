@@ -10,7 +10,7 @@ from sys import maxsize as MAXSIZE
 
 from .exceptions import ConstraintExpressionError
 
-from .version import __version__
+from . import __version__
 
 __dap__ = '2.15'
 

@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools >= 61.2", "setuptools_scm[toml]>=6.2"]
+requires = ["setuptools >= 64", "setuptools_scm[toml]>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -93,8 +93,4 @@ package-dir = {"" = "src"}
 
 
 [tool.setuptools_scm]
-write_to = "src/pydap/version.py"
-write_to_template = '''
-# Do not change! Do not track in version control!
-__version__ = "{version}"
-'''
+version_file = "src/pydap/_version.py"

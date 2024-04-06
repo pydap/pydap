@@ -22,7 +22,7 @@ lib64
 pip-log.txt
 
 # setuptools-scm
-version.py
+_version.py
 
 # Unit test / coverage reports
 .coverage
