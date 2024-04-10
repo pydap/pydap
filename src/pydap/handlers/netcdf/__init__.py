@@ -9,10 +9,10 @@ import numpy as np
 
 from pkg_resources import get_distribution
 
-from ...model import DatasetType, GridType, BaseType
-from ..lib import BaseHandler
-from ...exceptions import OpenFileError
-from ...pycompat import suppress
+from pydap.model import DatasetType, GridType, BaseType
+from pydap.handlers.lib import BaseHandler
+from pydap.exceptions import OpenFileError
+from pydap.pycompat import suppress
 
 from collections import OrderedDict
 

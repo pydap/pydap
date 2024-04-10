@@ -20,14 +20,14 @@ from webob import Request
 import pkg_resources
 from numpy.lib.arrayterator import Arrayterator
 
-from ..responses.lib import load_responses
-from ..responses.error import ErrorResponse
-from ..parsers import parse_ce, parse_selection
-from ..exceptions import (
+from pydap.responses.lib import load_responses
+from pydap.responses.error import ErrorResponse
+from pydap.parsers import parse_ce, parse_selection
+from pydap.exceptions import (
     ConstraintExpressionError, ExtensionNotSupportedError)
-from ..lib import (walk, fix_shorthand, get_var, encode,
+from pydap.lib import (walk, fix_shorthand, get_var, encode,
                    load_from_entry_point_relative)
-from ..model import (DatasetType, BaseType,
+from pydap.model import (DatasetType, BaseType,
                      SequenceType, StructureType,
                      GridType)
 

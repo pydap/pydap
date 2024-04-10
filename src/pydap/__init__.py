@@ -1,6 +1,7 @@
-'''
-Declare the namespace ``pydap`` here.
-'''
-__import__('pkg_resources').declare_namespace(__name__)
+from importlib.metadata import version, PackageNotFoundError
 
-__version__ = '3.4.1'
+try:
+    __version__ = version("pydap")
+except PackageNotFoundError:
+    # package is not installed
+    pass
