@@ -25,16 +25,16 @@ from io import BytesIO
 import pydap.model
 
 import pydap.net
-from ..lib import (
+from pydap.lib import (
     encode, combine_slices, fix_slice, hyperslab,
     START_OF_SEQUENCE, walk, StreamReader, BytesReader,
     DEFAULT_TIMEOUT, DAP2_ARRAY_LENGTH_NUMPY_TYPE)
 import pydap.handlers.lib
-from ..parsers.dds import dds_to_dataset
-from ..parsers.dmr import dmr_to_dataset
-from ..parsers.das import parse_das, add_attributes
+from pydap.parsers.dds import dds_to_dataset
+from pydap.parsers.dmr import dmr_to_dataset
+from pydap.parsers.das import parse_das, add_attributes
 import pydap.parsers
-from ..responses.dods import DAP2_response_dtypemap
+from pydap.responses.dods import DAP2_response_dtypemap
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())

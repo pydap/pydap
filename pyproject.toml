@@ -91,6 +91,8 @@ testpaths = ["/src/pydap/tests"]
 [tool.setuptools]
 package-dir = {"" = "src"}
 
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.setuptools_scm]
 version_file = "src/pydap/_version.py"
