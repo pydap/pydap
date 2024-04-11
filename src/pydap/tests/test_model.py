@@ -7,8 +7,14 @@ from collections.abc import Mapping
 import numpy as np
 import pytest
 
-from pydap.model import (BaseType, DapType, DatasetType, GridType,
-                         SequenceType, StructureType)
+from pydap.model import (
+    BaseType,
+    DapType,
+    DatasetType,
+    GridType,
+    SequenceType,
+    StructureType,
+)
 
 warnings.simplefilter("always")
 

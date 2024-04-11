@@ -12,8 +12,7 @@ import numpy as np
 
 from pydap.client import open_file
 from pydap.handlers.lib import IterData
-from pydap.model import (BaseType, DatasetType, GridType, SequenceType,
-                         StructureType)
+from pydap.model import BaseType, DatasetType, GridType, SequenceType, StructureType
 
 # Note that DAP2 does not support signed bytes (signed 8bits integers).
 

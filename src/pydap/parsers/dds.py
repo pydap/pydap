@@ -5,8 +5,7 @@ import re
 import numpy as np
 
 from ..lib import LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP, quote
-from ..model import (BaseType, DatasetType, GridType, SequenceType,
-                     StructureType)
+from ..model import BaseType, DatasetType, GridType, SequenceType, StructureType
 from . import SimpleParser
 
 constructors = ("grid", "sequence", "structure")

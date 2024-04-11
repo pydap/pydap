@@ -9,6 +9,7 @@ dataset to the internal model.
 import copy
 import gzip
 import io
+
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 import logging
@@ -25,9 +26,18 @@ import pydap.handlers.lib
 import pydap.model
 import pydap.net
 import pydap.parsers
-from pydap.lib import (DAP2_ARRAY_LENGTH_NUMPY_TYPE, DEFAULT_TIMEOUT,
-                       START_OF_SEQUENCE, BytesReader, StreamReader,
-                       combine_slices, encode, fix_slice, hyperslab, walk)
+from pydap.lib import (
+    DAP2_ARRAY_LENGTH_NUMPY_TYPE,
+    DEFAULT_TIMEOUT,
+    START_OF_SEQUENCE,
+    BytesReader,
+    StreamReader,
+    combine_slices,
+    encode,
+    fix_slice,
+    hyperslab,
+    walk,
+)
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import dmr_to_dataset

@@ -14,8 +14,7 @@ except ImportError:
     from singledispatch import singledispatch
 
 from ..lib import NUMPY_TO_DAP2_TYPEMAP, __version__
-from ..model import (BaseType, DatasetType, GridType, SequenceType,
-                     StructureType)
+from ..model import BaseType, DatasetType, GridType, SequenceType, StructureType
 from .lib import BaseResponse
 
 INDENT = " " * 4

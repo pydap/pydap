@@ -8,8 +8,7 @@ from webtest import TestApp as App
 from pydap.handlers.lib import BaseHandler
 from pydap.lib import __version__
 from pydap.responses.das import das
-from pydap.tests.datasets import (FaultyGrid, SimpleGrid, SimpleSequence,
-                                  SimpleStructure)
+from pydap.tests.datasets import FaultyGrid, SimpleGrid, SimpleSequence, SimpleStructure
 
 
 class TestDASResponseSequence(unittest.TestCase):

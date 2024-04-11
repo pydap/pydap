@@ -6,8 +6,16 @@ from sys import maxsize as MAXSIZE
 import numpy as np
 
 from pydap.exceptions import ConstraintExpressionError
-from pydap.lib import (combine_slices, encode, fix_shorthand, fix_slice,
-                       get_var, hyperslab, quote, walk)
+from pydap.lib import (
+    combine_slices,
+    encode,
+    fix_shorthand,
+    fix_slice,
+    get_var,
+    hyperslab,
+    quote,
+    walk,
+)
 from pydap.model import BaseType, DatasetType, StructureType
 
 

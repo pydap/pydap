@@ -11,9 +11,14 @@ from webtest import TestApp as App
 from pydap.handlers.lib import BaseHandler
 from pydap.lib import END_OF_SEQUENCE, START_OF_SEQUENCE, __version__
 from pydap.responses.dods import DODSResponse, dods
-from pydap.tests.datasets import (NestedSequence, SimpleArray, SimpleGrid,
-                                  SimpleSequence, SimpleStructure,
-                                  VerySimpleSequence)
+from pydap.tests.datasets import (
+    NestedSequence,
+    SimpleArray,
+    SimpleGrid,
+    SimpleSequence,
+    SimpleStructure,
+    VerySimpleSequence,
+)
 
 
 class TestDODSResponse(unittest.TestCase):

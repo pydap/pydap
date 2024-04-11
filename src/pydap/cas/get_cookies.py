@@ -3,8 +3,10 @@ import warnings
 
 import requests
 from bs4 import BeautifulSoup
-from requests.packages.urllib3.exceptions import (InsecurePlatformWarning,
-                                                  InsecureRequestWarning)
+from requests.packages.urllib3.exceptions import (
+    InsecurePlatformWarning,
+    InsecureRequestWarning,
+)
 from requests.utils import urlparse, urlunparse
 
 from ..lib import __version__

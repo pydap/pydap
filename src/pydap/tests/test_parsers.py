@@ -4,8 +4,13 @@ import operator
 import unittest
 
 from pydap.exceptions import ConstraintExpressionError
-from pydap.parsers import (SimpleParser, parse_ce, parse_hyperslab,
-                           parse_projection, parse_selection)
+from pydap.parsers import (
+    SimpleParser,
+    parse_ce,
+    parse_hyperslab,
+    parse_projection,
+    parse_selection,
+)
 from pydap.tests.datasets import VerySimpleSequence
 
 

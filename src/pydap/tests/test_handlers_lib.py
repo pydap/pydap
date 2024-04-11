@@ -8,16 +8,27 @@ from webtest import AppError
 from webtest import TestApp as App
 
 from pydap.exceptions import ConstraintExpressionError
-from pydap.handlers.lib import (BaseHandler, ConstraintExpression,
-                                ExtensionNotSupportedError, IterData,
-                                apply_projection, apply_selection, get_handler,
-                                load_handlers)
+from pydap.handlers.lib import (
+    BaseHandler,
+    ConstraintExpression,
+    ExtensionNotSupportedError,
+    IterData,
+    apply_projection,
+    apply_selection,
+    get_handler,
+    load_handlers,
+)
 from pydap.lib import walk
 from pydap.model import BaseType, SequenceType, StructureType
 from pydap.parsers import parse_projection
-from pydap.tests.datasets import (NestedSequence, SimpleArray, SimpleGrid,
-                                  SimpleSequence, SimpleStructure,
-                                  VerySimpleSequence)
+from pydap.tests.datasets import (
+    NestedSequence,
+    SimpleArray,
+    SimpleGrid,
+    SimpleSequence,
+    SimpleStructure,
+    VerySimpleSequence,
+)
 
 
 class TestHandlersLib(unittest.TestCase):

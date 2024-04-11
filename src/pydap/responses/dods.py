@@ -13,9 +13,15 @@ import copy
 
 import numpy as np
 
-from ..lib import (DAP2_ARRAY_LENGTH_NUMPY_TYPE,
-                   DAP2_TO_NUMPY_RESPONSE_TYPEMAP, END_OF_SEQUENCE,
-                   NUMPY_TO_DAP2_TYPEMAP, START_OF_SEQUENCE, __version__, walk)
+from ..lib import (
+    DAP2_ARRAY_LENGTH_NUMPY_TYPE,
+    DAP2_TO_NUMPY_RESPONSE_TYPEMAP,
+    END_OF_SEQUENCE,
+    NUMPY_TO_DAP2_TYPEMAP,
+    START_OF_SEQUENCE,
+    __version__,
+    walk,
+)
 from ..model import BaseType, SequenceType, StructureType
 from .dds import dds
 from .lib import BaseResponse

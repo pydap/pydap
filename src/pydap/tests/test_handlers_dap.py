@@ -5,12 +5,21 @@ import unittest
 import numpy as np
 
 import pydap.model
-from pydap.handlers.dap import (BaseProxyDap2, DAPHandler, SequenceProxy,
-                                find_pattern_in_string_iter, walk)
+from pydap.handlers.dap import (
+    BaseProxyDap2,
+    DAPHandler,
+    SequenceProxy,
+    find_pattern_in_string_iter,
+    walk,
+)
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
 from pydap.model import BaseType, DatasetType, GridType, StructureType
-from pydap.tests.datasets import (SimpleArray, SimpleGrid, SimpleSequence,
-                                  VerySimpleSequence)
+from pydap.tests.datasets import (
+    SimpleArray,
+    SimpleGrid,
+    SimpleSequence,
+    VerySimpleSequence,
+)
 
 try:
     from unittest.mock import patch
