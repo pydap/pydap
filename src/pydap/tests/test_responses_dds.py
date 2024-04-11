@@ -1,12 +1,14 @@
 """Test the DDS response."""
 
-from webtest import TestApp as App
-from webob.headers import ResponseHeaders
-from pydap.lib import __version__
-from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import SimpleSequence, SimpleGrid, SimpleStructure
-from pydap.responses.dds import dds
 import unittest
+
+from webob.headers import ResponseHeaders
+from webtest import TestApp as App
+
+from pydap.handlers.lib import BaseHandler
+from pydap.lib import __version__
+from pydap.responses.dds import dds
+from pydap.tests.datasets import SimpleGrid, SimpleSequence, SimpleStructure
 
 
 class TestDDSResponseSequence(unittest.TestCase):
@@ -15,7 +17,7 @@ class TestDDSResponseSequence(unittest.TestCase):
     def setUp(self):
         """Create a simple WSGI app."""
         app = App(BaseHandler(SimpleSequence))
-        self.res = app.get('/.dds')
+        self.res = app.get("/.dds")
 
     def test_dispatcher(self):
         """Test the single dispatcher."""
@@ -38,18 +40,26 @@ class TestDDSResponseSequence(unittest.TestCase):
         """Test the headers from the response."""
         self.assertEqual(
             self.res.headers,
-            ResponseHeaders([
-                ('XDODS-Server', 'pydap/' + __version__),
-                ('Content-description', 'dods_dds'),
-                ('Content-type', 'text/plain; charset=ascii'),
-                ('Access-Control-Allow-Origin', '*'),
-                ('Access-Control-Allow-Headers',
-                    'Origin, X-Requested-With, Content-Type'),
-                ('Content-Length', '228')]))
+            ResponseHeaders(
+                [
+                    ("XDODS-Server", "pydap/" + __version__),
+                    ("Content-description", "dods_dds"),
+                    ("Content-type", "text/plain; charset=ascii"),
+                    ("Access-Control-Allow-Origin", "*"),
+                    (
+                        "Access-Control-Allow-Headers",
+                        "Origin, X-Requested-With, Content-Type",
+                    ),
+                    ("Content-Length", "228"),
+                ]
+            ),
+        )
 
     def test_body(self):
         """Test the generated DDS response."""
-        self.assertEqual(self.res.text, """Dataset {
+        self.assertEqual(
+            self.res.text,
+            """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -61,18 +71,20 @@ class TestDDSResponseSequence(unittest.TestCase):
         Int32 pressure;
     } cast;
 } SimpleSequence;
-""")
+""",
+        )
 
 
 class TestDDSResponseGrid(unittest.TestCase):
-
     """Test DDS response from grids."""
 
     def test_body(self):
         """Test the generated DDS response."""
         app = App(BaseHandler(SimpleGrid))
-        res = app.get('/.dds')
-        self.assertEqual(res.text, """Dataset {
+        res = app.get("/.dds")
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Grid {
         Array:
             Int32 SimpleGrid[y = 2][x = 3];
@@ -83,18 +95,20 @@ class TestDDSResponseGrid(unittest.TestCase):
     Int32 x[x = 3];
     Int32 y[y = 2];
 } SimpleGrid;
-""")
+""",
+        )
 
 
 class TestDDSResponseStructure(unittest.TestCase):
-
     """Test DDS response from structures."""
 
     def test_body(self):
         """Test the generated DDS response."""
         app = App(BaseHandler(SimpleStructure))
-        res = app.get('/.dds')
-        self.assertEqual(res.text, """Dataset {
+        res = app.get("/.dds")
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Structure {
         Int16 b;
         Byte ub;
@@ -109,4 +123,5 @@ class TestDDSResponseStructure(unittest.TestCase):
         String U;
     } types;
 } SimpleStructure;
-""")
+""",
+        )

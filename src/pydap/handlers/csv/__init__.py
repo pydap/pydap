@@ -1,24 +1,23 @@
 """A pydap handler for CSV files."""
 
-import os
+import copy
 import csv
+import json
+import os
 import re
 import time
-import copy
-from stat import ST_MTIME
 from email.utils import formatdate
-import json
+from stat import ST_MTIME
 
 from pkg_resources import get_distribution
 
-from ...handlers.lib import BaseHandler, IterData
-from ...model import DatasetType, SequenceType, BaseType
 from ...exceptions import OpenFileError
+from ...handlers.lib import BaseHandler, IterData
+from ...model import BaseType, DatasetType, SequenceType
 from ...parsers.das import add_attributes
 
 
 class CSVHandler(BaseHandler):
-
     """This is a simple handler for CSV files.
 
     Here's a standard dataset for testing sequential data:
@@ -114,26 +113,28 @@ class CSVHandler(BaseHandler):
         BaseHandler.__init__(self)
 
         try:
-            with open(filepath, 'r') as fp:
+            with open(filepath, "r") as fp:
                 reader = csv.reader(fp, quoting=csv.QUOTE_NONNUMERIC)
                 vars = next(reader)
         except Exception as exc:
-            message = 'Unable to open file {filepath}: {exc}'.format(
-                filepath=filepath, exc=exc)
+            message = "Unable to open file {filepath}: {exc}".format(
+                filepath=filepath, exc=exc
+            )
             raise OpenFileError(message)
 
         self.additional_headers.append(
-            ('Last-modified',
-                (formatdate(
-                    time.mktime(
-                        time.localtime(os.stat(filepath)[ST_MTIME]))))))
+            (
+                "Last-modified",
+                (formatdate(time.mktime(time.localtime(os.stat(filepath)[ST_MTIME])))),
+            )
+        )
 
         # build dataset
         name = os.path.split(filepath)[1]
         self.dataset = DatasetType(name)
 
         # add sequence and children for each column
-        seq = self.dataset['sequence'] = SequenceType('sequence')
+        seq = self.dataset["sequence"] = SequenceType("sequence")
         for var in vars:
             seq[var] = BaseType(var)
 
@@ -149,7 +150,6 @@ class CSVHandler(BaseHandler):
 
 
 class CSVData(IterData):
-
     """Emulate a Numpy structured array using CSV files.
 
     Here's a standard dataset for testing sequential data:
@@ -243,8 +243,9 @@ class CSVData(IterData):
 
     """
 
-    def __init__(self, filepath, template, ifilter=None, imap=None,
-                 islice=None, level=0):
+    def __init__(
+        self, filepath, template, ifilter=None, imap=None, islice=None, level=0
+    ):
         self.filepath = filepath
         self.template = template
         self.level = level
@@ -257,18 +258,24 @@ class CSVData(IterData):
     def stream(self):
         """Generator that yield lines of the file."""
         try:
-            with open(self.filepath, 'r') as fp:
+            with open(self.filepath, "r") as fp:
                 reader = csv.reader(fp, quoting=csv.QUOTE_NONNUMERIC)
                 next(reader)  # consume var names
                 for row in reader:
                     yield row
         except Exception as exc:
-            message = 'Unable to open file {filepath}: {exc}'.format(
-                filepath=self.filepath, exc=exc)
+            message = "Unable to open file {filepath}: {exc}".format(
+                filepath=self.filepath, exc=exc
+            )
             raise OpenFileError(message)
 
     def __copy__(self):
         """Return a lightweight copy."""
-        return self.__class__(self.filepath, copy.copy(self.template),
-                              self.ifilter[:], self.imap[:], self.islice[:],
-                              self.level)
+        return self.__class__(
+            self.filepath,
+            copy.copy(self.template),
+            self.ifilter[:],
+            self.imap[:],
+            self.islice[:],
+            self.level,
+        )

@@ -5,7 +5,7 @@ pydap comes with a lightweight and scalable OPeNDAP server, implemented as a `WS
 
 There is no one right way to run pydap server; your application requirements and software stack will inform your deployment decisions. In this chapter we provide a few examples to try and get you on the right track.
 
-In order to distribute your data first you need to install a proper `handler <handlers.html>`_, that will convert the data format to the pydap data model. 
+In order to distribute your data first you need to install a proper `handler <handlers.html>`_, that will convert the data format to the pydap data model.
 
 Running standalone
 ------------------

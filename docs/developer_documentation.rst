@@ -2,7 +2,7 @@ Contributing to the documentation
 ---------------------------------
 
 The documentation is built with `sphinx <https://www.sphinx-doc.org/en/master/>`_ and hosted by
-`Read the Docs <https://about.readthedocs.com/>`_. To contribute to the documentation follow the 
+`Read the Docs <https://about.readthedocs.com/>`_. To contribute to the documentation follow the
 next steps.
 
 1. Within your development branch, move into the documentation directory of the project.
@@ -28,7 +28,7 @@ next steps.
      $ make clean
      $ make html
 
-5. You can inspect the files. For example to see a new build from `client.rst`. 
+5. You can inspect the files. For example to see a new build from `client.rst`.
 
    .. code-block:: bash
 
@@ -36,4 +36,3 @@ next steps.
 
 
 6. When satisfied, send a pull request.
-

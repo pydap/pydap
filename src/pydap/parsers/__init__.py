@@ -5,9 +5,9 @@ DDS and DAS responses.
 
 """
 
-import re
-import operator
 import ast
+import operator
+import re
 
 from requests.utils import unquote
 
@@ -24,28 +24,25 @@ def parse_projection(input):
     Returns a list of names and slices.
 
     """
+
     def tokenize(input):
         start = pos = count = 0
         for char in input:
-            if char == '(':
+            if char == "(":
                 count += 1
-            elif char == ')':
+            elif char == ")":
                 count -= 1
-            elif char == ',' and count == 0:
+            elif char == "," and count == 0:
                 yield input[start:pos]
-                start = pos+1
+                start = pos + 1
             pos += 1
         yield input[start:]
 
     def parse(token):
-        if '(' not in token:
-            token = token.split('.')
-            token = [
-                re.match(r'(.*?)(\[.*\])?$', part).groups()
-                for part in token]
-            token = [
-                (name, parse_hyperslab(slice_ or ''))
-                for (name, slice_) in token]
+        if "(" not in token:
+            token = token.split(".")
+            token = [re.match(r"(.*?)(\[.*\])?$", part).groups() for part in token]
+            token = [(name, parse_hyperslab(slice_ or "")) for (name, slice_) in token]
         return token
 
     return list(map(parse, tokenize(input)))
@@ -60,15 +57,15 @@ def parse_selection(expression, dataset):
     ``ast.literal_eval``.
 
     """
-    id1, op, id2 = re.split('(<=|>=|!=|=~|>|<|=)', expression, 1)
+    id1, op, id2 = re.split("(<=|>=|!=|=~|>|<|=)", expression, 1)
 
     op = {
-        '<=': operator.le,
-        '>=': operator.ge,
-        '!=': operator.ne,
-        '=': operator.eq,
-        '>': operator.gt,
-        '<': operator.lt,
+        "<=": operator.le,
+        ">=": operator.ge,
+        "!=": operator.ne,
+        "=": operator.eq,
+        ">": operator.gt,
+        "<": operator.lt,
     }[op]
 
     try:
@@ -113,11 +110,11 @@ def parse_ce(query_string):
     Returns a tuple with the projection and the selection.
 
     """
-    tokens = [token for token in unquote(query_string).split('&') if token]
+    tokens = [token for token in unquote(query_string).split("&") if token]
     if not tokens:
         projection = []
         selection = []
-    elif re.search('<=|>=|!=|=~|>|<|=', tokens[0]):
+    elif re.search("<=|>=|!=|=~|>|<|=", tokens[0]):
         projection = []
         selection = tokens
     else:
@@ -129,11 +126,11 @@ def parse_ce(query_string):
 
 def parse_hyperslab(hyperslab):
     """Parse a hyperslab, returning a Python tuple of slices."""
-    exprs = [expr for expr in hyperslab[1:-1].split('][') if expr]
+    exprs = [expr for expr in hyperslab[1:-1].split("][") if expr]
 
     out = []
     for expr in exprs:
-        tokens = list(map(int, expr.split(':')))
+        tokens = list(map(int, expr.split(":")))
         start = tokens[0]
         step = 1
 
@@ -153,7 +150,6 @@ def parse_hyperslab(hyperslab):
 
 
 class SimpleParser(object):
-
     """A very simple parser."""
 
     def __init__(self, input, flags=0):
@@ -167,7 +163,7 @@ class SimpleParser(object):
         if m:
             token = m.group()
         else:
-            token = ''
+            token = ""
         return token
 
     def consume(self, regexp):
@@ -176,7 +172,7 @@ class SimpleParser(object):
         m = p.match(self.buffer)
         if m:
             token = m.group()
-            self.buffer = self.buffer[len(token):]
+            self.buffer = self.buffer[len(token) :]
         else:
             raise Exception("Unable to parse token: %s" % self.buffer[:10])
         return token

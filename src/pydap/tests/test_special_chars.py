@@ -1,9 +1,11 @@
+import unittest
+
 import numpy as np
 from webob.request import Request
-from pydap.model import DatasetType, BaseType
-from pydap.handlers.lib import BaseHandler
+
 from pydap.client import open_url
-import unittest
+from pydap.handlers.lib import BaseHandler
+from pydap.model import BaseType, DatasetType
 
 
 class TestQuote(unittest.TestCase):
@@ -21,17 +23,23 @@ class TestQuote(unittest.TestCase):
 
     def test_dds(self):
         text = Request.blank("/.dds").get_response(self.app).text
-        self.assertEqual(text, """Dataset {
+        self.assertEqual(
+            text,
+            """Dataset {
     Int32 foo%5B;
 } test;
-""")
+""",
+        )
 
     def test_request(self):
         text = Request.blank("/.dds?foo%255B").get_response(self.app).text
-        self.assertEqual(text, """Dataset {
+        self.assertEqual(
+            text,
+            """Dataset {
     Int32 foo%5B;
 } test;
-""")
+""",
+        )
 
     def test_client(self):
         dataset = open_url("http://localhost:8001/", application=self.app)
@@ -51,10 +59,13 @@ class TestPeriod(unittest.TestCase):
 
     def test_dds(self):
         text = Request.blank("/.dds").get_response(self.app).text
-        self.assertEqual(text, """Dataset {
+        self.assertEqual(
+            text,
+            """Dataset {
     Int32 a%2Eb;
 } test;
-""")
+""",
+        )
 
     def test_client(self):
         dataset = open_url("http://localhost:8001/", application=self.app)

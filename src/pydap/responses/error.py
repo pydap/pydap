@@ -5,16 +5,15 @@ formated as a DAP error response.
 
 """
 
+from io import StringIO
 from traceback import print_exception
 
 from webob import Response
-from io import StringIO
 
-from ..lib import encode, __version__
+from ..lib import __version__, encode
 
 
 class ErrorResponse(object):
-
     """A specialized response for errors.
 
     This is a special response used when an exception is captured and passed to
@@ -29,19 +28,21 @@ class ErrorResponse(object):
         message = encode(buf.getvalue())
 
         # build error message
-        code = getattr(info[0], 'code', -1)
-        self.body = str('''Error {{
+        code = getattr(info[0], "code", -1)
+        self.body = str(
+            """Error {{
     code = {0};
     message = {1};
-}}''').format(code, message)
+}}"""
+        ).format(code, message)
 
     def __call__(self, environ, start_response):
         res = Response()
         res.text = self.body
-        res.status = '500 Internal Error'
-        res.content_type = 'text/plain'
-        res.charset = 'utf-8'
-        res.headers.add('Content-description', 'dods_error')
-        res.headers.add('XDODS-Server', 'pydap/%s' % __version__)
+        res.status = "500 Internal Error"
+        res.content_type = "text/plain"
+        res.charset = "utf-8"
+        res.headers.add("Content-description", "dods_error")
+        res.headers.add("XDODS-Server", "pydap/%s" % __version__)
 
         return res(environ, start_response)

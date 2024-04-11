@@ -6,11 +6,15 @@ repos:
   rev: v4.5.0
   hooks:
   - id: trailing-whitespace
+    exclude: src/pydap/tests/data/dmrs/MOD05_L2.A2019336.2315.061.2019337071952.hdf.dmr|src/pydap/tests/data/rainfall_time_malaysia.cdp.dods|src/pydap/wsgi/templates/base.html
   - id: end-of-file-fixer
+    exclude: src/pydap/tests/data/rainfall_time_malaysia.cdp.dods
   - id: check-yaml
   - id: check-toml
   - id: debug-statements
+    exclude: bootstrap.py
   - id: mixed-line-ending
+    exclude: src/pydap/tests/data/rainfall_time_malaysia.cdp.dods
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
   rev: v2.12.0
   hooks:
@@ -22,10 +26,11 @@ repos:
   rev: 5.13.2
   hooks:
   - id: isort
-- repo: https://github.com/psf/black
-  rev: 24.3.0
-  hooks:
-  - id: black
+# - repo: https://github.com/psf/black
+#   rev: 24.3.0
+#   hooks:
+#   - id: black
+#     exclude: src/pydap/tests/test_responses_error.py|src/pydap/wsgi/templates/base.html
 - repo: https://github.com/PyCQA/flake8
   rev: 7.0.0
   hooks:

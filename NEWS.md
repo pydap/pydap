@@ -28,35 +28,35 @@ News
 
   Merge pull request #259 from pydap/ejh_readme
   fixing documentation links in README
-  
+
   Merge pull request #258 from pydap/ejh_version
   changed version to 3.3.0
-  
+
   Merge pull request #253 from pydap/ejh_remove_python_2
   removing support for python 2
-  
+
   Merge pull request #209 from shreddd/master
   Fix to speed up directory listings.
-  
+
   Merge pull request #257 from pydap/ejh_macos_2
   adding macos to GitHub CI
-  
+
   Merge branch 'timeout' of github.com:cskarby/pydap
   Merge branch 'float_inf' of github.com:d70-t/pydap into ejh_inf
-  
+
   Merge pull request #247 from pydap/ejh_warn2
   fixed tostring warnings
-  
+
   Merge pull request #246 from pydap/ejh_warn
   fixed pytest warnings
-  
+
   Merge pull request #243 from pydap/ejh_collections
   Import ABC from collections.abc instead of collections for Python 3 compatibility
   adding more versions of python
 
   Merge pull request #241 from pydap/ejh_t1
   adding GitHub actions CI workflow
-  
+
   fix pos arg (#225)
 
   WIP: add user_charset arg (#223)

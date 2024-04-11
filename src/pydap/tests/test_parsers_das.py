@@ -1,10 +1,12 @@
 """Test DAS parsing functions."""
 
+import unittest
+
 import numpy as np
+
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.tests.test_parsers_dds import DDS
-import unittest
 
 DAS = """Attributes {
     structure {
@@ -40,7 +42,6 @@ DAS = """Attributes {
 
 
 class TestParseDAS(unittest.TestCase):
-
     """Test DAS parser."""
 
     def setUp(self):
@@ -72,13 +73,13 @@ class TestParseDAS(unittest.TestCase):
     def test_SPEH_attributes(self):
         """Test attributes not associated with any variables."""
         self.assertEqual(self.dataset.SPEH.debug, 1)
-        self.assertEqual(self.dataset.SPEH.attributes['TIME'], 0)
-        self.assertEqual(self.dataset.SPEH.attributes['COADSX'], 1e20)
-        self.assertEqual(self.dataset.SPEH.attributes['COADSY'], "zero")
+        self.assertEqual(self.dataset.SPEH.attributes["TIME"], 0)
+        self.assertEqual(self.dataset.SPEH.attributes["COADSX"], 1e20)
+        self.assertEqual(self.dataset.SPEH.attributes["COADSY"], "zero")
 
     def test_float_attributes(self):
         """Test various values of float attributes."""
         self.assertTrue(np.isnan(self.dataset.floats["a"]))
         self.assertEqual(self.dataset.floats["b"], float("-inf"))
         self.assertEqual(self.dataset.floats["c"], float("inf"))
-        self.assertEqual(self.dataset.floats["d"], 17.)
+        self.assertEqual(self.dataset.floats["d"], 17.0)

@@ -1,11 +1,11 @@
 """Test pydap base exception."""
 
-from pydap.exceptions import DapError
 import unittest
+
+from pydap.exceptions import DapError
 
 
 class TestExceptions(unittest.TestCase):
-
     """Test pydap base exception.
 
     Other exceptions behave exactly like the superclass, differing only by

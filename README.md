@@ -30,7 +30,7 @@ install pydap with this command:
 ```
 This will install pydap together with all the required
 dependencies. pydap is also available through [Anaconda](https://www.anaconda.com/).
-Below we install pydap and its required dependencies, along with common 
+Below we install pydap and its required dependencies, along with common
 additional packages in a fresh conda environment named pydap:
 
 ```bash
@@ -68,7 +68,7 @@ dataset, and pydap will download the accessed data on-the-fly as needed:
 ```
 
 For more information, please check the documentation on [using pydap
-as a client](https://pydap.github.io/pydap/client.html). 
+as a client](https://pydap.github.io/pydap/client.html).
 
 pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/)
 application. To use it, you first need to install the server and
@@ -108,4 +108,3 @@ documentation](https://pydap.github.io/pydap/).
 
 If you need any help with pydap, please feel free to send an email to
 the [mailing list](http://groups.google.com/group/pydap/)
-

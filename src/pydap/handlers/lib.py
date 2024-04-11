@@ -8,34 +8,32 @@ so that the data may be served using different responses.
 
 from __future__ import division
 
-import sys
-import re
-import operator
-import itertools
 import ast
 import copy
+import itertools
+import operator
+import re
+import sys
 
 import numpy as np
-from webob import Request
 import pkg_resources
 from numpy.lib.arrayterator import Arrayterator
+from webob import Request
 
-from pydap.responses.lib import load_responses
-from pydap.responses.error import ErrorResponse
+from pydap.exceptions import (ConstraintExpressionError,
+                              ExtensionNotSupportedError)
+from pydap.lib import (encode, fix_shorthand, get_var,
+                       load_from_entry_point_relative, walk)
+from pydap.model import (BaseType, DatasetType, GridType, SequenceType,
+                         StructureType)
 from pydap.parsers import parse_ce, parse_selection
-from pydap.exceptions import (
-    ConstraintExpressionError, ExtensionNotSupportedError)
-from pydap.lib import (walk, fix_shorthand, get_var, encode,
-                   load_from_entry_point_relative)
-from pydap.model import (DatasetType, BaseType,
-                     SequenceType, StructureType,
-                     GridType)
-
+from pydap.responses.error import ErrorResponse
+from pydap.responses.lib import load_responses
 
 # buffer size in bytes, for streaming data
 BUFFER_SIZE = 2**27
 
-CORS_RESPONSES = ['dds', 'das', 'dods', 'ver', 'json']
+CORS_RESPONSES = ["dds", "das", "dods", "ver", "json"]
 
 
 def load_handlers(working_set=pkg_resources.working_set):
@@ -49,14 +47,18 @@ def load_handlers(working_set=pkg_resources.working_set):
 
     """
     # Relative import of handlers:
-    package = 'pydap'
-    entry_points = 'pydap.handler'
-    base_dict = dict(load_from_entry_point_relative(r, package)
-                     for r in working_set.iter_entry_points(entry_points)
-                     if r.module_name.startswith(package))
-    opts_dict = dict((r.name, r.load())
-                     for r in working_set.iter_entry_points(entry_points)
-                     if not r.module_name.startswith(package))
+    package = "pydap"
+    entry_points = "pydap.handler"
+    base_dict = dict(
+        load_from_entry_point_relative(r, package)
+        for r in working_set.iter_entry_points(entry_points)
+        if r.module_name.startswith(package)
+    )
+    opts_dict = dict(
+        (r.name, r.load())
+        for r in working_set.iter_entry_points(entry_points)
+        if not r.module_name.startswith(package)
+    )
     base_dict.update(opts_dict)
     return base_dict.values()
 
@@ -73,11 +75,11 @@ def get_handler(filepath, handlers=None, instantiate=True):
             return handler(filepath)
 
     raise ExtensionNotSupportedError(
-        'No handler available for file {filepath}.'.format(filepath=filepath))
+        "No handler available for file {filepath}.".format(filepath=filepath)
+    )
 
 
 class BaseHandler(object):
-
     """Base class for pydap handlers.
 
     Handlers are WSGI applications that parse the client request and build the
@@ -87,7 +89,7 @@ class BaseHandler(object):
     """
 
     # load all available responses
-#    import pdb; pdb.set_trace()
+    #    import pdb; pdb.set_trace()
     responses = load_responses()
 
     def __init__(self, dataset=None, gzip=False):
@@ -97,11 +99,11 @@ class BaseHandler(object):
 
     def __call__(self, environ, start_response):
         req = Request(environ)
-        path, response = req.path.rsplit('.', 1)
-        if response == 'das':
-            req.query_string = ''
+        path, response = req.path.rsplit(".", 1)
+        if response == "das":
+            req.query_string = ""
         projection, selection = parse_ce(req.query_string)
-        buffer_size = environ.get('pydap.buffer_size', BUFFER_SIZE)
+        buffer_size = environ.get("pydap.buffer_size", BUFFER_SIZE)
 
         try:
             # build the dataset and pass it to the proper response, returning a
@@ -117,17 +119,18 @@ class BaseHandler(object):
 
             # CORS for Javascript requests
             if response in CORS_RESPONSES:
-                res.headers.add('Access-Control-Allow-Origin', '*')
+                res.headers.add("Access-Control-Allow-Origin", "*")
                 res.headers.add(
-                    'Access-Control-Allow-Headers',
-                    'Origin, X-Requested-With, Content-Type')
+                    "Access-Control-Allow-Headers",
+                    "Origin, X-Requested-With, Content-Type",
+                )
 
             if self._gzip:
                 res.encode_content()
             return res(environ, start_response)
         except Exception:
             # should the exception be catched?
-            if environ.get('x-wsgiorg.throw_errors'):
+            if environ.get("x-wsgiorg.throw_errors"):
                 raise
             else:
                 res = ErrorResponse(info=sys.exc_info())
@@ -138,7 +141,8 @@ class BaseHandler(object):
         if self.dataset is None:
             raise NotImplementedError(
                 "Subclasses must define a ``dataset`` attribute pointing to a"
-                "``DatasetType`` object.")
+                "``DatasetType`` object."
+            )
 
         # make a copy of the dataset, so we can filter sequences inplace
         dataset = copy.copy(self.dataset)
@@ -175,8 +179,11 @@ def wrap_arrayterator(dataset, size):
 
     """
     for var in walk(dataset, BaseType):
-        if (not isinstance(var.data, Arrayterator) and
-                var.data.dtype.itemsize and var.data.shape):
+        if (
+            not isinstance(var.data, Arrayterator)
+            and var.data.dtype.itemsize
+            and var.data.shape
+        ):
             elements = size // var.data.dtype.itemsize
             var.data = Arrayterator(var.data, elements)
 
@@ -192,9 +199,10 @@ def apply_selection(selection, dataset):
     for seq in walk(dataset, SequenceType):
         # apply only relevant selections
         conditions = [
-            condition for condition in selection
-            if re.match(
-                r'%s\.[^\.]+(<=|<|>=|>|=|!=)' % re.escape(seq.id), condition)]
+            condition
+            for condition in selection
+            if re.match(r"%s\.[^\.]+(<=|<|>=|>|=|!=)" % re.escape(seq.id), condition)
+        ]
         for condition in conditions:
             id1, op, id2 = parse_selection(condition, dataset)
             seq.data = seq[op(id1, id2)].data
@@ -203,8 +211,7 @@ def apply_selection(selection, dataset):
 
 def degenerate_grid_to_structure(candidate):
     if isinstance(candidate, GridType):
-        candidate = StructureType(
-            candidate.name, candidate.attributes)
+        candidate = StructureType(candidate.name, candidate.attributes)
     return candidate
 
 
@@ -259,7 +266,6 @@ def apply_projection(projection, dataset):
 
 
 class ConstraintExpression(object):
-
     """An object representing a selection on a constraint expression.
 
     These can be accumulated so that they are evaluated only once.
@@ -274,15 +280,15 @@ class ConstraintExpression(object):
 
     def __and__(self, other):
         """Join two CEs together, returning a new object."""
-        return self.__class__(self.value + '&' + str(other))
+        return self.__class__(self.value + "&" + str(other))
 
     def __or__(self, other):
         raise ConstraintExpressionError(
-            "OR constraints not allowed in the Opendap specification.")
+            "OR constraints not allowed in the Opendap specification."
+        )
 
 
 class IterData(object):
-
     """Class for manipulating data streams as structured arrays.
 
     A structured array is a Numpy construct that has some very interesting
@@ -292,8 +298,7 @@ class IterData(object):
 
     shape = ()
 
-    def __init__(self, stream, template, ifilter=None, imap=None, islice=None,
-                 level=0):
+    def __init__(self, stream, template, ifilter=None, imap=None, islice=None, level=0):
         self.stream = stream
         self.template = template
         self.level = level
@@ -306,17 +311,21 @@ class IterData(object):
     @property
     def dtype(self):
         """Return Numpy dtype of the object."""
+
         def array_dtype(x, template):
-            if (hasattr(template, 'keys') and
-               len(list(template.keys())) > 1):
+            if hasattr(template, "keys") and len(list(template.keys())) > 1:
                 peek = x
                 if isinstance(x, IterData):
                     peek = next(iter(x))
-                return np.dtype([(col, array_dtype(val, template[col]))
-                                 for col, val
-                                 in zip(template.keys(), peek)])
+                return np.dtype(
+                    [
+                        (col, array_dtype(val, template[col]))
+                        for col, val in zip(template.keys(), peek)
+                    ]
+                )
             else:
                 return np.array(x).dtype
+
         return array_dtype(next(iter(self)), self.template)
 
     def iterdata(self):
@@ -337,8 +346,14 @@ class IterData(object):
 
     def __copy__(self):
         """Return a lightweight copy of the object."""
-        return IterData(self.stream, copy.copy(self.template), self.ifilter[:],
-                        self.imap[:], self.islice[:], self.level)
+        return IterData(
+            self.stream,
+            copy.copy(self.template),
+            self.ifilter[:],
+            self.imap[:],
+            self.islice[:],
+            self.level,
+        )
 
     def __repr__(self):
         return "<IterData to stream %r>" % self.stream
@@ -361,13 +376,14 @@ class IterData(object):
         elif isinstance(key, list):
             cols = [list(self.template.keys()).index(k) for k in key]
             out.template._visible_keys = key
-            out.imap.append(deep_map(
-                lambda row: tuple(row[i] for i in cols), out.level+1))
+            out.imap.append(
+                deep_map(lambda row: tuple(row[i] for i in cols), out.level + 1)
+            )
 
         # slice the data
         elif isinstance(key, (int, slice)):
             if isinstance(key, int):
-                out.islice.append(slice(key, key+1))
+                out.islice.append(slice(key, key + 1))
             else:
                 out.islice.append(key)
 
@@ -389,71 +405,75 @@ class IterData(object):
             right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s=%s' % (self.template.id, right))
+        return ConstraintExpression("%s=%s" % (self.template.id, right))
 
     def __ne__(self, other):
         if isinstance(other, self.__class__):
             right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s!=%s' % (self.template.id, right))
+        return ConstraintExpression("%s!=%s" % (self.template.id, right))
 
     def __ge__(self, other):
         if isinstance(other, self.__class__):
             right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s>=%s' % (self.template.id, right))
+        return ConstraintExpression("%s>=%s" % (self.template.id, right))
 
     def __le__(self, other):
         if isinstance(other, self.__class__):
             right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s<=%s' % (self.template.id, right))
+        return ConstraintExpression("%s<=%s" % (self.template.id, right))
 
     def __gt__(self, other):
         if isinstance(other, self.__class__):
             right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s>%s' % (self.template.id, right))
+        return ConstraintExpression("%s>%s" % (self.template.id, right))
 
     def __lt__(self, other):
         if isinstance(other, self.__class__):
             right = other.template.id
         else:
             right = encode(other)
-        return ConstraintExpression('%s<%s' % (self.template.id, right))
+        return ConstraintExpression("%s<%s" % (self.template.id, right))
 
 
 def fix_nested(template):
     """Apply ``IterData`` to nested sequences on iteration."""
+
     def func(row):
         return tuple(
-            IterData(col, child) if isinstance(child, SequenceType)
-            else col
-            for col, child in zip(row, template.children()))
+            IterData(col, child) if isinstance(child, SequenceType) else col
+            for col, child in zip(row, template.children())
+        )
+
     return func
 
 
 def deep_map(function, level):
     """Map a function inside a nested list, returning the modified data."""
+
     def out(row, level=level):
         if level == 1:
             return function(row)
         else:
-            return [out(value, level-1) for value in row]
+            return [out(value, level - 1) for value in row]
+
     return out
 
 
 def build_filter(expression, template):
     """Return a filter function based on a comparison expression."""
-    id1, op, id2 = re.split('(<=|>=|!=|=~|>|<|=)', str(expression), 1)
+    id1, op, id2 = re.split("(<=|>=|!=|=~|>|<|=)", str(expression), 1)
 
     # calculate the column index were filtering and how deep it is
     try:
-        id1 = id1[len(template.id)+1:]
+        id1 = id1[len(template.id) + 1 :]
         target = template
         for level, token in enumerate(id1.split(".")):
             parent1 = target.id
@@ -464,8 +484,8 @@ def build_filter(expression, template):
     except Exception:
         raise ConstraintExpressionError(
             'Invalid constraint expression: "{expression}" '
-            '("{id}" is not a valid variable)'.format(
-                expression=expression, id=id1))
+            '("{id}" is not a valid variable)'.format(expression=expression, id=id1)
+        )
 
     # if we're comparing two variables they must be on the same sequence, so
     # ``parent1`` must be equal to ``parent2``
@@ -479,25 +499,27 @@ def build_filter(expression, template):
 
             def b(row):
                 return value
+
         except Exception:
             raise ConstraintExpressionError(
                 'Invalid constraint expression: "{expression}" '
-                '("{id}" is not valid)'.format(
-                    expression=expression, id=id2))
+                '("{id}" is not valid)'.format(expression=expression, id=id2)
+            )
 
     op = {
-        '<':  operator.lt,
-        '>':  operator.gt,
-        '!=': operator.ne,
-        '=':  operator.eq,
-        '>=': operator.ge,
-        '<=': operator.le,
-        '=~': lambda a, b: re.match(b, a),
+        "<": operator.lt,
+        ">": operator.gt,
+        "!=": operator.ne,
+        "=": operator.eq,
+        ">=": operator.ge,
+        "<=": operator.le,
+        "=~": lambda a, b: re.match(b, a),
     }[op]
 
     # if the filtering is applied in the outermost sequence we can simply pass
     # a filter, and ignore the map
     if level == 0:
+
         def f(row):
             return op(a(row), b(row))
 

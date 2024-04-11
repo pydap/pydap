@@ -4,13 +4,12 @@ import unittest
 
 from webtest import TestApp as App
 
-from pydap.lib import __version__
 from pydap.handlers.lib import BaseHandler
+from pydap.lib import __version__
 from pydap.tests.datasets import VerySimpleSequence
 
 
 class TestVersionResponse(unittest.TestCase):
-
     """Simple tests for the version response.
 
     Here we don't test the actual response body, since it will vary from
@@ -21,7 +20,7 @@ class TestVersionResponse(unittest.TestCase):
     def setUp(self):
         """Create a simple WSGI app with a dataset."""
         app = App(BaseHandler(VerySimpleSequence))
-        self.res = app.get('/.ver')
+        self.res = app.get("/.ver")
 
     def test_status(self):
         """Test the status code."""
@@ -37,9 +36,8 @@ class TestVersionResponse(unittest.TestCase):
 
     def test_headers(self):
         """Test that all headers are present."""
-        self.assertEqual(self.res.headers['Content-Type'],
-                         'application/json; charset=utf-8')
-        self.assertEqual(self.res.headers['Content-description'],
-                         'dods_version')
-        self.assertEqual(self.res.headers['XDODS-Server'],
-                         'pydap/' + __version__)
+        self.assertEqual(
+            self.res.headers["Content-Type"], "application/json; charset=utf-8"
+        )
+        self.assertEqual(self.res.headers["Content-description"], "dods_version")
+        self.assertEqual(self.res.headers["XDODS-Server"], "pydap/" + __version__)

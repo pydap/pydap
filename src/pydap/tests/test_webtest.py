@@ -1,12 +1,13 @@
-from webtest import TestApp as App
 import unittest
+
+from webtest import TestApp as App
 
 
 def MyApp(environ, start_response):
-    start_response('200 OK', [('content-type', 'text/plain; charset=utf-8')])
-    yield 'foo\n'.encode('utf-8')
-    yield 'bar\n'.encode('utf-8')
-    yield 'baz\n'.encode('utf-8')
+    start_response("200 OK", [("content-type", "text/plain; charset=utf-8")])
+    yield "foo\n".encode("utf-8")
+    yield "bar\n".encode("utf-8")
+    yield "baz\n".encode("utf-8")
 
 
 class MyTest(unittest.TestCase):
@@ -14,5 +15,5 @@ class MyTest(unittest.TestCase):
         self.app = App(MyApp)
 
     def test_webtest(self):
-        expected = 'foo\nbar\nbaz\n'
-        self.assertEqual(self.app.get('/').text, expected)
+        expected = "foo\nbar\nbaz\n"
+        self.assertEqual(self.app.get("/").text, expected)

@@ -51,7 +51,7 @@ Here is a simple example of a middleware that adds an attribute to a given datas
 
     from pydap.model import *
     from pydap.handlers.lib import BaseHandler
-    
+
     class AttributeMiddleware(object):
 
         def __init__(self, app):

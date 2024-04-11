@@ -38,5 +38,4 @@ except ImportError:
             # interpreter.
             #
             # See http://bugs.python.org/issue12029 for more details
-            return exctype is not None and issubclass(exctype,
-                                                      self._exceptions)
+            return exctype is not None and issubclass(exctype, self._exceptions)

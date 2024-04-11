@@ -17,7 +17,7 @@ Here is the minimal configuration for a handler that serves ``.npz`` files from 
     from pydap.handlers.helper import constrain
 
     class Handler(BaseHandler):
-        
+
         extensions = re.compile(r'^.*\.npz$', re.IGNORECASE)
 
         def __init__(self, filepath):
@@ -47,7 +47,7 @@ So let's go over the code. Our handler has a single class called ``Handler`` tha
     [pydap.handler]
     npz = path.to.my.handler:Handler
 
-Here the name of our handler ("npz") can be anything, as long as it points to the correct class. In order for pydap to be able to find the handler, it must be installed in the system with either a ``python setup.py install`` or, even better, ``python setup.py develop``. 
+Here the name of our handler ("npz") can be anything, as long as it points to the correct class. In order for pydap to be able to find the handler, it must be installed in the system with either a ``python setup.py install`` or, even better, ``python setup.py develop``.
 
 The class-level attribute ``extensions`` defines a regular expression that matches the files supported by the handler. In this case, the handler will match all files ending with the ``.npz`` extension.
 

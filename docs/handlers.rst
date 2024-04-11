@@ -1,7 +1,7 @@
 Handlers
 ========
 
-Handlers are special Python modules that convert between a given data format and the data model used by pydap (defined in the ``pydap.model`` module). They are necessary in order to pydap be able to actually serve a dataset. There are handlers for NetCDF, HDF 4 & 5, Matlab, relational databases, Grib 1 & 2, CSV, Seabird CTD files, and a few more. 
+Handlers are special Python modules that convert between a given data format and the data model used by pydap (defined in the ``pydap.model`` module). They are necessary in order to pydap be able to actually serve a dataset. There are handlers for NetCDF, HDF 4 & 5, Matlab, relational databases, Grib 1 & 2, CSV, Seabird CTD files, and a few more.
 
 Installing data handlers
 ------------------------
@@ -43,7 +43,7 @@ The ``pydap.handlers.nca`` is a simple handler for NetCDF aggregation (hence the
     axis = ensemble
     ; below optional metadata:
     history = Test for NetCDF aggregator
-    
+
     [ensemble]
     values = 1, 2, ...
     long_name = Ensemble members
@@ -86,12 +86,12 @@ The SQL handler reads data from a relation database, as the name suggests. It wo
 
     # please read http://groups.google.com/group/pydap/browse_thread/thread/c7f5c569d661f7f9 before
     # setting your password on the DSN
-    database: 
+    database:
         dsn: 'sqlite://simple.db'
         table: test
 
     dataset:
-        NC_GLOBAL: 
+        NC_GLOBAL:
             history: Created by the pydap SQL handler
             dataType: Station
             Conventions: GrADS
@@ -106,7 +106,7 @@ The SQL handler reads data from a relation database, as the name suggests. It wo
         name: simple
         items: !Query 'SELECT COUNT(id) FROM test'
 
-    _id: 
+    _id:
         col: id
         long_name: sequence id
         missing_value: -9999
@@ -141,7 +141,7 @@ The SQL handler reads data from a relation database, as the name suggests. It wo
         missing_value: -9999
         type: String
 
-    depth: 
+    depth:
         axis: Z
         col: depth
         long_name: depth
@@ -204,7 +204,7 @@ A handler for HDF5 files, based on `h5py <http://www.h5py.org/>`_. In order to i
 SQLite
 ~~~~~~
 
-This is a handler very similar to the SQL handler. The major difference is that data and metadata are all contained in a single ``.db`` SQLite file. Metadata is stored as JSON in a table called ``attributes``, while data goes into a table ``data``. 
+This is a handler very similar to the SQL handler. The major difference is that data and metadata are all contained in a single ``.db`` SQLite file. Metadata is stored as JSON in a table called ``attributes``, while data goes into a table ``data``.
 
 The handler was created as a way to move sequential data from one server to another. It comes with a script called ``freeze`` which will take an Opendap dataset with sequential data and create a ``.db`` file that can be served using this handler. For example:
 

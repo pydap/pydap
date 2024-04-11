@@ -12,27 +12,30 @@ KML, WMS, JSON, etc., installed as third-party Python packages that declare the
 
 from pkg_resources import iter_entry_points
 
-from ..model import DatasetType
 from ..lib import __version__, load_from_entry_point_relative
+from ..model import DatasetType
 
 
 def load_responses():
     """Load all available responses from the system, returning a dictionary."""
     # Relative import of responses:
-    package = 'pydap'
-    entry_points = 'pydap.response'
-    base_dict = dict(load_from_entry_point_relative(r, package)
-                     for r in iter_entry_points(entry_points)
-                     if r.module_name.startswith(package))
-    opts_dict = dict((r.name, r.load())
-                     for r in iter_entry_points(entry_points)
-                     if not r.module_name.startswith(package))
+    package = "pydap"
+    entry_points = "pydap.response"
+    base_dict = dict(
+        load_from_entry_point_relative(r, package)
+        for r in iter_entry_points(entry_points)
+        if r.module_name.startswith(package)
+    )
+    opts_dict = dict(
+        (r.name, r.load())
+        for r in iter_entry_points(entry_points)
+        if not r.module_name.startswith(package)
+    )
     base_dict.update(opts_dict)
     return base_dict
 
 
 class BaseResponse(object):
-
     """A base class for pydap responses.
 
     A pydap response is a WSGI application that converts a dataset into any
@@ -58,11 +61,11 @@ class BaseResponse(object):
     def __init__(self, dataset):
         self.dataset = dataset
         self.headers = [
-            ('XDODS-Server', 'pydap/%s' % __version__),
+            ("XDODS-Server", "pydap/%s" % __version__),
         ]
 
     def __call__(self, environ, start_response):
-        start_response('200 OK', self.headers)
+        start_response("200 OK", self.headers)
         return self
 
     def x_wsgiorg_parsed_response(self, type):
@@ -79,5 +82,4 @@ class BaseResponse(object):
             return self.dataset
 
     def __iter__(self):
-        raise NotImplementedError(
-            'Subclasses must implement __iter__')
+        raise NotImplementedError("Subclasses must implement __iter__")

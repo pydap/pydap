@@ -6,43 +6,45 @@ apply the function calls themselves.
 
 """
 
-import re
-import operator
 import ast
-
-from webob import Request
-from pkg_resources import iter_entry_points
-import numpy as np
+import operator
+import re
 from functools import reduce
 
+import numpy as np
+from pkg_resources import iter_entry_points
+from webob import Request
+
+from ..exceptions import ServerError
+from ..handlers.lib import BaseHandler, apply_projection
+from ..lib import fix_shorthand, load_from_entry_point_relative, walk
 from ..model import DatasetType, SequenceType
 from ..parsers import parse_ce
-from ..lib import walk, fix_shorthand, load_from_entry_point_relative
-from ..handlers.lib import BaseHandler, apply_projection
-from ..exceptions import ServerError
 
-
-FUNCTION = re.compile(r'([^(]*)\((.*)\)')
-RELOP = re.compile(r'(<=|<|>=|>|=~|=|!=)')
+FUNCTION = re.compile(r"([^(]*)\((.*)\)")
+RELOP = re.compile(r"(<=|<|>=|>|=~|=|!=)")
 
 
 def load_functions():
     """Load all available functions from the system, returning a dictionary."""
     # Relative import of functions:
-    package = 'pydap'
-    entry_points = 'pydap.function'
-    base_dict = dict(load_from_entry_point_relative(r, package)
-                     for r in iter_entry_points(entry_points)
-                     if r.module_name.startswith(package))
-    opts_dict = dict((r.name, r.load())
-                     for r in iter_entry_points(entry_points)
-                     if not r.module_name.startswith(package))
+    package = "pydap"
+    entry_points = "pydap.function"
+    base_dict = dict(
+        load_from_entry_point_relative(r, package)
+        for r in iter_entry_points(entry_points)
+        if r.module_name.startswith(package)
+    )
+    opts_dict = dict(
+        (r.name, r.load())
+        for r in iter_entry_points(entry_points)
+        if not r.module_name.startswith(package)
+    )
     base_dict.update(opts_dict)
     return base_dict
 
 
 class ServerSideFunctions(object):
-
     """A WebOb based middleware for handling server-side function calls.
 
     The middleware works by removing function calls from the request,
@@ -59,27 +61,26 @@ class ServerSideFunctions(object):
 
     def __call__(self, environ, start_response):
         # specify that we want the parsed dataset
-        environ['x-wsgiorg.want_parsed_response'] = True
+        environ["x-wsgiorg.want_parsed_response"] = True
         req = Request(environ)
         projection, selection = parse_ce(req.query_string)
 
         # check if there are any functions calls in the request
-        called = (
-            any(s for s in selection if FUNCTION.match(s)) or
-            any(p for p in projection if isinstance(p, str)))
+        called = any(s for s in selection if FUNCTION.match(s)) or any(
+            p for p in projection if isinstance(p, str)
+        )
 
         # ignore DAS requests and requests without functions
-        path, response = req.path.rsplit('.', 1)
-        if response == 'das' or not called:
+        path, response = req.path.rsplit(".", 1)
+        if response == "das" or not called:
             return self.app(environ, start_response)
 
         # apply selection without any function calls
-        req.query_string = '&'.join(
-            s for s in selection if not FUNCTION.match(s))
+        req.query_string = "&".join(s for s in selection if not FUNCTION.match(s))
         res = req.get_response(self.app)
 
         # get the dataset
-        method = getattr(res.app_iter, 'x_wsgiorg_parsed_response', False)
+        method = getattr(res.app_iter, "x_wsgiorg_parsed_response", False)
         if not method:
             raise ServerError("Unable to call server-side function!")
         dataset = method(DatasetType)
@@ -90,13 +91,13 @@ class ServerSideFunctions(object):
             if RELOP.search(expr):
                 call, op, other = RELOP.split(expr)
                 op = {
-                    '<':  operator.lt,
-                    '>':  operator.gt,
-                    '!=': operator.ne,
-                    '=':  operator.eq,
-                    '>=': operator.ge,
-                    '<=': operator.le,
-                    '=~': lambda a, b: re.match(b, a),
+                    "<": operator.lt,
+                    ">": operator.gt,
+                    "!=": operator.ne,
+                    "=": operator.eq,
+                    ">=": operator.ge,
+                    "<=": operator.le,
+                    "=~": lambda a, b: re.match(b, a),
                 }[op]
                 other = ast.literal_eval(other)
             else:
@@ -116,15 +117,16 @@ class ServerSideFunctions(object):
                 data = np.fromiter(child.data, child.dtype)
                 if data.dtype.char == "S":
                     valid = np.array(
-                        list(map(lambda v: op(str(v), str(other)), data)),
-                        bool)
+                        list(map(lambda v: op(str(v), str(other)), data)), bool
+                    )
                 else:
                     valid = op(data, other)
 
                 for sequence in walk(dataset, SequenceType):
                     sequence.data = np.rec.fromrecords(
                         [tuple(row) for row in sequence.iterdata()],
-                        names=list(sequence.keys()))[valid]
+                        names=list(sequence.keys()),
+                    )[valid]
 
         # now apply projection
         if projection:
@@ -139,15 +141,14 @@ class ServerSideFunctions(object):
             for call in func:
                 var = eval_function(dataset, call, self.functions)
                 for child in walk(var):
-                    parent = reduce(
-                        operator.getitem, [out] + child.id.split('.')[:-1])
+                    parent = reduce(operator.getitem, [out] + child.id.split(".")[:-1])
                     if child.name not in parent.keys():
                         parent[child.name] = child
                         break
             dataset = out
 
         # Return the original response (DDS, DAS, etc.)
-        path, response = req.path.rsplit('.', 1)
+        path, response = req.path.rsplit(".", 1)
         res = BaseHandler.responses[response](dataset)
 
         return res(environ, start_response)
@@ -165,13 +166,13 @@ def eval_function(dataset, function, functions):
     def tokenize(input):
         start = pos = count = 0
         for char in input:
-            if char == '(':
+            if char == "(":
                 count += 1
-            elif char == ')':
+            elif char == ")":
                 count -= 1
-            elif char == ',' and count == 0:
+            elif char == "," and count == 0:
                 yield input[start:pos]
-                start = pos+1
+                start = pos + 1
             pos += 1
         yield input[start:]
 
@@ -180,7 +181,7 @@ def eval_function(dataset, function, functions):
             return eval_function(dataset, token, functions)
         else:
             try:
-                names = re.sub(r'\[.*?\]', '', str(token)).split('.')
+                names = re.sub(r"\[.*?\]", "", str(token)).split(".")
                 return reduce(operator.getitem, [dataset] + names)
             except Exception:
                 try:

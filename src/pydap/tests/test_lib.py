@@ -1,17 +1,17 @@
 """Test the basic DAP functions."""
 
-import numpy as np
-from sys import maxsize as MAXSIZE
-from pydap.model import (DatasetType, BaseType,
-                         StructureType)
-from pydap.exceptions import ConstraintExpressionError
-from pydap.lib import (quote, encode, fix_slice, combine_slices, hyperslab,
-                       walk, fix_shorthand, get_var)
 import unittest
+from sys import maxsize as MAXSIZE
+
+import numpy as np
+
+from pydap.exceptions import ConstraintExpressionError
+from pydap.lib import (combine_slices, encode, fix_shorthand, fix_slice,
+                       get_var, hyperslab, quote, walk)
+from pydap.model import BaseType, DatasetType, StructureType
 
 
 class TestQuote(unittest.TestCase):
-
     """Test quoting.
 
     According to the DAP 2 specification a variable name MUST contain only
@@ -34,7 +34,6 @@ class TestQuote(unittest.TestCase):
 
 
 class TestEncode(unittest.TestCase):
-
     """Test encoding.
 
     According to the DAP 2 specification, numbers must be encoded using the C
@@ -56,22 +55,21 @@ class TestEncode(unittest.TestCase):
 
     def test_string_with_quotation(self):
         """Test encoding a string with a quotation mark."""
-        self.assertEqual(encode('this is a "test"'), '"this is a \"test\""')
+        self.assertEqual(encode('this is a "test"'), '"this is a "test""')
 
     def test_unicode(self):
         """Unicode objects are encoded just like strings."""
-        self.assertEqual(encode(u"test"), '"test"')
+        self.assertEqual(encode("test"), '"test"')
 
     def test_obj(self):
         """Other objects are encoded according to their ``repr``."""
         self.assertEqual(encode({}), '"{}"')
 
     def test_numpy_string(self):
-        self.assertEqual(encode(np.array('1', dtype='<U1')), '"1"')
+        self.assertEqual(encode(np.array("1", dtype="<U1")), '"1"')
 
 
 class TestFixSlice(unittest.TestCase):
-
     """Test the ``fix_slice`` function."""
 
     def test_not_tuple(self):
@@ -95,9 +93,7 @@ class TestFixSlice(unittest.TestCase):
         slice2 = fix_slice(slice1, x.shape)
 
         # an Ellipsis is expanded to slice(None)
-        self.assertEqual(
-            slice2,
-            ((slice(0, 2, 1), slice(0, 3, 1), 0)))
+        self.assertEqual(slice2, ((slice(0, 2, 1), slice(0, 3, 1), 0)))
         np.testing.assert_array_equal(x[slice1], x[slice2])
 
     def test_negative_int(self):
@@ -132,7 +128,6 @@ class TestFixSlice(unittest.TestCase):
 
 
 class TestCombineSlices(unittest.TestCase):
-
     """Test the ``combine_slices`` function."""
 
     def test_not_tuple(self):
@@ -189,18 +184,17 @@ class TestCombineSlices(unittest.TestCase):
 
 
 class TestHyperslab(unittest.TestCase):
-
     """Test hyperslab generation from Python slices."""
 
     def test_no_tuple(self):
         """Test that slices that are not tuples work."""
         slice_ = slice(0)
-        self.assertEqual(hyperslab(slice_), "[0:1:%d]" % (MAXSIZE-1))
+        self.assertEqual(hyperslab(slice_), "[0:1:%d]" % (MAXSIZE - 1))
 
     def test_remove(self):
         """Test that excess slices are removed."""
         slice_ = (slice(0), slice(None))
-        self.assertEqual(hyperslab(slice_), "[0:1:%d]" % (MAXSIZE-1))
+        self.assertEqual(hyperslab(slice_), "[0:1:%d]" % (MAXSIZE - 1))
 
     def test_ndimensional(self):
         """Test n-dimensions slices."""
@@ -209,7 +203,6 @@ class TestHyperslab(unittest.TestCase):
 
 
 class TestWalk(unittest.TestCase):
-
     """Test the ``walk`` function to iterate over a dataset."""
 
     def setUp(self):
@@ -221,8 +214,8 @@ class TestWalk(unittest.TestCase):
     def test_walk(self):
         """Test that all variables are yielded."""
         self.assertEqual(
-            list(walk(self.dataset)),
-            [self.dataset, self.dataset.b, self.dataset.c])
+            list(walk(self.dataset)), [self.dataset, self.dataset.b, self.dataset.c]
+        )
 
     def test_walk_type(self):
         """Test the filtering of variables yielded."""
@@ -230,7 +223,6 @@ class TestWalk(unittest.TestCase):
 
 
 class TestFixShorthand(unittest.TestCase):
-
     """Test the ``fix_shorthand`` function."""
 
     def test_fix_projection(self):
@@ -240,9 +232,7 @@ class TestFixShorthand(unittest.TestCase):
         dataset["b"]["c"] = BaseType("c")
 
         projection = [[("c", ())]]
-        self.assertEqual(
-            fix_shorthand(projection, dataset),
-            [[('b', ()), ('c', ())]])
+        self.assertEqual(fix_shorthand(projection, dataset), [[("b", ()), ("c", ())]])
 
     def test_conflict(self):
         """Test a dataset with conflicting short names."""
@@ -258,7 +248,6 @@ class TestFixShorthand(unittest.TestCase):
 
 
 class TestGetVar(unittest.TestCase):
-
     """Test the ``get_var`` function."""
 
     def test_get_var(self):
@@ -267,4 +256,4 @@ class TestGetVar(unittest.TestCase):
         dataset["b"] = StructureType("b")
         dataset["b"]["c"] = BaseType("c")
 
-        self.assertEqual(get_var(dataset, 'b.c'), dataset['b']['c'])
+        self.assertEqual(get_var(dataset, "b.c"), dataset["b"]["c"])

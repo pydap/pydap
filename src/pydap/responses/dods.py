@@ -13,14 +13,12 @@ import copy
 
 import numpy as np
 
-from ..model import (BaseType,
-                     SequenceType, StructureType)
-from ..lib import (walk, START_OF_SEQUENCE, END_OF_SEQUENCE, __version__,
-                   NUMPY_TO_DAP2_TYPEMAP,
-                   DAP2_TO_NUMPY_RESPONSE_TYPEMAP,
-                   DAP2_ARRAY_LENGTH_NUMPY_TYPE)
-from .lib import BaseResponse
+from ..lib import (DAP2_ARRAY_LENGTH_NUMPY_TYPE,
+                   DAP2_TO_NUMPY_RESPONSE_TYPEMAP, END_OF_SEQUENCE,
+                   NUMPY_TO_DAP2_TYPEMAP, START_OF_SEQUENCE, __version__, walk)
+from ..model import BaseType, SequenceType, StructureType
 from .dds import dds
+from .lib import BaseResponse
 
 try:
     from functools import singledispatch
@@ -34,40 +32,38 @@ def DAP2_response_dtypemap(dtype):
     and returns a dtype object that is compatible with
     the DAP2 specification.
     """
-    dtype_str = DAP2_TO_NUMPY_RESPONSE_TYPEMAP[
-                    NUMPY_TO_DAP2_TYPEMAP[
-                        dtype.char]]
+    dtype_str = DAP2_TO_NUMPY_RESPONSE_TYPEMAP[NUMPY_TO_DAP2_TYPEMAP[dtype.char]]
     return np.dtype(dtype_str)
 
 
 def tostring_with_byteorder(x, dtype):
-    return (x
-            .astype(dtype.str)
-            .newbyteorder(dtype.byteorder)
-            .tobytes())
+    return x.astype(dtype.str).newbyteorder(dtype.byteorder).tobytes()
 
 
 class DODSResponse(BaseResponse):
-
     """The DODS response."""
 
     __version__ = __version__
 
     def __init__(self, dataset):
         BaseResponse.__init__(self, dataset)
-        self.headers.extend([('Content-description', 'dods_data'),
-                             ('Content-type', 'application/octet-stream')])
+        self.headers.extend(
+            [
+                ("Content-description", "dods_data"),
+                ("Content-type", "application/octet-stream"),
+            ]
+        )
 
         length = calculate_size(dataset)
         if length is not None:
-            self.headers.append(('Content-length', str(length)))
+            self.headers.append(("Content-length", str(length)))
 
     def __iter__(self):
         # generate DDS
         for line in dds(self.dataset):
-            yield line.encode('ascii')
+            yield line.encode("ascii")
 
-        yield b'Data:\n'
+        yield b"Data:\n"
         for block in dods(self.dataset):
             yield block
 
@@ -93,11 +89,9 @@ def _sequencetype(var):
         position = 0
         try:
             for child in var.children():
-                if DAP2_response_dtypemap(child.dtype).char == 'S':
-                    (DAP2_types
-                     .append(DAP2_ARRAY_LENGTH_NUMPY_TYPE))  # string length
-                    DAP2_types.append(
-                        '|S{%s}' % position)   # string padded to 4n
+                if DAP2_response_dtypemap(child.dtype).char == "S":
+                    (DAP2_types.append(DAP2_ARRAY_LENGTH_NUMPY_TYPE))  # string length
+                    DAP2_types.append("|S{%s}" % position)  # string padded to 4n
                     position += 1
                 else:
                     # Convert any numpy dtypes to numpy dtypes compatible
@@ -105,7 +99,7 @@ def _sequencetype(var):
                     DAP2_types.append(DAP2_response_dtypemap(child.dtype).str)
         except StopIteration:
             return
-        DAP2_dtype_str = ','.join(DAP2_types)
+        DAP2_dtype_str = ",".join(DAP2_types)
         strings = position > 0
 
         # array initializations is costy, so we keep a cache here; this will
@@ -125,7 +119,7 @@ def _sequencetype(var):
                         padded.append(length + (-length % 4))
                     out.append(value)
                 record = out
-                DAP2_dtype_str = ','.join(DAP2_types).format(*padded)
+                DAP2_dtype_str = ",".join(DAP2_types).format(*padded)
 
             if DAP2_dtype_str not in cache:
                 # Remember that DAP2_dtype is a (possibly composite)
@@ -175,12 +169,12 @@ def _basetype(var):
 
         # send length twice at the begining of an array...
         factor = 2
-        if DAP2_dtype.char == 'S':
+        if DAP2_dtype.char == "S":
             # ... expcept for strings:
             factor = 1
         yield tostring_with_byteorder(
-                length,
-                np.dtype(DAP2_ARRAY_LENGTH_NUMPY_TYPE)) * factor
+            length, np.dtype(DAP2_ARRAY_LENGTH_NUMPY_TYPE)
+        ) * factor
 
     # make data iterable; 1D arrays must be converted to 2D, since
     # iteration over 1D yields scalars which are not properly cast to big
@@ -198,27 +192,28 @@ def _basetype(var):
         length = np.prod(data.shape).astype(int)
         for block in data:
             yield tostring_with_byteorder(block, DAP2_dtype)
-        yield (-length % 4) * b'\0'
+        yield (-length % 4) * b"\0"
 
     # regular data
     else:
         # strings are also zero padded and preceeded by their length
-        if DAP2_dtype.char == 'S':
+        if DAP2_dtype.char == "S":
             for block in data:
                 for word in block.flat:
                     length = len(word)
                     yield tostring_with_byteorder(
-                                np.array(length),
-                                np.dtype(DAP2_ARRAY_LENGTH_NUMPY_TYPE))
+                        np.array(length), np.dtype(DAP2_ARRAY_LENGTH_NUMPY_TYPE)
+                    )
                     # byteorder is not important for strings:
-                    if hasattr(word, 'encode'):
-                        yield word.encode('ascii')
-                    elif hasattr(word, 'tobytes'):
+                    if hasattr(word, "encode"):
+                        yield word.encode("ascii")
+                    elif hasattr(word, "tobytes"):
                         yield word.tobytes()
                     else:
-                        raise TypeError("Could not convert word '{0}' to bytes"
-                                        .format(word))
-                    yield (-length % 4) * b'\0'
+                        raise TypeError(
+                            "Could not convert word '{0}' to bytes".format(word)
+                        )
+                    yield (-length % 4) * b"\0"
         else:
             for block in data:
                 # Remember that DAP2_dtype is a
@@ -239,9 +234,9 @@ def calculate_size(dataset):
         # streamed directly from the source. Also, strings are encoded
         # individually, so it's not possible to get their size unless we read
         # everything.
-        if (isinstance(var, SequenceType) or
-            (isinstance(var, BaseType) and
-             DAP2_response_dtypemap(var.dtype).char == 'S')):
+        if isinstance(var, SequenceType) or (
+            isinstance(var, BaseType) and DAP2_response_dtypemap(var.dtype).char == "S"
+        ):
             return None
         elif isinstance(var, BaseType):
             if var.shape:
@@ -261,5 +256,5 @@ def calculate_size(dataset):
                 length += size * DAP2_dtype.itemsize
 
     # account for DDS
-    length += len(''.join(dds(dataset))) + len(b'Data:\n')
+    length += len("".join(dds(dataset))) + len(b"Data:\n")
     return length
