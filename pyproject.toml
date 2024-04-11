@@ -74,6 +74,9 @@ tests = [
   'pyopenssl'
 ]
 
+[tool.isort]
+profile = "black"
+
 [tool.pytest.ini_options]
 addopts = "-v --cov"
 testpaths = ["/src/pydap/tests"]
