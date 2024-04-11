@@ -1,17 +1,18 @@
 import re
 import sys
+import unittest
+
 from webob import Request
 
-from pydap.responses.error import ErrorResponse
 from pydap.lib import __version__
-import unittest
+from pydap.responses.error import ErrorResponse
 
 
 class TestErrorResponse(unittest.TestCase):
     def setUp(self):
         # create an exception that would happen in runtime
         try:
-            1/0
+            1 / 0
         except Exception:
             error = ErrorResponse(sys.exc_info())
 
@@ -39,8 +40,8 @@ class TestErrorResponse(unittest.TestCase):
     code = -1;
     message = "Traceback \(most recent call last\):
   File .*
-    1\/0
-(    \~\^\~
+    1 \/ 0
+(    \~\~\^\~\~
 )?ZeroDivisionError:( integer)? division( or modulo)? by zero
 ";
 }"""), re.DOTALL)

@@ -1,92 +1,85 @@
 [build-system]
-requires = ["setuptools >= 64", "setuptools_scm[toml]>=8"]
 build-backend = "setuptools.build_meta"
+requires = ["setuptools >= 64", "setuptools_scm[toml]>=8"]
 
 [project]
-name = "pydap"
-authors = [{name= 'Roberto De Almeida', email= 'roberto@dealmeida.net'}]
+authors = [{name = 'Roberto De Almeida', email = 'roberto@dealmeida.net'}]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Intended Audience :: Science/Research",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Operating System :: POSIX :: Linux",
+  "Topic :: Scientific/Engineering",
+  "License :: OSI Approved :: MIT License"
+]
+dependencies = [
+  "numpy",
+  "Webob",
+  "Jinja2",
+  "docopt-ng",
+  "beautifulsoup4",
+  "requests"
+]
 description = "A pure python implementation of the Data Access Protocol."
-readme = "README.md"
-requires-python = ">=3.9"
-maintainers = [{name= 'Miguel Jimenez-Urias', email= 'mjimenez@opendap.org'}]
-
 dynamic = ["version"]
 license = {file = "LICENSE"}
+maintainers = [{name = 'Miguel Jimenez-Urias', email = 'mjimenez@opendap.org'}]
+name = "pydap"
+readme = "README.md"
+requires-python = ">=3.9"
 
-classifiers=[
-	"Development Status :: 5 - Production/Stable",
-	"Intended Audience :: Science/Research",
-	"Programming Language :: Python",
-	"Programming Language :: Python :: 3",
-	"Programming Language :: Python :: 3.9",
-	"Programming Language :: Python :: 3.10",
-	"Programming Language :: Python :: 3.11",
-	"Operating System :: MacOS",
-	"Operating System :: Microsoft :: Windows",
-	"Operating System :: POSIX",
-	"Operating System :: POSIX :: Linux",
-	"Topic :: Scientific/Engineering",
-	"License :: OSI Approved :: MIT License",
-]
+[project.entry-points."console_scripts"]
+dods = "pydap.handlers.dap:dump"
+pydap = "pydap.wsgi.app:main"
 
-dependencies = [
-	"numpy",
-	"Webob",
-	"Jinja2",
-	"docopt-ng",
-	"beautifulsoup4",
-	"requests",
-]
-
-[project.optional-dependencies]
-tests = [
-	'pytest>=3.6', 
-	'pytest-cov',
-	'pytest-attrib',
-	'requests-mock',
-	'WebTest',
-	'flake8',
-	'werkzeug>= 2.2.2',
-	'pyopenssl',
-]
-
-
-docs = ['Sphinx','Pygments', "pandoc", "sphinx_rtd_theme", "nbsphinx", "numpydoc"]
-functions = ['gsw==3.0.6', 'coards']
-cas = ['lxml']
-"handlers.netcdf" = ['netCDF4']
-netcdf = ['netCDF4']
-server = ['gunicorn', 'PasteDeploy']
-
+[project.entry-points."pydap.function"]
+bounds = "pydap.wsgi.functions:bounds"
+density = "pydap.wsgi.functions:density"
+mean = "pydap.wsgi.functions:mean"
 
 [project.entry-points."pydap.handler"]
 nc = "pydap.handlers.netcdf:NetCDFHandler"
 
-
 [project.entry-points."pydap.response"]
+asc = "pydap.responses.ascii:ASCIIResponse"
+ascii = "pydap.responses.ascii:ASCIIResponse"
 das = "pydap.responses.das:DASResponse"
 dds = "pydap.responses.dds:DDSResponse"
 dods = "pydap.responses.dods:DODSResponse"
 html = "pydap.responses.html:HTMLResponse"
-asc = "pydap.responses.ascii:ASCIIResponse"
-ascii = "pydap.responses.ascii:ASCIIResponse"
 ver = "pydap.responses.version:VersionResponse"
 
-[project.entry-points."pydap.function"]
-bounds = "pydap.wsgi.functions:bounds"
-mean = "pydap.wsgi.functions:mean"
-density = "pydap.wsgi.functions:density"
+[project.optional-dependencies]
+cas = ['lxml']
+docs = ['Sphinx', 'Pygments', "pandoc", "sphinx_rtd_theme", "nbsphinx", "numpydoc"]
+functions = ['gsw==3.0.6', 'coards']
+"handlers.netcdf" = ['netCDF4']
+netcdf = ['netCDF4']
+server = ['gunicorn', 'PasteDeploy']
+tests = [
+  'pytest>=3.6',
+  'pytest-cov',
+  'pytest-attrib',
+  'requests-mock',
+  'WebTest',
+  'flake8',
+  'werkzeug>= 2.2.2',
+  'pyopenssl'
+]
 
-
-[project.entry-points."console_scripts"]
-pydap = "pydap.wsgi.app:main"
-dods = "pydap.handlers.dap:dump"
-
+[tool.isort]
+profile = "black"
 
 [tool.pytest.ini_options]
 addopts = "-v --cov"
 testpaths = ["/src/pydap/tests"]
-
 
 [tool.setuptools]
 package-dir = {"" = "src"}

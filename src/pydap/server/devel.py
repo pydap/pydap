@@ -1,14 +1,14 @@
-from webob.request import Request
-from webob.exc import HTTPError
-import threading
-import multiprocessing
-import time
 import math
-import numpy as np
+import multiprocessing
 import socket
 import sys
-
+import threading
+import time
 from wsgiref.simple_server import make_server
+
+import numpy as np
+from webob.exc import HTTPError
+from webob.request import Request
 
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType
@@ -32,9 +32,7 @@ def get_open_port():
 
 
 def run_server_in_process(httpd, shutdown, **kwargs):
-    _server = (threading
-               .Thread(target=httpd.serve_forever,
-                       kwargs=kwargs))
+    _server = threading.Thread(target=httpd.serve_forever, kwargs=kwargs)
     _server.start()
     shutdown.wait()
     httpd.shutdown()
@@ -83,14 +81,20 @@ class LocalTestServer(object):
     >>> server.shutdown()
     """
 
-    def __init__(self, application=BaseHandler(DefaultDataset),
-                 port=None, wait=0.5, polling=1e-2, as_process=False):
+    def __init__(
+        self,
+        application=BaseHandler(DefaultDataset),
+        port=None,
+        wait=0.5,
+        polling=1e-2,
+        as_process=False,
+    ):
         self._port = port or get_open_port()
         self.application = application
         self._wait = wait
         self._polling = polling
         self._as_process = as_process
-        self._address = '0.0.0.0'
+        self._address = "0.0.0.0"
 
     @property
     def url(self):
@@ -101,24 +105,26 @@ class LocalTestServer(object):
         application = self.application
 
         self._httpd = make_server(self._address, self.port, application)
-        kwargs = {'poll_interval': 0.1}
+        kwargs = {"poll_interval": 0.1}
 
         if self._as_process:
             self._shutdown = multiprocessing.Event()
-            if sys.platform in ['darwin', 'win32']:
+            if sys.platform in ["darwin", "win32"]:
                 # see https://github.com/python/cpython/issues/77906
                 # no long term solution, simply temporaty fix
-                ctx = multiprocessing.get_context('fork') 
+                ctx = multiprocessing.get_context("fork")
                 Process = ctx.Process
             else:
-                Process =  multiprocessing.Process
-            self._server = (Process(target=run_server_in_process,
-                                     args=(self._httpd, self._shutdown),
-                                     kwargs=kwargs))
+                Process = multiprocessing.Process
+            self._server = Process(
+                target=run_server_in_process,
+                args=(self._httpd, self._shutdown),
+                kwargs=kwargs,
+            )
         else:
-            self._server = (threading
-                            .Thread(target=self._httpd.serve_forever,
-                                    kwargs=kwargs))
+            self._server = threading.Thread(
+                target=self._httpd.serve_forever, kwargs=kwargs
+            )
 
         self._server.start()
         self.poll_server()
@@ -126,15 +132,14 @@ class LocalTestServer(object):
     def poll_server(self):
         # Poll the server
         ok = False
-        for trial in range(int(math.ceil(self._wait/self._polling))):
+        for trial in range(int(math.ceil(self._wait / self._polling))):
             try:
                 # When checking whether server has started, do
                 # not verify ssl:
                 resp = get_response(
-                        Request
-                        .blank(self.url + '.dds'),
-                        None, verify=False)
-                ok = (resp.status_code == 200)
+                    Request.blank(self.url + ".dds"), None, verify=False
+                )
+                ok = resp.status_code == 200
             except HTTPError:
                 pass
             if ok:
@@ -143,9 +148,12 @@ class LocalTestServer(object):
 
         if not ok:
             self.shutdown()
-            raise Exception(('LocalTestServer did not start in {0}s. '
-                             'Try using LocalTestServer(..., wait={1}')
-                            .format(self._wait, 2*self._wait))
+            raise Exception(
+                (
+                    "LocalTestServer did not start in {0}s. "
+                    "Try using LocalTestServer(..., wait={1}"
+                ).format(self._wait, 2 * self._wait)
+            )
 
     @property
     def port(self):

@@ -1,42 +1,41 @@
 import multiprocessing
-import time
-import requests
 import sys
+import time
 import warnings
 
+import requests
 from werkzeug.serving import run_simple
 
-from ..wsgi.ssf import ServerSideFunctions
 from ..handlers.lib import BaseHandler
+from ..wsgi.ssf import ServerSideFunctions
 from .devel import DefaultDataset, LocalTestServer
 
 
-def run_simple_server(application=BaseHandler(DefaultDataset),
-                      port=8000, ssl_context=None):
+def run_simple_server(
+    application=BaseHandler(DefaultDataset), port=8000, ssl_context=None
+):
     application = ServerSideFunctions(application)
 
     def app_check_for_shutdown(environ, start_response):
-        if environ['PATH_INFO'].endswith('shutdown'):
+        if environ["PATH_INFO"].endswith("shutdown"):
             shutdown_server(environ)
             return shutdown_application(environ, start_response)
         else:
             return application(environ, start_response)
 
-    run_simple('0.0.0.0', port,
-               app_check_for_shutdown,
-               ssl_context=ssl_context)
+    run_simple("0.0.0.0", port, app_check_for_shutdown, ssl_context=ssl_context)
 
 
 def shutdown_server(environ):
     pass
-    #if 'werkzeug.server.shutdown' not in environ:
+    # if 'werkzeug.server.shutdown' not in environ:
     #    raise RuntimeError('Not running the development server')
-    #environ['werkzeug.server.shutdown']()
+    # environ['werkzeug.server.shutdown']()
 
 
 def shutdown_application(environ, start_response):
-    start_response('200 OK', [('Content-Type', 'text/plain')])
-    return [b'Server is shutting down.']
+    start_response("200 OK", [("Content-Type", "text/plain")])
+    return [b"Server is shutting down."]
 
 
 class LocalTestServerSSL(LocalTestServer):
@@ -77,11 +76,19 @@ class LocalTestServerSSL(LocalTestServer):
     1
     >>> server.shutdown()
     """
-    def __init__(self, application=BaseHandler(DefaultDataset),
-                 port=None, wait=0.5, polling=1e-2,
-                 as_process=False, ssl_context=None):
-        super(LocalTestServerSSL, self).__init__(application, port, wait,
-                                                 polling, as_process)
+
+    def __init__(
+        self,
+        application=BaseHandler(DefaultDataset),
+        port=None,
+        wait=0.5,
+        polling=1e-2,
+        as_process=False,
+        ssl_context=None,
+    ):
+        super(LocalTestServerSSL, self).__init__(
+            application, port, wait, polling, as_process
+        )
         self._ssl_context = ssl_context
 
     @property
@@ -92,30 +99,33 @@ class LocalTestServerSSL(LocalTestServer):
             return "https://{0}:{1}/".format(self._address, self.port)
 
     def start(self):
-        if sys.platform in ['darwin', 'win32']:
+        if sys.platform in ["darwin", "win32"]:
             # see https://github.com/python/cpython/issues/77906
             # no long term solution, simply temporaty fix
-            ctx = multiprocessing.get_context('fork')
+            ctx = multiprocessing.get_context("fork")
             Process = ctx.Process
         else:
-            Process =  multiprocessing.Process
+            Process = multiprocessing.Process
 
         # Start a simple WSGI server:
-        self._server = Process(target=run_simple_server,
-                                args=(self.application, self.port, self._ssl_context))
+        self._server = Process(
+            target=run_simple_server,
+            args=(self.application, self.port, self._ssl_context),
+        )
         self._server.start()
         # Wait a little while for the server to start:
         self.poll_server()
 
+    # https://werkzeug.palletsprojects.com/en/2.2.x/serving/#shutting-down-the-server
     def shutdown(self):
         # Shutdown the server:
         url = "http://0.0.0.0:%s/shutdown"
         if self._ssl_context is not None:
-            url = url.replace('http', 'https')
+            url = url.replace("http", "https")
         with warnings.catch_warnings():
-            warnings.simplefilter('ignore')
+            warnings.simplefilter("ignore")
             requests.head(url % self.port, verify=False)
         time.sleep(self._wait)
-        #self._server.join()
-        self._server.terminate()  # https://werkzeug.palletsprojects.com/en/2.2.x/serving/#shutting-down-the-server
-        del(self._server)
+        # self._server.join()
+        self._server.terminate()
+        del self._server

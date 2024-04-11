@@ -1,11 +1,11 @@
 """Test pydap namespace."""
 
-import pydap
 import unittest
+
+import pydap
 
 
 class TestNamespace(unittest.TestCase):
-
     """Test pydap namespace."""
 
     def test_namespace(self):

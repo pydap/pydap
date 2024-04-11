@@ -1,21 +1,19 @@
 """Tests for the server-side function WSGI middleware."""
 
 import sys
-
-from webtest import TestApp as App
-import numpy as np
-
-from pydap.model import SequenceType, BaseType
-from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import SimpleSequence, SimpleGrid
-from pydap.wsgi.ssf import ServerSideFunctions
-from pydap.exceptions import ServerError
-
 import unittest
+
+import numpy as np
+from webtest import TestApp as App
+
+from pydap.exceptions import ServerError
+from pydap.handlers.lib import BaseHandler
+from pydap.model import BaseType, SequenceType
+from pydap.tests.datasets import SimpleGrid, SimpleSequence
+from pydap.wsgi.ssf import ServerSideFunctions
 
 
 class TestMiddleware(unittest.TestCase):
-
     """Tests for the server-side function middleware."""
 
     def test_das(self):
@@ -37,8 +35,7 @@ class TestMiddleware(unittest.TestCase):
         can be manipulated by middleware.
 
         """
-        app = App(
-            ServerSideFunctions(Accumulator(BaseHandler(SimpleGrid))))
+        app = App(ServerSideFunctions(Accumulator(BaseHandler(SimpleGrid))))
 
         # a normal request should work, even though server-side functions are
         # not working in the WSGI pipeline
@@ -52,8 +49,11 @@ class TestMiddleware(unittest.TestCase):
         """Test a selection server-side function."""
         app = App(ServerSideFunctions(BaseHandler(SimpleSequence)))
         res = app.get(
-            "/.asc?density(cast.salinity,cast.temperature,cast.pressure)>1025")
-        self.assertEqual(res.text, """Dataset {
+            "/.asc?density(cast.salinity,cast.temperature,cast.pressure)>1025"
+        )
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -69,14 +69,16 @@ class TestMiddleware(unittest.TestCase):
 cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salinity, cast.pressure
 "2", 200, 10, 500, 1, 15, 35, 100
 
-""")
+""",
+        )
 
     def test_operators(self):
         """Test different operators on selection using a dummy function."""
-        app = App(
-            ServerSideFunctions(BaseHandler(SimpleSequence), double=double))
+        app = App(ServerSideFunctions(BaseHandler(SimpleSequence), double=double))
         res = app.get("/.asc?cast.lat&double(cast.lat)>10")
-        self.assertEqual(res.text, """Dataset {
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -85,10 +87,13 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
 cast.lat
 10
 
-""")
+""",
+        )
 
         res = app.get("/.asc?cast.lat&double(cast.lat)>=20")
-        self.assertEqual(res.text, """Dataset {
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -97,10 +102,13 @@ cast.lat
 cast.lat
 10
 
-""")
+""",
+        )
 
         res = app.get("/.asc?cast.lat&double(cast.lat)<10")
-        self.assertEqual(res.text, """Dataset {
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -109,10 +117,13 @@ cast.lat
 cast.lat
 -10
 
-""")
+""",
+        )
 
         res = app.get("/.asc?cast.lat&double(cast.lat)<=-20")
-        self.assertEqual(res.text, """Dataset {
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -121,10 +132,13 @@ cast.lat
 cast.lat
 -10
 
-""")
+""",
+        )
 
         res = app.get("/.asc?cast.lat&double(cast.lat)=20")
-        self.assertEqual(res.text, """Dataset {
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -133,10 +147,13 @@ cast.lat
 cast.lat
 10
 
-""")
+""",
+        )
 
         res = app.get("/.asc?cast.lat&double(cast.lat)!=20")
-        self.assertEqual(res.text, """Dataset {
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Sequence {
         Int32 lat;
     } cast;
@@ -145,7 +162,8 @@ cast.lat
 cast.lat
 -10
 
-""")
+""",
+        )
 
     def test_selection_no_comparison(self):
         """Test function calls in the selection without comparison.
@@ -157,8 +175,11 @@ cast.lat
         app = App(ServerSideFunctions(BaseHandler(SimpleSequence)))
         res = app.get(
             "/.asc?cast.lat,cast.lon&"
-            "bounds(0,360,-90,0,0,500,00Z01JAN1900,00Z01JAN2000)")
-        self.assertEqual(res.text, """Dataset {
+            "bounds(0,360,-90,0,0,500,00Z01JAN1900,00Z01JAN2000)"
+        )
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Sequence {
         Int32 lat;
         Int32 lon;
@@ -168,25 +189,31 @@ cast.lat
 cast.lat, cast.lon
 -10, 100
 
-""")
+""",
+        )
 
     def test_projection(self):
         """Test a simple function call on a projection."""
         app = App(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x)")
-        self.assertEqual(res.text, """Dataset {
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Float64 x;
 } SimpleGrid;
 ---------------------------------------------
 x
 1
-""")
+""",
+        )
 
     def test_projection_clash(self):
         """Test a function call creating a variable with a conflicting name."""
         app = App(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(x),x")
-        self.assertEqual(res.text, """Dataset {
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Int32 x[x = 3];
 } SimpleGrid;
 ---------------------------------------------
@@ -195,23 +222,26 @@ x
 [1] 1
 [2] 2
 
-""")
+""",
+        )
 
     def test_nested_projection(self):
         """Test a nested function call."""
         app = App(ServerSideFunctions(BaseHandler(SimpleGrid)))
         res = app.get("/.asc?mean(mean(SimpleGrid.SimpleGrid,0),0)")
-        self.assertEqual(res.text, """Dataset {
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Float64 SimpleGrid;
 } SimpleGrid;
 ---------------------------------------------
 SimpleGrid
 2.5
-""")
+""",
+        )
 
 
 class Accumulator(object):
-
     """A WSGI middleware that breaks streaming."""
 
     def __init__(self, app):
@@ -233,7 +263,7 @@ def double(dataset, var):
 
     # get a single variable and double its value
     selection = sequence[var.name]
-    rows = [(value*2,) for value in selection]
+    rows = [(value * 2,) for value in selection]
 
     # create output sequence
     out = SequenceType("result")

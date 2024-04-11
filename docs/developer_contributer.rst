@@ -6,7 +6,7 @@ Report bugs and submit feedback at the `Issue Tracker <https://github.com/pydap/
 
 **Using Git and GitHub**
 
-Assuming familiarity with git and version control, and that you have an account in GITHUB, 
+Assuming familiarity with git and version control, and that you have an account in GITHUB,
 the following is a step-by-step guide for contributing to pydap.
 
 1. Create your own fork of the project on GITHUB if you don't have one already. If you already
@@ -14,7 +14,7 @@ have one, then make sure your fork's main branch is up-to-date.
 
 **On your local computer terminal**:
 
-2. If you don't have one already (otherwise skip to step 4.), clone your fork into your computer: 
+2. If you don't have one already (otherwise skip to step 4.), clone your fork into your computer:
 
    .. code-block:: bash
 
@@ -81,9 +81,22 @@ have one, then make sure your fork's main branch is up-to-date.
      $ pytest
 
 11. Make edits/commits as necessary, and push. Once ready, go to your pydap fork repository and click on
-``Compare and Pull``. 
+``Compare and Pull``.
 
-12. Finally, if your branch has no conclicts, click on ``Send Pull Request`` to finish sending the PR. 
+12. Make sure that the code follows the style guide using the following commands:
+
+   .. code-block:: bash
+
+    $ conda install -c conda-forge pre-commit
+    $ pre-commit run --all
+
+   .. note::
+
+    Run the following command to automatically run `black` and `flake8` each time `git commit` is used:
+
+      .. code-block:: bash
+
+       $ pre-commit install
 
 
-
+13. Finally, if your branch has no conclicts, click on ``Send Pull Request`` to finish sending the PR.

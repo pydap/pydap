@@ -167,22 +167,21 @@ But this is discouraged as this will be deprecated soon. The ``.iterdata()`` is
 therefore highly recommended.
 """
 
-import operator
 import copy
-from functools import reduce
-import numpy as np
-from collections import OrderedDict
+import operator
 import warnings
+from collections import OrderedDict
 from collections.abc import Mapping
-from .lib import quote, decode_np_strings
+from functools import reduce
 
+import numpy as np
 
-__all__ = [
-    'BaseType', 'StructureType', 'DatasetType', 'SequenceType', 'GridType']
+from .lib import decode_np_strings, quote
+
+__all__ = ["BaseType", "StructureType", "DatasetType", "SequenceType", "GridType"]
 
 
 class DapType(object):
-
     """The common Opendap type.
 
     This is a base class, defining common methods and attributes for all other
@@ -190,7 +189,7 @@ class DapType(object):
 
     """
 
-    def __init__(self, name='nameless', attributes=None, **kwargs):
+    def __init__(self, name="nameless", attributes=None, **kwargs):
         self.name = quote(name)
         self.attributes = attributes or {}
         self.attributes.update(kwargs)
@@ -199,8 +198,7 @@ class DapType(object):
         self._id = self.name
 
     def __repr__(self):
-        return 'DapType(%s)' % ', '.join(
-            map(repr, [self.name, self.attributes]))
+        return "DapType(%s)" % ", ".join(map(repr, [self.name, self.attributes]))
 
     # The id.
     def _set_id(self, id):
@@ -208,8 +206,8 @@ class DapType(object):
 
         # Update children id.
         for child in self.children():
-            #pass
-            child.id = '%s.%s' % (id, child.name)
+            # pass
+            child.id = "%s.%s" % (id, child.name)
 
     def _get_id(self):
         return self._id
@@ -235,8 +233,8 @@ class DapType(object):
             return self.attributes[attr]
         except (KeyError, TypeError):
             raise AttributeError(
-                "'%s' object has no attribute '%s'"
-                % (type(self), attr))
+                "'%s' object has no attribute '%s'" % (type(self), attr)
+            )
 
     def children(self):
         """Return iterator over children."""
@@ -244,11 +242,11 @@ class DapType(object):
 
 
 class BaseType(DapType):
-
     """A thin wrapper over Numpy arrays."""
 
-    def __init__(self, name='nameless', data=None, dimensions=None,
-                 attributes=None, **kwargs):
+    def __init__(
+        self, name="nameless", data=None, dimensions=None, attributes=None, **kwargs
+    ):
         super(BaseType, self).__init__(name, attributes, **kwargs)
         self.data = data
         self.dimensions = dimensions or ()
@@ -258,7 +256,7 @@ class BaseType(DapType):
         self._shape = ()
 
     def __repr__(self):
-        return '<%s with data %s>' % (type(self).__name__, repr(self.data))
+        return "<%s with data %s>" % (type(self).__name__, repr(self.data))
 
     @property
     def dtype(self):
@@ -290,8 +288,9 @@ class BaseType(DapType):
         dimensions, same name, and a view of the data.
 
         """
-        out = type(self)(self.name, self.data, self.dimensions[:],
-                         self.attributes.copy())
+        out = type(self)(
+            self.name, self.data, self.dimensions[:], self.attributes.copy()
+        )
         out.id = self.id
         return out
 
@@ -318,8 +317,8 @@ class BaseType(DapType):
     def __getitem__(self, index):
         out = copy.copy(self)
         out.data = self._get_data_index(index)
-        if type(self.data).__name__ == 'BaseProxyDap4':
-            out.attributes['checksum'] = self.data.checksum
+        if type(self.data).__name__ == "BaseProxyDap4":
+            out.attributes["checksum"] = self.data.checksum
         return out
 
     def __len__(self):
@@ -335,10 +334,10 @@ class BaseType(DapType):
 
     @property
     def _is_string_dtype(self):
-        return hasattr(self._data, 'dtype') and self._data.dtype.char == 'S'
+        return hasattr(self._data, "dtype") and self._data.dtype.char == "S"
 
     def iterdata(self):
-        """ This method was added to mimic new SequenceType method."""
+        """This method was added to mimic new SequenceType method."""
         return iter(self)
 
     def __array__(self):
@@ -361,13 +360,14 @@ class BaseType(DapType):
             # ``.dtype`` and ``.shape``
             # methods will fail.
             self._data = np.array(data)
+
     data = property(_get_data, _set_data)
 
 
 class StructureType(DapType, Mapping):
     """A dict-like object holding other variables."""
 
-    def __init__(self, name='nameless', attributes=None, **kwargs):
+    def __init__(self, name="nameless", attributes=None, **kwargs):
         super(StructureType, self).__init__(name, attributes, **kwargs)
 
         # allow some keys to be hidden:
@@ -375,8 +375,10 @@ class StructureType(DapType, Mapping):
         self._dict = OrderedDict()
 
     def __repr__(self):
-        return '<%s with children %s>' % (
-            type(self).__name__, ', '.join(map(repr, self._visible_keys)))
+        return "<%s with children %s>" % (
+            type(self).__name__,
+            ", ".join(map(repr, self._visible_keys)),
+        )
 
     def __getattr__(self, attr):
         """Lazy shortcut return children."""
@@ -386,7 +388,7 @@ class StructureType(DapType, Mapping):
             return DapType.__getattr__(self, attr)
 
     def __contains__(self, key):
-        return (key in self._visible_keys)
+        return key in self._visible_keys
 
     # __iter__, __getitem__, __len__ are required for Mapping
     # From these, keys, items, values, get, __eq__,
@@ -401,23 +403,22 @@ class StructureType(DapType, Mapping):
         return iter(self._dict.keys())
 
     def _getitem_string(self, key):
-        """ Assume that key is a string type """
+        """Assume that key is a string type"""
         try:
             return self._dict[quote(key)]
         except KeyError:
-            splitted = key.split('.')
+            splitted = key.split(".")
             if len(splitted) > 1:
                 try:
-                    return self[splitted[0]]['.'.join(splitted[1:])]
+                    return self[splitted[0]][".".join(splitted[1:])]
                 except (KeyError, IndexError):
-                    return self['.'.join(splitted[1:])]
+                    return self[".".join(splitted[1:])]
             else:
                 raise
 
     def _getitem_string_tuple(self, key):
-        """ Assume that key is a tuple of strings """
-        out = type(self)(self.name, data=self.data,
-                         attributes=self.attributes.copy())
+        """Assume that key is a tuple of strings"""
+        out = type(self)(self.name, data=self.data, attributes=self.attributes.copy())
         for name in key:
             out[name] = copy.copy(self._getitem_string(name))
         return out
@@ -445,8 +446,8 @@ class StructureType(DapType, Mapping):
         key = quote(key)
         if key != item.name:
             raise KeyError(
-                'Key "%s" is different from variable name "%s"!' %
-                (key, item.name))
+                'Key "%s" is different from variable name "%s"!' % (key, item.name)
+            )
 
         if key in self:
             del self[key]
@@ -455,7 +456,7 @@ class StructureType(DapType, Mapping):
         self._visible_keys.append(key)
 
         # Set item id.
-        item.id = '%s.%s' % (self.id, item.name)
+        item.id = "%s.%s" % (self.id, item.name)
 
     def __delitem__(self, key):
         del self._dict[key]
@@ -470,6 +471,7 @@ class StructureType(DapType, Mapping):
     def _set_data(self, data):
         for col, var in zip(data, self.children()):
             var.data = col
+
     data = property(_get_data, _set_data)
 
     def __shallowcopy__(self):
@@ -493,7 +495,6 @@ class StructureType(DapType, Mapping):
 
 
 class DatasetType(StructureType):
-
     """A root Dataset.
 
     The Dataset is a Structure, but it names does not compose the id hierarchy:
@@ -521,17 +522,16 @@ class DatasetType(StructureType):
     def to_netcdf(self, *args, **kwargs):
         try:
             from .apis.netcdf4 import NetCDF
+
             return NetCDF(self, *args, **kwargs)
         except ImportError:
-            raise NotImplementedError('.to_netcdf requires the netCDF4 '
-                                      'package.')
+            raise NotImplementedError(".to_netcdf requires the netCDF4 " "package.")
 
     def change_order(self, order):
         self._dict = OrderedDict((k, self._dict[k]) for k in order)
 
 
 class SequenceType(StructureType):
-
     """A container that stores data in a Numpy array.
 
     Here's a standard dataset for testing sequential data:
@@ -619,14 +619,14 @@ class SequenceType(StructureType):
 
     """
 
-    def __init__(self, name='nameless', data=None, attributes=None, **kwargs):
+    def __init__(self, name="nameless", data=None, attributes=None, **kwargs):
         super(SequenceType, self).__init__(name, attributes, **kwargs)
         self._data = data
 
     def _set_data(self, data):
         self._data = data
         for child in self.children():
-            tokens = child.id[len(self.id)+1:].split('.')
+            tokens = child.id[len(self.id) + 1 :].split(".")
             child.data = reduce(operator.getitem, [data] + tokens)
 
     def _get_data(self):
@@ -640,23 +640,27 @@ class SequenceType(StructureType):
 
     def __iter__(self):
         # This method should be removed in pydap 3.4
-        warnings.warn('Starting with pydap 3.4 '
-                      '``for val in sequence: ...`` '
-                      'will give children names. '
-                      'To iterate over data the construct '
-                      '``for val in sequence.iterdata(): ...``'
-                      'is available now and will be supported in the'
-                      'future to iterate over data.',
-                      PendingDeprecationWarning)
+        warnings.warn(
+            "Starting with pydap 3.4 "
+            "``for val in sequence: ...`` "
+            "will give children names. "
+            "To iterate over data the construct "
+            "``for val in sequence.iterdata(): ...``"
+            "is available now and will be supported in the"
+            "future to iterate over data.",
+            PendingDeprecationWarning,
+        )
         return self.iterdata()
 
     def __len__(self):
         # This method should be removed in pydap 3.4
-        warnings.warn('Starting with pydap 3.4, '
-                      '``len(sequence)`` will give '
-                      'the number of children and not the '
-                      'length of the data.',
-                      PendingDeprecationWarning)
+        warnings.warn(
+            "Starting with pydap 3.4, "
+            "``len(sequence)`` will give "
+            "the number of children and not the "
+            "length of the data.",
+            PendingDeprecationWarning,
+        )
         return len(self.data)
 
     def items(self):
@@ -675,7 +679,7 @@ class SequenceType(StructureType):
 
     def __contains__(self, key):
         # This method should be removed in pydap 3.4
-        return (key in self._visible_keys)
+        return key in self._visible_keys
 
     def __getitem__(self, key):
         # If key is a string, return child with the corresponding data.
@@ -709,15 +713,16 @@ class GridType(StructureType):
 
     """
 
-    def __init__(self, name='nameless', attributes=None, **kwargs):
+    def __init__(self, name="nameless", attributes=None, **kwargs):
         super(GridType, self).__init__(name, attributes, **kwargs)
         self._output_grid = True
 
     def __repr__(self):
-        return '<%s with array %s and maps %s>' % (
+        return "<%s with array %s and maps %s>" % (
             type(self).__name__,
             repr(list(self.keys())[0]),
-            ', '.join(map(repr, list(self.keys())[1:])))
+            ", ".join(map(repr, list(self.keys())[1:])),
+        )
 
     def __getitem__(self, key):
         # Return a child.
@@ -739,7 +744,7 @@ class GridType(StructureType):
 
             out = copy.copy(self)
             for var, slice_ in zip(out.children(), [key] + list(key)):
-                if type(self.data).__name__ == 'BaseProxyDap4':
+                if type(self.data).__name__ == "BaseProxyDap4":
                     pass
                 var.data = self[var.name].data[slice_]
             return out

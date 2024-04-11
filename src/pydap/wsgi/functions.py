@@ -20,14 +20,14 @@ automatically discover the new functions from the system.
 
 """
 
-from datetime import datetime, timedelta
 import re
+from datetime import datetime, timedelta
 
 import numpy as np
 
-from ..model import SequenceType, GridType, BaseType
-from ..lib import walk
 from ..exceptions import ConstraintExpressionError, ServerError
+from ..lib import walk
+from ..model import BaseType, GridType, SequenceType
 from ..pycompat import suppress
 
 with suppress(ImportError):
@@ -48,17 +48,17 @@ def density(dataset, salinity, temperature, pressure):
         break
     else:
         raise ConstraintExpressionError(
-            'Function "bounds" should be used on a Sequence.')
+            'Function "bounds" should be used on a Sequence.'
+        )
 
     selection = sequence[salinity.name, temperature.name, pressure.name]
     rows = [tuple(row) for row in selection.iterdata()]
-    data = np.rec.fromrecords(
-        rows, names=['salinity', 'temperature', 'pressure'])
-    rho = gsw.rho(data['salinity'], data['temperature'], data['pressure'])
+    data = np.rec.fromrecords(rows, names=["salinity", "temperature", "pressure"])
+    rho = gsw.rho(data["salinity"], data["temperature"], data["pressure"])
 
     out = SequenceType("result")
-    out['rho'] = BaseType("rho", units="kg/m**3")
-    out.data = np.rec.fromrecords(rho.reshape(-1, 1), names=['rho'])
+    out["rho"] = BaseType("rho", units="kg/m**3")
+    out.data = np.rec.fromrecords(rho.reshape(-1, 1), names=["rho"])
     return out
 
 
@@ -82,45 +82,41 @@ def bounds(dataset, xmin, xmax, ymin, ymax, zmin, zmax, tmin, tmax):
         break  # get first sequence
     else:
         raise ConstraintExpressionError(
-            'Function "bounds" should be used on a Sequence.')
+            'Function "bounds" should be used on a Sequence.'
+        )
 
     for child in sequence.children():
-        if child.attributes.get('axis', '').lower() == 'x':
+        if child.attributes.get("axis", "").lower() == "x":
             if xmin == xmax:
                 sequence.data = sequence[child == xmin].data
             else:
-                sequence.data = sequence[
-                    (child >= xmin) & (child <= xmax)].data
-        elif child.attributes.get('axis', '').lower() == 'y':
+                sequence.data = sequence[(child >= xmin) & (child <= xmax)].data
+        elif child.attributes.get("axis", "").lower() == "y":
             if ymin == ymax:
                 sequence.data = sequence[child == ymin].data
             else:
-                sequence.data = sequence[
-                    (child >= ymin) & (child <= ymax)].data
-        elif child.attributes.get('axis', '').lower() == 'z':
+                sequence.data = sequence[(child >= ymin) & (child <= ymax)].data
+        elif child.attributes.get("axis", "").lower() == "z":
             if zmin == zmax:
                 sequence.data = sequence[child == zmin].data
             else:
-                sequence.data = sequence[
-                    (child >= zmin) & (child <= zmax)].data
-        elif child.attributes.get('axis', '').lower() == 't':
-            start = datetime.strptime(tmin, '%HZ%d%b%Y')
-            end = datetime.strptime(tmax, '%HZ%d%b%Y')
-            units = child.attributes.get('units', 'seconds since 1970-01-01')
+                sequence.data = sequence[(child >= zmin) & (child <= zmax)].data
+        elif child.attributes.get("axis", "").lower() == "t":
+            start = datetime.strptime(tmin, "%HZ%d%b%Y")
+            end = datetime.strptime(tmax, "%HZ%d%b%Y")
+            units = child.attributes.get("units", "seconds since 1970-01-01")
 
             # if start and end are equal, add the step
-            if start == end and 'grads_step' in child.attributes:
-                dt = parse_step(child.attributes['grads_step'])
+            if start == end and "grads_step" in child.attributes:
+                dt = parse_step(child.attributes["grads_step"])
                 end = start + dt
                 tmin = coards.format(start, units)
                 tmax = coards.format(end, units)
-                sequence.data = sequence[
-                    (child >= tmin) & (child < tmax)].data
+                sequence.data = sequence[(child >= tmin) & (child < tmax)].data
             else:
                 tmin = coards.format(start, units)
                 tmax = coards.format(end, units)
-                sequence.data = sequence[
-                    (child >= tmin) & (child <= tmax)].data
+                sequence.data = sequence[(child >= tmin) & (child <= tmax)].data
 
     return sequence
 
@@ -130,18 +126,18 @@ bounds.__version__ = "1.0"
 
 def parse_step(step):
     """Parse a GrADS time step returning a timedelta."""
-    value, units = re.search(r'(\d+)(.*)', step).groups()
+    value, units = re.search(r"(\d+)(.*)", step).groups()
     value = int(value)
-    if units.lower() == 'mn':
+    if units.lower() == "mn":
         return timedelta(minutes=value)
-    if units.lower() == 'hr':
+    if units.lower() == "hr":
         return timedelta(hours=value)
-    if units.lower() == 'dy':
+    if units.lower() == "dy":
         return timedelta(days=value)
-    if units.lower() == 'mo':
-        raise NotImplementedError('Need to implement month time step')
-    if units.lower() == 'yr':
-        raise NotImplementedError('Need to implement year time step')
+    if units.lower() == "mo":
+        raise NotImplementedError("Need to implement month time step")
+    if units.lower() == "yr":
+        raise NotImplementedError("Need to implement year time step")
     raise ServerError('Unknown units: "%s".' % units)
 
 
@@ -154,7 +150,8 @@ def mean(dataset, var, axis=0):
     """
     if not isinstance(var, (GridType, BaseType)):
         raise ConstraintExpressionError(
-            'Function "mean" should be used on an array or grid.')
+            'Function "mean" should be used on an array or grid.'
+        )
 
     axis = int(axis)
     dims = tuple(dim for i, dim in enumerate(var.dimensions) if i != axis)
@@ -162,18 +159,27 @@ def mean(dataset, var, axis=0):
     # process basetype
     if isinstance(var, BaseType):
         return BaseType(
-            name=var.name, data=np.mean(var.data[:], axis=axis),
-            dimensions=dims, attributes=var.attributes)
+            name=var.name,
+            data=np.mean(var.data[:], axis=axis),
+            dimensions=dims,
+            attributes=var.attributes,
+        )
 
     # process grid
     out = GridType(name=var.name, attributes=var.attributes)
     out[var.array.name] = BaseType(
-        name=var.array.name, data=np.mean(var.array.data[:], axis=axis),
-        dimensions=dims, attributes=var.array.attributes)
+        name=var.array.name,
+        data=np.mean(var.array.data[:], axis=axis),
+        dimensions=dims,
+        attributes=var.array.attributes,
+    )
     for dim in dims:
         out[dim] = BaseType(
-            name=dim, data=var[dim].data[:], dimensions=(dim,),
-            attributes=var[dim].attributes)
+            name=dim,
+            data=var[dim].data[:],
+            dimensions=(dim,),
+            attributes=var[dim].attributes,
+        )
     return out
 
 

@@ -1,16 +1,20 @@
 """Test parsing functions."""
 
 import operator
-
-from pydap.parsers import (parse_projection, parse_selection,
-                           parse_ce, parse_hyperslab, SimpleParser)
-from pydap.exceptions import ConstraintExpressionError
-from pydap.tests.datasets import VerySimpleSequence
 import unittest
+
+from pydap.exceptions import ConstraintExpressionError
+from pydap.parsers import (
+    SimpleParser,
+    parse_ce,
+    parse_hyperslab,
+    parse_projection,
+    parse_selection,
+)
+from pydap.tests.datasets import VerySimpleSequence
 
 
 class TestParseProjection(unittest.TestCase):
-
     """Test projection parser.
 
     The projection is a comma separated list of variable ids (or names, if the
@@ -27,30 +31,25 @@ class TestParseProjection(unittest.TestCase):
     def test_deep(self):
         """Test a projection with a deep id."""
         parsed = parse_projection("a.b.c,d")
-        self.assertEqual(
-            parsed, [[("a", ()), ("b", ()), ("c", ())], [("d", ())]])
+        self.assertEqual(parsed, [[("a", ()), ("b", ()), ("c", ())], [("d", ())]])
 
     def test_hyperslab(self):
         """Test a projection with a hyperslab."""
         parsed = parse_projection("a,b.c[0:2:9]")
-        self.assertEqual(
-            parsed, [[("a", ())], [("b", ()), ("c", (slice(0, 10, 2),))]])
+        self.assertEqual(parsed, [[("a", ())], [("b", ()), ("c", (slice(0, 10, 2),))]])
 
     def test_function_call(self):
         """Test a projection with a function call."""
         parsed = parse_projection("mean(a[0],1)")
-        self.assertEqual(
-            parsed, ['mean(a[0],1)'])
+        self.assertEqual(parsed, ["mean(a[0],1)"])
 
     def test_nested_function_call(self):
         """Test a projection with a function call."""
         parsed = parse_projection("mean(mean(a[0],1))")
-        self.assertEqual(
-            parsed, ['mean(mean(a[0],1))'])
+        self.assertEqual(parsed, ["mean(mean(a[0],1))"])
 
 
 class TestParseSelection(unittest.TestCase):
-
     """Test selection parser."""
 
     def test_simple(self):
@@ -69,12 +68,11 @@ class TestParseSelection(unittest.TestCase):
 
 
 class TestParseCe(unittest.TestCase):
-
     """Test the constraint expression parser."""
 
     def test_empty(self):
         """Test no constraint expression."""
-        projection, selection = parse_ce('')
+        projection, selection = parse_ce("")
         self.assertEqual(projection, [])
         self.assertEqual(selection, [])
 
@@ -100,60 +98,61 @@ class TestParseCe(unittest.TestCase):
         """Test a more complex constraint expression."""
         projection, selection = parse_ce("a,b[0:2:9],c&a>1&b<2")
         self.assertEqual(
-            projection,
-            [[("a", ())], [("b", (slice(0, 10, 2),))], [("c", ())]])
+            projection, [[("a", ())], [("b", (slice(0, 10, 2),))], [("c", ())]]
+        )
         self.assertEqual(selection, ["a>1", "b<2"])
 
     def test_function(self):
         """Test a constraint expression with a function call."""
         projection, selection = parse_ce(
-            "time&bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)")
+            "time&bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)"
+        )
         self.assertEqual(projection, [[("time", ())]])
         self.assertEqual(
-            selection,
-            ["bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)"])
+            selection, ["bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)"]
+        )
 
     def test_function_no_selection(self):
         """Test a constraint expression with a function call."""
         projection, selection = parse_ce(
-            "time,bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)")
+            "time,bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)"
+        )
         self.assertEqual(
             projection,
-            [[("time", ())],
-                'bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)'])
+            [[("time", ())], "bounds(0,360,-90,90,0,500,00Z01JAN1970,00Z04JAN1970)"],
+        )
         self.assertEqual(selection, [])
 
 
 class TestParseHyperslab(unittest.TestCase):
-
     """Test hyperslab parser."""
 
     def test_point(self):
         """Test a single value selection."""
-        self.assertEqual(parse_hyperslab('[0]'), (slice(0, 1, 1),))
+        self.assertEqual(parse_hyperslab("[0]"), (slice(0, 1, 1),))
 
     def test_start_stop(self):
         """Test start and stop, default step."""
-        self.assertEqual(parse_hyperslab('[0:1]'), (slice(0, 2, 1),))
+        self.assertEqual(parse_hyperslab("[0:1]"), (slice(0, 2, 1),))
 
     def test_start_step_stop(self):
         """Test start, step and stop."""
-        self.assertEqual(parse_hyperslab('[0:2:9]'), (slice(0, 10, 2),))
+        self.assertEqual(parse_hyperslab("[0:2:9]"), (slice(0, 10, 2),))
 
     def test_invalid(self):
         """Test invalid hyperslab."""
         with self.assertRaises(ConstraintExpressionError):
-            parse_hyperslab('[0:2:9:1]')
+            parse_hyperslab("[0:2:9:1]")
 
     def test_ndimensionsal(self):
         """Test n-dimensional slices."""
         self.assertEqual(
-            parse_hyperslab('[0:2:9][0][0:99]'),
-            (slice(0, 10, 2), slice(0, 1, 1), slice(0, 100, 1)))
+            parse_hyperslab("[0:2:9][0][0:99]"),
+            (slice(0, 10, 2), slice(0, 1, 1), slice(0, 100, 1)),
+        )
 
 
 class TestSimpleParser(unittest.TestCase):
-
     """Test the base class for the DAS/DDS parsers."""
 
     def test_peek_existing(self):

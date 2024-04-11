@@ -1,25 +1,23 @@
 """Test the DAS response."""
 
-from webtest import TestApp as App
-from webob.headers import ResponseHeaders
-from pydap.lib import __version__
-from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import (
-    SimpleSequence, SimpleGrid, FaultyGrid, SimpleStructure
-)
-from pydap.responses.das import das
-
 import unittest
+
+from webob.headers import ResponseHeaders
+from webtest import TestApp as App
+
+from pydap.handlers.lib import BaseHandler
+from pydap.lib import __version__
+from pydap.responses.das import das
+from pydap.tests.datasets import FaultyGrid, SimpleGrid, SimpleSequence, SimpleStructure
 
 
 class TestDASResponseSequence(unittest.TestCase):
-
     """Test the DAS response from a sequence."""
 
     def setUp(self):
         """Create a simple WSGI app."""
         app = App(BaseHandler(SimpleSequence))
-        self.res = app.get('/.das')
+        self.res = app.get("/.das")
 
     def test_dispatcher(self):
         """Test the single dispatcher."""
@@ -42,18 +40,26 @@ class TestDASResponseSequence(unittest.TestCase):
         """Test the response headers."""
         self.assertEqual(
             self.res.headers,
-            ResponseHeaders([
-                ('XDODS-Server', 'pydap/' + __version__),
-                ('Content-description', 'dods_das'),
-                ('Content-type', 'text/plain; charset=ascii'),
-                ('Access-Control-Allow-Origin', '*'),
-                ('Access-Control-Allow-Headers',
-                    'Origin, X-Requested-With, Content-Type'),
-                ('Content-Length', '510')]))
+            ResponseHeaders(
+                [
+                    ("XDODS-Server", "pydap/" + __version__),
+                    ("Content-description", "dods_das"),
+                    ("Content-type", "text/plain; charset=ascii"),
+                    ("Access-Control-Allow-Origin", "*"),
+                    (
+                        "Access-Control-Allow-Headers",
+                        "Origin, X-Requested-With, Content-Type",
+                    ),
+                    ("Content-Length", "510"),
+                ]
+            ),
+        )
 
     def test_body(self):
         """Test the generated DAS response."""
-        self.assertEqual(self.res.text, """Attributes {
+        self.assertEqual(
+            self.res.text,
+            """Attributes {
     String description "A simple sequence for testing.";
     nested {
         Int32 value 42;
@@ -82,18 +88,20 @@ class TestDASResponseSequence(unittest.TestCase):
         }
     }
 }
-""")
+""",
+        )
 
 
 class TestDASResponseGrid(unittest.TestCase):
-
     """Test the DAS response from a grid."""
 
     def test_body(self):
         """Test the generated DAS response."""
         app = App(BaseHandler(SimpleGrid))
-        res = app.get('/.das')
-        self.assertEqual(res.text, """Attributes {
+        res = app.get("/.das")
+        self.assertEqual(
+            res.text,
+            """Attributes {
     String description "A simple grid for testing.";
     SimpleGrid {
     }
@@ -106,18 +114,20 @@ class TestDASResponseGrid(unittest.TestCase):
         String units "degrees_north";
     }
 }
-""")
+""",
+        )
 
 
 class TestDASResponseFaultyGrid(unittest.TestCase):
-
     """Test the DAS response from a grid with empty properties."""
 
     def test_body(self):
         """Test the generated DAS response."""
         app = App(BaseHandler(FaultyGrid))
-        res = app.get('/.das')
-        self.assertEqual(res.text, """Attributes {
+        res = app.get("/.das")
+        self.assertEqual(
+            res.text,
+            """Attributes {
     String description "A faulty grid for testing.";
     FaultyGrid {
     }
@@ -129,18 +139,20 @@ class TestDASResponseFaultyGrid(unittest.TestCase):
         String axis "Y";
     }
 }
-""")
+""",
+        )
 
 
 class TestDASResponseStructure(unittest.TestCase):
-
     """The the DAS response from a structure."""
 
     def test_body(self):
         """Test the generated DAS response."""
         app = App(BaseHandler(SimpleStructure))
-        res = app.get('/.das')
-        self.assertEqual(res.text, """Attributes {
+        res = app.get("/.das")
+        self.assertEqual(
+            res.text,
+            """Attributes {
     types {
         String key "value";
         nested {
@@ -173,4 +185,5 @@ class TestDASResponseStructure(unittest.TestCase):
         }
     }
 }
-""")
+""",
+        )

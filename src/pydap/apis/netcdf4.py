@@ -1,18 +1,20 @@
+import logging
+
+from netCDF4 import Dataset
+
 from ..handlers.lib import BaseHandler
 from ..server.devel import LocalTestServer
 
-from netCDF4 import Dataset
-import logging
-
 _logger = logging.getLogger(__name__)
 
-_private_atts = ['server']
+_private_atts = ["server"]
 
 
 class NetCDF(Dataset):
     def __init__(self, dataset, *args, **kwargs):
-        self.server = LocalTestServer(application=BaseHandler(dataset=dataset),
-                                      as_process=True)
+        self.server = LocalTestServer(
+            application=BaseHandler(dataset=dataset), as_process=True
+        )
         self.server.start()
         super(NetCDF, self).__init__(self.server.url, *args, **kwargs)
 

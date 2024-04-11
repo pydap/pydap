@@ -80,7 +80,7 @@ Note that the variable name has to be used as its key on the ``StructureType``. 
     >>> s[c.name] = c
 
 There is a special derivative of the ``StructureType`` called ``DatasetType``, which represent the dataset.
-The difference between the two is that there should be only one ``DatasetType``, but 
+The difference between the two is that there should be only one ``DatasetType``, but
 it may contain any number of ``StructureType`` objects, which can be deeply nested. Let's create our dataset object:
 
 .. doctest::
@@ -147,12 +147,12 @@ Data
 ~~~~
 
 As we saw on the last subsection, all pydap objects have a ``data`` attribute that holds a representation of the variable data.
-This representation will vary depending on the variable type. 
+This representation will vary depending on the variable type.
 
 ``BaseType``
 ************
 
-For the simple ``BaseType`` objects the ``data`` attributes is usually a Numpy array, 
+For the simple ``BaseType`` objects the ``data`` attributes is usually a Numpy array,
 though we can also use a Numpy scalar or Python number:
 
 .. doctest::
@@ -186,11 +186,11 @@ When you *slice* a ``BaseType`` array, the slice is simply passed onto the data 
     <BaseType with data array([0, 1])>
     >>> b[:2].data
     array([0, 1])
-    
-You can think of a ``BaseType`` object as a thin layer around Numpy arrays, 
-until you realize that the ``data`` attribute can be *any* object implementing the array interface! 
-This is how the DAP client works -- instead of assigning an array with data directly to the attribute, 
-we assign a special object which behaves like an array and acts as a *proxy* to a remote dataset. 
+
+You can think of a ``BaseType`` object as a thin layer around Numpy arrays,
+until you realize that the ``data`` attribute can be *any* object implementing the array interface!
+This is how the DAP client works -- instead of assigning an array with data directly to the attribute,
+we assign a special object which behaves like an array and acts as a *proxy* to a remote dataset.
 
 Here's an example:
 
@@ -219,8 +219,8 @@ Here's an example:
       [ -7.69166648e-01  -7.79999971e-01  -6.75454497e-01  -5.95714271e-01]
       [  1.28333330e-01  -5.00000156e-02  -6.36363626e-02  -1.41666666e-01]
       [  6.38000011e-01   8.95384610e-01   7.21666634e-01   8.10000002e-01]]]
-    
-In the example above, the data is only downloaded in the last line, when the pseudo array is sliced. The object will construct the appropriate DAP URL, request the data, unpack it and return a Numpy array. 
+
+In the example above, the data is only downloaded in the last line, when the pseudo array is sliced. The object will construct the appropriate DAP URL, request the data, unpack it and return a Numpy array.
 
 ``StructureType``
 *****************
@@ -254,7 +254,7 @@ The same is true for objects of ``DatasetType``, since the dataset is simply the
 ``SequenceType``
 ****************
 
-A ``SequenceType`` object is a special kind of ``StructureType`` holding sequential data. 
+A ``SequenceType`` object is a special kind of ``StructureType`` holding sequential data.
 Here's an example of a sequence holding the variables ``a`` and ``c`` that we created before:
 
 .. doctest::
@@ -279,10 +279,10 @@ Let's add some data to our sequence. This can be done by setting a structured nu
     >>> print(s.data)
     [(1, 10) (2, 20) (3, 30)]
 
-Note that the data for the sequence is an aggregation of the children data, similar to Python's ``zip()`` builtin. 
+Note that the data for the sequence is an aggregation of the children data, similar to Python's ``zip()`` builtin.
 This will be more complicated when encountering nested sequences, but for flat sequences they behave the same.
 
-We can also iterate over the ``SequenceType``. In this case, it will return a series of tuples with the data: 
+We can also iterate over the ``SequenceType``. In this case, it will return a series of tuples with the data:
 
 .. doctest::
 
@@ -292,7 +292,7 @@ We can also iterate over the ``SequenceType``. In this case, it will return a se
     (2, 20)
     (3, 30)
 
-Prior to pydap 3.2.2, this approach was not possible and one had to iterate directly over ``SequenceType``: 
+Prior to pydap 3.2.2, this approach was not possible and one had to iterate directly over ``SequenceType``:
 
 .. doctest::
 
@@ -304,7 +304,7 @@ Prior to pydap 3.2.2, this approach was not possible and one had to iterate dire
 
 This approach will be deprecated in pydap 3.4.
 
-The ``SequenceType`` behaves pretty much like `structured arrays <https://numpy.org/doc/stable/user/basics.rec.html>`_ from 
+The ``SequenceType`` behaves pretty much like `structured arrays <https://numpy.org/doc/stable/user/basics.rec.html>`_ from
 Numpy, since we can reference them by column (``s['a']``) or by index:
 
 .. doctest::
@@ -312,10 +312,10 @@ Numpy, since we can reference them by column (``s['a']``) or by index:
     >>> s[1].data
     (2, 20)
     >>> s[ s.a < 3 ].data
-    array([(1, 10), (2, 20)], 
+    array([(1, 10), (2, 20)],
           dtype=[('a', '<i4'), ('long%20%26%20complicated', '<i2')])
 
-Note that these objects are also ``SequenceType`` themselves. The basic rules when working with sequence data are: 
+Note that these objects are also ``SequenceType`` themselves. The basic rules when working with sequence data are:
 
 1. When a ``SequenceType`` is sliced with a string the corresponding children is returned. For example: ``s['a']`` will return child ``a``;
 2. When a ``SequenceType`` is iterated over (using ``.iterdata()`` after pydap 3.2.2) it will return a series of tuples, each one containing the data for a record;
@@ -325,10 +325,10 @@ Note that these objects are also ``SequenceType`` themselves. The basic rules wh
 
 Note that except for rule 4 ``SequenceType`` mimics the behavior of Numpy structure arrays.
 
-Now imagine that we want to add to a ``SequenceType`` data pulled from a relational database. 
-The easy way would be to fetch the data in the correct column order, and insert it into the sequence. 
-But what if we don't want to store the data in memory, and instead we would like to stream it directly from the database? 
-In this case we can create an object that behaves like a structure array, similar to the proxy object that implements the array interface. 
+Now imagine that we want to add to a ``SequenceType`` data pulled from a relational database.
+The easy way would be to fetch the data in the correct column order, and insert it into the sequence.
+But what if we don't want to store the data in memory, and instead we would like to stream it directly from the database?
+In this case we can create an object that behaves like a structure array, similar to the proxy object that implements the array interface.
 pydap defines a "protocol" called ``IterData``, which is simply any object that:
 
 1. Returns data when iterated over.
@@ -338,7 +338,7 @@ pydap defines a "protocol" called ``IterData``, which is simply any object that:
    b) if the slice is a tuple of strings the object contains only those children, in that order;
    c) if the slice is an integer, a ``slice()`` or a comparison, the data is filter accordingly.
 
-The base implementation works by wrapping data from a basic Numpy array. 
+The base implementation works by wrapping data from a basic Numpy array.
 And here is an example of how we would use it:
 
 .. doctest::
@@ -365,16 +365,16 @@ One can also iterate directly over the ``IterData`` object to obtain the data:
 
 This approach will not be deprecated in pydap 3.4.
 
-There are many implementations of classes derived from ``IterData``: ``pydap.handlers.dap.SequenceProxy`` is a proxy to 
-sequential data on Opendap servers, ``pydap.handlers.csv.CSVProxy`` wraps a CSV file, 
+There are many implementations of classes derived from ``IterData``: ``pydap.handlers.dap.SequenceProxy`` is a proxy to
+sequential data on Opendap servers, ``pydap.handlers.csv.CSVProxy`` wraps a CSV file,
 and ``pydap.handlers.sql.SQLProxy`` works as a stream to a relational database.
 
 ``GridType``
 ************
 
-A ``GridType`` is a special kind of object that behaves like an array and a ``StructureType``. 
-The class is derived from ``StructureType``; the major difference is that the first defined variable is a multidimensional array, 
-while subsequent children are vector maps that define the axes of the array. This way, the ``data`` attribute on a ``GridType`` 
+A ``GridType`` is a special kind of object that behaves like an array and a ``StructureType``.
+The class is derived from ``StructureType``; the major difference is that the first defined variable is a multidimensional array,
+while subsequent children are vector maps that define the axes of the array. This way, the ``data`` attribute on a ``GridType``
 returns the data of all its children: the n-dimensional array followed by *n* maps.
 
 Here is a simple example:
@@ -390,7 +390,7 @@ Here is a simple example:
     >>> g.data
     [array([[0, 1, 2],
                [3, 4, 5]]), array([0, 1]), array([0, 1, 2])]
- 
+
 Grid behave like arrays in that they can be sliced. When this happens, a new ``GridType`` is returned with the proper data and axes:
 
 .. doctest::

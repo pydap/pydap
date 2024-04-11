@@ -1,11 +1,16 @@
 pydap
 =====
 
-[![Build Status](https://travis-ci.org/pydap/pydap.svg)](https://travis-ci.org/pydap/pydap)
 [![Python3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/pydap/)
 [![conda forge](https://anaconda.org/conda-forge/pydap/badges/version.svg)](https://anaconda.org/conda-forge/pydap)
+[![Build Status](https://travis-ci.org/pydap/pydap.svg)](https://travis-ci.org/pydap/pydap)
+[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/pydap/pydap)
+[![pre-commit](https://results.pre-commit.ci/badge/github/pydap/pydap/master.svg)](https://results.pre-commit.ci/latest/github/pydap/pydap/master)
 [![Join the chat at https://gitter.im/pydap/pydap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pydap/pydap)
+
+
 
 [pydap](https://pydap.github.io/pydap/) is an implementation of the
 Opendap/DODS protocol, written from scratch in pure python.  You can
@@ -30,7 +35,7 @@ install pydap with this command:
 ```
 This will install pydap together with all the required
 dependencies. pydap is also available through [Anaconda](https://www.anaconda.com/).
-Below we install pydap and its required dependencies, along with common 
+Below we install pydap and its required dependencies, along with common
 additional packages in a fresh conda environment named pydap:
 
 ```bash
@@ -68,7 +73,7 @@ dataset, and pydap will download the accessed data on-the-fly as needed:
 ```
 
 For more information, please check the documentation on [using pydap
-as a client](https://pydap.github.io/pydap/client.html). 
+as a client](https://pydap.github.io/pydap/client.html).
 
 pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/)
 application. To use it, you first need to install the server and
@@ -108,4 +113,3 @@ documentation](https://pydap.github.io/pydap/).
 
 If you need any help with pydap, please feel free to send an email to
 the [mailing list](http://groups.google.com/group/pydap/)
-

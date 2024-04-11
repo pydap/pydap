@@ -1,23 +1,21 @@
 """Tests for the pydap server."""
 
 import os
-import tempfile
 import shutil
+import tempfile
+import unittest
 from xml.etree import ElementTree as etree
 
-from webtest import AppError
-from webtest import TestApp as App
 from webob import Response
 from webob.dec import wsgify
+from webtest import AppError
+from webtest import TestApp as App
 
-from pydap.wsgi.app import init, DapServer, StaticMiddleware
 from pydap.exceptions import ExtensionNotSupportedError
-
-import unittest
+from pydap.wsgi.app import DapServer, StaticMiddleware, init
 
 
 class TestDapServer(unittest.TestCase):
-
     """Tests for the pydap server."""
 
     def setUp(self):
@@ -75,9 +73,12 @@ class TestDapServer(unittest.TestCase):
         """Test that THREDDS Catalog requests work."""
         res = self.app.get("/catalog.xml")
         self.assertEqual(res.status, "200 OK")
-        self.assertTrue(res.text.startswith('<?xml'))
+        self.assertTrue(res.text.startswith("<?xml"))
         xml = etree.fromstring(res.text)
-        self.assertEqual(xml.tag, '{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}catalog')  # noqa
+        self.assertEqual(
+            xml.tag,
+            "{http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0}catalog",
+        )  # noqa
 
     def test_not_found(self):
         """Test 404 responses."""
@@ -91,7 +92,6 @@ class TestDapServer(unittest.TestCase):
 
 
 class TestPackageAssets(unittest.TestCase):
-
     """Test that we can load assets from the package."""
 
     def setUp(self):
@@ -126,7 +126,6 @@ class TestPackageAssets(unittest.TestCase):
 
 
 class DummyHandler(object):
-
     """A dummy handler for testing the server."""
 
     extensions = r"^.*\.foo$"

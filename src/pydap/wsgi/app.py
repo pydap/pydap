@@ -15,28 +15,27 @@ Options:
 
 """
 
+import mimetypes
 import os
 import re
-import mimetypes
-from datetime import datetime
 import shutil
+from datetime import datetime
 
-from jinja2 import Environment, PackageLoader, FileSystemLoader, ChoiceLoader
+import pkg_resources
+from jinja2 import ChoiceLoader, Environment, FileSystemLoader, PackageLoader
+from requests.utils import unquote
 from webob import Response
 from webob.dec import wsgify
-from webob.exc import HTTPNotFound, HTTPForbidden
-from webob.static import FileApp, DirectoryApp
-import pkg_resources
-from requests.utils import unquote
+from webob.exc import HTTPForbidden, HTTPNotFound
+from webob.static import DirectoryApp, FileApp
 
-from ..lib import __version__
-from ..handlers.lib import get_handler, load_handlers
 from ..exceptions import ExtensionNotSupportedError
+from ..handlers.lib import get_handler, load_handlers
+from ..lib import __version__
 from .ssf import ServerSideFunctions
 
 
 class DapServer(object):
-
     """A directory app that creates file listings and handle DAP requests."""
 
     def __init__(self, path, templates=None):
@@ -68,12 +67,11 @@ class DapServer(object):
         Returns either a file download, directory listing or DAP response.
 
         """
-        path = os.path.abspath(
-            os.path.join(self.path, *req.path_info.split("/")))
+        path = os.path.abspath(os.path.join(self.path, *req.path_info.split("/")))
 
         if not path.startswith(self.path):
             return HTTPForbidden()
-        if path.endswith('catalog.xml'):
+        if path.endswith("catalog.xml"):
             return self.index(os.path.dirname(path), req, catalog=True)
         elif os.path.exists(path):
             if os.path.isdir(path):
@@ -93,30 +91,41 @@ class DapServer(object):
     def index(self, directory, req, catalog=False):
         """Return a directory listing."""
 
-        template_name = 'index.html'
-        response_content_type = 'text/html'
-        content = [
-            os.path.join(directory, name) for name in os.listdir(directory)]
+        template_name = "index.html"
+        response_content_type = "text/html"
+        content = [os.path.join(directory, name) for name in os.listdir(directory)]
 
-        files = [{
-            "name": os.path.split(path)[1],
-            "size": os.path.getsize(path),
-            "last_modified": datetime.fromtimestamp(os.path.getmtime(path)),
-            "supported": supported(path, self.handlers),
-        } for path in content if os.path.isfile(path)]
+        files = [
+            {
+                "name": os.path.split(path)[1],
+                "size": os.path.getsize(path),
+                "last_modified": datetime.fromtimestamp(os.path.getmtime(path)),
+                "supported": supported(path, self.handlers),
+            }
+            for path in content
+            if os.path.isfile(path)
+        ]
         files.sort(key=lambda d: alphanum_key(d["name"]))
 
-        directories = [{
-            "name": os.path.split(path)[1],
-            "last_modified": datetime.fromtimestamp(os.path.getmtime(path)),
-        } for path in content if os.path.isdir(path)]
+        directories = [
+            {
+                "name": os.path.split(path)[1],
+                "last_modified": datetime.fromtimestamp(os.path.getmtime(path)),
+            }
+            for path in content
+            if os.path.isdir(path)
+        ]
         directories.sort(key=lambda d: alphanum_key(d["name"]))
 
         tokens = req.path_info.split("/")[1:]
-        breadcrumbs = [{
-            "url": "/".join([req.application_url] + tokens[:i+1]),
-            "title": token,
-        } for i, token in enumerate(tokens) if token]
+        breadcrumbs = [
+            {
+                "url": "/".join([req.application_url] + tokens[: i + 1]),
+                "title": token,
+            }
+            for i, token in enumerate(tokens)
+            if token
+        ]
 
         context = {
             "root": req.application_url,
@@ -128,15 +137,16 @@ class DapServer(object):
         }
 
         if catalog:
-            context['location'] = req.path.replace('catalog.xml', '')
-            template_name = 'catalog.xml'
-            response_content_type = 'application/xml'
+            context["location"] = req.path.replace("catalog.xml", "")
+            template_name = "catalog.xml"
+            response_content_type = "application/xml"
 
         template = self.env.get_template(template_name)
         return Response(
             body=template.render(context),
             content_type=response_content_type,
-            charset="utf-8")
+            charset="utf-8",
+        )
 
 
 def supported(filepath, handlers=None):
@@ -163,15 +173,17 @@ def alphanum_key(s):
     From http://nedbatchelder.com/blog/200712.html#e20071211T054956
 
     """
+
     def tryint(s):
         try:
             return int(s)
         except Exception:
             return s
-    return [tryint(c) for c in re.split('([0-9]+)', s)]
+
+    return [tryint(c) for c in re.split("([0-9]+)", s)]
 
 
-def datetimeformat(value, format='%Y-%m-%d %H:%M:%S'):
+def datetimeformat(value, format="%Y-%m-%d %H:%M:%S"):
     """Return a formatted datetime object."""
     return value.strftime(format)
 
@@ -182,7 +194,6 @@ def datetimeformat_iso(value):
 
 
 class StaticMiddleware(object):
-
     """WSGI middleware for static assets.
 
     The assets can be either specified as a directory, or retrieved from a
@@ -208,7 +219,7 @@ class StaticMiddleware(object):
 
         # otherwise, load resource from package
         package, resource_path = self.static
-        resource = os.path.join(resource_path, *req.path_info.split('/'))
+        resource = os.path.join(resource_path, *req.path_info.split("/"))
         if not pkg_resources.resource_exists(package, resource):
             return HTTPNotFound(req.path_info)
 
@@ -216,7 +227,8 @@ class StaticMiddleware(object):
         return Response(
             body=pkg_resources.resource_string(package, resource),
             content_type=content_type,
-            content_encoding=content_encoding)
+            content_encoding=content_encoding,
+        )
 
 
 def init(directory):
@@ -226,10 +238,10 @@ def init(directory):
     shutil.copytree(templates, directory)
 
     # copy templates from HTML response
-    for resource in pkg_resources.resource_listdir(
-            "pydap.responses.html", "templates"):
+    for resource in pkg_resources.resource_listdir("pydap.responses.html", "templates"):
         path = pkg_resources.resource_filename(
-            "pydap.responses.html", "templates/{0}".format(resource))
+            "pydap.responses.html", "templates/{0}".format(resource)
+        )
         shutil.copy(path, directory)
 
 
@@ -266,7 +278,8 @@ def main():  # pragma: no cover
         host=arguments["--bind"],
         port=int(arguments["--port"]),
         workers=workers,
-        worker_class=arguments["--worker-class"]).run()
+        worker_class=arguments["--worker-class"],
+    ).run()
 
 
 if __name__ == "__main__":

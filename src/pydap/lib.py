@@ -1,37 +1,40 @@
 """Basic functions related to the DAP spec."""
-import operator
 
-import numpy as np
-from pkg_resources import get_distribution
-from requests.utils import quote as quote_
+import operator
 from functools import reduce
 from itertools import zip_longest
 from sys import maxsize as MAXSIZE
 
-from .exceptions import ConstraintExpressionError
+import numpy as np
+from requests.utils import quote as quote_
 
 from . import __version__
+from .exceptions import ConstraintExpressionError
 
-__dap__ = '2.15'
+__dap__ = "2.15"
 
 # when installed in --editable mode, the `__version__` can be a very long str
-# which causes `test_responses_html.py to fail (Content-Length' != '5864' 
+# which causes `test_responses_html.py to fail (Content-Length' != '5864'
 # in test_headers). This will work for now.
 
-__version__ = str(__version__)[:5] # it used to be 3.4.1, len=5.
+__version__ = str(__version__)[:5]  # it used to be 3.4.1, len=5.
 
-START_OF_SEQUENCE = b'\x5a\x00\x00\x00'
-END_OF_SEQUENCE = b'\xa5\x00\x00\x00'
-STRING = '|S128'
+START_OF_SEQUENCE = b"\x5a\x00\x00\x00"
+END_OF_SEQUENCE = b"\xa5\x00\x00\x00"
+STRING = "|S128"
 DEFAULT_TIMEOUT = 120  # 120 seconds = 2 minutes
 
 NUMPY_TO_DAP2_TYPEMAP = {
-    'd': 'Float64',
-    'f': 'Float32',
-    'h': 'Int16',
-    'H': 'UInt16',
-    'i': 'Int32', 'l': 'Int32', 'q': 'Int32',
-    'I': 'UInt32', 'L': 'UInt32', 'Q': 'UInt32',
+    "d": "Float64",
+    "f": "Float32",
+    "h": "Int16",
+    "H": "UInt16",
+    "i": "Int32",
+    "l": "Int32",
+    "q": "Int32",
+    "I": "UInt32",
+    "L": "UInt32",
+    "Q": "UInt32",
     # DAP2 does not support signed bytes.
     # Its Byte type is unsigned and thus corresponds
     # to numpy's 'B'.
@@ -43,15 +46,15 @@ NUMPY_TO_DAP2_TYPEMAP = {
     # but this not how the protocol has been defined.
     # This means that numpy's 'b' must be mapped to Int16
     # and data must be upconverted in the DODS response.
-    'b': 'Int16',
-    'B': 'Byte',
+    "b": "Int16",
+    "B": "Byte",
     # There are no boolean types in DAP2. Upconvert to
     # Byte:
-    '?': 'Byte',
-    'S': 'String',
+    "?": "Byte",
+    "S": "String",
     # Map numpy's 'U' to String b/c
     # DAP2 does not explicitly support unicode.
-    'U': 'String'
+    "U": "String",
 }
 
 # DAP2 demands big-endian 32 bytes signed integers
@@ -60,19 +63,19 @@ NUMPY_TO_DAP2_TYPEMAP = {
 # big-endian 32 bytes UNSIGNED integers:
 # DAP2_ARRAY_LENGTH_NUMPY_TYPE = '>I'
 # Since pydap 3.2.2, the length type is accurate:
-DAP2_ARRAY_LENGTH_NUMPY_TYPE = '>i'
+DAP2_ARRAY_LENGTH_NUMPY_TYPE = ">i"
 
 DAP2_TO_NUMPY_RESPONSE_TYPEMAP = {
-    'Float64': '>d',
-    'Float32': '>f',
+    "Float64": ">d",
+    "Float32": ">f",
     # This is a weird aspect of the DAP2 specification.
     # For backward-compatibility, Int16 and UInt16 are
     # encoded as 32 bits integers in the response,
     # respectively:
-    'Int16': '>i',
-    'UInt16': '>I',
-    'Int32': '>i',
-    'UInt32': '>I',
+    "Int16": ">i",
+    "UInt16": ">I",
+    "Int32": ">i",
+    "UInt32": ">I",
     # DAP2 does not support signed bytes.
     # It's Byte type is unsigned and thus corresponds
     # to numpy 'B'.
@@ -84,81 +87,78 @@ DAP2_TO_NUMPY_RESPONSE_TYPEMAP = {
     # but this not how the protocol has been defined.
     # This means that DAP2 Byte is unsigned and must be
     # mapped to numpy's 'B' type, usigned byte.
-    'Byte': 'B',
+    "Byte": "B",
     # Map String to numpy's string type 'S' b/c
     # DAP2 does not explicitly support unicode.
-    'String': 'S',
-    'URL': 'S',
+    "String": "S",
+    "URL": "S",
     #
     # These two types are not DAP2 but it is useful
     # to include them for compatiblity with other
     # data sources:
-    'Int': '>i',
-    'UInt': '>I',
+    "Int": ">i",
+    "UInt": ">I",
 }
 
 # Typemap from lower case DAP2 types to
 # numpy dtype string with specified endiannes.
 # Here, the endianness is very important:
 LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP = {
-    'float64': '>d',
-    'float32': '>f',
-    'int16': '>h',
-    'uint16': '>H',
-    'int32': '>i',
-    'uint32': '>I',
-    'byte': 'B',
-    'string': STRING,
-    'url': STRING,
-    'int': '>i',
-    'uint': '>I',
+    "float64": ">d",
+    "float32": ">f",
+    "int16": ">h",
+    "uint16": ">H",
+    "int32": ">i",
+    "uint32": ">I",
+    "byte": "B",
+    "string": STRING,
+    "url": STRING,
+    "int": ">i",
+    "uint": ">I",
 }
 
 # Typemap from lower case DAP4 types to
 # numpy dtype string with specified endiannes.
 # Here, the endianness is very important:
 DAP4_TO_NUMPY_PARSER_TYPEMAP = {
-    'Float16': '>f2',
-    'Float32': '>f4',
-    'Float64': '>f8',
-    'Int8': '>i1',
-    'UInt8': '>u1',
-    'Int16': '>i2',
-    'UInt16': '>u2',
-    'Int32': '>i4',
-    'UInt32': '>u4',
-    'Int64': '>i8',
-    'UInt64': '>u8',
-    'Byte': 'B',
-    'String': STRING,
-    'Url': STRING,
+    "Float16": ">f2",
+    "Float32": ">f4",
+    "Float64": ">f8",
+    "Int8": ">i1",
+    "UInt8": ">u1",
+    "Int16": ">i2",
+    "UInt16": ">u2",
+    "Int32": ">i4",
+    "UInt32": ">u4",
+    "Int64": ">i8",
+    "UInt64": ">u8",
+    "Byte": "B",
+    "String": STRING,
+    "Url": STRING,
 }
 
 
 def quote(name):
     """Return quoted name according to the DAP specification.
 
-        >>> quote("White space")
-        'White%20space'
-        >>> quote("Period.")
-        'Period%2E'
+    >>> quote("White space")
+    'White%20space'
+    >>> quote("Period.")
+    'Period%2E'
 
     """
-    safe = '%_!~*\'-"/'
-    return quote_(name.encode('utf-8'), safe=safe).replace('.', '%2E')
+    safe = "%_!~*'-\"/"
+    return quote_(name.encode("utf-8"), safe=safe).replace(".", "%2E")
 
 
 def encode(obj):
     """Return an object encoded to its DAP representation."""
     # fix for Python 3.5, where strings are being encoded as numbers
-    if (
-            isinstance(obj, str) or
-            isinstance(obj, np.ndarray) and obj.dtype.char in 'SU'
-    ):
+    if isinstance(obj, str) or isinstance(obj, np.ndarray) and obj.dtype.char in "SU":
         return '"{0}"'.format(obj)
 
     try:
-        return '%.6g' % obj
+        return "%.6g" % obj
     except Exception:
         return '"{0}"'.format(obj)
 
@@ -205,8 +205,7 @@ def fix_slice(slice_, shape):
                 i += n
 
             j = s.stop
-            if (j is None or
-                    j > n):
+            if j is None or j > n:
                 j = n
             elif j < 0:
                 j += n
@@ -225,8 +224,7 @@ def combine_slices(slice1, slice2):
 
     """
     out = []
-    for exp1, exp2 in zip_longest(
-            slice1, slice2, fillvalue=slice(None)):
+    for exp1, exp2 in zip_longest(slice1, slice2, fillvalue=slice(None)):
         if isinstance(exp1, int):
             exp1 = slice(exp1, exp1 + 1)
         if isinstance(exp2, int):
@@ -258,8 +256,10 @@ def hyperslab(slice_):
     while slice_ and slice_[-1] == slice(None):
         slice_.pop(-1)
 
-    return ''.join('[%s:%s:%s]' % (
-        s.start or 0, s.step or 1, (s.stop or MAXSIZE) - 1) for s in slice_)
+    return "".join(
+        "[%s:%s:%s]" % (s.start or 0, s.step or 1, (s.stop or MAXSIZE) - 1)
+        for s in slice_
+    )
 
 
 def walk(var, type=object):
@@ -291,34 +291,41 @@ def fix_shorthand(projection, dataset):
                 if token == child.name:
                     if var:
                         raise ConstraintExpressionError(
-                            'Ambiguous shorthand notation request: %s' % token)
-                    var = [
-                              (parent, ()) for parent in child.id.split('.')[:-1]
-                          ] + [(token, slice_)]
+                            "Ambiguous shorthand notation request: %s" % token
+                        )
+                    var = [(parent, ()) for parent in child.id.split(".")[:-1]] + [
+                        (token, slice_)
+                    ]
         out.append(var)
     return out
 
 
 def get_var(dataset, id_):
     """Given an id, return the corresponding variable from the dataset."""
-    tokens = id_.split('.')
+    tokens = id_.split(".")
     return reduce(operator.getitem, [dataset] + tokens)
 
 
 def decode_np_strings(numpy_var):
     """Given a fixed-width numpy string, decode it to a unicode type"""
-    if isinstance(numpy_var, bytes) and hasattr(numpy_var, 'tobytes'):
-        return numpy_var.tobytes().decode('utf-8')
+    if isinstance(numpy_var, bytes) and hasattr(numpy_var, "tobytes"):
+        return numpy_var.tobytes().decode("utf-8")
     else:
         return numpy_var
 
 
 def load_from_entry_point_relative(r, package):
     try:
-        loaded = getattr(__import__(r.module_name
-                                    .replace(package + '.', '', 1),
-                                    globals(), None, [r.attrs[0]], 1),
-                         r.attrs[0])
+        loaded = getattr(
+            __import__(
+                r.module_name.replace(package + ".", "", 1),
+                globals(),
+                None,
+                [r.attrs[0]],
+                1,
+            ),
+            r.attrs[0],
+        )
         return r.name, loaded
     except ImportError:
         # This is only used in handlers testing:
@@ -357,4 +364,3 @@ class BytesReader(object):
 
     def peek(self, n):
         return self.data[:n]
-

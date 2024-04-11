@@ -1,26 +1,24 @@
 """Test ASCII response."""
 
 import sys
-
-from webtest import TestApp as App
-from webob.headers import ResponseHeaders
-
-from pydap.lib import __version__
-from pydap.handlers.lib import BaseHandler
-from pydap.tests.datasets import SimpleSequence, SimpleGrid
-from pydap.responses.ascii import ascii
-
 import unittest
+
+from webob.headers import ResponseHeaders
+from webtest import TestApp as App
+
+from pydap.handlers.lib import BaseHandler
+from pydap.lib import __version__
+from pydap.responses.ascii import ascii
+from pydap.tests.datasets import SimpleGrid, SimpleSequence
 
 
 class TestASCIIResponseSequence(unittest.TestCase):
-
     """Test ASCII response from a sequence."""
 
     def setUp(self):
         """Create a simple WSGI app for testing."""
         app = App(BaseHandler(SimpleSequence))
-        self.res = app.get('/.asc')
+        self.res = app.get("/.asc")
 
     def test_dispatcher(self):
         """Test the single dispatcher."""
@@ -43,15 +41,21 @@ class TestASCIIResponseSequence(unittest.TestCase):
         """Test headers from the response."""
         self.assertEqual(
             self.res.headers,
-            ResponseHeaders([
-                ('XDODS-Server', 'pydap/' + __version__),
-                ('Content-description', 'dods_ascii'),
-                ('Content-type', 'text/plain; charset=ascii'),
-                ('Content-Length', '440')]))
+            ResponseHeaders(
+                [
+                    ("XDODS-Server", "pydap/" + __version__),
+                    ("Content-description", "dods_ascii"),
+                    ("Content-type", "text/plain; charset=ascii"),
+                    ("Content-Length", "440"),
+                ]
+            ),
+        )
 
     def test_body(self):
         """Test the generated ASCII response."""
-        self.assertEqual(self.res.text, """Dataset {
+        self.assertEqual(
+            self.res.text,
+            """Dataset {
     Sequence {
         String id;
         Int32 lon;
@@ -68,18 +72,20 @@ cast.id, cast.lon, cast.lat, cast.depth, cast.time, cast.temperature, cast.salin
 "1", 100, -10, 0, -1, 21, 35, 0
 "2", 200, 10, 500, 1, 15, 35, 100
 
-""")
+""",
+        )
 
 
 class TestASCIIResponseGrid(unittest.TestCase):
-
     """Test ASCII response from a grid."""
 
     def test_body(self):
         """Test the generated ASCII response."""
         app = App(BaseHandler(SimpleGrid))
-        res = app.get('/.asc')
-        self.assertEqual(res.text, """Dataset {
+        res = app.get("/.asc")
+        self.assertEqual(
+            res.text,
+            """Dataset {
     Grid {
         Array:
             Int32 SimpleGrid[y = 2][x = 3];
@@ -118,4 +124,5 @@ y
 [0] 0
 [1] 1
 
-""")
+""",
+        )

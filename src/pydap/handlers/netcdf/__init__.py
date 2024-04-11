@@ -3,18 +3,17 @@
 import os
 import re
 import time
-from stat import ST_MTIME
+from collections import OrderedDict
 from email.utils import formatdate
-import numpy as np
+from stat import ST_MTIME
 
+import numpy as np
 from pkg_resources import get_distribution
 
-from pydap.model import DatasetType, GridType, BaseType
-from pydap.handlers.lib import BaseHandler
 from pydap.exceptions import OpenFileError
+from pydap.handlers.lib import BaseHandler
+from pydap.model import BaseType, DatasetType, GridType
 from pydap.pycompat import suppress
-
-from collections import OrderedDict
 
 # Check for netCDF4 presence:
 with suppress(ImportError):
@@ -23,6 +22,7 @@ with suppress(ImportError):
 
         def attrs(var):
             return dict((k, getattr(var, k)) for k in var.ncattrs())
+
     except ImportError:
         from scipy.io.netcdf import netcdf_file
 
@@ -31,7 +31,6 @@ with suppress(ImportError):
 
 
 class NetCDFHandler(BaseHandler):
-
     """A simple handler for NetCDF files.
     Here's a standard dataset for testing sequential data:
     """
@@ -44,14 +43,17 @@ class NetCDFHandler(BaseHandler):
 
         self.filepath = filepath
         try:
-            with netcdf_file(self.filepath, 'r') as source:
-                self.additional_headers.append(('Last-modified',
-                                               (formatdate(
-                                                time.mktime(
-                                                    time.localtime(
-                                                        os.stat(filepath)
-                                                        [ST_MTIME])
-                                                        )))))
+            with netcdf_file(self.filepath, "r") as source:
+                self.additional_headers.append(
+                    (
+                        "Last-modified",
+                        (
+                            formatdate(
+                                time.mktime(time.localtime(os.stat(filepath)[ST_MTIME]))
+                            )
+                        ),
+                    )
+                )
 
                 # shortcuts
                 vars = source.variables
@@ -59,13 +61,13 @@ class NetCDFHandler(BaseHandler):
 
                 # build dataset
                 name = os.path.split(filepath)[1]
-                self.dataset = DatasetType(name,
-                                           attributes=dict(
-                                                      NC_GLOBAL=attrs(source)))
+                self.dataset = DatasetType(
+                    name, attributes=dict(NC_GLOBAL=attrs(source))
+                )
                 for dim in dims:
                     if dims[dim] is None:
-                        self.dataset.attributes['DODS_EXTRA'] = {
-                            'Unlimited_Dimension': dim,
+                        self.dataset.attributes["DODS_EXTRA"] = {
+                            "Unlimited_Dimension": dim,
                         }
                         break
 
@@ -74,25 +76,21 @@ class NetCDFHandler(BaseHandler):
                 for grid in grids:
                     self.dataset[grid] = GridType(grid, attrs(vars[grid]))
                     # add array
-                    self.dataset[grid][grid] = BaseType(grid,
-                                                        LazyVariable(
-                                                            source,
-                                                            grid,
-                                                            grid,
-                                                            self.filepath),
-                                                        vars[grid].dimensions,
-                                                        attrs(vars[grid]))
+                    self.dataset[grid][grid] = BaseType(
+                        grid,
+                        LazyVariable(source, grid, grid, self.filepath),
+                        vars[grid].dimensions,
+                        attrs(vars[grid]),
+                    )
                     # add maps
                     for dim in vars[grid].dimensions:
                         try:
                             data = vars[dim][:]
                             attributes = attrs(vars[dim])
                         except KeyError:
-                            data = np.arange(dims[dim].size, dtype='i')
+                            data = np.arange(dims[dim].size, dtype="i")
                             attributes = None
-                        self.dataset[grid][dim] = BaseType(dim, data,
-                                                           None,
-                                                           attributes)
+                        self.dataset[grid][dim] = BaseType(dim, data, None, attributes)
 
                 # add dims
                 for dim in dims:
@@ -100,14 +98,12 @@ class NetCDFHandler(BaseHandler):
                         data = vars[dim][:]
                         attributes = attrs(vars[dim])
                     except KeyError:
-                        data = np.arange(dims[dim].size, dtype='i')
+                        data = np.arange(dims[dim].size, dtype="i")
                         attributes = None
-                    self.dataset[dim] = BaseType(dim, data,
-                                                 None,
-                                                 attributes)
+                    self.dataset[dim] = BaseType(dim, data, None, attributes)
         except Exception as exc:
             raise
-            message = 'Unable to open file %s: %s' % (filepath, exc)
+            message = "Unable to open file %s: %s" % (filepath, exc)
             raise OpenFileError(message)
 
 
@@ -125,18 +121,17 @@ class LazyVariable:
         self.scale = True
         self.name = name
         self.size = np.prod(self.shape)
-        self._attributes = dict((attr, var.getncattr(attr))
-                                for attr in var.ncattrs())
+        self._attributes = dict((attr, var.getncattr(attr)) for attr in var.ncattrs())
         return
 
     def chunking(self):
-        return 'contiguous'
+        return "contiguous"
 
     def filters(self):
         return None
 
     def get_var_chunk_cache(self):
-        raise NotImplementedError('get_var_chunk_cache is not implemented')
+        raise NotImplementedError("get_var_chunk_cache is not implemented")
         return
 
     def ncattrs(self):
@@ -149,9 +144,9 @@ class LazyVariable:
         # from netcdf4-python
         # if name in _private_atts, it is stored at the python
         # level and not in the netCDF file.
-        if name.startswith('__') and name.endswith('__'):
+        if name.startswith("__") and name.endswith("__"):
             # if __dict__ requested, return a dict with netCDF attributes.
-            if name == '__dict__':
+            if name == "__dict__":
                 names = self.ncattrs()
                 values = []
                 for name in names:
@@ -169,12 +164,15 @@ class LazyVariable:
         return self[...]
 
     def __getitem__(self, key):
-        with netcdf_file(self.filepath, 'r') as source:
+        with netcdf_file(self.filepath, "r") as source:
             # Avoid applying scale_factor, see
             # https://github.com/pydap/pydap/issues/190
             source.set_auto_scale(False)
-            return (np.asarray(source[self.path][key])
-                    .astype(self.dtype).reshape(self._reshape))
+            return (
+                np.asarray(source[self.path][key])
+                .astype(self.dtype)
+                .reshape(self._reshape)
+            )
 
     def reshape(self, *args):
         if len(args) > 1:
@@ -189,7 +187,7 @@ class LazyVariable:
 
     def __len__(self):
         if not self.shape:
-            raise TypeError('len() of unsized object')
+            raise TypeError("len() of unsized object")
         else:
             return self.shape[0]
 
@@ -199,7 +197,8 @@ class LazyVariable:
 
 if __name__ == "__main__":
     import sys
+
     from werkzeug.serving import run_simple
 
     application = NetCDFHandler(sys.argv[1])
-    run_simple('localhost', 8001, application, use_reloader=True)
+    run_simple("localhost", 8001, application, use_reloader=True)
