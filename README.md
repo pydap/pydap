@@ -1,11 +1,16 @@
 pydap
 =====
 
-[![Build Status](https://travis-ci.org/pydap/pydap.svg)](https://travis-ci.org/pydap/pydap)
 [![Python3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/pydap/)
 [![conda forge](https://anaconda.org/conda-forge/pydap/badges/version.svg)](https://anaconda.org/conda-forge/pydap)
+[![Build Status](https://travis-ci.org/pydap/pydap.svg)](https://travis-ci.org/pydap/pydap)
+[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/pydap/pydap)
+[![pre-commit](https://results.pre-commit.ci/badge/github/pydap/pydap/master.svg)](https://results.pre-commit.ci/latest/github/pydap/pydap/master)
 [![Join the chat at https://gitter.im/pydap/pydap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pydap/pydap)
+
+
 
 [pydap](https://pydap.github.io/pydap/) is an implementation of the
 Opendap/DODS protocol, written from scratch in pure python.  You can
