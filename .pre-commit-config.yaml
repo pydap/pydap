@@ -22,11 +22,11 @@ repos:
     args: [--autofix, --preserve-quotes]
   - id: pretty-format-toml
     args: [--autofix]
-# - repo: https://github.com/pycqa/isort
-#   rev: 5.13.2
-#   hooks:
-#   - id: isort
-#     exclude: src/pydap/tests/test_responses_error.py|src/pydap/wsgi/templates/base.html
+- repo: https://github.com/pycqa/isort
+  rev: 5.13.2
+  hooks:
+  - id: isort
+    exclude: src/pydap/tests/test_responses_error.py|src/pydap/wsgi/templates/base.html
 - repo: https://github.com/psf/black
   rev: 24.3.0
   hooks:
