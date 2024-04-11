@@ -83,4 +83,20 @@ have one, then make sure your fork's main branch is up-to-date.
 11. Make edits/commits as necessary, and push. Once ready, go to your pydap fork repository and click on
 ``Compare and Pull``.
 
-12. Finally, if your branch has no conclicts, click on ``Send Pull Request`` to finish sending the PR.
+12. Make sure that the code follows the style guide using the following commands:
+
+   .. code-block:: bash
+
+    $ conda install -c conda-forge pre-commit
+    $ pre-commit run --all
+
+   .. note::
+
+    Run the following command to automatically run `black` and `flake8` each time `git commit` is used:
+
+      .. code-block:: bash
+
+       $ pre-commit install
+
+
+13. Finally, if your branch has no conclicts, click on ``Send Pull Request`` to finish sending the PR.
