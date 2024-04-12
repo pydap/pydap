@@ -134,6 +134,8 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 self.fragment,
             )
         )
+        dmr_url = dmr_url.replace("[", "%5B").replace("]", "%5D")
+
         r = pydap.net.GET(
             dmr_url,
             self.application,
@@ -438,11 +440,14 @@ class BaseProxyDap4(BaseProxyDap2):
 
     def __getitem__(self, index):
         # build download url
-        index = combine_slices(self.slice, fix_slice(index, self.shape))
-        scheme, netloc, path, params, query, fragment = urlparse(self.baseurl)
-        ce = "dap4.ce=" + quote(self.id) + hyperslab(index) + query
-        url = urlunparse((scheme, netloc, path + ".dap", "", ce, fragment)).rstrip("&")
 
+        index = combine_slices(self.slice, fix_slice(index, self.shape))
+        scheme, netloc, path, _, query, fragment = urlparse(self.baseurl)
+        # ce = "dap4.ce=" + quote(self.id) + hyperslab(index) + query
+        # else:
+        ce = "dap4.ce=" + quote(self.id) + hyperslab(index)
+        url = urlunparse((scheme, netloc, path + ".dap", "", ce, fragment)).rstrip("&")
+        # I need to encode `[` and `]`
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
 
