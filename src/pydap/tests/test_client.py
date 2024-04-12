@@ -31,11 +31,24 @@ def test_open_url(sequence_app):
 
 
 def test_open_url_dap4():
-    url = "http://test.opendap.org/opendap/hyrax/data/nc/test.nc"
-    constrain = "dap4.ce=/s33[0][0]"
-    data_original = open_url(url)
-    data_dap4 = open_url(url + "?" + constrain, protocol="dap4")
+    base_url = "http://test.opendap.org/opendap/hyrax/data/nc/test.nc"
+    data_original = open_url(base_url)
+
+    # test single data point
+    constrain1 = "dap4.ce=/s33[0][0]"
+    data_dap4 = open_url(base_url + "?" + constrain1, protocol="dap4")
     assert data_dap4["s33"][:].data == data_original["s33"][0, 0].data
+
+    # subset of vars
+    var1 = "/s33[0:][0:1:2];"
+    var2 = "/br34[0:1:1][0:1:2][0:1:3];"
+    var3 = "/s113[0:1:0][0:1:0][0:1:2]"
+    Vars = [var1, var2, var3]
+
+    url = base_url + "?dap4.ce=" + var1 + var2 + var3
+    dataset = open_url(url, protocol="dap4")
+    # check [vars1, vars2, vars3] only in dataset
+    assert len(dataset.keys()) == len(Vars)
 
 
 @pytest.mark.client
