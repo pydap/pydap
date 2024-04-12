@@ -30,6 +30,14 @@ def test_open_url(sequence_app):
     assert list(dataset.keys()) == ["cast"]
 
 
+def test_open_url_dap4():
+    url = "http://test.opendap.org/opendap/hyrax/data/nc/test.nc"
+    constrain = "dap4.ce=/s33[0][0]"
+    data_original = open_url(url)
+    data_dap4 = open_url(url + "?" + constrain, protocol="dap4")
+    assert data_dap4["s33"][:].data == data_original["s33"][0, 0].data
+
+
 @pytest.mark.client
 def test_open_dods():
     """Open a file downloaded from the test server with the DAS."""
