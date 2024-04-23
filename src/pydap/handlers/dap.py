@@ -135,7 +135,6 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             )
         )
         dmr_url = dmr_url.replace("[", "%5B").replace("]", "%5D")
-
         r = pydap.net.GET(
             dmr_url,
             self.application,
@@ -148,16 +147,18 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         self.dataset = dmr_to_dataset(dmr)
 
     def dataset_from_dap2(self):
+        # escape for certain characters
         dds_url = urlunparse(
             (
                 self.scheme,
                 self.netloc,
                 self.path + ".dds",
                 "",
-                self.query,
+                quote(self.query),
                 self.fragment,
             )
         )
+        print("dds_url: ", dds_url)
         r = pydap.net.GET(
             dds_url,
             self.application,
@@ -188,6 +189,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             timeout=self.timeout,
             verify=self.verify,
         )
+        print("das_url:", das_url)
         pydap.net.raise_for_status(r)
         das = safe_charset_text(r, self.user_charset)
         add_attributes(self.dataset, parse_das(das))
