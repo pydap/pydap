@@ -15,8 +15,6 @@ jobs:
         python-version: ['3.x', '3.9', '3.10', '3.11']
         exclude:
         - {python-version: "3.9", os: "macos-latest"}
-        include:
-        - {python-version: "3.9", os: "macos-13"}
     name: macos-latest Python ${{ matrix.python-version }}
     steps:
     - uses: actions/checkout@v4
