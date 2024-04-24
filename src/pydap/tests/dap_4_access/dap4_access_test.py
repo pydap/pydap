@@ -70,7 +70,7 @@ def main():
         i += 1
         print(f"Call {i}")
         variable = pydap_ds["sea_ice_fraction"][0, 1700:1799:10, 1800:1900:10]
-        print(f"Time for request: {time.time()-start}")
+        print(f"Time for request: {time.time() - start}")
         print('A subset of the "sea_ice_fraction" variable')
         print(variable.data)
 
