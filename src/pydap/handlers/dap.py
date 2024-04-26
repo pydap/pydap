@@ -158,7 +158,6 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 self.fragment,
             )
         )
-        print("dds_url: ", dds_url)
         r = pydap.net.GET(
             dds_url,
             self.application,
@@ -189,7 +188,6 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             timeout=self.timeout,
             verify=self.verify,
         )
-        print("das_url:", das_url)
         pydap.net.raise_for_status(r)
         das = safe_charset_text(r, self.user_charset)
         add_attributes(self.dataset, parse_das(das))
@@ -232,6 +230,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             var.data = SequenceProxy(
                 self.base_url,
                 template,
+                selection=self.selection,
                 application=self.application,
                 session=self.session,
                 timeout=self.timeout,
