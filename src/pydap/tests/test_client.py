@@ -30,8 +30,13 @@ def test_open_url(sequence_app):
     assert list(dataset.keys()) == ["cast"]
 
 
-def test_open_url_dap4():
-    base_url = "http://test.opendap.org/opendap/hyrax/data/nc/test.nc"
+@pytest.fixture
+def remote_url():
+    return "http://test.opendap.org/opendap/hyrax/data/"
+
+
+def test_open_url_dap4(remote_url):
+    base_url = remote_url + "nc/test.nc"
     data_original = open_url(base_url)
 
     # test single data point
@@ -39,7 +44,7 @@ def test_open_url_dap4():
     data_dap4 = open_url(base_url + "?" + constrain1, protocol="dap4")
     assert data_dap4["s33"][:].data == data_original["s33"][0, 0].data
 
-    # subset of vars
+    # subset of vars by indexes
     var1 = "/s33[0:][0:1:2];"
     var2 = "/br34[0:1:1][0:1:2][0:1:3];"
     var3 = "/s113[0:1:0][0:1:0][0:1:2]"
@@ -49,6 +54,32 @@ def test_open_url_dap4():
     dataset = open_url(url, protocol="dap4")
     # check [vars1, vars2, vars3] only in dataset
     assert len(dataset.keys()) == len(Vars)
+
+
+def test_open_url_seqCE(remote_url):
+    seq_url = remote_url + "ff/gsodock.dat"
+    data_original = open_url(seq_url)
+    # get name of Sequence
+    seq_name = [key for key in data_original.keys()][0]
+
+    # add constraint expression
+    Vars = ["Time", "Sea_Temp"]
+    Value = 35234.1
+    projection = "URI_GSO-Dock.Time,URI_GSO-Dock.Sea_Temp"
+    selection = "URI_GSO-Dock.Time<" + str(Value)
+    seq_url_CE = seq_url + "?" + projection + "&" + selection
+
+    dsCE = open_url(seq_url_CE)
+
+    # assert projection works within sequence
+    assert set([var for var in dsCE[seq_name].keys()]) == set(Vars)
+
+    # assert selection works within sequence
+
+    assert max([var for var in dsCE[seq_name]["Time"]]) < Value
+    assert len([var for var in dsCE[seq_name]["Time"]]) < len(
+        [var for var in data_original[seq_name]["Time"]]
+    )
 
 
 @pytest.mark.client
