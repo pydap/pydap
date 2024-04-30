@@ -5,22 +5,21 @@ Usage:
 
 Options:
   -h --help                     Show this help message and exit
-  --version                     Show version
+  --version                     Show pydap version
   -i --init DIR                 Create directory with templates
   -b ADDRESS --bind ADDRESS     The ip to listen to [default: 127.0.0.1]
   -p PORT --port PORT           The port to connect [default: 8001]
   -d DIR --data DIR             The directory with files [default: .]
   -t DIR --templates DIR        The directory with templates
+  --workers INT                 Number of workers [default: 1]
+  --threads INT                 Number of threads [default: 1]
   --worker-class=CLASS          Gunicorn worker class [default: sync]
-
 """
 
 import mimetypes
-import multiprocessing
 import os
 import re
 import shutil
-import warnings as _warnings
 from datetime import datetime
 
 import pkg_resources
@@ -283,29 +282,6 @@ def main():  # pragma: no cover
         init(arguments["--init"])
         return
 
-    # assign core count for comparison later
-    ncores = multiprocessing.cpu_count()
-
-    if arguments["--workers"] is None and arguments["--threads"] is None:
-        workers = ncores
-        threads = 1
-    elif arguments["--workers"] is not None and arguments["--threads"] is None:
-        workers = arguments["--workers"]
-        threads = 1  # default
-    elif arguments["--workers"] is None and arguments["--threads"] is not None:
-        workers = 1
-        threads = arguments["--threads"]
-    else:
-        # both threads and workers are defined by user, must check that in
-        # combination these do not exceed cpu.core count. Give precedence
-        # to workers over threads and raise warning
-        workers = arguments["--workers"]
-        if workers > ncores:
-            _warnings.warn("The number of workers exceed the number of cpu core count")
-            workers = ncores
-
-        threads = min(arguments["--threads"], ncores // workers)
-
     # create pydap app
     data, templates = arguments["--data"], arguments["--templates"]
     app = DapServer(data, templates)
@@ -323,9 +299,9 @@ def main():  # pragma: no cover
         app,
         host=arguments["--bind"],
         port=int(arguments["--port"]),
-        workers=workers,
+        workers=arguments["--workers"],
+        threads=arguments["--threads"],
         worker_class=arguments["--worker-class"],
-        threads=threads,
     )
     pydap_app.run()
 
