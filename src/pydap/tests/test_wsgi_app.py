@@ -115,8 +115,11 @@ class TestPyDapApplication(unittest.TestCase):
         app = DapServer(data, templates)
         app.handlers = [DummyHandler]
         app = StaticMiddleware(app, os.path.join(templates, "static"))
-        nworks = multiprocessing.cpu_count() * 2 + 1
-        self.app = PyDapApplication(app, host="127.0.1", port="8001", workers=nworks)
+        nworks = multiprocessing.cpu_count() // 2
+        nthreads = multiprocessing.cpu_count() // 2
+        self.app = PyDapApplication(
+            app, host="127.0.1", port="8001", workers=nworks, threads=nthreads
+        )
 
     def tearDown(self):
         """Remove the installation."""
@@ -129,7 +132,11 @@ class TestPyDapApplication(unittest.TestCase):
 
     def test_app_cfgworkers(self):
         workers = self.app.cfg.settings["workers"].value
-        self.assertEqual(workers, multiprocessing.cpu_count() * 2 + 1)
+        self.assertEqual(workers, multiprocessing.cpu_count() // 2)
+
+    def test_app_cfgthreads(self):
+        threads = self.app.cfg.settings["threads"].value
+        self.assertEqual(threads, multiprocessing.cpu_count() // 2)
 
 
 class TestPackageAssets(unittest.TestCase):
