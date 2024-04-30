@@ -124,12 +124,12 @@ class TestPyDapApplication(unittest.TestCase):
 
     def test_app_bind(self):
         """Test the correct config."""
-        bind = self.app._config
-        self.assertEqual(bind["bind"], "127.0.1:8001")
+        bind = self.app.cfg.settings["bind"].value[0]
+        self.assertEqual(bind, "127.0.1:8001")
 
     def test_app_cfgworkers(self):
-        bind = self.app._config
-        self.assertEqual(bind["workers"], multiprocessing.cpu_count() * 2 + 1)
+        workers = self.app.cfg.settings["workers"].value
+        self.assertEqual(workers, multiprocessing.cpu_count() * 2 + 1)
 
 
 class TestPackageAssets(unittest.TestCase):
