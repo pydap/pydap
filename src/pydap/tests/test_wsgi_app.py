@@ -1,5 +1,6 @@
 """Tests for the pydap server."""
 
+import multiprocessing
 import os
 import shutil
 import tempfile
@@ -12,7 +13,7 @@ from webtest import AppError
 from webtest import TestApp as App
 
 from pydap.exceptions import ExtensionNotSupportedError
-from pydap.wsgi.app import DapServer, StaticMiddleware, init
+from pydap.wsgi.app import DapServer, PyDapApplication, StaticMiddleware, init
 
 
 class TestDapServer(unittest.TestCase):
@@ -89,6 +90,46 @@ class TestDapServer(unittest.TestCase):
         """Test that we can load a static asset."""
         res = self.app.get("/static/style.css")
         self.assertEqual(res.status, "200 OK")
+
+
+class TestPyDapApplication(unittest.TestCase):
+    """tests the configuration of Application"""
+
+    def setUp(self):
+        """Create an installation."""
+        self.install = tempfile.mkdtemp(suffix="pydap")
+
+        # create directory for data with two files
+        data = os.path.join(self.install, "data")
+        os.mkdir(data)
+        os.mkdir(os.path.join(data, "subdir"))
+        with open(os.path.join(data, "README.txt"), "w") as fp:
+            fp.write("Hello, world!")
+        with open(os.path.join(data, "data.foo"), "w") as fp:
+            pass
+
+        # create templates directory
+        templates = os.path.join(self.install, "templates")
+        init(templates)
+
+        app = DapServer(data, templates)
+        app.handlers = [DummyHandler]
+        app = StaticMiddleware(app, os.path.join(templates, "static"))
+        nworks = multiprocessing.cpu_count() * 2 + 1
+        self.app = PyDapApplication(app, host="127.0.1", port="8001", workers=nworks)
+
+    def tearDown(self):
+        """Remove the installation."""
+        shutil.rmtree(self.install)
+
+    def test_app_bind(self):
+        """Test the correct config."""
+        bind = self.app._config
+        self.assertEqual(bind["bind"], "127.0.1:8001")
+
+    def test_app_cfgworkers(self):
+        bind = self.app._config
+        self.assertEqual(bind["workers"], multiprocessing.cpu_count() * 2 + 1)
 
 
 class TestPackageAssets(unittest.TestCase):
