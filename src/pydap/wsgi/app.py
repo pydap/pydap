@@ -20,6 +20,7 @@ import multiprocessing
 import os
 import re
 import shutil
+import warnings as _warnings
 from datetime import datetime
 
 import pkg_resources
@@ -250,7 +251,7 @@ def init(directory):
 
 class PyDapApplication(WSGIApplication):
     """An application interface for configuring and loading
-    the various necessities for any given web framework."""
+    the various necessities for a given web framework."""
 
     def __init__(self, app, **local_config):
 
@@ -282,6 +283,29 @@ def main():  # pragma: no cover
         init(arguments["--init"])
         return
 
+    # assign core count for comparison later
+    ncores = multiprocessing.cpu_count()
+
+    if arguments["--workers"] is None and arguments["--threads"] is None:
+        workers = ncores
+        threads = 1
+    elif arguments["--workers"] is not None and arguments["--threads"] is None:
+        workers = arguments["--workers"]
+        threads = 1  # default
+    elif arguments["--workers"] is None and arguments["--threads"] is not None:
+        workers = 1
+        threads = arguments["--threads"]
+    else:
+        # both threads and workers are defined by user, must check that in
+        # combination these do not exceed cpu.core count. Give precedence
+        # to workers over threads and raise warning
+        workers = arguments["--workers"]
+        if workers > ncores:
+            _warnings.warn("The number of workers exceed the number of cpu core count")
+            workers = ncores
+
+        threads = min(arguments["--threads"], ncores // workers)
+
     # create pydap app
     data, templates = arguments["--data"], arguments["--templates"]
     app = DapServer(data, templates)
@@ -299,8 +323,9 @@ def main():  # pragma: no cover
         app,
         host=arguments["--bind"],
         port=int(arguments["--port"]),
-        workers=multiprocessing.cpu_count() * 2 + 1,
+        workers=workers,
         worker_class=arguments["--worker-class"],
+        threads=threads,
     )
     pydap_app.run()
 
