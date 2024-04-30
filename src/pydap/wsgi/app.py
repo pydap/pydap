@@ -249,6 +249,9 @@ def init(directory):
 
 
 class PyDapApplication(WSGIApplication):
+    """An application interface for configuring and loading
+    the various necessities for any given web framework."""
+
     def __init__(self, app, **local_config):
 
         self._app = app
