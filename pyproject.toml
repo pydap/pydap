@@ -71,7 +71,8 @@ tests = [
   'WebTest',
   'flake8',
   'werkzeug>= 2.2.2',
-  'pyopenssl'
+  'pyopenssl',
+  'gunicorn'
 ]
 
 [tool.isort]
