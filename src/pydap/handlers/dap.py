@@ -16,6 +16,7 @@ import logging
 import pprint
 import re
 import sys
+import warnings as _warnings
 from io import BytesIO
 from itertools import chain
 
@@ -105,6 +106,9 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         elif self.scheme == "dap4":
             self.scheme = "http"
             return "dap4"
+        elif self.query[:4] == "dap4":
+            self.sheme = "http"
+            return "dap4"
         else:
             extension = self.path.split(".")[-1]
             if extension in ["dmr", "dap"]:
@@ -112,6 +116,12 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             elif extension in ["dds", "dods"]:
                 return "dap2"
             else:
+                _warnings.warn(
+                    "PyDAP was unable to determine the DAP protocol "
+                    "defaulting to DAP2 which is consider legacy and "
+                    "may result in slower responses. For more, see "
+                    "go to https://www.opendap.org/faq-page."
+                )
                 return "dap2"
 
     def make_dataset(
