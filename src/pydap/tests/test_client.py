@@ -41,7 +41,7 @@ def test_open_url_dap4(remote_url):
 
     # test single data point
     constrain1 = "dap4.ce=/s33[0][0]"
-    data_dap4 = open_url(base_url + "?" + constrain1, protocol="dap4")
+    data_dap4 = open_url(base_url + "?" + constrain1)
     assert data_dap4["s33"][:].data == data_original["s33"][0, 0].data
 
     # subset of vars by indexes
@@ -51,7 +51,7 @@ def test_open_url_dap4(remote_url):
     Vars = [var1, var2, var3]
 
     url = base_url + "?dap4.ce=" + var1 + var2 + var3
-    dataset = open_url(url, protocol="dap4")
+    dataset = open_url(url)
     # check [vars1, vars2, vars3] only in dataset
     assert len(dataset.keys()) == len(Vars)
 
