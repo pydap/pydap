@@ -5,14 +5,15 @@ Usage:
 
 Options:
   -h --help                     Show this help message and exit
-  --version                     Show version
+  --version                     Show pydap version
   -i --init DIR                 Create directory with templates
   -b ADDRESS --bind ADDRESS     The ip to listen to [default: 127.0.0.1]
   -p PORT --port PORT           The port to connect [default: 8001]
   -d DIR --data DIR             The directory with files [default: .]
   -t DIR --templates DIR        The directory with templates
+  --workers INT                 Number of workers [default: 1]
+  --threads INT                 Number of threads [default: 1]
   --worker-class=CLASS          Gunicorn worker class [default: sync]
-
 """
 
 import mimetypes
@@ -22,6 +23,8 @@ import shutil
 from datetime import datetime
 
 import pkg_resources
+from docopt import docopt
+from gunicorn.app.wsgiapp import WSGIApplication
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, PackageLoader
 from requests.utils import unquote
 from webob import Response
@@ -245,12 +248,32 @@ def init(directory):
         shutil.copy(path, directory)
 
 
+class PyDapApplication(WSGIApplication):
+    """An application interface for configuring and loading
+    the various necessities for a given web framework."""
+
+    def __init__(self, app, **local_config):
+
+        self._app = app
+        self._config = local_config
+        self._config["bind"] = "%s:%s" % (
+            local_config.pop("host", ""),
+            local_config.pop("port", ""),
+        )
+
+        WSGIApplication.__init__(self)
+
+    def load_config(self):
+        for k, v in self._config.items():
+            if v is not None:
+                self.cfg.set(k.lower(), v)
+
+    def load(self):
+        return self._app
+
+
 def main():  # pragma: no cover
     """Run server from the command line."""
-    import multiprocessing
-
-    from docopt import docopt
-    from gunicorn.app.pasterapp import PasterServerApplication
 
     arguments = docopt(__doc__, version="pydap %s" % __version__)
 
@@ -272,14 +295,15 @@ def main():  # pragma: no cover
     app = StaticMiddleware(app, static)
 
     # configure WSGI server
-    workers = multiprocessing.cpu_count() * 2 + 1
-    PasterServerApplication(
+    pydap_app = PyDapApplication(
         app,
         host=arguments["--bind"],
         port=int(arguments["--port"]),
-        workers=workers,
+        workers=arguments["--workers"],
+        threads=arguments["--threads"],
         worker_class=arguments["--worker-class"],
-    ).run()
+    )
+    pydap_app.run()
 
 
 if __name__ == "__main__":
