@@ -16,7 +16,7 @@ from pydap.lib import (
     quote,
     walk,
 )
-from pydap.model import BaseType, DatasetType, StructureType
+from pydap.model import BaseType, DatasetType, SequenceType, StructureType
 
 
 class TestQuote(unittest.TestCase):
@@ -218,16 +218,19 @@ class TestWalk(unittest.TestCase):
         self.dataset = DatasetType("a")
         self.dataset["b"] = BaseType("b")
         self.dataset["c"] = StructureType("c")
+        self.dataset["d"] = SequenceType("d")
 
     def test_walk(self):
         """Test that all variables are yielded."""
         self.assertEqual(
-            list(walk(self.dataset)), [self.dataset, self.dataset.b, self.dataset.c]
+            list(walk(self.dataset)),
+            [self.dataset, self.dataset.b, self.dataset.c, self.dataset.d],
         )
 
     def test_walk_type(self):
         """Test the filtering of variables yielded."""
         self.assertEqual(list(walk(self.dataset, BaseType)), [self.dataset.b])
+        self.assertEqual(list(walk(self.dataset, SequenceType)), [self.dataset.d])
 
 
 class TestFixShorthand(unittest.TestCase):
