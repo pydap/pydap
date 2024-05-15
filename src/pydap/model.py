@@ -514,18 +514,36 @@ class DatasetType(StructureType):
 
     def __setitem__(self, key, item):
 
-        key = quote(key)  # should name be quoted?
-        if key != item.name:
-            raise KeyError(
-                'Key "%s" is different from variable name "%s"!' % (key, item.name)
-            )
+        # is key a path-like?
+        N = len(key.split("/")[1:])
+        if key[0] == "/" and N > 1:
+            parts = key.split("/")[1:]
+            # add parent group to dataset keys
+            if parts[0] not in self._dict:
+                self._visible_keys.append(parts[0])
+            # iterate over all groups to reach DAP object
+            current = self._dict
+            for j in range(N - 1):
+                if parts[j] not in current:
+                    current[parts[j]] = GroupType(parts[j])
+                current = current[parts[j]]
+            current[parts[-1]] = item
+        else:
+            if key[0] == "/":
+                key = key[1:]
 
-        if key in self:
-            del self[key]
+            key = quote(key)  # should name be quoted?
+            if key != item.name:
+                raise KeyError(
+                    'Key "%s" is different from variable name "%s"!' % (key, item.name)
+                )
 
-        self._dict[key] = item
-        # By default added keys are visible:
-        self._visible_keys.append(key)
+            if key in self:
+                del self[key]
+
+            self._dict[key] = item
+            # By default added keys are visible:
+            self._visible_keys.append(key)
 
         # The dataset name does not go into the children ids.
         item.id = item.name
