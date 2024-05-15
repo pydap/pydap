@@ -128,9 +128,11 @@ def has_map(element):
 def dmr_to_dataset(dmr):
     """Return a dataset object from a DMR representation."""
 
+    # this should simple be:
+    # return DMRParser(dmr).parse()
+
     # Parse the DMR. First dropping the namespace
-    dmr = re.sub(' xmlns="[^"]+"', "", dmr, count=1)
-    dom_et = ET.fromstring(dmr)
+    dom_et = DMRParser(dmr).node
 
     variables = get_variables(dom_et)
     named_dimensions = get_named_dimensions(dom_et)
@@ -190,11 +192,15 @@ def dmr_to_dataset(dmr):
     return dataset
 
 
-class DMRParser:
+class DMRParser(object):
     """A parser for the DMR."""
 
     def __init__(self, dmr):
+        # super(DMRParser, self).__init__(dmr, re.IGNORECASE)
         self.dmr = dmr
+
+        _dmr = re.sub(' xmlns="[^"]+"', "", self.dmr, count=1)
+        self.node = ET.fromstring(_dmr)
 
 
 class DummyData(object):
