@@ -178,7 +178,14 @@ import numpy as np
 
 from .lib import decode_np_strings, quote
 
-__all__ = ["BaseType", "StructureType", "DatasetType", "SequenceType", "GridType"]
+__all__ = [
+    "BaseType",
+    "StructureType",
+    "DatasetType",
+    "SequenceType",
+    "GridType",
+    "GroupType",
+]
 
 
 class DapType(object):
@@ -503,11 +510,22 @@ class DatasetType(StructureType):
         >>> dataset["B"] = BaseType("B")
         >>> dataset["B"].id
         'B'
-
     """
 
     def __setitem__(self, key, item):
-        StructureType.__setitem__(self, key, item)
+
+        key = quote(key)  # should name be quoted?
+        if key != item.name:
+            raise KeyError(
+                'Key "%s" is different from variable name "%s"!' % (key, item.name)
+            )
+
+        if key in self:
+            del self[key]
+
+        self._dict[key] = item
+        # By default added keys are visible:
+        self._visible_keys.append(key)
 
         # The dataset name does not go into the children ids.
         item.id = item.name
@@ -791,6 +809,42 @@ class GridType(StructureType):
     def dimensions(self):
         """Return the name of the axes."""
         return tuple(list(self.keys())[1:])
+
+
+class GroupType(StructureType):
+    """A Group container.
+
+    A folder-like DAP container which may have other DAP types like
+    Sequences, Structures, DataArrays, and other Groups, as children.
+
+    Groups in OPeNDAP:
+        - There is at least the root Group `/`.
+        - Must have a name.
+        - There is a single parent to a Group (tree hierarchy).
+        - Attributes are Global at the Group level.
+        - Can have share dimensions, which are scoped to all children (not to parent)
+
+    Examples:
+
+    """
+
+    def __setitem__(self, key, item):
+        StructureType.__setitem__(self, key, item)
+
+        # The Group name does (not) go into the children ids.
+
+        item.id = item.name
+        # self._dict[key] = item
+
+        # # By default added keys are visible:
+        # self._visible_keys.append(key)
+
+    def _set_id(self, id):
+        """The dataset name is (not) included in the children ids."""
+        self._id = id
+
+        for child in self.children():
+            child.id = child.name
 
 
 class MapType(StructureType):
