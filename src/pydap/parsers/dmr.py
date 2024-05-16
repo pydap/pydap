@@ -175,19 +175,28 @@ def dmr_to_dataset(dmr):
     dataset_name = dom_et.attrib["name"]
     dataset = pydap.model.DatasetType(dataset_name)
     for name, variable in variables.items():
+        var_name = variable["name"]
+        if len(var_name.split("/")) > 1:
+            # path-like name - Groups!
+            var_name = var_name.split("/")[-1]
+            # need to do the same with dimensions
+            for i in range(len(variable["dims"])):
+                dim = variable["dims"][i].split("/")[-1]
+                variable["dims"][i] = dim
+
         data = DummyData(dtype=variable["dtype"], shape=variable["shape"])
         array = pydap.model.BaseType(
-            name=variable["name"], data=data, dimensions=variable["dims"]
+            name=var_name, data=data, dimensions=variable["dims"]
         )
         if variable["has_map"]:
-            var = pydap.model.GridType(name=variable["name"])
-            var[name] = array
+            var = pydap.model.GridType(name=var_name)
+            var[var_name] = array
             for dim in variable["dims"]:
                 var[dim] = copy.copy(dataset[dim])
         else:
             var = array
         var.attributes = variable["attributes"]
-        dataset[var.name] = var
+        dataset[name] = var
 
     return dataset
 
