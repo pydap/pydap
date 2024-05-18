@@ -12,6 +12,7 @@ from pydap.model import (
     DapType,
     DatasetType,
     GridType,
+    GroupType,
     SequenceType,
     StructureType,
 )
@@ -471,6 +472,24 @@ def test_SequenceType_copy(sequence_example):
     clone = copy.copy(sequence_example)
     assert sequence_example is not clone
     assert (sequence_example.data == clone.data).all()
+
+
+def test_DatasetType_get_item_directory_path():
+    dataset = DatasetType("dataset")
+    child = BaseType("child")
+    dataset["child"] = child
+    assert dataset[""] == dataset
+    assert dataset["/"] == dataset
+
+
+def test_DatasetType_set_item_directory_path(sequence_example):
+    dataset = DatasetType("dataset")
+    path = "/Group1/Group2/example"
+    dataset[path] == sequence_example
+    assert list(dataset.keys())[0] == "Group1"
+    assert list(dataset["Group1"].keys())[0] == "Group2"
+    assert isinstance(dataset["Group1"], GroupType)
+    assert isinstance(dataset["Group2"], GroupType)
 
 
 # Test pydap grids.
