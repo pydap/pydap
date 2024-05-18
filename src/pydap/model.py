@@ -420,8 +420,6 @@ class StructureType(DapType, Mapping):
                     return self[splitted[0]][".".join(splitted[1:])]
                 except (KeyError, IndexError):
                     return self[".".join(splitted[1:])]
-            else:
-                raise
 
     def _getitem_string_tuple(self, key):
         """Assume that key is a tuple of strings"""
@@ -547,6 +545,32 @@ class DatasetType(StructureType):
 
         # The dataset name does not go into the children ids.
         item.id = item.name
+
+    def _getitem_string(self, key):
+        """Assume that key is a string type"""
+        try:
+            return self._dict[quote(key)]
+        except KeyError:
+            parts = key.split("/")
+            if len(parts) == 1:
+                # empty path = ''
+                return self
+            elif len(parts) > 1:
+                if parts[0] == parts[1]:
+                    if len(parts) == 2:
+                        return self
+                    else:
+                        raise KeyError("Path not recognized")
+                else:
+                    # # directory like
+                    pass
+
+            splitted = key.split(".")
+            if len(splitted) > 1:
+                try:
+                    return self[splitted[0]][".".join(splitted[1:])]
+                except (KeyError, IndexError):
+                    return self[".".join(splitted[1:])]
 
     def _set_id(self, id):
         """The dataset name is not included in the children ids."""
