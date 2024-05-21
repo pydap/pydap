@@ -485,11 +485,12 @@ def test_DatasetType_get_item_directory_path():
 def test_DatasetType_set_item_directory_path(sequence_example):
     dataset = DatasetType("dataset")
     path = "/Group1/Group2/example"
-    dataset[path] == sequence_example
-    assert list(dataset.keys())[0] == "Group1"
-    assert list(dataset["Group1"].keys())[0] == "Group2"
+    dataset[path] = sequence_example
+    assert "Group1" in list(dataset.keys())
+    assert "Group2" in list(dataset["/Group1"].keys())
     assert isinstance(dataset["Group1"], GroupType)
-    assert isinstance(dataset["Group2"], GroupType)
+    assert isinstance(dataset["Group1/Group2"], GroupType)
+    assert isinstance(dataset["Group1/Group2/example"], SequenceType)
 
 
 # Test pydap grids.

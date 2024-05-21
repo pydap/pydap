@@ -145,6 +145,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             )
         )
         dmr_url = dmr_url.replace("[", "%5B").replace("]", "%5D")
+        print(dmr_url)
         r = pydap.net.GET(
             dmr_url,
             self.application,

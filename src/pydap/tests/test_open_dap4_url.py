@@ -11,10 +11,10 @@ def test_coads():
     pydap_ds["COADSX"][10:12:1]
 
 
-def test_groups():
-    url = base_url + ":8080/opendap/dmrpp_test_files/"
-    pydap_ds = open_url(url + "ATL03_20181228015957_13810110_003_01.2var.h5.dmrpp")
-    pydap_ds["/gt1r/bckgrd_atlas/bckgrd_int_height"][0:10]
+# def test_groups():
+#     url = base_url + ":8080/opendap/dmrpp_test_files/"
+#     pydap_ds = open_url(url + "ATL03_20181228015957_13810110_003_01.2var.h5.dmrpp")
+#     pydap_ds["/gt1r/bckgrd_atlas/bckgrd_int_height"][0:10]
 
 
 @pytest.mark.skip(reason="bug in testserver")

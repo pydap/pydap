@@ -420,6 +420,8 @@ class StructureType(DapType, Mapping):
                     return self[splitted[0]][".".join(splitted[1:])]
                 except (KeyError, IndexError):
                     return self[".".join(splitted[1:])]
+            else:
+                raise
 
     def _getitem_string_tuple(self, key):
         """Assume that key is a tuple of strings"""
@@ -511,6 +513,7 @@ class DatasetType(StructureType):
     """
 
     def __setitem__(self, key, item):
+        # StructureType.__setitem__(self, key, item)
 
         # is key a path-like?
         N = len(key.split("/")[1:])
@@ -552,25 +555,25 @@ class DatasetType(StructureType):
             return self._dict[quote(key)]
         except KeyError:
             parts = key.split("/")
-            if len(parts) == 1:
-                # empty path = ''
+            Np = len(parts)
+            if Np <= 2 and set(parts) == set([""]):
                 return self
-            elif len(parts) > 1:
-                if parts[0] == parts[1]:
-                    if len(parts) == 2:
-                        return self
+            elif Np > 1 and set(parts) != set([""]):
+                current = self
+                for j in range(Np):
+                    if ("/").join(parts[j:]) in current.keys():
+                        return current[("/").join(parts[j:])]
                     else:
-                        raise KeyError("Path not recognized")
+                        current = current[parts[j]]
+            else:
+                splitted = key.split(".")
+                if len(splitted) > 1:
+                    try:
+                        return self[splitted[0]][".".join(splitted[1:])]
+                    except (KeyError, IndexError):
+                        return self[".".join(splitted[1:])]
                 else:
-                    # # directory like
-                    pass
-
-            splitted = key.split(".")
-            if len(splitted) > 1:
-                try:
-                    return self[splitted[0]][".".join(splitted[1:])]
-                except (KeyError, IndexError):
-                    return self[".".join(splitted[1:])]
+                    raise
 
     def _set_id(self, id):
         """The dataset name is not included in the children ids."""
@@ -878,7 +881,7 @@ class GroupType(StructureType):
         item.id = item.name
         # self._dict[key] = item
 
-        # # By default added keys are visible:
+        # # # By default added keys are visible:
         # self._visible_keys.append(key)
 
     def _set_id(self, id):

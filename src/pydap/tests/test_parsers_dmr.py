@@ -23,7 +23,7 @@ def test_single_scalar():
 def test_coads_climatology2():
     dataset = load_dmr_file("data/dmrs/coads_climatology.nc.dmr")
     assert dataset["SST"].attributes["long_name"] == "SEA SURFACE TEMPERATURE"
-    assert dataset["SST"].attributes["missing_value"] == "-9.99999979e+33"
+    assert dataset["SST"].attributes["missing_value"] == -9.99999979e33
     assert dataset["AIRT"].shape == (12, 90, 180)
     assert dataset["VWND"].dtype.str == ">f4"
 

@@ -58,21 +58,20 @@ def get_variables(node, prefix="") -> dict:
     return variables
 
 
-def get_named_dimensions(node, prefix="", parent=""):
+def get_named_dimensions(node, prefix=""):
     dimensions = {}
     group_name = node.get("name")
     if group_name is None:
         return dimensions
     if node.tag != "Dataset":
         prefix = prefix + "/" + group_name
-        parent = node.tag + "/"
     for subnode in node:
         if subnode.tag == "Dimension":
             name = subnode.get("name")
             if prefix != "":
                 name = prefix + "/" + name
             dimensions[name] = int(subnode.attrib["size"])
-        dimensions.update(get_named_dimensions(subnode, prefix, parent))
+        dimensions.update(get_named_dimensions(subnode, prefix))
     return dimensions
 
 
@@ -152,7 +151,7 @@ def dmr_to_dataset(dmr):
     # Bootstrap variables
     for name, variable in variables.items():
         variable["name"] = name
-        variable["attributes"] = get_attributes(variable["element"])
+        variable["attributes"] = get_attributes(variable["element"], {})
         variable["dtype"] = get_dtype(variable["element"])
         variable["dims"] = get_dim_names(variable["element"])
         variable["has_map"] = has_map(variable["element"])
@@ -200,7 +199,22 @@ def dmr_to_dataset(dmr):
         else:
             var = array
         var.attributes = variable["attributes"]
-        dataset[name] = var
+        if "parent" in variable.keys() and variable["parent"] in [
+            "Sequence",
+            "Structure",
+        ]:
+            parts = name.split("/")
+            parent_name = parts[-2]
+            path = ("/").join(parts[:-2])
+            if variable["parent"] == "Sequence":
+                dapType = pydap.model.SequenceType
+            else:
+                dapType = pydap.model.StructureType
+            if parent_name not in dataset[path].keys():
+                dataset[path + parent_name] = dapType(parent_name)
+            dataset[("/").join(parts)] = var
+        else:
+            dataset[name] = var
 
     return dataset
 
