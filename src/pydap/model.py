@@ -563,12 +563,22 @@ class DatasetType(StructureType):
             if Np <= 2 and set(parts) == set([""]):
                 return self
             elif Np > 1 and set(parts) != set([""]):
+                if parts[0] == "":
+                    parts = parts[1:]
+                    Np = len(parts)
                 current = self
-                for j in range(Np):
-                    if ("/").join(parts[j:]) in current.keys():
-                        return current[("/").join(parts[j:])]
-                    else:
-                        current = current[parts[j]]
+                if Np == 1:
+                    return self[parts[0]]
+                else:
+                    for j in range(Np):
+                        key_c = ("/").join(parts[j:])
+                        splitted = key_c.split(".")
+                        if key_c in current.keys():
+                            return current[key_c]
+                        elif len(splitted) > 1 and splitted[0] in current.keys():
+                            return current[key_c]
+                        else:
+                            current = current[parts[j]]
             else:
                 splitted = key.split(".")
                 if len(splitted) > 1:
