@@ -212,9 +212,13 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
     def add_dap4_proxies(self):
         # remove any projection from the base_url, leaving selections
         for var in walk(self.dataset, pydap.model.BaseType):
+            if var.path is not None:
+                var_name = var.path + "/" + var.name
+            else:
+                var_name = var.name
             var.data = BaseProxyDap4(
                 self.base_url,
-                var.name,
+                var_name,
                 var.dtype,
                 var.shape,
                 application=self.application,
@@ -827,8 +831,9 @@ def unpack_dap4_data(xdr_stream, dataset):
     buffer = stream2bytearray(xdr_stream)
 
     start = 0
-    for variable_name in dataset:
-        variable = dataset[variable_name]
+    for variable in walk(dataset, pydap.model.BaseType):
+        # variable_name = variable.name
+        # variable = dataset[variable_name]
         count = get_count(variable)
         stop = start + count
         data = decode_variable(

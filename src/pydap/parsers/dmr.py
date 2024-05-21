@@ -179,17 +179,23 @@ def dmr_to_dataset(dmr):
 
     for name, variable in variables.items():
         var_name = variable["name"]
+        path = None
         if len(var_name.split("/")) > 1:
             # path-like name - Groups!
-            var_name = var_name.split("/")[-1]
+            parts = var_name.split("/")
+            var_name = parts[-1]
+            path = ("/").join(parts[:-1])
             # need to do the same with dimensions
             for i in range(len(variable["dims"])):
                 dim = variable["dims"][i].split("/")[-1]
                 variable["dims"][i] = dim
+            variable["attributes"]["path"] = path
 
-        data = DummyData(dtype=variable["dtype"], shape=variable["shape"])
+        data = DummyData(dtype=variable["dtype"], shape=variable["shape"], path=path)
         array = pydap.model.BaseType(
-            name=var_name, data=data, dimensions=variable["dims"]
+            name=var_name,
+            data=data,
+            dimensions=variable["dims"],
         )
         if variable["has_map"]:
             var = pydap.model.GridType(name=var_name)
@@ -213,6 +219,7 @@ def dmr_to_dataset(dmr):
             if parent_name not in dataset[path].keys():
                 dataset[path + parent_name] = dapType(parent_name)
             dataset[("/").join(parts)] = var
+
         else:
             dataset[name] = var
 
@@ -243,6 +250,7 @@ class DMRParser(object):
 
 
 class DummyData(object):
-    def __init__(self, dtype, shape):
+    def __init__(self, dtype, shape, path):
         self.dtype = dtype
         self.shape = shape
+        self.path = path

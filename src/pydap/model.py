@@ -266,6 +266,10 @@ class BaseType(DapType):
         return "<%s with data %s>" % (type(self).__name__, repr(self.data))
 
     @property
+    def path(self):
+        return self.data.path
+
+    @property
     def dtype(self):
         """Property that returns the data dtype."""
         return self.data.dtype
