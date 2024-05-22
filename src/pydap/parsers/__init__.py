@@ -81,7 +81,7 @@ def parse_selection(expression, dataset):
     return id1, op, id2
 
 
-def parse_ce(query_string):
+def parse_ce(query_string, protocol="dap2"):
     """Extract the projection and selection from the QUERY_STRING.
 
         >>> parse_ce('a,b[0:2:9],c&a>1&b<2')  # doctest: +NORMALIZE_WHITESPACE
@@ -110,16 +110,21 @@ def parse_ce(query_string):
     Returns a tuple with the projection and the selection.
 
     """
-    tokens = [token for token in unquote(query_string).split("&") if token]
-    if not tokens:
+    if protocol == "dap2":
+        key = "&"
+        tokens = [token for token in unquote(query_string).split(key) if token]
+        if not tokens:
+            projection = []
+            selection = []
+        elif re.search("<=|>=|!=|=~|>|<|=", tokens[0]):
+            projection = []
+            selection = tokens
+        else:
+            projection = parse_projection(tokens[0])
+            selection = tokens[1:]
+    else:
         projection = []
         selection = []
-    elif re.search("<=|>=|!=|=~|>|<|=", tokens[0]):
-        projection = []
-        selection = tokens
-    else:
-        projection = parse_projection(tokens[0])
-        selection = tokens[1:]
 
     return projection, selection
 
