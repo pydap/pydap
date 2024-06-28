@@ -31,8 +31,8 @@ class TestErrorResponse(unittest.TestCase):
     def test_headers(self):
         self.assertEqual(self.res.headers['Content-Type'],
                          'text/plain; charset=utf-8')
-        self.assertEqual(self.res.headers['Content-description'], 'dods_error')
-        self.assertEqual(self.res.headers['XDODS-Server'],
+        self.assertEqual(self.res.headers['Content-description'], 'OPeNDAP_error')
+        self.assertEqual(self.res.headers['OPeNDAP-Server'],
                          'pydap/' + __version__)
 
     def test_body(self):

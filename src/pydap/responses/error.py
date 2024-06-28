@@ -42,7 +42,7 @@ class ErrorResponse(object):
         res.status = "500 Internal Error"
         res.content_type = "text/plain"
         res.charset = "utf-8"
-        res.headers.add("Content-description", "dods_error")
-        res.headers.add("XDODS-Server", "pydap/%s" % __version__)
+        res.headers.add("Content-description", "OPeNDAP_error")
+        res.headers.add("OPeNDAP-Server", "pydap/%s" % __version__)
 
         return res(environ, start_response)

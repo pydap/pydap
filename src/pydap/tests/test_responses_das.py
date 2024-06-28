@@ -42,7 +42,7 @@ class TestDASResponseSequence(unittest.TestCase):
             self.res.headers,
             ResponseHeaders(
                 [
-                    ("XDODS-Server", "pydap/" + __version__),
+                    ("OPeNDAP-Server", "pydap/" + __version__),
                     ("Content-description", "dods_das"),
                     ("Content-type", "text/plain; charset=ascii"),
                     ("Access-Control-Allow-Origin", "*"),
