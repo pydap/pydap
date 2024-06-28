@@ -28,20 +28,32 @@ class DMRResponse(BaseResponse):
         BaseResponse.__init__(self, dataset)
         self.headers.extend(
             [
-                ("Content-description", "dmr"),
+                ("Content-description", "dmr++"),
                 ("Content-type", "text/plain; charset=ascii"),
             ]
         )
 
     def __iter__(self):
+        # generate DDS
         for line in dmr(self.dataset):
             yield line.encode("ascii")
 
+        yield b"Data:\n"
+        for block in dmr(self.dataset):
+            yield block
+
 
 @singledispatch
-def dmr(var, level=0, sequence=0):
-    """Single dispatcher that generates the DDS response."""
+def dmr(var):
+    """Single dispatcher for generating the DODS response."""
     raise StopIteration
+
+
+@dmr.register(StructureType)
+def _structuretype(var):
+    for child in var.children():
+        for block in dmr(child):
+            yield block
 
 
 @dmr.register(DatasetType)
@@ -58,15 +70,6 @@ def _sequencetype(var, level=0, sequence=0):
     yield "{indent}Sequence {{\n".format(indent=level * INDENT)
     for child in var.children():
         for line in dmr(child, level + 1, sequence + 1):
-            yield line
-    yield "{indent}}} {name};\n".format(indent=level * INDENT, name=var.name)
-
-
-@dmr.register(StructureType)
-def _structuretype(var, level=0, sequence=0):
-    yield "{indent}Structure {{\n".format(indent=level * INDENT)
-    for child in var.children():
-        for line in dmr(child, level + 1, sequence):
             yield line
     yield "{indent}}} {name};\n".format(indent=level * INDENT, name=var.name)
 
