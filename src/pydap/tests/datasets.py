@@ -12,7 +12,14 @@ import numpy as np
 
 from pydap.client import open_file
 from pydap.handlers.lib import IterData
-from pydap.model import BaseType, DatasetType, GridType, SequenceType, StructureType
+from pydap.model import (
+    BaseType,
+    DatasetType,
+    GridType,
+    GroupType,
+    SequenceType,
+    StructureType,
+)
 
 # Note that DAP2 does not support signed bytes (signed 8bits integers).
 
@@ -217,6 +224,14 @@ SimpleGrid["y"] = SimpleGrid["SimpleGrid"]["y"] = BaseType(
     "y", np.arange(2), axis="Y", units="degrees_north"
 )
 
+SimpleGroup = DatasetType("SimpleGroup", description="A simple group for testing.")
+SimpleGroup["SimpleGroup"] = GroupType("SimpleGroup")
+SimpleGroup["SimpleGroup"]["Temperature"] = BaseType(
+    "Temperature", np.arange(10, 20, 1), units="degrees_celsius"
+)
+SimpleGroup["SimpleGroup"]["Salinity"] = BaseType(
+    "Salinity", 30 * np.ones(10), units="psu"
+)
 
 # a faulty grid
 FaultyGrid = DatasetType("FaultyGrid", description="A faulty grid for testing.")
