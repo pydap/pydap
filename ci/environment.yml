@@ -2,7 +2,7 @@ name: pydap_tests
 channels:
 - conda-forge
 dependencies:
-- numpy
+- numpy < 2.0
 - netCDF4
 - pytest
 - pytest-cov
