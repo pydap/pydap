@@ -106,7 +106,7 @@ def _basetype(var, level=0, path="/"):
         yield '{indent}<Attribute name="{name}" type="{type}">\n'.format(
             indent=(level + 1) * INDENT, name=key, type=_type
         )
-        yield "{indent}<Value>{val}</Value>".format(
+        yield "{indent}<Value>{val}</Value>\n".format(
             indent=(level + 2) * INDENT, val=value
         )
         yield "{indent}</Attribute>\n".format(indent=(level + 1) * INDENT)
