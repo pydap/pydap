@@ -887,12 +887,13 @@ class GroupType(StructureType):
 
     """
 
-    def __setitem__(self, key, item):
+    def __setitem__(self, key, item, dimensions=None):
         StructureType.__setitem__(self, key, item)
 
         # The Group name does (not) go into the children ids.
 
         item.id = item.name
+        self.dimesions = dimensions or ()
         # self._dict[key] = item
 
         # # # By default added keys are visible:
