@@ -1,23 +1,27 @@
-<?xml version='1.0' encoding='ISO-8859-1'?>
-<Dataset xmlns= 'http://xml.opendap.org/ns/DAP/4.0#' xml:base='http://localhost:8001' dapVersion='4.0' dmrVersion= '1.0' name='example%20dataset'>
-    <Group name= 'SimpleGroup'>
-        <Dimension name= 'X' size='4'/>
-        <Dimension name= 'Y' size='4'/>
-        <int64 Temperature >'
-            <Dim name= 'X'/>
-            <Dim name= 'Y'/>
-            <Attribute name= 'units' type='str'>
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#" xml:base="http://localhost:8001" dapVersion="4.0" dmrVersion="1.0" name="example%20dataset">
+    <Group name="SimpleGroup">
+        <Dimension name="X" size="4"/>
+        <Dimension name="Y" size="4"/>
+        <Float32 name="Temperature">
+            <Dim name="/SimpleGroup/X"/>
+            <Dim name="/SimpleGroup/Y"/>
+            <Attribute name='units' type="str">
                 <Value>degrees_celsius</Value>
-            <Attribute/>
-        <float64 Salinity >
-            <Dim name= 'X'/>
-            <Dim name= 'Y'/>
-            <Attribute name= 'units' type='str'>
+            </Attribute>
+        </Float32>
+        <Float32 name="Salinity">
+            <Dim name="/SimpleGroup/X"/>
+            <Dim name="/SimpleGroup/Y"/>
+            <Attribute name="units" type='str'>
                 <Value>psu</Value>
-            <Attribute/>
-        <int64 X >
-            <Dim name= 'X'/>
-        <int64 Y >
-            <Dim name= 'Y'/>
+            </Attribute>
+        </Float32>
+        <Int16 name="X">
+            <Dim name="/SimpleGroup/X"/>
+        </Int16>
+        <Int16 name="Y">
+            <Dim name="/SimpleGroup/Y"/>
+        </Int16>
     </Group>
 </Dataset>
