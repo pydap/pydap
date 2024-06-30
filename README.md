@@ -92,14 +92,15 @@ To run the server just issue the command:
 
 ```bash
 
-    $ pydap --data ./myserver/data/ --port 8001
+    $ pydap --data ./myserver/data/ --port 8001 --workers 4 --threads 4
 ```
 
-This will start a standalone server running on http://localhost:8001/,
+This will start a standalone server running on the default http://localhost:8001/,
 serving netCDF files from ``./myserver/data/``, similar to the test
 server at http://test.pydap.org/. Since the server uses the
-[WSGI](http://wsgi.org/) standard, it can easily be run behind
-Apache. The [server
+[WSGI](http://wsgi.org/) standard, pydap uses by default 1 worker and 1
+thread, but these can be defined by the user like in the case above (4 workers
+and 4 threads). Pydap can also easily be run behind Apache. The [server
 documentation](https://pydap.github.io/pydap/server.html) has
 more information on how to better deploy pydap.
 
