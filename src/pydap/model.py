@@ -176,7 +176,7 @@ from functools import reduce
 
 import numpy as np
 
-from .lib import decode_np_strings, quote
+from .lib import _quote, decode_np_strings
 
 __all__ = [
     "BaseType",
@@ -197,7 +197,7 @@ class DapType(object):
     """
 
     def __init__(self, name="nameless", attributes=None, **kwargs):
-        self.name = quote(name)
+        self.name = _quote(name)
         self.attributes = attributes or {}
         self.attributes.update(kwargs)
 
@@ -416,7 +416,7 @@ class StructureType(DapType, Mapping):
     def _getitem_string(self, key):
         """Assume that key is a string type"""
         try:
-            return self._dict[quote(key)]
+            return self._dict[_quote(key)]
         except KeyError:
             splitted = key.split(".")
             if len(splitted) > 1:
@@ -454,7 +454,7 @@ class StructureType(DapType, Mapping):
             yield self[key]
 
     def __setitem__(self, key, item):
-        key = quote(key)
+        key = _quote(key)
         if key != item.name:
             raise KeyError(
                 'Key "%s" is different from variable name "%s"!' % (key, item.name)
@@ -537,7 +537,7 @@ class DatasetType(StructureType):
             if key[0] == "/":
                 key = key[1:]
 
-            key = quote(key)  # should name be quoted?
+            key = _quote(key)  # should name be quoted?
             if key != item.name:
                 raise KeyError(
                     'Key "%s" is different from variable name "%s"!' % (key, item.name)
@@ -556,7 +556,7 @@ class DatasetType(StructureType):
     def _getitem_string(self, key):
         """Assume that key is a string type"""
         try:
-            return self._dict[quote(key)]
+            return self._dict[_quote(key)]
         except KeyError:
             parts = key.split("/")
             Np = len(parts)

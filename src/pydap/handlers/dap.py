@@ -21,7 +21,7 @@ from io import BytesIO
 from itertools import chain
 
 import numpy
-from requests.utils import quote, urlparse, urlunparse
+from requests.utils import urlparse, urlunparse
 
 import pydap.handlers.lib
 import pydap.model
@@ -33,6 +33,7 @@ from pydap.lib import (
     START_OF_SEQUENCE,
     BytesReader,
     StreamReader,
+    _quote,
     combine_slices,
     encode,
     fix_slice,
@@ -140,12 +141,10 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 self.netloc,
                 self.path + ".dmr",
                 "",
-                self.query,
+                _quote(self.query),
                 self.fragment,
             )
         )
-        dmr_url = dmr_url.replace("[", "%5B").replace("]", "%5D")
-        print(dmr_url)
         r = pydap.net.GET(
             dmr_url,
             self.application,
@@ -165,7 +164,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 self.netloc,
                 self.path + ".dds",
                 "",
-                quote(self.query),
+                _quote(self.query),
                 self.fragment,
             )
         )
@@ -374,7 +373,7 @@ class BaseProxyDap2(object):
                 netloc,
                 path + ".dods",
                 "",
-                quote(self.id) + hyperslab(index) + "&" + query,
+                self.id + hyperslab(index) + "&" + _quote(query),
                 fragment,
             )
         ).rstrip("&")
@@ -458,7 +457,7 @@ class BaseProxyDap4(BaseProxyDap2):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
         scheme, netloc, path, _, query, fragment = urlparse(self.baseurl)
-        ce = "dap4.ce=" + quote(self.id) + hyperslab(index)
+        ce = "dap4.ce=" + self.id + hyperslab(index)
         url = urlunparse((scheme, netloc, path + ".dap", "", ce, fragment)).rstrip("&")
 
         # download and unpack data
@@ -584,9 +583,9 @@ class SequenceProxy(object):
     def id(self):
         """Return the id of this sequence."""
         if self.sub_children:
-            id_ = ",".join(quote(child.id) for child in self.template.children())
+            id_ = ",".join(child.id for child in self.template.children())
         else:
-            id_ = quote(self.template.id)
+            id_ = self.template.id
         return id_
 
     def __iter__(self):
@@ -744,7 +743,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
                             "retrieved. To avoid this "
                             "error consider using open_url(..., "
                             "output_grid=False)."
-                        ).format(quote(id))
+                        ).format(id)
                     )
                 else:
                     raise

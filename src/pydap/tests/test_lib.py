@@ -7,13 +7,13 @@ import numpy as np
 
 from pydap.exceptions import ConstraintExpressionError
 from pydap.lib import (
+    _quote,
     combine_slices,
     encode,
     fix_shorthand,
     fix_slice,
     get_var,
     hyperslab,
-    quote,
     walk,
 )
 from pydap.model import BaseType, DatasetType, SequenceType, StructureType
@@ -34,11 +34,11 @@ class TestQuote(unittest.TestCase):
 
     def test_quoting(self):
         """Test a simple quoting."""
-        self.assertEqual(quote("White space"), "White%20space")
+        self.assertEqual(_quote("White space"), "White%20space")
 
     def test_quoting_period(self):
         """Test if period is also quoted."""
-        self.assertEqual(quote("Period."), "Period%2E")
+        self.assertEqual(_quote("Period."), "Period%2E")
 
 
 class TestEncode(unittest.TestCase):

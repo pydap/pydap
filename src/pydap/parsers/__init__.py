@@ -9,10 +9,8 @@ import ast
 import operator
 import re
 
-from requests.utils import unquote
-
 from ..exceptions import ConstraintExpressionError
-from ..lib import get_var
+from ..lib import get_var, unquote
 
 
 def parse_projection(input):

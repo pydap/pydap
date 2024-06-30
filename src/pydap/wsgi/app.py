@@ -23,7 +23,8 @@ from datetime import datetime
 
 import pkg_resources
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, PackageLoader
-from requests.utils import unquote
+
+# from requests.utils import unquote
 from webob import Response
 from webob.dec import wsgify
 from webob.exc import HTTPForbidden, HTTPNotFound
@@ -31,7 +32,7 @@ from webob.static import DirectoryApp, FileApp
 
 from ..exceptions import ExtensionNotSupportedError
 from ..handlers.lib import get_handler, load_handlers
-from ..lib import __version__
+from ..lib import __version__, unquote
 from .ssf import ServerSideFunctions
 
 

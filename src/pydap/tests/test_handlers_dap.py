@@ -410,11 +410,11 @@ class TestSequenceProxy(unittest.TestCase):
         """Test URL generation."""
         self.assertEqual(self.remote.url, "http://localhost:8001/.dods?sequence")
         self.assertEqual(
-            self.remote["int"].url, "http://localhost:8001/.dods?sequence.int"
+            self.remote["int"].url, "http://localhost:8001/.dods?" + "sequence.int"
         )
         self.assertEqual(
             self.remote[["float", "int"]].url,
-            "http://localhost:8001/.dods?sequence.float,sequence.int",
+            "http://localhost:8001/.dods?" + "sequence.float,sequence.int",
         )
 
     def test_iter(self):
@@ -499,16 +499,16 @@ class TestSequenceProxy(unittest.TestCase):
     def test_comparisons(self):
         """Test lazy comparisons on the object."""
         filtered = self.remote[self.remote["byte"] == 4]
-        self.assertEqual(filtered.selection, ["sequence.byte=4"])
+        self.assertEqual(filtered.selection, ["sequence.byte" + "=4"])
 
         filtered = self.remote[self.remote["byte"] != 4]
-        self.assertEqual(filtered.selection, ["sequence.byte!=4"])
+        self.assertEqual(filtered.selection, ["sequence.byte" + "!=4"])
 
         filtered = self.remote[self.remote["byte"] >= 4]
-        self.assertEqual(filtered.selection, ["sequence.byte>=4"])
+        self.assertEqual(filtered.selection, ["sequence.byte" + ">=4"])
 
         filtered = self.remote[self.remote["byte"] <= 4]
-        self.assertEqual(filtered.selection, ["sequence.byte<=4"])
+        self.assertEqual(filtered.selection, ["sequence.byte" + "<=4"])
 
 
 class TestSequenceWithString(unittest.TestCase):
@@ -563,7 +563,7 @@ class TestSequenceWithString(unittest.TestCase):
 
         # filtering works because we store comparisons as lazy objects
         self.assertIsInstance(self.remote["lon"] > 100, ConstraintExpression)
-        self.assertEqual(filtered.selection, ["cast.lon>100"])
+        self.assertEqual(filtered.selection, ["cast.lon" + ">100"])
 
 
 class TestStringBaseType(unittest.TestCase):
