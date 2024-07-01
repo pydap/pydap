@@ -40,4 +40,4 @@ class TestVersionResponse(unittest.TestCase):
             self.res.headers["Content-Type"], "application/json; charset=utf-8"
         )
         self.assertEqual(self.res.headers["Content-description"], "dods_version")
-        self.assertEqual(self.res.headers["XDODS-Server"], "pydap/" + __version__)
+        self.assertEqual(self.res.headers["OPeNDAP-Server"], "pydap/" + __version__)

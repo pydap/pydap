@@ -4,7 +4,7 @@ import re
 
 import numpy as np
 
-from ..lib import LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP, quote
+from ..lib import LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP, _quote
 from ..model import BaseType, DatasetType, GridType, SequenceType, StructureType
 from . import SimpleParser
 
@@ -46,7 +46,7 @@ class DDSParser(SimpleParser):
             dataset[var.name] = var
         self.consume("}")
 
-        dataset.name = quote(self.consume("[^;]+"))
+        dataset.name = _quote(self.consume("[^;]+"))
         dataset._set_id(dataset.name)
         self.consume(";")
 
@@ -69,7 +69,7 @@ class DDSParser(SimpleParser):
         data_type_string = self.consume(r"\w+")
 
         parser_dtype = DAP2_parser_typemap(data_type_string)
-        name = quote(self.consume(r"[^;\[]+"))
+        name = _quote(self.consume(r"[^;\[]+"))
 
         shape, dimensions = self.dimensions()
         self.consume(r";")
@@ -105,7 +105,7 @@ class DDSParser(SimpleParser):
             sequence[var.name] = var
         self.consume("}")
 
-        sequence.name = quote(self.consume("[^;]+"))
+        sequence.name = _quote(self.consume("[^;]+"))
         self.consume(";")
         return sequence
 
@@ -120,7 +120,7 @@ class DDSParser(SimpleParser):
             structure[var.name] = var
         self.consume("}")
 
-        structure.name = quote(self.consume("[^;]+"))
+        structure.name = _quote(self.consume("[^;]+"))
         self.consume(";")
 
         return structure
@@ -143,7 +143,7 @@ class DDSParser(SimpleParser):
             grid[var.name] = var
         self.consume("}")
 
-        grid.name = quote(self.consume("[^;]+"))
+        grid.name = _quote(self.consume("[^;]+"))
         self.consume(";")
 
         return grid

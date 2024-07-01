@@ -45,6 +45,6 @@ class VersionResponse(object):
         res.content_type = "application/json"
         res.charset = "utf-8"
         res.headers.add("Content-description", "dods_version")
-        res.headers.add("XDODS-Server", "pydap/%s" % __version__)
+        res.headers.add("OPeNDAP-Server", "pydap/%s" % __version__)
 
         return res(environ, start_response)

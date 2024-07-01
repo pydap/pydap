@@ -7,6 +7,7 @@ from sys import maxsize as MAXSIZE
 
 import numpy as np
 from requests.utils import quote as quote_
+from requests.utils import unquote as unquote_
 
 from . import __version__
 from .exceptions import ConstraintExpressionError
@@ -138,17 +139,37 @@ DAP4_TO_NUMPY_PARSER_TYPEMAP = {
 }
 
 
-def quote(name):
+def _quote(name):
     """Return quoted name according to the DAP specification.
 
-    >>> quote("White space")
+    >>> _quote("White space")
     'White%20space'
-    >>> quote("Period.")
+    >>> _quote("Period.")
     'Period%2E'
 
     """
     safe = "%_!~*'-\"/"
-    return quote_(name.encode("utf-8"), safe=safe).replace(".", "%2E")
+    if "dap4" == name[:4]:
+        # Dap4 protocol. Must not scape = sign there.
+        prefix = name[:8]
+        name = name[8:]
+    else:
+        prefix = ""
+    name = quote_(name.encode("utf-8"), safe=safe).replace(".", "%2E")
+    return prefix + name.replace("[", "%5B").replace("]", "%5D")
+
+
+def unquote(name):
+    """Return unquoted name according to the DAP specification.
+
+    >>> unquote("White%20space")
+    'White space'
+    >>> unquote("Period%2E")
+    'Period.'
+
+    """
+    name = name.replace("%2E", ".").replace("%5B", "[").replace("%5D", "]")
+    return unquote_(name)
 
 
 def encode(obj):
@@ -288,7 +309,7 @@ def fix_shorthand(projection, dataset):
         if len(var) == 1 and var[0][0] not in list(dataset.keys()):
             token, slice_ = var.pop(0)
             for child in walk(dataset):
-                if token == child.name:
+                if token == unquote(child.name):
                     if var:
                         raise ConstraintExpressionError(
                             "Ambiguous shorthand notation request: %s" % token

@@ -1,5 +1,6 @@
 """A DMR parser."""
 
+import ast
 import collections
 import copy
 import re
@@ -40,7 +41,7 @@ def dap4_to_numpy_typemap(type_string):
     return np.dtype(dtype_str)
 
 
-def get_variables(node, prefix=""):
+def get_variables(node, prefix="") -> dict:
     variables = collections.OrderedDict()
     group_name = node.get("name")
     if group_name is None:
@@ -52,7 +53,7 @@ def get_variables(node, prefix=""):
             name = subnode.get("name")
             if prefix != "":
                 name = prefix + "/" + name
-            variables[name] = {"element": subnode}
+            variables[name] = {"element": subnode, "parent": node.tag}
         variables.update(get_variables(subnode, prefix))
     return variables
 
@@ -80,12 +81,15 @@ def get_dtype(element):
     return dtype
 
 
-def get_attributes(element):
-    attributes = {}
+def get_attributes(element, attributes={}):
     attribute_elements = element.findall("Attribute")
+    numType = [item for item in dmr_atomic_types if item not in ["Byte", "Char"]]
     for attribute_element in attribute_elements:
         name = attribute_element.get("name")
         value = attribute_element.find("Value").text
+        _type = attribute_element.get("type")
+        if _type in numType:
+            value = ast.literal_eval(value)
         attributes[name] = value
     return attributes
 
@@ -128,9 +132,13 @@ def has_map(element):
 def dmr_to_dataset(dmr):
     """Return a dataset object from a DMR representation."""
 
+    # this should simple be:
+    # return DMRParser(dmr).parse()
+
     # Parse the DMR. First dropping the namespace
-    dmr = re.sub(' xmlns="[^"]+"', "", dmr, count=1)
-    dom_et = ET.fromstring(dmr)
+    dom_et = DMRParser(dmr).node
+    # emtpy dataset
+    dataset = DMRParser(dmr).init_dataset()
 
     variables = get_variables(dom_et)
     named_dimensions = get_named_dimensions(dom_et)
@@ -143,7 +151,7 @@ def dmr_to_dataset(dmr):
     # Bootstrap variables
     for name, variable in variables.items():
         variable["name"] = name
-        variable["attributes"] = get_attributes(variable["element"])
+        variable["attributes"] = get_attributes(variable["element"], {})
         variable["dtype"] = get_dtype(variable["element"])
         variable["dims"] = get_dim_names(variable["element"])
         variable["has_map"] = has_map(variable["element"])
@@ -169,35 +177,80 @@ def dmr_to_dataset(dmr):
         for dim in variable["dims"]:
             variable["shape"] += (variables[dim]["size"],)
 
-    # Convert the ordered dictionary to dataset
-    dataset_name = dom_et.attrib["name"]
-    dataset = pydap.model.DatasetType(dataset_name)
     for name, variable in variables.items():
-        data = DummyData(dtype=variable["dtype"], shape=variable["shape"])
+        var_name = variable["name"]
+        path = None
+        if len(var_name.split("/")) > 1:
+            # path-like name - Groups!
+            parts = var_name.split("/")
+            var_name = parts[-1]
+            path = ("/").join(parts[:-1])
+            # need to do the same with dimensions
+            for i in range(len(variable["dims"])):
+                dim = variable["dims"][i].split("/")[-1]
+                variable["dims"][i] = dim
+            variable["attributes"]["path"] = path
+
+        data = DummyData(dtype=variable["dtype"], shape=variable["shape"], path=path)
         array = pydap.model.BaseType(
-            name=variable["name"], data=data, dimensions=variable["dims"]
+            name=var_name,
+            data=data,
+            dimensions=variable["dims"],
         )
         if variable["has_map"]:
-            var = pydap.model.GridType(name=variable["name"])
-            var[name] = array
+            var = pydap.model.GridType(name=var_name)
+            var[var_name] = array
             for dim in variable["dims"]:
                 var[dim] = copy.copy(dataset[dim])
         else:
             var = array
         var.attributes = variable["attributes"]
-        dataset[var.name] = var
+        if "parent" in variable.keys() and variable["parent"] in [
+            "Sequence",
+            "Structure",
+        ]:
+            parts = name.split("/")
+            parent_name = parts[-2]
+            path = ("/").join(parts[:-2])
+            if variable["parent"] == "Sequence":
+                dapType = pydap.model.SequenceType
+            else:
+                dapType = pydap.model.StructureType
+            if parent_name not in dataset[path].keys():
+                dataset[path + parent_name] = dapType(parent_name)
+            dataset[("/").join(parts)] = var
+
+        else:
+            dataset[name] = var
 
     return dataset
 
 
-class DMRParser:
+class DMRParser(object):
     """A parser for the DMR."""
 
     def __init__(self, dmr):
+        # super(DMRParser, self).__init__(dmr, re.IGNORECASE)
         self.dmr = dmr
+
+        _dmr = re.sub(' xmlns="[^"]+"', "", self.dmr, count=1)
+        self.node = ET.fromstring(_dmr)
+
+    def init_dataset(self):
+        """creates an empty dataset with a name and attributes"""
+        dataset_name = self.node.get("name")
+        dataset = pydap.model.DatasetType(dataset_name)
+        AttsNames = [subnode.get("name") for subnode in self.node.findall("Attribute")]
+        Attrs = {}
+        for subnode in self.node:
+            if subnode.get("name") in AttsNames:
+                Attrs = get_attributes(subnode, Attrs)
+        dataset.attributes = Attrs
+        return dataset
 
 
 class DummyData(object):
-    def __init__(self, dtype, shape):
+    def __init__(self, dtype, shape, path):
         self.dtype = dtype
         self.shape = shape
+        self.path = path

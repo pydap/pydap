@@ -43,7 +43,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
             res.headers,
             ResponseHeaders(
                 [
-                    ("XDODS-Server", "pydap/" + __version__),
+                    ("OPeNDAP-Server", "pydap/" + __version__),
                     ("Content-description", "dods_form"),
                     ("Content-type", "text/html; charset=utf-8"),
                     ("Content-Length", "5864"),
