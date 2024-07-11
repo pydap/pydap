@@ -27,7 +27,7 @@ jobs:
       run: |
         pip3 install -U pip setuptools
         pip3 install -U "werkzeug<2.1"
-        pip3 install -U "numpy<2.0" webtest gsw coards
+        pip3 install -U numpy webtest gsw coards
         pip3 install -U netCDF4 pytest Webob Jinja2 docopt-ng beautifulsoup4 requests testresources
     - name: Run tests with pytest
       run: |
