@@ -176,9 +176,16 @@ from functools import reduce
 
 import numpy as np
 
-from .lib import decode_np_strings, quote
+from .lib import _quote, decode_np_strings
 
-__all__ = ["BaseType", "StructureType", "DatasetType", "SequenceType", "GridType"]
+__all__ = [
+    "BaseType",
+    "StructureType",
+    "DatasetType",
+    "SequenceType",
+    "GridType",
+    "GroupType",
+]
 
 
 class DapType(object):
@@ -190,7 +197,7 @@ class DapType(object):
     """
 
     def __init__(self, name="nameless", attributes=None, **kwargs):
-        self.name = quote(name)
+        self.name = _quote(name)
         self.attributes = attributes or {}
         self.attributes.update(kwargs)
 
@@ -257,6 +264,10 @@ class BaseType(DapType):
 
     def __repr__(self):
         return "<%s with data %s>" % (type(self).__name__, repr(self.data))
+
+    @property
+    def path(self):
+        return self.data.path
 
     @property
     def dtype(self):
@@ -405,7 +416,7 @@ class StructureType(DapType, Mapping):
     def _getitem_string(self, key):
         """Assume that key is a string type"""
         try:
-            return self._dict[quote(key)]
+            return self._dict[_quote(key)]
         except KeyError:
             splitted = key.split(".")
             if len(splitted) > 1:
@@ -443,7 +454,7 @@ class StructureType(DapType, Mapping):
             yield self[key]
 
     def __setitem__(self, key, item):
-        key = quote(key)
+        key = _quote(key)
         if key != item.name:
             raise KeyError(
                 'Key "%s" is different from variable name "%s"!' % (key, item.name)
@@ -503,14 +514,80 @@ class DatasetType(StructureType):
         >>> dataset["B"] = BaseType("B")
         >>> dataset["B"].id
         'B'
-
     """
 
     def __setitem__(self, key, item):
-        StructureType.__setitem__(self, key, item)
+        # StructureType.__setitem__(self, key, item)
+
+        # is key a path-like?
+        N = len(key.split("/")[1:])
+        if key[0] == "/" and N > 1:
+            parts = key.split("/")[1:]
+            # add parent group to dataset keys
+            if parts[0] not in self._dict:
+                self._visible_keys.append(parts[0])
+            # iterate over all groups to reach DAP object
+            current = self._dict
+            for j in range(N - 1):
+                if parts[j] not in current:
+                    current[parts[j]] = GroupType(parts[j])
+                current = current[parts[j]]
+            current[parts[-1]] = item
+        else:
+            if key[0] == "/":
+                key = key[1:]
+
+            key = _quote(key)  # should name be quoted?
+            if key != item.name:
+                raise KeyError(
+                    'Key "%s" is different from variable name "%s"!' % (key, item.name)
+                )
+
+            if key in self:
+                del self[key]
+
+            self._dict[key] = item
+            # By default added keys are visible:
+            self._visible_keys.append(key)
 
         # The dataset name does not go into the children ids.
         item.id = item.name
+
+    def _getitem_string(self, key):
+        """Assume that key is a string type"""
+        try:
+            return self._dict[_quote(key)]
+        except KeyError:
+            parts = key.split("/")
+            Np = len(parts)
+            if Np <= 2 and set(parts) == set([""]):
+                return self
+            elif Np > 1 and set(parts) != set([""]):
+                if parts[0] == "":
+                    parts = parts[1:]
+                    Np = len(parts)
+                current = self
+                if Np == 1:
+                    return self[parts[0]]
+                else:
+                    for j in range(Np):
+                        key_c = ("/").join(parts[j:])
+                        splitted = key_c.split(".")
+                        if key_c in current.keys():
+                            return current[key_c]
+                        elif len(splitted) > 1 and splitted[0] in current.keys():
+                            return current[key_c]
+                        else:
+                            current = current[parts[j]]
+            else:
+                splitted = key.split(".")
+                if len(splitted) > 1:
+                    try:
+                        return self[splitted[0]][".".join(splitted[1:])]
+                    except (KeyError, IndexError):
+                        return self[".".join(splitted[1:])]
+                else:
+                    raise
 
     def _set_id(self, id):
         """The dataset name is not included in the children ids."""
@@ -791,6 +868,43 @@ class GridType(StructureType):
     def dimensions(self):
         """Return the name of the axes."""
         return tuple(list(self.keys())[1:])
+
+
+class GroupType(StructureType):
+    """A Group container.
+
+    A folder-like DAP container which may have other DAP types like
+    Sequences, Structures, DataArrays, and other Groups, as children.
+
+    Groups in OPeNDAP:
+        - There is at least the root Group `/`.
+        - Must have a name.
+        - There is a single parent to a Group (tree hierarchy).
+        - Attributes are Global at the Group level.
+        - Can have share dimensions, which are scoped to all children (not to parent)
+
+    Examples:
+
+    """
+
+    def __setitem__(self, key, item, dimensions=None):
+        StructureType.__setitem__(self, key, item)
+
+        # The Group name does (not) go into the children ids.
+
+        item.id = item.name
+        self.dimesions = dimensions or ()
+        # self._dict[key] = item
+
+        # # # By default added keys are visible:
+        # self._visible_keys.append(key)
+
+    def _set_id(self, id):
+        """The dataset name is (not) included in the children ids."""
+        self._id = id
+
+        for child in self.children():
+            child.id = child.name
 
 
 class MapType(StructureType):

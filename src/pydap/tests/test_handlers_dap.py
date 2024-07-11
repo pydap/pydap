@@ -17,6 +17,7 @@ from pydap.model import BaseType, DatasetType, GridType, StructureType
 from pydap.tests.datasets import (
     SimpleArray,
     SimpleGrid,
+    SimpleGroup,
     SimpleSequence,
     VerySimpleSequence,
 )
@@ -35,6 +36,7 @@ class TestDapHandler(unittest.TestCase):
         self.app1 = BaseHandler(SimpleGrid)
         self.app2 = BaseHandler(SimpleSequence)
         self.app3 = BaseHandler(SimpleGrid, gzip=True)
+        self.app4 = BaseHandler(SimpleGroup)
 
     def test_grid(self):
         """Test that dataset has the correct data proxies for grids."""
@@ -258,22 +260,8 @@ class TestDapHandler(unittest.TestCase):
 
     def test_custom_timeout_BaseProxyDap4(self):
 
-        # monkeypatch DAP4 dataset init (since there is
-        # no DAP4 test dataset available, we only
-        # need the DAP4 proxy to be instantiated as such
-        # to test assignment of custom timeout).
-        # See DAPHandler.make_dataset call in __init__
-        # We only need DAPHandler.add_proxies to handle
-        # case add_dap4_proxies for the timeout test
-        # ToDo: This hack should be removed once a proper DAP4 test setup
-        # is in place
-        from _pytest.monkeypatch import MonkeyPatch
-
-        mp = MonkeyPatch()
-        mp.setattr(DAPHandler, "dataset_from_dap4", DAPHandler.dataset_from_dap2)
-
         dataset = DAPHandler(
-            "http://localhost:8001/", self.app1, timeout=300, protocol="dap4"
+            "http://localhost:8001/", self.app4, timeout=300, protocol="dap4"
         ).dataset
 
         for var in walk(dataset, pydap.model.BaseType):

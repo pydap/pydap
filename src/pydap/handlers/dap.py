@@ -16,11 +16,12 @@ import logging
 import pprint
 import re
 import sys
+import warnings as _warnings
 from io import BytesIO
 from itertools import chain
 
 import numpy
-from requests.utils import quote, urlparse, urlunparse
+from requests.utils import urlparse, urlunparse
 
 import pydap.handlers.lib
 import pydap.model
@@ -32,6 +33,7 @@ from pydap.lib import (
     START_OF_SEQUENCE,
     BytesReader,
     StreamReader,
+    _quote,
     combine_slices,
     encode,
     fix_slice,
@@ -105,6 +107,9 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         elif self.scheme == "dap4":
             self.scheme = "http"
             return "dap4"
+        elif self.query[:4] == "dap4":
+            self.sheme = "http"
+            return "dap4"
         else:
             extension = self.path.split(".")[-1]
             if extension in ["dmr", "dap"]:
@@ -112,6 +117,12 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             elif extension in ["dds", "dods"]:
                 return "dap2"
             else:
+                _warnings.warn(
+                    "PyDAP was unable to determine the DAP protocol "
+                    "defaulting to DAP2 which is consider legacy and "
+                    "may result in slower responses. For more, see "
+                    "go to https://www.opendap.org/faq-page."
+                )
                 return "dap2"
 
     def make_dataset(
@@ -130,7 +141,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 self.netloc,
                 self.path + ".dmr",
                 "",
-                self.query,
+                _quote(self.query),
                 self.fragment,
             )
         )
@@ -146,13 +157,14 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
         self.dataset = dmr_to_dataset(dmr)
 
     def dataset_from_dap2(self):
+        # escape for certain characters
         dds_url = urlunparse(
             (
                 self.scheme,
                 self.netloc,
                 self.path + ".dds",
                 "",
-                self.query,
+                _quote(self.query),
                 self.fragment,
             )
         )
@@ -199,9 +211,13 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
     def add_dap4_proxies(self):
         # remove any projection from the base_url, leaving selections
         for var in walk(self.dataset, pydap.model.BaseType):
+            if var.path is not None:
+                var_name = var.path + "/" + var.name
+            else:
+                var_name = var.name
             var.data = BaseProxyDap4(
                 self.base_url,
-                var.name,
+                var_name,
                 var.dtype,
                 var.shape,
                 application=self.application,
@@ -228,6 +244,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             var.data = SequenceProxy(
                 self.base_url,
                 template,
+                selection=self.selection,
                 application=self.application,
                 session=self.session,
                 timeout=self.timeout,
@@ -356,7 +373,7 @@ class BaseProxyDap2(object):
                 netloc,
                 path + ".dods",
                 "",
-                quote(self.id) + hyperslab(index) + "&" + query,
+                self.id + hyperslab(index) + "&" + _quote(query),
                 fragment,
             )
         ).rstrip("&")
@@ -439,8 +456,8 @@ class BaseProxyDap4(BaseProxyDap2):
     def __getitem__(self, index):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
-        scheme, netloc, path, params, query, fragment = urlparse(self.baseurl)
-        ce = "dap4.ce=" + quote(self.id) + hyperslab(index) + query
+        scheme, netloc, path, _, query, fragment = urlparse(self.baseurl)
+        ce = "dap4.ce=" + self.id + hyperslab(index)
         url = urlunparse((scheme, netloc, path + ".dap", "", ce, fragment)).rstrip("&")
 
         # download and unpack data
@@ -566,9 +583,9 @@ class SequenceProxy(object):
     def id(self):
         """Return the id of this sequence."""
         if self.sub_children:
-            id_ = ",".join(quote(child.id) for child in self.template.children())
+            id_ = ",".join(child.id for child in self.template.children())
         else:
-            id_ = quote(self.template.id)
+            id_ = self.template.id
         return id_
 
     def __iter__(self):
@@ -726,7 +743,7 @@ def convert_stream_to_list(stream, parser_dtype, shape, id):
                             "retrieved. To avoid this "
                             "error consider using open_url(..., "
                             "output_grid=False)."
-                        ).format(quote(id))
+                        ).format(id)
                     )
                 else:
                     raise
@@ -813,8 +830,9 @@ def unpack_dap4_data(xdr_stream, dataset):
     buffer = stream2bytearray(xdr_stream)
 
     start = 0
-    for variable_name in dataset:
-        variable = dataset[variable_name]
+    for variable in walk(dataset, pydap.model.BaseType):
+        # variable_name = variable.name
+        # variable = dataset[variable_name]
         count = get_count(variable)
         stop = start + count
         data = decode_variable(

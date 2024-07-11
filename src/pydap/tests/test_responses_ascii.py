@@ -43,7 +43,7 @@ class TestASCIIResponseSequence(unittest.TestCase):
             self.res.headers,
             ResponseHeaders(
                 [
-                    ("XDODS-Server", "pydap/" + __version__),
+                    ("OPeNDAP-Server", "pydap/" + __version__),
                     ("Content-description", "dods_ascii"),
                     ("Content-type", "text/plain; charset=ascii"),
                     ("Content-Length", "440"),

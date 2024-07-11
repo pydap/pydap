@@ -52,7 +52,7 @@ class TestDODSResponse(unittest.TestCase):
             self.res.headers,
             ResponseHeaders(
                 [
-                    ("XDODS-Server", "pydap/" + __version__),
+                    ("OPeNDAP-Server", "pydap/" + __version__),
                     ("Content-description", "dods_data"),
                     ("Content-type", "application/octet-stream"),
                     ("Access-Control-Allow-Origin", "*"),

@@ -7,7 +7,7 @@ from requests.utils import urlparse, urlunparse
 from webob.exc import HTTPError
 from webob.request import Request
 
-from .lib import DEFAULT_TIMEOUT
+from .lib import DEFAULT_TIMEOUT, _quote
 
 
 def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT, verify=True):
@@ -21,7 +21,7 @@ def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT, verify=Tru
     """
     if application:
         _, _, path, _, query, fragment = urlparse(url)
-        url = urlunparse(("", "", path, "", query, fragment))
+        url = urlunparse(("", "", path, "", _quote(query), fragment))
 
     response = follow_redirect(
         url, application=application, session=session, timeout=timeout, verify=verify

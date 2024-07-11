@@ -16,7 +16,7 @@ class TestLoadResponse(unittest.TestCase):
     def setUp(self):
         """Load all available responses.
 
-        At least the DDS, DAS, DODS, HTML, ASC and version responses should be
+        At least the DDS, DAS, DODS, DMR, HTML, ASC and version responses should be
         loaded, since they are included in pydap. Other third-party responses
         may also be present.
 
@@ -43,6 +43,10 @@ class TestLoadResponse(unittest.TestCase):
         """Test that the ASCII response is loaded."""
         self.assertIs(self.responses["ascii"], pydap.responses.ascii.ASCIIResponse)
         self.assertIs(self.responses["asc"], pydap.responses.ascii.ASCIIResponse)
+
+    def test_responses_dmr(self):
+        """Test that the dmr response is loaded."""
+        self.assertIs(self.responses["dmr"], pydap.responses.dmr.DMRResponse)
 
     def test_responses_ver(self):
         """Test that the version response is loaded."""

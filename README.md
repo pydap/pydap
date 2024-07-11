@@ -8,7 +8,6 @@ pydap
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/pydap/pydap)
 [![pre-commit](https://results.pre-commit.ci/badge/github/pydap/pydap/master.svg)](https://results.pre-commit.ci/latest/github/pydap/pydap/master)
-[![Join the chat at https://gitter.im/pydap/pydap](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/pydap/pydap)
 
 
 

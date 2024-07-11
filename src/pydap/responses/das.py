@@ -16,7 +16,7 @@ from collections.abc import Iterable
 
 import numpy as np
 
-from ..lib import NUMPY_TO_DAP2_TYPEMAP, __version__, encode, quote
+from ..lib import NUMPY_TO_DAP2_TYPEMAP, __version__, _quote, encode
 from ..model import BaseType, DatasetType, GridType, SequenceType, StructureType
 from .lib import BaseResponse
 
@@ -121,7 +121,7 @@ def build_attributes(attr, values, level=0):
         yield "{indent}{type} {attr} {values};\n".format(
             indent=(level) * INDENT,
             type=type,
-            attr=quote(attr),
+            attr=_quote(attr),
             values=", ".join(values),
         )
 

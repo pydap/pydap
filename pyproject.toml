@@ -45,6 +45,7 @@ density = "pydap.wsgi.functions:density"
 mean = "pydap.wsgi.functions:mean"
 
 [project.entry-points."pydap.handler"]
+csv = "pydap.handlers.csv:CSVHandler"
 nc = "pydap.handlers.netcdf:NetCDFHandler"
 
 [project.entry-points."pydap.response"]
@@ -52,6 +53,7 @@ asc = "pydap.responses.ascii:ASCIIResponse"
 ascii = "pydap.responses.ascii:ASCIIResponse"
 das = "pydap.responses.das:DASResponse"
 dds = "pydap.responses.dds:DDSResponse"
+dmr = "pydap.responses.dmr:DMRResponse"
 dods = "pydap.responses.dods:DODSResponse"
 html = "pydap.responses.html:HTMLResponse"
 ver = "pydap.responses.version:VersionResponse"

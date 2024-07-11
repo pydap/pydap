@@ -61,7 +61,7 @@ class BaseResponse(object):
     def __init__(self, dataset):
         self.dataset = dataset
         self.headers = [
-            ("XDODS-Server", "pydap/%s" % __version__),
+            ("OPeNDAP-Server", "pydap/%s" % __version__),
         ]
 
     def __call__(self, environ, start_response):
