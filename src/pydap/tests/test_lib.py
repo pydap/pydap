@@ -14,9 +14,10 @@ from pydap.lib import (
     fix_slice,
     get_var,
     hyperslab,
+    tree,
     walk,
 )
-from pydap.model import BaseType, DatasetType, SequenceType, StructureType
+from pydap.model import BaseType, DatasetType, GroupType, SequenceType, StructureType
 
 
 class TestQuote(unittest.TestCase):
@@ -231,6 +232,24 @@ class TestWalk(unittest.TestCase):
         """Test the filtering of variables yielded."""
         self.assertEqual(list(walk(self.dataset, BaseType)), [self.dataset.b])
         self.assertEqual(list(walk(self.dataset, SequenceType)), [self.dataset.d])
+
+
+class TestTree(unittest.TestCase):
+    """Test the ``tree`` func"""
+
+    def setUp(self):
+        self.dataset = DatasetType("name")
+        self.dataset["a"] = BaseType("a")
+        self.dataset["Group1"] = GroupType("Group1")
+        self.dataset["/Group1/Seq1"] = SequenceType("Seq1")
+        self.dataset["/Group1/Seq1/b"] = BaseType("b")
+        self.dataset["/Group1/Seq1/c"] = BaseType("c")
+        self.dataset["d"] = StructureType("d")
+        self.dataset["e"] = SequenceType("e")
+
+    def test_tree_repr(self):
+        self.assertEqual(self.dataset.tree(), tree(self.dataset))
+        self.assertEqual(self.dataset["Group1"].tree(), tree(self.dataset["Group1"]))
 
 
 class TestFixShorthand(unittest.TestCase):
