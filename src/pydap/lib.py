@@ -296,6 +296,31 @@ def walk(var, type=object):
             yield var
 
 
+def tree(template, prefix=""):
+    # Print the current node's name, add '.' at the root level
+    if prefix == "":
+        print(f".{unquote_(template.name)}")
+    else:
+        print(template.name)
+
+    # Iterate over the children
+    Nchild = len([child for child in template.children()])
+    for i, child in enumerate(template.children()):
+        # Determine the prefix for the current child
+        if i == Nchild - 1:
+            child_prefix = "└──"
+            next_prefix = "   "
+        else:
+            child_prefix = "├──"
+            next_prefix = "│  "
+
+        # Print the current child
+        print(prefix + child_prefix, end="")
+
+        # Recursively call tree on the child with updated prefix
+        tree(child, prefix + next_prefix)
+
+
 def fix_shorthand(projection, dataset):
     """Fix shorthand notation in the projection.
 
