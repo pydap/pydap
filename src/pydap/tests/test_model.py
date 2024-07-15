@@ -384,12 +384,10 @@ def test_SequenceType_data(sequence_example):
     )
 
 
-def test_SequenceType_len(sequence_example, recwarn):
+def test_SequenceType_len(sequence_example):
     """Test that length is read from the data attribute."""
     assert len(list(sequence_example.keys())) == 3
     assert len(sequence_example) == 4
-    assert len(recwarn) == 1
-    assert recwarn.pop(PendingDeprecationWarning)
 
 
 def test_SequenceType_iterdata(sequence_example):
@@ -405,14 +403,6 @@ def test_SequenceType_iter(sequence_example):
     for a, b in zip(iter(sequence_example), sequence_example.data):
         for sub_a, sub_b in zip(a, b):
             assert sub_a == sub_b
-
-
-def test_SequenceType_iter_deprecation(sequence_example, recwarn):
-    """Test that direct iteration over data attribute is deprecated."""
-    # Remove in pydap 3.4
-    iter(sequence_example)
-    assert len(recwarn) == 1
-    assert recwarn.pop(PendingDeprecationWarning)
 
 
 def test_SequenceType_items(sequence_example):

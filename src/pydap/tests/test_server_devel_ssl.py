@@ -9,7 +9,6 @@ it could work with more data formats.
 
 import ssl
 import sys
-import warnings
 
 import numpy as np
 import pytest
@@ -59,10 +58,11 @@ def test_open(sequence_type_data):
     )
 
 
+@pytest.mark.filterwarnings("ignore::urllib3.exceptions.InsecureRequestWarning")
 @server
 def test_verify_open_url(sequence_type_data):
     """Test that open_url raises the correct SSLError"""
-    warnings.simplefilter("always")
+    # warnings.simplefilter("always")
 
     TestDataset = DatasetType("Test")
     TestDataset["sequence"] = sequence_type_data
