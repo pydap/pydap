@@ -288,9 +288,9 @@ We can also iterate over the ``SequenceType``. In this case, it will return a se
 
     >>> for record in s.iterdata():
     ...     print(record)
-    (1, 10)
-    (2, 20)
-    (3, 30)
+    (np.int32(1), np.int16(10))
+    (np.int32(2), np.int16(20))
+    (np.int32(3), np.int16(30))
 
 Prior to pydap 3.2.2, this approach was not possible and one had to iterate directly over ``SequenceType``:
 
@@ -298,9 +298,9 @@ Prior to pydap 3.2.2, this approach was not possible and one had to iterate dire
 
     >>> for record in s:
     ...     print(record)
-    (1, 10)
-    (2, 20)
-    (3, 30)
+    (np.int32(1), np.int16(10))
+    (np.int32(2), np.int16(20))
+    (np.int32(3), np.int16(30))
 
 This approach will be deprecated in pydap 3.4.
 
@@ -310,7 +310,7 @@ Numpy, since we can reference them by column (``s['a']``) or by index:
 .. doctest::
 
     >>> s[1].data
-    (2, 20)
+    np.void((2, 20), dtype=[('a', '<i4'), ('long%20%26%20complicated', '<i2')])
     >>> s[ s.a < 3 ].data
     array([(1, 10), (2, 20)],
           dtype=[('a', '<i4'), ('long%20%26%20complicated', '<i2')])
@@ -353,7 +353,7 @@ And here is an example of how we would use it:
            [10, 20]])>
     >>> for record in s2.iterdata():
     ...     print(record)
-    (10, 20)
+    (np.int64(10), np.int64(20))
 
 One can also iterate directly over the ``IterData`` object to obtain the data:
 
@@ -361,9 +361,11 @@ One can also iterate directly over the ``IterData`` object to obtain the data:
 
     >>> for record in s2:
     ...     print(record)
-    (10, 20)
+    (np.int64(10), np.int64(20))
 
-This approach will not be deprecated in pydap 3.4.
+This approach will not be deprecated in pydap 3.4. NOTE: For numpy > 2.0, iterating over the
+``IterData`` object returns a record specifying the individual types of the elements of the
+sequence
 
 There are many implementations of classes derived from ``IterData``: ``pydap.handlers.dap.SequenceProxy`` is a proxy to
 sequential data on Opendap servers, ``pydap.handlers.csv.CSVProxy`` wraps a CSV file,

@@ -5,6 +5,7 @@ import unittest
 from collections import OrderedDict
 
 import numpy as np
+from numpy.lib import Arrayterator
 from webob.headers import ResponseHeaders
 from webtest import TestApp as App
 
@@ -170,6 +171,14 @@ class TestDODSResponseStructure(unittest.TestCase):
 
     def test_body(self):
         """Test response body."""
+        arr = np.array(-10, dtype=np.int16).astype(">i")
+        arr_1d = np.array([arr])
+        newbyteo = arr_1d.dtype.newbyteorder(">")
+        newarr = arr_1d.astype(newbyteo)
+        # View with new byte order
+        expected_result = newarr.view(newbyteo)
+
+        # begins here
         dds, xdrdata = self.res.body.split(b"\nData:\n", 1)
         dds = dds.decode("ascii")
         self.assertEqual(
@@ -200,15 +209,7 @@ class TestDODSResponseStructure(unittest.TestCase):
                 ("i32", (np.array(-10, dtype=np.int32).astype(">i").tobytes())),
                 ("ui32", (np.array(10, dtype=np.uint32).astype(">I").tobytes())),
                 # -10 int16 upconv. to int32 for transfer
-                (
-                    "i16",
-                    (
-                        np.array(-10, dtype=np.int16)
-                        .astype(">i")
-                        .newbyteorder(">")
-                        .tobytes()
-                    ),
-                ),
+                ("i16", expected_result.tobytes()),
                 # 10 uint16 upconv. to uint32 for transfer
                 ("ui16", (np.array(10, dtype=np.uint16).astype(">I").tobytes())),
                 ("f32", (np.array(100, dtype=np.float32).astype(">f").tobytes())),
@@ -315,7 +316,7 @@ class TestDODSResponseArrayterator(unittest.TestCase):
     def test_grid(self):
         """Test a grid."""
         modified = copy.copy(SimpleGrid)
-        modified.SimpleGrid.SimpleGrid.data = np.lib.arrayterator.Arrayterator(
+        modified.SimpleGrid.SimpleGrid.data = Arrayterator(
             modified.SimpleGrid.SimpleGrid.data, 2
         )
 

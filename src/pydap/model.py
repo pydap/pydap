@@ -128,15 +128,15 @@ obects are very flexible. Data can be accessed by iterating over the object::
 
     >>> for record in cast.iterdata():
     ...     print(record)
-    (10.0, 17.0, 35.0, '1')
-    (20.0, 15.0, 35.0, '2')
+    (np.float32(10.0), np.float32(17.0), np.float32(35.0), '1')
+    (np.float32(20.0), np.float32(15.0), np.float32(35.0), '2')
 
 It is possible to select only a few variables::
 
     >>> for record in cast['salinity', 'depth'].iterdata():
     ...     print(record)
-    (35.0, 10.0)
-    (35.0, 20.0)
+    (np.float32(35.0), np.float32(10.0))
+    (np.float32(35.0), np.float32(20.0))
 
     >>> cast['temperature'].dtype
     dtype('float32')
@@ -155,13 +155,13 @@ When constrained, it yields the SequenceType:
     <class 'pydap.model.SequenceType'>
     >>> for record in cast[ cast['temperature'] < 16 ].iterdata():
     ...     print(record)
-    (20.0, 15.0, 35.0, '2')
+    (np.float32(20.0), np.float32(15.0), np.float32(35.0), '2')
 
 As mentioned earlier, it is still possible to iterate directly over data::
 
     >>> for record in cast[ cast['temperature'] < 16 ]:
     ...     print(record)
-    (20.0, 15.0, 35.0, '2')
+    (np.float32(20.0), np.float32(15.0), np.float32(35.0), '2')
 
 But this is discouraged as this will be deprecated soon. The ``.iterdata()`` is
 therefore highly recommended.
@@ -636,19 +636,19 @@ class SequenceType(StructureType):
 
         >>> for line in seq.iterdata():
         ...     print(line)
-        (10, 15.2, 'Diamond_St')
-        (11, 13.1, 'Blacktail_Loop')
-        (12, 13.3, 'Platinum_St')
-        (13, 12.1, 'Kodiak_Trail')
+        (np.int32(10), np.float32(15.2), 'Diamond_St')
+        (np.int32(11), np.float32(13.1), 'Blacktail_Loop')
+        (np.int32(12), np.float32(13.3), 'Platinum_St')
+        (np.int32(13), np.float32(12.1), 'Kodiak_Trail')
 
     The order of the variables can be changed:
 
         >>> for line in seq['temperature', 'site', 'index'].iterdata():
         ...     print(line)
-        (15.2, 'Diamond_St', 10)
-        (13.1, 'Blacktail_Loop', 11)
-        (13.3, 'Platinum_St', 12)
-        (12.1, 'Kodiak_Trail', 13)
+        (np.float32(15.2), 'Diamond_St', np.int32(10))
+        (np.float32(13.1), 'Blacktail_Loop', np.int32(11))
+        (np.float32(13.3), 'Platinum_St', np.int32(12))
+        (np.float32(12.1), 'Kodiak_Trail', np.int32(13))
 
     We can iterate over children:
 
@@ -663,9 +663,9 @@ class SequenceType(StructureType):
 
         >>> for line in seq[ seq.index > 10 ].iterdata():
         ...     print(line)
-        (11, 13.1, 'Blacktail_Loop')
-        (12, 13.3, 'Platinum_St')
-        (13, 12.1, 'Kodiak_Trail')
+        (np.int32(11), np.float32(13.1), 'Blacktail_Loop')
+        (np.int32(12), np.float32(13.3), 'Platinum_St')
+        (np.int32(13), np.float32(12.1), 'Kodiak_Trail')
 
         >>> for line in seq[ seq.index > 10 ]['site'].iterdata():
         ...     print(line)
@@ -676,16 +676,16 @@ class SequenceType(StructureType):
         >>> for line in (seq['site', 'temperature'][seq.index > 10]
         ...              .iterdata()):
         ...     print(line)
-        ('Blacktail_Loop', 13.1)
-        ('Platinum_St', 13.3)
-        ('Kodiak_Trail', 12.1)
+        ('Blacktail_Loop', np.float32(13.1))
+        ('Platinum_St', np.float32(13.3))
+        ('Kodiak_Trail', np.float32(12.1))
 
     Or slice it:
 
         >>> for line in seq[::2].iterdata():
         ...     print(line)
-        (10, 15.2, 'Diamond_St')
-        (12, 13.3, 'Platinum_St')
+        (np.int32(10), np.float32(15.2), 'Diamond_St')
+        (np.int32(12), np.float32(13.3), 'Platinum_St')
 
         >>> for line in seq[ seq.index > 10 ][::2]['site'].iterdata():
         ...     print(line)
