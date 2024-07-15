@@ -169,7 +169,6 @@ therefore highly recommended.
 
 import copy
 import operator
-import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 from functools import reduce
@@ -719,28 +718,9 @@ class SequenceType(StructureType):
             yield tuple(map(decode_np_strings, line))
 
     def __iter__(self):
-        # This method should be removed in pydap 3.4
-        warnings.warn(
-            "Starting with pydap 3.4 "
-            "``for val in sequence: ...`` "
-            "will give children names. "
-            "To iterate over data the construct "
-            "``for val in sequence.iterdata(): ...``"
-            "is available now and will be supported in the"
-            "future to iterate over data.",
-            PendingDeprecationWarning,
-        )
         return self.iterdata()
 
     def __len__(self):
-        # This method should be removed in pydap 3.4
-        warnings.warn(
-            "Starting with pydap 3.4, "
-            "``len(sequence)`` will give "
-            "the number of children and not the "
-            "length of the data.",
-            PendingDeprecationWarning,
-        )
         return len(self.data)
 
     def items(self):
