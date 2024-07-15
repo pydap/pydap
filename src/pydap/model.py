@@ -176,7 +176,7 @@ from functools import reduce
 
 import numpy as np
 
-from .lib import _quote, decode_np_strings
+from .lib import _quote, decode_np_strings, tree
 
 __all__ = [
     "BaseType",
@@ -452,6 +452,9 @@ class StructureType(DapType, Mapping):
         # iterator on visible children:
         for key in self._visible_keys:
             yield self[key]
+
+    def tree(self):
+        return tree(self)
 
     def __setitem__(self, key, item):
         key = _quote(key)
