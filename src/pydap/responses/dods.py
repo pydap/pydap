@@ -43,7 +43,9 @@ def DAP2_response_dtypemap(dtype):
 
 
 def tostring_with_byteorder(x, dtype):
-    return x.astype(dtype.str).newbyteorder(dtype.byteorder).tobytes()
+    order = dtype.byteorder
+    _var = x.astype(dtype.str)
+    return _var.view(_var.dtype.newbyteorder(order)).tobytes()
 
 
 class DODSResponse(BaseResponse):

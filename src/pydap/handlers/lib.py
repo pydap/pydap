@@ -17,7 +17,7 @@ import sys
 
 import numpy as np
 import pkg_resources
-from numpy.lib.arrayterator import Arrayterator
+from numpy.lib import Arrayterator
 from webob import Request
 
 from pydap.exceptions import ConstraintExpressionError, ExtensionNotSupportedError
