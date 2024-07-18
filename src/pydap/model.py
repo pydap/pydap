@@ -889,7 +889,3 @@ class GroupType(StructureType):
 
         for child in self.children():
             child.id = child.name
-
-
-class MapType(StructureType):
-    pass
