@@ -175,7 +175,7 @@ from functools import reduce
 
 import numpy as np
 
-from .lib import _quote, decode_np_strings, tree
+from .lib import _quote, decode_np_strings, tree, walk
 
 __all__ = [
     "BaseType",
@@ -260,6 +260,8 @@ class BaseType(DapType):
         # these are set when not data is present (eg, when parsing a DDS)
         self._dtype = None
         self._shape = ()
+        self._itemsize = None
+        self._nbytes = None
 
     def __repr__(self):
         return "<%s with data %s>" % (type(self).__name__, repr(self.data))
@@ -290,6 +292,14 @@ class BaseType(DapType):
     @property
     def size(self):
         return int(np.prod(self.shape))
+
+    @property
+    def itemsize(self):
+        return np.asarray([], dtype=self.data.dtype).itemsize
+
+    @property
+    def nbytes(self):
+        return self.itemsize * self.size
 
     def __copy__(self):
         """A lightweight copy of the variable.
@@ -608,6 +618,16 @@ class DatasetType(StructureType):
 
     def change_order(self, order):
         self._dict = OrderedDict((k, self._dict[k]) for k in order)
+
+    @property
+    def nbytes(self):
+        """Returns the number of bytes occupied in aggregation by all
+        uncompressed, BaseType data in the DatasetType. Attributes are
+        not included in the computation of value"""
+        nbytes = 0
+        for var in walk(self, BaseType):
+            nbytes += var.nbytes
+        return nbytes
 
 
 class SequenceType(StructureType):
