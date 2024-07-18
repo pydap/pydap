@@ -36,7 +36,7 @@ def test_jpl2():
 def test_coads():
     file_path = "data/daps/coads_climatology.nc.dap"
     dataset = load_dap(file_path)
-    values = dataset["SST"][0, 2, 0:3].data
+    values = dataset["SST"].array[0, 2, 0:3].data
     expected = numpy.array([0.12833333, -0.05000002, -0.06363636], dtype="float32")
     numpy.testing.assert_almost_equal(values, expected)
 
