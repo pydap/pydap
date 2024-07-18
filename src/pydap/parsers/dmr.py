@@ -2,6 +2,7 @@
 
 import ast
 import collections
+import copy
 import re
 from xml.etree import ElementTree as ET
 
@@ -120,6 +121,14 @@ def get_dim_sizes(element):
     return dimension_sizes
 
 
+def has_map(element):
+    maps = element.findall("Map")
+    if len(maps) > 0:
+        return True
+    else:
+        return False
+
+
 def dmr_to_dataset(dmr):
     """Return a dataset object from a DMR representation."""
 
@@ -145,6 +154,7 @@ def dmr_to_dataset(dmr):
         variable["attributes"] = get_attributes(variable["element"], {})
         variable["dtype"] = get_dtype(variable["element"])
         variable["dims"] = get_dim_names(variable["element"])
+        variable["has_map"] = has_map(variable["element"])
         variable["shape"] = get_dim_sizes(variable["element"])
 
     # Add size entry for dimension variables
@@ -157,6 +167,7 @@ def dmr_to_dataset(dmr):
                 "size": size,
                 "dims": [name],
                 "dtype": "int",
+                "has_map": False,
                 "attributes": {},
                 "shape": (),
             }
@@ -186,9 +197,13 @@ def dmr_to_dataset(dmr):
             data=data,
             dimensions=variable["dims"],
         )
-
-        var = array
-
+        if variable["has_map"]:
+            var = pydap.model.GridType(name=var_name)
+            var[var_name] = array
+            for dim in variable["dims"]:
+                var[dim] = copy.copy(dataset[dim])
+        else:
+            var = array
         var.attributes = variable["attributes"]
         if "parent" in variable.keys() and variable["parent"] in [
             "Sequence",
