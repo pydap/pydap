@@ -260,6 +260,7 @@ class BaseType(DapType):
         # these are set when not data is present (eg, when parsing a DDS)
         self._dtype = None
         self._shape = ()
+        self._Maps = ()  # must be fully qualifying name
 
     def __repr__(self):
         return "<%s with data %s>" % (type(self).__name__, repr(self.data))
