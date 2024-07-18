@@ -260,7 +260,6 @@ class BaseType(DapType):
         # these are set when not data is present (eg, when parsing a DDS)
         self._dtype = None
         self._shape = ()
-        self._Maps = ()  # must be fully qualifying name
 
     def __repr__(self):
         return "<%s with data %s>" % (type(self).__name__, repr(self.data))
@@ -330,6 +329,7 @@ class BaseType(DapType):
         out.data = self._get_data_index(index)
         if type(self.data).__name__ == "BaseProxyDap4":
             out.attributes["checksum"] = self.data.checksum
+            out.attributes["Maps"] = self.Maps
         return out
 
     def __len__(self):
