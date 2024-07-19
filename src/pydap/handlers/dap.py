@@ -224,8 +224,6 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 session=self.session,
                 timeout=self.timeout,
             )
-        for var in walk(self.dataset, pydap.model.GridType):
-            var.set_output_grid(self.output_grid)
 
     def add_dap2_proxies(self):
         # now add data proxies

@@ -55,3 +55,10 @@ def test_mod05():
         "Cell_Along_Swath_5km",
         "Cell_Across_Swath_5km",
     ]
+
+
+def test_SWOT():
+    dataset = load_dmr_file("data/dmrs/SWOT_GPR.dmr")
+    # pick a single variable Maps
+    maps = ("/data_01/longitude", "/data_01/latitude")
+    assert dataset["data_01/ku/swh_ocean"].Maps == maps

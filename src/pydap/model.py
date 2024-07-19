@@ -339,6 +339,7 @@ class BaseType(DapType):
         out.data = self._get_data_index(index)
         if type(self.data).__name__ == "BaseProxyDap4":
             out.attributes["checksum"] = self.data.checksum
+            out.attributes["Maps"] = self.Maps
         return out
 
     def __len__(self):
@@ -908,7 +909,3 @@ class GroupType(StructureType):
 
         for child in self.children():
             child.id = child.name
-
-
-class MapType(StructureType):
-    pass

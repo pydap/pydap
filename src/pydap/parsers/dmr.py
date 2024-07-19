@@ -2,7 +2,6 @@
 
 import ast
 import collections
-import copy
 import re
 from xml.etree import ElementTree as ET
 
@@ -121,12 +120,10 @@ def get_dim_sizes(element):
     return dimension_sizes
 
 
-def has_map(element):
+def get_maps(element):
     maps = element.findall("Map")
-    if len(maps) > 0:
-        return True
-    else:
-        return False
+    Maps = tuple([maps[i].get("name") for i in range(len(maps))])
+    return Maps
 
 
 def dmr_to_dataset(dmr):
@@ -154,7 +151,7 @@ def dmr_to_dataset(dmr):
         variable["attributes"] = get_attributes(variable["element"], {})
         variable["dtype"] = get_dtype(variable["element"])
         variable["dims"] = get_dim_names(variable["element"])
-        variable["has_map"] = has_map(variable["element"])
+        variable["maps"] = get_maps(variable["element"])
         variable["shape"] = get_dim_sizes(variable["element"])
 
     # Add size entry for dimension variables
@@ -167,7 +164,7 @@ def dmr_to_dataset(dmr):
                 "size": size,
                 "dims": [name],
                 "dtype": "int",
-                "has_map": False,
+                "maps": (),
                 "attributes": {},
                 "shape": (),
             }
@@ -197,13 +194,10 @@ def dmr_to_dataset(dmr):
             data=data,
             dimensions=variable["dims"],
         )
-        if variable["has_map"]:
-            var = pydap.model.GridType(name=var_name)
-            var[var_name] = array
-            for dim in variable["dims"]:
-                var[dim] = copy.copy(dataset[dim])
-        else:
-            var = array
+        # pass along maps
+        if "maps" in variable.keys():
+            array.Maps = variable["maps"]
+        var = array
         var.attributes = variable["attributes"]
         if "parent" in variable.keys() and variable["parent"] in [
             "Sequence",

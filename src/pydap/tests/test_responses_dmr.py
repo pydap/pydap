@@ -19,7 +19,7 @@ def load_dmr_file(file_path):
     return text
 
 
-class TestDDSResponseSequence(unittest.TestCase):
+class TestDMRResponseSequence(unittest.TestCase):
     """Test DRM response from sequences."""
 
     def setUp(self):
