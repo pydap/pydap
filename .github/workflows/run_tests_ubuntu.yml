@@ -25,7 +25,6 @@ jobs:
         python -m pip install --upgrade pip
         python -m pip install -U pip setuptools
         python -m pip install -e .[tests,netcdf,client]
-        conda list
 
     - name: Run tests with pytest
       run: |
