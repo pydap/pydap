@@ -23,7 +23,12 @@ jobs:
     - name: install hdf5
       run: |
         brew install hdf5
-    - name: Install dependencies python -m pip install --upgrade pip python -m pip install -U pip setuptools python -m pip install -e .[tests,netcdf,client] conda list
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -U pip setuptools
+        python -m pip install -e .[tests,netcdf,client]
+        conda list
 
     - name: Run tests with pytest
       run: |
