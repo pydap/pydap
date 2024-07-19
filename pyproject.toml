@@ -74,7 +74,9 @@ tests = [
   'flake8',
   'werkzeug>= 2.2.2',
   'gunicorn',
-  'cryptography'
+  'cryptography',
+  'gsw',
+  'coards'
 ]
 
 [tool.isort]
