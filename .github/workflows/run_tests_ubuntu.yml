@@ -2,10 +2,10 @@ name: Run Python Tests
 on:
   push:
     branches:
-    - master
+    - main
   pull_request:
     branches:
-    - master
+    - main
 
 jobs:
   build:
@@ -23,13 +23,9 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip3 install -U pip setuptools
-        pip3 install -U "werkzeug>=2.2.2" cryptography
-        pip3 install -U numpy webtest gsw coards
-        pip3 install -U netCDF4 pytest Webob Jinja2 docopt-ng beautifulsoup4 requests testresources
-    - name: Run tests with pytest
-      run: |
+        python -m pip install -U pip setuptools
         pip install -e .[tests,netcdf,client]
+
     - name: Run tests with pytest
       run: |
         pytest
