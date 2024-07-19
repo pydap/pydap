@@ -171,6 +171,17 @@ def test_BaseType_array():
     np.testing.assert_array_equal(np.array(var), np.arange(16).reshape(2, 2, 2, 2))
 
 
+def test_BaseType_itemsize():
+    """Test itemsize of array"""
+    var = BaseType("var", np.arange(4, dtype=np.int32))
+    assert var.itemsize == np.arange(1, dtype=np.int32).itemsize
+
+
+def test_BaseType_nbytes():
+    var = BaseType("var", np.arange(4, dtype=np.int32))
+    assert var.nbytes == np.arange(4, dtype=np.int32).nbytes
+
+
 # Test pydap structures.
 def test_StructureType_init():
     """Test attributes used for dict-like behavior."""
@@ -492,6 +503,22 @@ def gridtype_example():
     example["x"] = BaseType("x", data=np.arange(30))
     example["y"] = BaseType("y", data=np.arange(50))
     return example
+
+
+def test_DatasetType_nbytes(gridtype_example):
+    dataset = DatasetType("dataset")
+    dataset["example"] = gridtype_example
+    dataset["variable"] = BaseType("variable", np.arange(100, dtype=np.complex128))
+
+    a_nb = dataset["example"].a.nbytes
+    x_nb = dataset["example"].x.nbytes
+    y_nb = dataset["example"].y.nbytes
+    v_nb = dataset["variable"].nbytes
+
+    # aggregate size of arrays only
+    Nbytes = a_nb + x_nb + y_nb + v_nb
+
+    assert dataset.nbytes == Nbytes
 
 
 def test_GridType_repr(gridtype_example):
