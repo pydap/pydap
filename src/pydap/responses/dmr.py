@@ -111,3 +111,11 @@ def _basetype(var, level=0, path="/"):
         )
         yield "{indent}</Attribute>\n".format(indent=(level + 1) * INDENT)
     yield "{indent}</{type}>\n".format(indent=level * INDENT, type=_vartype)
+
+    # get maps
+    if "Maps" in var.attributes.keys():
+        Maps = var.Maps
+        for _map in Maps:
+            yield '{indent}<Map name="{name}">\n'.format(
+                indent=(level + 1) * INDENT, name=_map
+            )
