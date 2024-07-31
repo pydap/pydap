@@ -1,0 +1,161 @@
+Traceback (most recent call last):
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/nbclient/client.py", line 1314, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.10/asyncio/base_events.py", line 649, in run_until_complete
+    return future.result()
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+dataset1 = open_url(data_url1, session=my_session, protocol="dap4")
+------------------
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mHTTPError[0m                                 Traceback (most recent call last)
+Cell [0;32mIn[5], line 1[0m
+[0;32m----> 1[0m dataset1 [38;5;241m=[39m [43mopen_url[49m[43m([49m[43mdata_url1[49m[43m,[49m[43m [49m[43msession[49m[38;5;241;43m=[39;49m[43mmy_session[49m[43m,[49m[43m [49m[43mprotocol[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mdap4[39;49m[38;5;124;43m"[39;49m[43m)[49m
+
+File [0;32m~/pydap/src/pydap/client.py:78[0m, in [0;36mopen_url[0;34m(url, application, session, output_grid, timeout, verify, user_charset, protocol)[0m
+[1;32m     62[0m [38;5;28;01mdef[39;00m [38;5;21mopen_url[39m(
+[1;32m     63[0m     url,
+[1;32m     64[0m     application[38;5;241m=[39m[38;5;28;01mNone[39;00m,
+[0;32m   (...)[0m
+[1;32m     70[0m     protocol[38;5;241m=[39m[38;5;28;01mNone[39;00m,
+[1;32m     71[0m ):
+[1;32m     72[0m [38;5;250m    [39m[38;5;124;03m"""[39;00m
+[1;32m     73[0m [38;5;124;03m    Open a remote URL, returning a dataset.[39;00m
+[1;32m     74[0m
+[1;32m     75[0m [38;5;124;03m    set output_grid to `False` to retrieve only main arrays and[39;00m
+[1;32m     76[0m [38;5;124;03m    never retrieve coordinate axes.[39;00m
+[1;32m     77[0m [38;5;124;03m    """[39;00m
+[0;32m---> 78[0m     handler [38;5;241m=[39m [43mpydap[49m[38;5;241;43m.[39;49m[43mhandlers[49m[38;5;241;43m.[39;49m[43mdap[49m[38;5;241;43m.[39;49m[43mDAPHandler[49m[43m([49m
+[1;32m     79[0m [43m        [49m[43murl[49m[43m,[49m
+[1;32m     80[0m [43m        [49m[43mapplication[49m[43m,[49m
+[1;32m     81[0m [43m        [49m[43msession[49m[43m,[49m
+[1;32m     82[0m [43m        [49m[43moutput_grid[49m[43m,[49m
+[1;32m     83[0m [43m        [49m[43mtimeout[49m[38;5;241;43m=[39;49m[43mtimeout[49m[43m,[49m
+[1;32m     84[0m [43m        [49m[43mverify[49m[38;5;241;43m=[39;49m[43mverify[49m[43m,[49m
+[1;32m     85[0m [43m        [49m[43muser_charset[49m[38;5;241;43m=[39;49m[43muser_charset[49m[43m,[49m
+[1;32m     86[0m [43m        [49m[43mprotocol[49m[38;5;241;43m=[39;49m[43mprotocol[49m[43m,[49m
+[1;32m     87[0m [43m    [49m[43m)[49m
+[1;32m     88[0m     dataset [38;5;241m=[39m handler[38;5;241m.[39mdataset
+[1;32m     90[0m     [38;5;66;03m# attach server-side functions[39;00m
+
+File [0;32m~/pydap/src/pydap/handlers/dap.py:98[0m, in [0;36mDAPHandler.__init__[0;34m(self, url, application, session, output_grid, timeout, verify, user_charset, protocol)[0m
+[1;32m     89[0m arg [38;5;241m=[39m (
+[1;32m     90[0m     [38;5;28mself[39m[38;5;241m.[39mscheme,
+[1;32m     91[0m     [38;5;28mself[39m[38;5;241m.[39mnetloc,
+[0;32m   (...)[0m
+[1;32m     95[0m     [38;5;28mself[39m[38;5;241m.[39mfragment,
+[1;32m     96[0m )
+[1;32m     97[0m [38;5;28mself[39m[38;5;241m.[39mbase_url [38;5;241m=[39m urlunparse(arg)
+[0;32m---> 98[0m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mmake_dataset[49m[43m([49m[43m)[49m
+[1;32m     99[0m [38;5;28mself[39m[38;5;241m.[39madd_proxies()
+
+File [0;32m~/pydap/src/pydap/handlers/dap.py:132[0m, in [0;36mDAPHandler.make_dataset[0;34m(self)[0m
+[1;32m    128[0m [38;5;28;01mdef[39;00m [38;5;21mmake_dataset[39m(
+[1;32m    129[0m     [38;5;28mself[39m,
+[1;32m    130[0m ):
+[1;32m    131[0m     [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39mprotocol [38;5;241m==[39m [38;5;124m"[39m[38;5;124mdap4[39m[38;5;124m"[39m:
+[0;32m--> 132[0m         [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mdataset_from_dap4[49m[43m([49m[43m)[49m
+[1;32m    133[0m     [38;5;28;01melse[39;00m:
+[1;32m    134[0m         [38;5;28mself[39m[38;5;241m.[39mdataset_from_dap2()
+
+File [0;32m~/pydap/src/pydap/handlers/dap.py:155[0m, in [0;36mDAPHandler.dataset_from_dap4[0;34m(self)[0m
+[1;32m    138[0m dmr_url [38;5;241m=[39m urlunparse(
+[1;32m    139[0m     (
+[1;32m    140[0m         [38;5;28mself[39m[38;5;241m.[39mscheme,
+[0;32m   (...)[0m
+[1;32m    146[0m     )
+[1;32m    147[0m )
+[1;32m    148[0m r [38;5;241m=[39m pydap[38;5;241m.[39mnet[38;5;241m.[39mGET(
+[1;32m    149[0m     dmr_url,
+[1;32m    150[0m     [38;5;28mself[39m[38;5;241m.[39mapplication,
+[0;32m   (...)[0m
+[1;32m    153[0m     verify[38;5;241m=[39m[38;5;28mself[39m[38;5;241m.[39mverify,
+[1;32m    154[0m )
+[0;32m--> 155[0m [43mpydap[49m[38;5;241;43m.[39;49m[43mnet[49m[38;5;241;43m.[39;49m[43mraise_for_status[49m[43m([49m[43mr[49m[43m)[49m
+[1;32m    156[0m dmr [38;5;241m=[39m safe_charset_text(r, [38;5;28mself[39m[38;5;241m.[39muser_charset)
+[1;32m    157[0m [38;5;28mself[39m[38;5;241m.[39mdataset [38;5;241m=[39m dmr_to_dataset(dmr)
+
+File [0;32m~/pydap/src/pydap/net.py:37[0m, in [0;36mraise_for_status[0;34m(response)[0m
+[1;32m     34[0m [38;5;28;01mdef[39;00m [38;5;21mraise_for_status[39m(response):
+[1;32m     35[0m     [38;5;66;03m# Raise error if status is above 300:[39;00m
+[1;32m     36[0m     [38;5;28;01mif[39;00m response[38;5;241m.[39mstatus_code [38;5;241m>[39m[38;5;241m=[39m [38;5;241m400[39m:
+[0;32m---> 37[0m         [38;5;28;01mraise[39;00m HTTPError(
+[1;32m     38[0m             detail[38;5;241m=[39mresponse[38;5;241m.[39mstatus [38;5;241m+[39m [38;5;124m"[39m[38;5;130;01m\n[39;00m[38;5;124m"[39m [38;5;241m+[39m response[38;5;241m.[39mtext,
+[1;32m     39[0m             headers[38;5;241m=[39mresponse[38;5;241m.[39mheaders,
+[1;32m     40[0m             comment[38;5;241m=[39mresponse[38;5;241m.[39mbody,
+[1;32m     41[0m         )
+[1;32m     42[0m     [38;5;28;01melif[39;00m response[38;5;241m.[39mstatus_code [38;5;241m>[39m[38;5;241m=[39m [38;5;241m300[39m:
+[1;32m     43[0m         [38;5;28;01mtry[39;00m:
+
+[0;31mHTTPError[0m: 500 Internal Server Error
+
+
+
+
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link rel='stylesheet' href='/docs/css/contents.css' type='text/css'/>
+    <title>Hyrax - Internal Error (500)</title>
+    <style type="text/css">
+        <!--
+        .style1 {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        -->
+    </style>
+</head>
+
+<body>
+<p>&nbsp;</p>
+
+<h1 align="center">Hyrax - Internal Error (500)</h1>
+<hr size="1" noshade="noshade"/>
+<table width="100%" border="0">
+    <tr>
+        <td>
+            <img src="/docs/images/superman.jpg"
+                 alt="Bad things are happening"
+                 title="Bad things are happening"
+                 width="320"
+                 height="426"/>
+        </td>
+        <td>
+            <p align="left" class="style1">OUCH!</p>
+
+            <p align="left">Something Bad Happened On This Server.</p>
+
+
+            <p align="left"> If you think that the server is broken (that the URL you submitted should have worked),
+                then please contact the OPeNDAP user support coordinator at:
+                <a href="mailto:support@opendap.org?subject=Hyrax Error 500&amp;body=%0A%0A%0A%0A%0A# -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --%0A# %0A# We&#39;re sorry you had a problem using the server.%0A# Please use the space above to describe what you%0A# were trying to do and we will try to assist you.%0A# Thanks,%0A# OPeNDAP Support.%0A# %0A# -- -- -- hyrax error info, please include -- -- --%0A# %0A# ReqInfo.getRequestUrl(): https://opendap.earthdata.nasa.gov/collections/C2799438313-POCLOUD/granules/SWOT_GPR_2PfP507_010_20230501_003247_20230501_012352.dmr%0A# request_url: https://opendap.earthdata.nasa.gov/error/error500.jsp%0A# protocol: HTTP/1.1%0A# server: opendap.earthdata.nasa.gov%0A# port: 443%0A# javax.servlet.forward.request_uri: /collections/C2799438313-POCLOUD/granules/SWOT_GPR_2PfP507_010_20230501_003247_20230501_012352.dmr%0A# query_string: n/a%0A# status: 500%0A# message: no_error_message_found%0A# %0A# -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --%0A">support@opendap.org</a>
+            </p>
+
+        </td>
+    </tr>
+
+</table>
+<hr size="1" noshade="noshade"/>
+<h1 align="center">Hyrax - Internal Error (500)</h1>
+</body>
+</html>
