@@ -85,7 +85,9 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
 
         self.protocol = self.determine_protocol(protocol)
 
-        self.projection, self.selection = pydap.parsers.parse_ce(self.query)
+        self.projection, self.selection = pydap.parsers.parse_ce(
+            self.query, self.protocol
+        )
         arg = (
             self.scheme,
             self.netloc,
@@ -224,6 +226,17 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 session=self.session,
                 timeout=self.timeout,
             )
+
+        # apply projections to BaseType only
+        # CE for sequences and structs
+        # are not ready (see https://github.com/pydap/pydap/issues/314)
+        for var in self.projection:
+            target = self.dataset
+            while var:
+                token, index = var.pop(0)
+                target = target[token]
+                if isinstance(target, pydap.model.BaseType):
+                    target.data.slice = fix_slice(index, target.shape)
 
     def add_dap2_proxies(self):
         # now add data proxies

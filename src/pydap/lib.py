@@ -192,7 +192,7 @@ def fix_slice(slice_, shape):
 
     This is based on this document:
 
-        http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
+        https://numpy.org/doc/stable/user/basics.indexing.html#slicing-and-striding
 
     """
     # convert `slice_` to a tuple
@@ -211,10 +211,10 @@ def fix_slice(slice_, shape):
     slice_ = tuple(out) + (slice(None),) * expand
 
     out = []
-    for s, n in zip(slice_, shape):
+    for s, N in zip(slice_, shape):
         if isinstance(s, int):
             if s < 0:
-                s += n
+                s += N
             out.append(s)
         else:
             k = s.step or 1
@@ -223,13 +223,13 @@ def fix_slice(slice_, shape):
             if i is None:
                 i = 0
             elif i < 0:
-                i += n
+                i += N
 
             j = s.stop
-            if j is None or j > n:
-                j = n
+            if j is None or j >= (N + i):
+                j = N + i
             elif j < 0:
-                j += n
+                j += N
 
             out.append(slice(i, j, k))
 

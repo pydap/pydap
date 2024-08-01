@@ -45,7 +45,7 @@ def test_open_url_dap4(remote_url):
     assert data_dap4["s33"][:].data == data_original["s33"][0, 0].data
 
     # subset of vars by indexes
-    var1 = "/s33[0:][0:1:2];"
+    var1 = "/s33[0:1:2][0:1:2];"
     var2 = "/br34[0:1:1][0:1:2][0:1:3];"
     var3 = "/s113[0:1:0][0:1:0][0:1:2]"
     Vars = [var1, var2, var3]
@@ -54,6 +54,15 @@ def test_open_url_dap4(remote_url):
     dataset = open_url(url)
     # check [vars1, vars2, vars3] only in dataset
     assert len(dataset.keys()) == len(Vars)
+
+
+def test_open_url_dap4_shape():
+    url = "http://test.opendap.org:8080/opendap/"
+    filename = "netcdf/examples/200803061600_HFRadar_USEGC_6km_rtv_SIO.nc"
+    CE = "?dap4.ce=/lon[100:1:199]"
+    ds_ce = open_url(url + filename + CE)
+    data = ds_ce["lon"][:]
+    assert data.shape == (100,)
 
 
 def test_open_url_seqCE(remote_url):
