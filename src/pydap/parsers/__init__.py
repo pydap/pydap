@@ -114,9 +114,19 @@ def parse_ce(query_string, protocol="dap2"):
     """
     if protocol == "dap2":
         key = "&"
+        if len(query_string) > 0 and query_string[:8] == "dap4.ce=":
+            raise ConstraintExpressionError(
+                "The Constraint Expression %s does not follow the DAP2 "
+                "model specification" % query_string,
+            )
     elif protocol == "dap4":
         key = "|"
-        # remove `dap4.ce=` from query string
+        # remove `dap4.ce=` from query string if there is a query
+        if len(query_string) > 0 and query_string[:8] != "dap4.ce=":
+            raise ConstraintExpressionError(
+                "The Constraint Expression %s does not follow the DAP4"
+                "model specification " % query_string,
+            )
         query_string = query_string[8:]
     tokens = [token for token in unquote(query_string).split(key) if token]
     if not tokens:
