@@ -135,6 +135,12 @@ class TestFixSlice(unittest.TestCase):
         self.assertEqual(slice2, (slice(2, 8, 1),))
         np.testing.assert_array_equal(x[slice1], x[slice2])
 
+    def test_non_zero_slicestart(self):
+        x = np.arange(0, 100)
+        slice1 = slice(100, 200)
+        slice2 = fix_slice(slice1, x.shape)
+        self.assertEqual(slice2, (slice(100, 200, 1),))
+
 
 class TestCombineSlices(unittest.TestCase):
     """Test the ``combine_slices`` function."""

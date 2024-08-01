@@ -123,6 +123,19 @@ class TestParseCe(unittest.TestCase):
         )
         self.assertEqual(selection, [])
 
+    def test_dap4_ce(self):
+        protocol = "dap4"
+        projection, sel = parse_ce("dap4.ce=/lon[100:1:199]", protocol)
+        self.assertEqual(projection, [[("/lon", (slice(100, 200, 1),))]])
+        self.assertEqual(sel, [])
+
+    def test_inconsistent_CE_protocol(self):
+        query1 = "dap4.ce=/lon[100:1:199]"
+        query2 = "lon[100:1:199]"
+        with self.assertRaises(ConstraintExpressionError):
+            parse_ce(query1, "dap2")
+            parse_ce(query2, "dap4")
+
 
 class TestParseHyperslab(unittest.TestCase):
     """Test hyperslab parser."""
