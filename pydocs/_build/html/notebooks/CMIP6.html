@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>CMIP6 - Coupled Model Intercomparison Project Phase 6 &#8212; My sample book</title>
+    <title>CMIP6 &#8212; My sample book</title>
 
 
 
@@ -61,7 +61,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Guide for new contributors" href="../guide_to_developer.html" />
-    <link rel="prev" title="SWOT Nadir NALT GDR (Level 2)" href="SWOT.html" />
+    <link rel="prev" title="SWOT" href="SWOT.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -182,9 +182,9 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE: Ocean Color Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT Nadir NALT GDR (Level 2)</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">CMIP6 - Coupled Model Intercomparison Project Phase 6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">CMIP6</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
 <ul class="nav bd-sidenav">
@@ -324,9 +324,7 @@ document.write(`
   </button>
 `);
 </script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
+
 </div></div>
 
     </div>
@@ -337,25 +335,11 @@ document.write(`
 
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>CMIP6 - Coupled Model Intercomparison Project Phase 6</h1>
+    <h1>CMIP6</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
 
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements-to-run-this-notebook">Requirements to run this notebook</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives">Objectives</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cmip6-access-via-opendap">CMIP6 Access via OPeNDAP</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-dataset-access-via-pydap">Create dataset access via pydap</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-single-variable">Inspect single variable</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-arrays">Grid Arrays</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#let-s-make-some-plots">Let’s make some plots!</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -365,17 +349,14 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
 
-  <section class="tex2jax_ignore mathjax_ignore" id="cmip6-coupled-model-intercomparison-project-phase-6">
-<h1>CMIP6 - Coupled Model Intercomparison Project Phase 6<a class="headerlink" href="#cmip6-coupled-model-intercomparison-project-phase-6" title="Link to this heading">#</a></h1>
-<p>This notebook demonstrates access to CMIP6 data. Broad information about the dataset can be found on the PACE website (see <a class="reference external" href="https://oceandata.sci.gsfc.nasa.gov">here</a>)</p>
-<section id="requirements-to-run-this-notebook">
-<h2>Requirements to run this notebook<a class="headerlink" href="#requirements-to-run-this-notebook" title="Link to this heading">#</a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="cmip6">
+<h1>CMIP6<a class="headerlink" href="#cmip6" title="Link to this heading">#</a></h1>
+<p>This notebook demonstrates access to <strong>Coupled Model Intercomparison Project Phase</strong> 6 (<code class="docutils literal notranslate"><span class="pre">CMIP6</span></code>) data. Broad information about the dataset can be found on the PACE website (see <a class="reference external" href="https://oceandata.sci.gsfc.nasa.gov">here</a>)</p>
+<p><strong>Requirements to run this notebook</strong></p>
 <ol class="arabic simple">
 <li><p>None</p></li>
 </ol>
-</section>
-<section id="objectives">
-<h2>Objectives<a class="headerlink" href="#objectives" title="Link to this heading">#</a></h2>
+<p><strong>Objectives</strong></p>
 <p>Use <a class="reference external" href="https://pydap.github.io/pydap/">pydap</a>’s client API to demonstrate</p>
 <ul class="simple">
 <li><p>To demonstrate remote access to CMIP data available through the **Earth System Grid Federation <a class="reference external" href="https://aims2.llnl.gov/search/cmip6/">ESGF</a> Portal.</p></li>
@@ -393,9 +374,7 @@ document.write(`
 </div>
 </div>
 </div>
-</section>
-<section id="cmip6-access-via-opendap">
-<h2>CMIP6 Access via OPeNDAP<a class="headerlink" href="#cmip6-access-via-opendap" title="Link to this heading">#</a></h2>
+<p><strong>CMIP6 Access via OPeNDAP server</strong></p>
 <p>You can also directly inspect a THREDDS catalog for <a class="reference external" href="https://crd-esgf-drc.ec.gc.ca/thredds/catalog/esgB_dataroot/AR6/CMIP6/catalog.html">CMIP6</a>. For example, you can navigate to <code class="docutils literal notranslate"><span class="pre">CDRMIP/CCCma/CanESM5/esm-pi-cdr-pulse/r2i1p2f1/Eday/ts/gn/v20190429</span></code> and access <a class="reference external" href="https://crd-esgf-drc.ec.gc.ca/thredds/dodsC/esgB_dataroot/AR6/CMIP6/CDRMIP/CCCma/CanESM5/esm-pi-cdr-pulse/r2i1p2f1/Eday/ts/gn/v20190429/ts_Eday_CanESM5_esm-pi-cdr-pulse_r2i1p2f1_gn_54510101-56501231.nc.html">ts data</a> via OPeNDAP DAP2 protocol.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -404,9 +383,7 @@ document.write(`
 </div>
 </div>
 </div>
-</section>
-<section id="create-dataset-access-via-pydap">
-<h2>Create dataset access via pydap<a class="headerlink" href="#create-dataset-access-via-pydap" title="Link to this heading">#</a></h2>
+<p><strong>Create dataset access via pydap</strong></p>
 <p>By default <code class="docutils literal notranslate"><span class="pre">protocol='dap2'</span></code>, however the default behavior may change in the future.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -416,8 +393,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 73.8 ms, sys: 9.21 ms, total: 83 ms
-Wall time: 1.17 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 73 ms, sys: 8.33 ms, total: 81.4 ms
+Wall time: 1.25 s
 </pre></div>
 </div>
 </div>
@@ -457,9 +434,7 @@ Wall time: 1.17 s
 </div>
 </div>
 </div>
-</section>
-<section id="inspect-single-variable">
-<h2>Inspect single variable<a class="headerlink" href="#inspect-single-variable" title="Link to this heading">#</a></h2>
+<p><strong>Inspect single variable</strong></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ts</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">]</span>
@@ -473,9 +448,7 @@ Wall time: 1.17 s
 </div>
 </div>
 </div>
-</section>
-<section id="grid-arrays">
-<h2>Grid Arrays<a class="headerlink" href="#grid-arrays" title="Link to this heading">#</a></h2>
+<p><strong>Grid Arrays</strong></p>
 <ul class="simple">
 <li><p>No longer implemented in <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. These carry copies of dimensions/coverage, and can be considered self-contained.</p></li>
 <li><p>Attempting to download into memory <code class="docutils literal notranslate"><span class="pre">ts</span></code> also downloads <code class="docutils literal notranslate"><span class="pre">time</span></code>, <code class="docutils literal notranslate"><span class="pre">lat</span></code>, <code class="docutils literal notranslate"><span class="pre">lon</span></code>.</p></li>
@@ -533,9 +506,7 @@ Wall time: 1.17 s
 </div>
 </div>
 </div>
-</section>
-<section id="let-s-make-some-plots">
-<h2>Let’s make some plots!<a class="headerlink" href="#let-s-make-some-plots" title="Link to this heading">#</a></h2>
+<p><strong>Let’s make some plots!</strong></p>
 <p>We will pick the Grid type <code class="docutils literal notranslate"><span class="pre">ts</span></code> at <code class="docutils literal notranslate"><span class="pre">time=0</span></code>. Will use <code class="docutils literal notranslate"><span class="pre">pydap</span></code>.</p>
 <p><strong>NOTE</strong>: When making a plot, check for missing values, scale factors, units.</p>
 <div class="cell docutils container">
@@ -678,7 +649,6 @@ Wall time: 1.17 s
 </div>
 <p><strong>Fig 1</strong>. Global Near surface temperature on a (longitude)-periodic domain.</p>
 </section>
-</section>
 
     <script type="text/x-thebe-config">
     {
@@ -716,7 +686,7 @@ Wall time: 1.17 s
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">SWOT Nadir NALT GDR (Level 2)</p>
+        <p class="prev-next-title">SWOT</p>
       </div>
     </a>
     <a class="right-next"
@@ -734,27 +704,6 @@ Wall time: 1.17 s
             </div>
 
 
-
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements-to-run-this-notebook">Requirements to run this notebook</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives">Objectives</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cmip6-access-via-opendap">CMIP6 Access via OPeNDAP</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-dataset-access-via-pydap">Create dataset access via pydap</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-single-variable">Inspect single variable</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#grid-arrays">Grid Arrays</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#let-s-make-some-plots">Let’s make some plots!</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
 
 
           </div>

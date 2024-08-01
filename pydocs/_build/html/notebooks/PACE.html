@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>PACE: Ocean Color Data &#8212; My sample book</title>
+    <title>PACE &#8212; My sample book</title>
 
 
 
@@ -57,12 +57,10 @@
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/PACE';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="SWOT Nadir NALT GDR (Level 2)" href="SWOT.html" />
+    <link rel="next" title="SWOT" href="SWOT.html" />
     <link rel="prev" title="ECCOv4 access via NASA’s EarthData in the Cloud" href="ECCO.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -184,9 +182,9 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">PACE: Ocean Color Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT Nadir NALT GDR (Level 2)</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CMIP6.html">CMIP6 - Coupled Model Intercomparison Project Phase 6</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CMIP6.html">CMIP6</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
 <ul class="nav bd-sidenav">
@@ -326,9 +324,7 @@ document.write(`
   </button>
 `);
 </script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="fa-solid fa-list"></span>
-</button>
+
 </div></div>
 
     </div>
@@ -339,29 +335,11 @@ document.write(`
 
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>PACE: Ocean Color Data</h1>
+    <h1>PACE</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
 
-            <div>
-                <h2> Contents </h2>
-            </div>
-            <nav aria-label="Page">
-                <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements-to-run-this-notebook">Requirements to run this notebook</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives">Objectives</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pace-access-via-opendap">PACE Access via OPeNDAP</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-token-authorization-and-create-requests-session">Import Token Authorization and create requests.Session()</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-download-some-data">Lets download some data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decoding-data-values">Decoding data values:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cf-conventions">CF - Conventions</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subsetting-data">Subsetting data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-opendap-s-webform-data-request">Accessing OPeNDAP’s webform “Data Request”</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xarray-opendap-server-side-processing">xarray + OPeNDAP server-side processing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downloading-in-memory-is-60-times-faster">Downloading in memory is 60 times faster !</a></li>
-</ul>
-            </nav>
         </div>
     </div>
 </div>
@@ -371,23 +349,21 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
 
-  <section class="tex2jax_ignore mathjax_ignore" id="pace-ocean-color-data">
-<h1>PACE: Ocean Color Data<a class="headerlink" href="#pace-ocean-color-data" title="Link to this heading">#</a></h1>
-<p>This notebook demonstrates access to PACE data. Broad information about the dataset can be found on the PACE website (see <a class="reference external" href="https://oceandata.sci.gsfc.nasa.gov">here</a>)</p>
-<section id="requirements-to-run-this-notebook">
-<h2>Requirements to run this notebook<a class="headerlink" href="#requirements-to-run-this-notebook" title="Link to this heading">#</a></h2>
+  <section class="tex2jax_ignore mathjax_ignore" id="pace">
+<h1>PACE<a class="headerlink" href="#pace" title="Link to this heading">#</a></h1>
+<p>This notebook demonstrates access to PACE Ocean Color Data. Broad information about the dataset can be found on the PACE website (see <a class="reference external" href="https://oceandata.sci.gsfc.nasa.gov">here</a>)</p>
+<p><strong>Requirements to run this notebook</strong></p>
 <ol class="arabic simple">
 <li><p>Have an Earth Data Login account</p></li>
 <li><p>Have a Bearer Token.</p></li>
 </ol>
-</section>
-<section id="objectives">
-<h2>Objectives<a class="headerlink" href="#objectives" title="Link to this heading">#</a></h2>
+<p><strong>Objectives</strong></p>
 <p>Use <a class="reference external" href="https://pydap.github.io/pydap/">pydap</a>’s client API to demonstrate</p>
 <ul class="simple">
-<li><p>Access to NASA’s <a class="reference external" href="https://www.earthdata.nasa.gov/">EarthData</a> via the use of <code class="docutils literal notranslate"><span class="pre">tokens</span></code>. <code class="docutils literal notranslate"><span class="pre">Tokens</span></code> are greatly favored over <code class="docutils literal notranslate"><span class="pre">username/password</span></code>, since <code class="docutils literal notranslate"><span class="pre">tokens</span></code> avoid repeated authentication over the many redirects.</p></li>
-<li><p>Access/download <code class="docutils literal notranslate"><span class="pre">PACE</span></code> data via and OPeNDAP URL and <code class="docutils literal notranslate"><span class="pre">pydap</span></code>’s client.</p></li>
-<li><p>subsetting via URL <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expressions</span></code>.</p></li>
+<li><p>Access to NASA’s <a class="reference external" href="https://www.earthdata.nasa.gov/">EarthData in the cloud</a> via the use of <code class="docutils literal notranslate"><span class="pre">tokens</span></code>.</p></li>
+<li><p>Access/download <code class="docutils literal notranslate"><span class="pre">PACE</span></code> data with an <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> URL and <code class="docutils literal notranslate"><span class="pre">pydap</span></code>’s client.</p></li>
+<li><p>Construct a <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expression</span></code>.</p></li>
+<li><p>Speed up the workflow by exploiting <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>’s <strong>data-proximate subsetting</strong> to access and download only subset of the original data.</p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">Author</span></code>: Miguel Jimenez-Urias, ‘24</p>
 <div class="cell docutils container">
@@ -402,9 +378,7 @@ document.write(`
 </div>
 </div>
 </div>
-</section>
-<section id="pace-access-via-opendap">
-<h2>PACE Access via OPeNDAP<a class="headerlink" href="#pace-access-via-opendap" title="Link to this heading">#</a></h2>
+<p><strong>PACE Access via OPeNDAP</strong></p>
 <p>The PACE OPeNDAP data catalog can be found <a class="reference external" href="https://oceandata.sci.gsfc.nasa.gov/opendap/PACE_OCI/L3SMI/2024/contents.html">here</a>. Data only starts in 2024.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -414,9 +388,7 @@ document.write(`
 </div>
 </div>
 </div>
-</section>
-<section id="import-token-authorization-and-create-requests-session">
-<h2>Import Token Authorization and create requests.Session()<a class="headerlink" href="#import-token-authorization-and-create-requests-session" title="Link to this heading">#</a></h2>
+<p><strong>Import Token Authorization</strong></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;&lt;YourTokenHERE&gt;&quot;</span>
@@ -444,8 +416,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 49.4 ms, sys: 6.63 ms, total: 56.1 ms
-Wall time: 1.16 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 45.1 ms, sys: 6.39 ms, total: 51.5 ms
+Wall time: 1.1 s
 </pre></div>
 </div>
 </div>
@@ -525,19 +497,10 @@ Wall time: 1.16 s
 </div>
 </div>
 </div>
-</section>
-<section id="lets-download-some-data">
-<h2>Lets download some data<a class="headerlink" href="#lets-download-some-data" title="Link to this heading">#</a></h2>
+<p><strong>Lets download some data</strong></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">chlor_a</span> <span class="o">=</span> <span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">][:]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1min 4s, sys: 1min 42s, total: 2min 46s
-Wall time: 2min 52s
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">chlor_a</span> <span class="o">=</span> <span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">][:]</span>
 </pre></div>
 </div>
 </div>
@@ -577,13 +540,9 @@ Wall time: 2min 52s
 </div>
 </div>
 </div>
-</section>
-<section id="decoding-data-values">
-<h2>Decoding data values:<a class="headerlink" href="#decoding-data-values" title="Link to this heading">#</a></h2>
+<p><strong>Decoding data values:</strong></p>
 <p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> decodes time and spatial values internally by default, everytime one accesses the data values, whereas currently there is no such method within <code class="docutils literal notranslate"><span class="pre">pydap</span></code> to do so. But it is often useful to understand how this works internally, and what type of parameters are used for decoding. Because OPeNDAP is based on the NetCDF data model, it if a CF-compliant software. Below are some of the most used metadata attributes associated for decoding data:</p>
-</section>
-<section id="cf-conventions">
-<h2>CF - Conventions<a class="headerlink" href="#cf-conventions" title="Link to this heading">#</a></h2>
+<p><strong>CF - Conventions</strong></p>
 <p>In OPeNDAP’s metadata rich datasets, each contains standard attributes used to describe missing data, units in which the data is presented, and any stretching/scaling of the values.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">standard</span> <span class="pre">name</span></code></p></li>
@@ -671,9 +630,7 @@ Wall time: 2min 52s
 </div>
 </div>
 <p><strong>Fig 1.</strong> Chlorophyll A concentration for the entire dataset.</p>
-</section>
-<section id="subsetting-data">
-<h2>Subsetting data<a class="headerlink" href="#subsetting-data" title="Link to this heading">#</a></h2>
+<p><strong>Subsetting data</strong></p>
 <p>We can use the figure above to find a region of interest, in index space. Then we can combine <code class="docutils literal notranslate"><span class="pre">xarray</span></code> and <code class="docutils literal notranslate"><span class="pre">OPeNDAP's</span> <span class="pre">Hyrax</span></code> to access only the data we want.</p>
 <ul class="simple">
 <li><p><strong>NorthAtlantic</strong></p></li>
@@ -694,22 +651,12 @@ Wall time: 2min 52s
 </div>
 </div>
 <p><strong>Fig 2.</strong> An approach to visually subset the global Chlorophyll A concentration. This approach allows to extract index values to construct the Constraint Expression and add it to the URL.</p>
-</section>
-<section id="accessing-opendap-s-webform-data-request">
-<h2>Accessing OPeNDAP’s webform “Data Request”<a class="headerlink" href="#accessing-opendap-s-webform-data-request" title="Link to this heading">#</a></h2>
-<p>You can interactively construct an OPeNDAP URL associated with a dataset by accessing the OPeNDAP server’s Data Request Form. Depending on what DAP-protocol
-the server implements you can append to a URL:</p>
-<p><span class="math notranslate nohighlight">\(\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{\textbf{DAP2\; Implementation}: \;\;\;\;\;\;} \longrightarrow \text{\;\;\;\;\;&lt;URL&gt;.html}\)</span></p>
-<p>or</p>
-<p><span class="math notranslate nohighlight">\(\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \text{\textbf{DAP4\; Implementation}: \;\;\;\;\;\;} \longrightarrow \text{\;\;\;\;\;&lt;URL&gt;.dmr.html}\)</span></p>
-<p>Then paste the resulting <code class="docutils literal notranslate"><span class="pre">URL</span></code> onto a browser. This is relevant when subsetting data via data-proximate <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> servers. In this case, the Hyrax server implements both <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> and <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>.</p>
-<p><strong>NOTE</strong> <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> servers that implement <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> <strong>DO NOT</strong> support <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. But <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> servers that implement <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> support <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>.</p>
-<img src="img/PACE_form.png" alt="drawing" width="750"/>
-<p><strong>Fig. 3</strong> <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span> <span class="pre">DAP4</span> <span class="pre">Data</span> <span class="pre">Request</span> <span class="pre">Form</span></code> for the dataset used in this tutorial. The <code class="docutils literal notranslate"><span class="pre">Form</span></code> allows works as an <code class="docutils literal notranslate"><span class="pre">interactive</span> <span class="pre">URL-builder</span></code> by selecting the variables <code class="docutils literal notranslate"><span class="pre">lat</span></code>, <code class="docutils literal notranslate"><span class="pre">lon</span></code>, <code class="docutils literal notranslate"><span class="pre">chlor_a</span></code>, with the appropriate indexes in the <strong>Fig. 2</strong> above. You can access the form <a class="reference external" href="https://oceandata.sci.gsfc.nasa.gov/opendap/PACE_OCI/L3SMI/2024/0310/PACE_OCI.20240310.L3m.DAY.CHL.V2_0.chlor_a.4km.NRT.nc.dmr.html">HERE</a>.</p>
-</section>
-<section id="xarray-opendap-server-side-processing">
-<h2>xarray + OPeNDAP server-side processing<a class="headerlink" href="#xarray-opendap-server-side-processing" title="Link to this heading">#</a></h2>
-<p>We modify the <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> URL constructed with the form, so that it begins with <code class="docutils literal notranslate"><span class="pre">dap4</span></code> (shortcut to define the DAP implementation).</p>
+<p><strong>Adding a Constraint Expression</strong></p>
+<p>You can pass the index range to the URL, in the form of a <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expression</span> <span class="pre">(CE)</span></code>. The syntax for <code class="docutils literal notranslate"><span class="pre">CE</span></code>s in <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;?dap4.ce=/lat[500:1:2000];/lon[2000:1:4500];/chlor_a[500:1:2000][2000:1:4500]&quot;</span>
+</pre></div>
+</div>
+<p><strong>NOTE</strong>: In <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>’s <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expressions</span></code>, <code class="docutils literal notranslate"><span class="pre">hyper_slices</span></code> define index range as follows: <code class="docutils literal notranslate"><span class="pre">start:step:stop</span></code>, and these include the last index (<code class="docutils literal notranslate"><span class="pre">stop</span></code>).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;dap4://oceandata.sci.gsfc.nasa.gov/opendap/PACE_OCI/L3SMI/2024/0310/PACE_OCI.20240310.L3m.DAY.CHL.V2_0.chlor_a.4km.NRT.nc?dap4.ce=/lat[500:1:2000];/lon[2000:1:4500];/chlor_a[500:1:2000][2000:1:4500]&quot;</span>
@@ -725,10 +672,254 @@ the server implements you can append to a URL:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.PACE_OCI.20240310.L3m.DAY.CHL.V2_0.chlor_a.4km.NRT.nc
-├──lat
-├──lon
-└──chlor_a
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">HTTPError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">22</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/client.py:78,</span> in <span class="ni">open_url</span><span class="nt">(url, application, session, output_grid, timeout, verify, user_charset, protocol)</span>
+<span class="g g-Whitespace">     </span><span class="mi">62</span> <span class="k">def</span> <span class="nf">open_url</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">63</span>     <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">64</span>     <span class="n">application</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">70</span>     <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">71</span> <span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">72</span><span class="w">     </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span><span class="sd">     Open a remote URL, returning a dataset.</span>
+<span class="g g-Whitespace">     </span><span class="mi">74</span><span class="sd"> </span>
+<span class="g g-Whitespace">     </span><span class="mi">75</span><span class="sd">     set output_grid to `False` to retrieve only main arrays and</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span><span class="sd">     never retrieve coordinate axes.</span>
+<span class="g g-Whitespace">     </span><span class="mi">77</span><span class="sd">     &quot;&quot;&quot;</span>
+<span class="ne">---&gt; </span><span class="mi">78</span>     <span class="n">handler</span> <span class="o">=</span> <span class="n">pydap</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">dap</span><span class="o">.</span><span class="n">DAPHandler</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span>         <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">80</span>         <span class="n">application</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span>         <span class="n">session</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span>         <span class="n">output_grid</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span>         <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">84</span>         <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">85</span>         <span class="n">user_charset</span><span class="o">=</span><span class="n">user_charset</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">86</span>         <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">87</span>     <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">88</span>     <span class="n">dataset</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">dataset</span>
+<span class="g g-Whitespace">     </span><span class="mi">90</span>     <span class="c1"># attach server-side functions</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/handlers/dap.py:100,</span> in <span class="ni">DAPHandler.__init__</span><span class="nt">(self, url, application, session, output_grid, timeout, verify, user_charset, protocol)</span>
+<span class="g g-Whitespace">     </span><span class="mi">91</span> <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">92</span>     <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">93</span>     <span class="bp">self</span><span class="o">.</span><span class="n">netloc</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">97</span>     <span class="bp">self</span><span class="o">.</span><span class="n">fragment</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">98</span> <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">99</span> <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">urlunparse</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">100</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_dataset</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">101</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_proxies</span><span class="p">()</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/handlers/dap.py:134,</span> in <span class="ni">DAPHandler.make_dataset</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">130</span> <span class="k">def</span> <span class="nf">make_dataset</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">131</span>     <span class="bp">self</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">132</span> <span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">133</span>     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">==</span> <span class="s2">&quot;dap4&quot;</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">134</span>         <span class="bp">self</span><span class="o">.</span><span class="n">dataset_from_dap4</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">135</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">136</span>         <span class="bp">self</span><span class="o">.</span><span class="n">dataset_from_dap2</span><span class="p">()</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/handlers/dap.py:157,</span> in <span class="ni">DAPHandler.dataset_from_dap4</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">140</span> <span class="n">dmr_url</span> <span class="o">=</span> <span class="n">urlunparse</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">141</span>     <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">142</span>         <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">148</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">149</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">150</span> <span class="n">r</span> <span class="o">=</span> <span class="n">pydap</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">151</span>     <span class="n">dmr_url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">152</span>     <span class="bp">self</span><span class="o">.</span><span class="n">application</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">155</span>     <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">156</span> <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">157</span> <span class="n">pydap</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">158</span> <span class="n">dmr</span> <span class="o">=</span> <span class="n">safe_charset_text</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_charset</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">159</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dmr_to_dataset</span><span class="p">(</span><span class="n">dmr</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/net.py:37,</span> in <span class="ni">raise_for_status</span><span class="nt">(response)</span>
+<span class="g g-Whitespace">     </span><span class="mi">34</span> <span class="k">def</span> <span class="nf">raise_for_status</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">35</span>     <span class="c1"># Raise error if status is above 300:</span>
+<span class="g g-Whitespace">     </span><span class="mi">36</span>     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">400</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">37</span>         <span class="k">raise</span> <span class="n">HTTPError</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">38</span>             <span class="n">detail</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">39</span>             <span class="n">headers</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">40</span>             <span class="n">comment</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">41</span>         <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">42</span>     <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">300</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">43</span>         <span class="k">try</span><span class="p">:</span>
+
+<span class="ne">HTTPError</span>: 500 Internal Server Error
+
+
+<span class="o">&lt;!</span>doctype<span class="w"> </span>html&gt;
+<span class="o">&lt;</span><span class="n">html</span> <span class="n">lang</span><span class="o">=</span><span class="s1">&#39;en&#39;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">head</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">meta</span> <span class="n">charset</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">title</span><span class="o">&gt;</span><span class="n">ERROR</span> <span class="o">@</span> <span class="n">Ocean</span> <span class="n">Biology</span> <span class="n">Distributed</span> <span class="n">Active</span> <span class="n">Archive</span> <span class="n">Center</span> <span class="p">(</span><span class="n">OB</span><span class="o">.</span><span class="n">DAAC</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">title</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">meta</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;viewport&#39;</span> <span class="n">content</span><span class="o">=</span><span class="s1">&#39;width=device-width, initial-scale=1&#39;</span><span class="o">&gt;</span>
+
+
+<span class="o">&lt;</span><span class="n">style</span><span class="o">&gt;</span>
+<span class="n">body</span> <span class="p">{</span>
+        <span class="n">font</span><span class="o">-</span><span class="n">family</span><span class="p">:</span> <span class="n">tahoma</span><span class="p">,</span> <span class="n">serif</span><span class="p">;</span>
+        <span class="n">background</span><span class="o">-</span><span class="n">color</span><span class="p">:</span> <span class="c1">#ebebeb;</span>
+        <span class="n">padding</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">margin</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="n">font</span><span class="o">-</span><span class="n">size</span><span class="p">:</span> <span class="mi">14</span><span class="n">px</span><span class="p">;</span>
+        <span class="n">height</span><span class="p">:</span> <span class="mi">100</span><span class="o">%</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="o">*</span><span class="p">,</span>
+<span class="o">*</span><span class="p">:</span><span class="n">before</span><span class="p">,</span>
+<span class="o">*</span><span class="p">:</span><span class="n">after</span> <span class="p">{</span>
+  <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">box</span><span class="o">-</span><span class="n">sizing</span><span class="p">:</span> <span class="n">border</span><span class="o">-</span><span class="n">box</span><span class="p">;</span>
+  <span class="o">-</span><span class="n">moz</span><span class="o">-</span><span class="n">box</span><span class="o">-</span><span class="n">sizing</span><span class="p">:</span> <span class="n">border</span><span class="o">-</span><span class="n">box</span><span class="p">;</span>
+  <span class="n">box</span><span class="o">-</span><span class="n">sizing</span><span class="p">:</span> <span class="n">border</span><span class="o">-</span><span class="n">box</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="ne">a</span>:link, a:visited, a:active {
+        <span class="n">color</span><span class="p">:</span> <span class="c1">#2D7AB7;</span>
+        <span class="n">text</span><span class="o">-</span><span class="n">decoration</span><span class="p">:</span> <span class="n">none</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">h2</span> <span class="p">{</span>
+        <span class="n">margin</span><span class="o">-</span><span class="n">bottom</span><span class="p">:</span> <span class="mi">20</span><span class="n">px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">h3</span> <span class="p">{</span>
+        <span class="n">margin</span><span class="o">-</span><span class="n">bottom</span><span class="p">:</span> <span class="mi">20</span><span class="n">px</span><span class="p">;</span>
+   <span class="n">margin</span><span class="o">-</span><span class="n">top</span><span class="p">:</span> <span class="mi">20</span><span class="n">px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="o">.</span><span class="n">full</span><span class="o">-</span><span class="n">width</span><span class="o">-</span><span class="n">container</span> <span class="p">{</span>
+        <span class="n">display</span><span class="p">:</span> <span class="n">grid</span><span class="p">;</span>
+        <span class="n">grid</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">columns</span><span class="p">:</span> <span class="mi">1</span><span class="n">fr</span><span class="p">;</span>
+        <span class="nb">max</span><span class="o">-</span><span class="n">width</span><span class="p">:</span> <span class="mi">1600</span><span class="n">px</span><span class="p">;</span>
+        <span class="n">margin</span><span class="p">:</span> <span class="n">auto</span><span class="p">;</span>
+        <span class="n">height</span><span class="p">:</span> <span class="mi">100</span><span class="n">vh</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">ul</span> <span class="p">{</span>
+  <span class="nb">list</span><span class="o">-</span><span class="n">style</span><span class="p">:</span> <span class="n">none</span><span class="p">;</span>
+  <span class="n">padding</span><span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="n">margin</span><span class="p">:</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">20</span><span class="n">px</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="nb">list</span><span class="o">-</span><span class="n">style</span><span class="o">-</span><span class="n">position</span><span class="p">:</span> <span class="n">outside</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">li</span> <span class="p">{</span>
+  <span class="n">padding</span><span class="o">-</span><span class="n">left</span><span class="p">:</span> <span class="mi">16</span><span class="n">px</span><span class="p">;</span>
+  <span class="o">/*</span> <span class="n">margin</span><span class="o">-</span><span class="n">bottom</span><span class="p">:</span> <span class="mi">20</span><span class="n">px</span><span class="p">;</span> <span class="o">*/</span>
+<span class="p">}</span>
+
+<span class="o">.</span><span class="n">hanging</span><span class="o">-</span><span class="n">indent</span> <span class="n">ul</span> <span class="o">&gt;</span> <span class="n">li</span> <span class="p">{</span>
+        <span class="n">padding</span><span class="o">-</span><span class="n">left</span><span class="p">:</span> <span class="mi">18</span><span class="n">px</span><span class="p">;</span>
+        <span class="n">text</span><span class="o">-</span><span class="n">indent</span><span class="p">:</span> <span class="o">-</span><span class="mi">18</span><span class="n">px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">ul</span> <span class="o">&gt;</span> <span class="n">li</span><span class="p">::</span><span class="n">before</span> <span class="p">{</span>
+  <span class="n">content</span><span class="p">:</span> <span class="s2">&quot;\&gt;\&gt;&quot;</span><span class="p">;</span>
+  <span class="n">padding</span><span class="o">-</span><span class="n">right</span><span class="p">:</span> <span class="mi">8</span><span class="n">px</span><span class="p">;</span>
+  <span class="n">font</span><span class="o">-</span><span class="n">size</span><span class="p">:</span> <span class="mi">20</span><span class="n">px</span><span class="p">;</span>
+  <span class="n">color</span><span class="p">:</span> <span class="c1">#999999;</span>
+<span class="p">}</span>
+
+<span class="n">hr</span> <span class="p">{</span>
+        <span class="n">border</span><span class="o">-</span><span class="n">top</span><span class="p">:</span> <span class="mi">3</span><span class="n">px</span> <span class="n">solid</span> <span class="c1">#255f8e;</span>
+<span class="p">}</span>
+
+<span class="o">.</span><span class="n">content</span><span class="o">-</span><span class="n">full</span> <span class="p">{</span>
+        <span class="n">background</span><span class="o">-</span><span class="n">color</span><span class="p">:</span> <span class="c1">#fff;</span>
+        <span class="n">padding</span><span class="p">:</span> <span class="mi">20</span><span class="n">px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="o">.</span><span class="n">error</span><span class="o">-</span><span class="n">grid</span> <span class="p">{</span>
+        <span class="n">display</span><span class="p">:</span> <span class="n">grid</span><span class="p">;</span>
+        <span class="n">grid</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">columns</span><span class="p">:</span> <span class="mi">1</span><span class="n">fr</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="o">.</span><span class="n">error</span><span class="o">-</span><span class="n">grid</span><span class="o">-</span><span class="n">item</span> <span class="p">{</span>
+        <span class="o">/*</span> <span class="n">outline</span><span class="p">:</span> <span class="mi">1</span><span class="n">px</span> <span class="n">solid</span> <span class="n">red</span><span class="p">;</span> <span class="o">*/</span>
+<span class="p">}</span>
+
+
+<span class="nd">@media</span> <span class="p">(</span><span class="nb">min</span><span class="o">-</span><span class="n">width</span><span class="p">:</span> <span class="mi">35</span><span class="n">em</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="n">body</span> <span class="p">{</span>
+                <span class="n">margin</span><span class="p">:</span> <span class="mi">0</span> <span class="mi">25</span><span class="n">px</span> <span class="mi">0</span> <span class="mi">25</span><span class="n">px</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="o">.</span><span class="n">error</span><span class="o">-</span><span class="n">grid</span> <span class="p">{</span>
+                <span class="n">display</span><span class="p">:</span> <span class="n">grid</span><span class="p">;</span>
+                <span class="n">grid</span><span class="o">-</span><span class="n">template</span><span class="o">-</span><span class="n">columns</span><span class="p">:</span> <span class="mi">1</span><span class="n">fr</span> <span class="n">minmax</span><span class="p">(</span><span class="mi">600</span><span class="n">px</span><span class="p">,</span> <span class="mi">1</span><span class="n">fr</span><span class="p">)</span> <span class="mi">1</span><span class="n">fr</span><span class="p">;</span>
+        <span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="nd">@media</span> <span class="p">(</span><span class="nb">min</span><span class="o">-</span><span class="n">width</span><span class="p">:</span> <span class="mi">50</span><span class="n">em</span><span class="p">)</span> <span class="p">{</span>
+
+        <span class="n">body</span> <span class="p">{</span>
+                <span class="n">margin</span><span class="p">:</span> <span class="mi">0</span> <span class="mi">50</span><span class="n">px</span> <span class="mi">0</span> <span class="mi">50</span><span class="n">px</span><span class="p">;</span>
+        <span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="o">&lt;/</span><span class="n">style</span><span class="o">&gt;</span>
+
+<span class="o">&lt;/</span><span class="n">head</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">body</span><span class="o">&gt;</span>
+
+
+<span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;full-width-container&quot;</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;content-full&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;text-align: center; align: center;&quot;</span><span class="o">&gt;</span>
+
+                <span class="o">&lt;</span><span class="n">br</span><span class="o">&gt;</span>
+
+                <span class="o">&lt;</span><span class="n">hr</span><span class="o">&gt;</span>
+
+                <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;error-grid&quot;</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;error-grid-item&quot;</span><span class="o">&gt;&amp;</span><span class="n">nbsp</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;error-grid-item&quot;</span><span class="o">&gt;</span>
+
+                                <span class="o">&lt;</span><span class="n">h1</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;font-size: 40px;&quot;</span><span class="o">&gt;&lt;</span><span class="n">b</span><span class="o">&gt;.</span><span class="p">:</span><span class="o">.</span> <span class="n">ERROR</span> <span class="o">.</span><span class="p">:</span><span class="o">.&lt;/</span><span class="n">b</span><span class="o">&gt;&lt;/</span><span class="n">h1</span><span class="o">&gt;</span>
+
+                                <span class="o">&lt;</span><span class="n">h2</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;color: #255f8e;&quot;</span><span class="o">&gt;</span><span class="n">Ocean</span> <span class="n">Biology</span> <span class="n">Distributed</span> <span class="n">Active</span> <span class="n">Archive</span> <span class="n">Center</span> <span class="p">(</span><span class="n">OB</span><span class="o">.</span><span class="n">DAAC</span><span class="p">)</span><span class="o">&lt;/</span><span class="n">h2</span><span class="o">&gt;</span>
+
+                                <span class="o">&lt;</span><span class="n">div</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;text-align: left;&quot;</span><span class="o">&gt;</span>
+
+                                        <span class="o">&lt;</span><span class="n">br</span><span class="o">&gt;</span>
+                                        <span class="o">&lt;</span><span class="n">p</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;font-weight: bold;&quot;</span><span class="o">&gt;</span><span class="n">Helpful</span> <span class="n">Links</span><span class="p">:</span><span class="o">&lt;/</span><span class="n">p</span><span class="o">&gt;</span>
+
+                                        <span class="o">&lt;</span><span class="n">ul</span><span class="o">&gt;</span>
+                                                <span class="o">&lt;</span><span class="n">li</span><span class="o">&gt;</span><span class="n">Go</span> <span class="n">back</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Ocean</span> <span class="n">Color</span> <span class="n">website</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">br</span><span class="o">&gt;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;https://oceancolor.gsfc.nasa.gov&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;margin-left: 50px;&quot;</span><span class="o">&gt;</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">oceancolor</span><span class="o">.</span><span class="n">gsfc</span><span class="o">.</span><span class="n">nasa</span><span class="o">.</span><span class="n">gov</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+                                                <span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+                                                <span class="o">&lt;</span><span class="n">li</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;margin-top: 20px;&quot;</span><span class="o">&gt;</span><span class="n">Email</span> <span class="n">the</span> <span class="n">website</span> <span class="n">administrators</span><span class="p">:</span><span class="o">&lt;</span><span class="n">br</span><span class="o">&gt;&lt;</span><span class="n">a</span> <span class="n">href</span><span class="o">=</span><span class="s2">&quot;mailto:obdaacwebadmin@oceancolor.gsfc.nasa.gov&quot;</span> <span class="n">style</span><span class="o">=</span><span class="s2">&quot;margin-left: 50px;&quot;</span><span class="o">&gt;</span><span class="n">obdaacwebadmin</span><span class="nd">@oceancolor</span><span class="o">.</span><span class="n">gsfc</span><span class="o">.</span><span class="n">nasa</span><span class="o">.</span><span class="n">gov</span><span class="o">&lt;/</span><span class="n">a</span><span class="o">&gt;</span>
+                                                <span class="o">&lt;/</span><span class="n">li</span><span class="o">&gt;</span>
+                                        <span class="o">&lt;/</span><span class="n">ul</span><span class="o">&gt;</span>
+
+                                <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+
+                        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+                        <span class="o">&lt;</span><span class="n">div</span> <span class="n">class</span><span class="o">=</span><span class="s2">&quot;error-grid-item&quot;</span><span class="o">&gt;&amp;</span><span class="n">nbsp</span><span class="p">;</span><span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+                <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+
+
+                <span class="o">&lt;</span><span class="n">hr</span><span class="o">&gt;</span>
+
+        <span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+
+<span class="o">&lt;/</span><span class="n">div</span><span class="o">&gt;</span>
+
+
+<span class="o">&lt;/</span><span class="n">body</span><span class="o">&gt;</span>
+<span class="o">&lt;/</span><span class="n">html</span><span class="o">&gt;</span>
+
+<span class="o">&lt;!</span>--<span class="w"> </span>IE<span class="w"> </span>needs<span class="w"> </span><span class="m">512</span>+<span class="w"> </span>bytes:<span class="w"> </span>http://blogs.msdn.com/b/ieinternals/archive/2010/08/19/http-error-pages-in-internet-explorer.aspx<span class="w"> </span>--&gt;
 </pre></div>
 </div>
 </div>
@@ -742,21 +933,12 @@ the server implements you can append to a URL:</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">chlor_a</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">][:]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 770 ms, sys: 618 ms, total: 1.39 s
-Wall time: 3.33 s
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">chlor_a</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">][:]</span>
 </pre></div>
 </div>
 </div>
 </div>
-</section>
-<section id="downloading-in-memory-is-60-times-faster">
-<h2>Downloading in memory is 60 times faster !<a class="headerlink" href="#downloading-in-memory-is-60-times-faster" title="Link to this heading">#</a></h2>
+<p><strong>Downloading into memory is now 60 times faster !</strong></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CHLOR_A</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">chlor_a</span><span class="p">)</span>
@@ -782,11 +964,10 @@ Wall time: 3.33 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/993069ec15c10fa867a768029acb0ca315bcb158d1deddf0106f0019e1d99f96.png" src="../_images/993069ec15c10fa867a768029acb0ca315bcb158d1deddf0106f0019e1d99f96.png" />
+<img alt="../_images/d7e5338b4038cefe599ec83d3e508ea07a9fcdaea0944c6fa3a5309cf05a5e02.png" src="../_images/d7e5338b4038cefe599ec83d3e508ea07a9fcdaea0944c6fa3a5309cf05a5e02.png" />
 </div>
 </div>
-<p><strong>Fig 4.</strong> Subset the global Chlorophyll A concentration. Only this data was requested and downloaded. The OPeNDAP server, in this case Hyrax, perform all subseting in a data-proximate way.</p>
-</section>
+<p><strong>Fig 3.</strong> Subset the global Chlorophyll A concentration. Only this data was requested and downloaded. The OPeNDAP server, in this case Hyrax, perform all subseting in a data-proximate way.</p>
 </section>
 
     <script type="text/x-thebe-config">
@@ -833,7 +1014,7 @@ Wall time: 3.33 s
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">SWOT Nadir NALT GDR (Level 2)</p>
+        <p class="prev-next-title">SWOT</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -843,31 +1024,6 @@ Wall time: 3.33 s
             </div>
 
 
-
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> Contents
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements-to-run-this-notebook">Requirements to run this notebook</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives">Objectives</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pace-access-via-opendap">PACE Access via OPeNDAP</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-token-authorization-and-create-requests-session">Import Token Authorization and create requests.Session()</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-download-some-data">Lets download some data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#decoding-data-values">Decoding data values:</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cf-conventions">CF - Conventions</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subsetting-data">Subsetting data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-opendap-s-webform-data-request">Accessing OPeNDAP’s webform “Data Request”</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#xarray-opendap-server-side-processing">xarray + OPeNDAP server-side processing</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downloading-in-memory-is-60-times-faster">Downloading in memory is 60 times faster !</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
 
 
           </div>

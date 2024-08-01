@@ -24,7 +24,7 @@ ds_grid = open_url(Grid_url, session=my_session, protocol="dap4")
 Cell [0;32mIn[5], line 1[0m
 [0;32m----> 1[0m ds_grid [38;5;241m=[39m [43mopen_url[49m[43m([49m[43mGrid_url[49m[43m,[49m[43m [49m[43msession[49m[38;5;241;43m=[39;49m[43mmy_session[49m[43m,[49m[43m [49m[43mprotocol[49m[38;5;241;43m=[39;49m[38;5;124;43m"[39;49m[38;5;124;43mdap4[39;49m[38;5;124;43m"[39;49m[43m)[49m
 
-File [0;32m~/pydap/src/pydap/client.py:78[0m, in [0;36mopen_url[0;34m(url, application, session, output_grid, timeout, verify, user_charset, protocol)[0m
+File [0;32m~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/client.py:78[0m, in [0;36mopen_url[0;34m(url, application, session, output_grid, timeout, verify, user_charset, protocol)[0m
 [1;32m     62[0m [38;5;28;01mdef[39;00m [38;5;21mopen_url[39m(
 [1;32m     63[0m     url,
 [1;32m     64[0m     application[38;5;241m=[39m[38;5;28;01mNone[39;00m,
@@ -50,44 +50,44 @@ File [0;32m~/pydap/src/pydap/client.py:78[0m, in [0;36mopen_url[0;34m(url, a
 [1;32m     88[0m     dataset [38;5;241m=[39m handler[38;5;241m.[39mdataset
 [1;32m     90[0m     [38;5;66;03m# attach server-side functions[39;00m
 
-File [0;32m~/pydap/src/pydap/handlers/dap.py:98[0m, in [0;36mDAPHandler.__init__[0;34m(self, url, application, session, output_grid, timeout, verify, user_charset, protocol)[0m
-[1;32m     89[0m arg [38;5;241m=[39m (
-[1;32m     90[0m     [38;5;28mself[39m[38;5;241m.[39mscheme,
-[1;32m     91[0m     [38;5;28mself[39m[38;5;241m.[39mnetloc,
+File [0;32m~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/handlers/dap.py:100[0m, in [0;36mDAPHandler.__init__[0;34m(self, url, application, session, output_grid, timeout, verify, user_charset, protocol)[0m
+[1;32m     91[0m arg [38;5;241m=[39m (
+[1;32m     92[0m     [38;5;28mself[39m[38;5;241m.[39mscheme,
+[1;32m     93[0m     [38;5;28mself[39m[38;5;241m.[39mnetloc,
 [0;32m   (...)[0m
-[1;32m     95[0m     [38;5;28mself[39m[38;5;241m.[39mfragment,
-[1;32m     96[0m )
-[1;32m     97[0m [38;5;28mself[39m[38;5;241m.[39mbase_url [38;5;241m=[39m urlunparse(arg)
-[0;32m---> 98[0m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mmake_dataset[49m[43m([49m[43m)[49m
-[1;32m     99[0m [38;5;28mself[39m[38;5;241m.[39madd_proxies()
+[1;32m     97[0m     [38;5;28mself[39m[38;5;241m.[39mfragment,
+[1;32m     98[0m )
+[1;32m     99[0m [38;5;28mself[39m[38;5;241m.[39mbase_url [38;5;241m=[39m urlunparse(arg)
+[0;32m--> 100[0m [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mmake_dataset[49m[43m([49m[43m)[49m
+[1;32m    101[0m [38;5;28mself[39m[38;5;241m.[39madd_proxies()
 
-File [0;32m~/pydap/src/pydap/handlers/dap.py:132[0m, in [0;36mDAPHandler.make_dataset[0;34m(self)[0m
-[1;32m    128[0m [38;5;28;01mdef[39;00m [38;5;21mmake_dataset[39m(
-[1;32m    129[0m     [38;5;28mself[39m,
-[1;32m    130[0m ):
-[1;32m    131[0m     [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39mprotocol [38;5;241m==[39m [38;5;124m"[39m[38;5;124mdap4[39m[38;5;124m"[39m:
-[0;32m--> 132[0m         [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mdataset_from_dap4[49m[43m([49m[43m)[49m
-[1;32m    133[0m     [38;5;28;01melse[39;00m:
-[1;32m    134[0m         [38;5;28mself[39m[38;5;241m.[39mdataset_from_dap2()
+File [0;32m~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/handlers/dap.py:134[0m, in [0;36mDAPHandler.make_dataset[0;34m(self)[0m
+[1;32m    130[0m [38;5;28;01mdef[39;00m [38;5;21mmake_dataset[39m(
+[1;32m    131[0m     [38;5;28mself[39m,
+[1;32m    132[0m ):
+[1;32m    133[0m     [38;5;28;01mif[39;00m [38;5;28mself[39m[38;5;241m.[39mprotocol [38;5;241m==[39m [38;5;124m"[39m[38;5;124mdap4[39m[38;5;124m"[39m:
+[0;32m--> 134[0m         [38;5;28;43mself[39;49m[38;5;241;43m.[39;49m[43mdataset_from_dap4[49m[43m([49m[43m)[49m
+[1;32m    135[0m     [38;5;28;01melse[39;00m:
+[1;32m    136[0m         [38;5;28mself[39m[38;5;241m.[39mdataset_from_dap2()
 
-File [0;32m~/pydap/src/pydap/handlers/dap.py:155[0m, in [0;36mDAPHandler.dataset_from_dap4[0;34m(self)[0m
-[1;32m    138[0m dmr_url [38;5;241m=[39m urlunparse(
-[1;32m    139[0m     (
-[1;32m    140[0m         [38;5;28mself[39m[38;5;241m.[39mscheme,
+File [0;32m~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/handlers/dap.py:157[0m, in [0;36mDAPHandler.dataset_from_dap4[0;34m(self)[0m
+[1;32m    140[0m dmr_url [38;5;241m=[39m urlunparse(
+[1;32m    141[0m     (
+[1;32m    142[0m         [38;5;28mself[39m[38;5;241m.[39mscheme,
 [0;32m   (...)[0m
-[1;32m    146[0m     )
-[1;32m    147[0m )
-[1;32m    148[0m r [38;5;241m=[39m pydap[38;5;241m.[39mnet[38;5;241m.[39mGET(
-[1;32m    149[0m     dmr_url,
-[1;32m    150[0m     [38;5;28mself[39m[38;5;241m.[39mapplication,
+[1;32m    148[0m     )
+[1;32m    149[0m )
+[1;32m    150[0m r [38;5;241m=[39m pydap[38;5;241m.[39mnet[38;5;241m.[39mGET(
+[1;32m    151[0m     dmr_url,
+[1;32m    152[0m     [38;5;28mself[39m[38;5;241m.[39mapplication,
 [0;32m   (...)[0m
-[1;32m    153[0m     verify[38;5;241m=[39m[38;5;28mself[39m[38;5;241m.[39mverify,
-[1;32m    154[0m )
-[0;32m--> 155[0m [43mpydap[49m[38;5;241;43m.[39;49m[43mnet[49m[38;5;241;43m.[39;49m[43mraise_for_status[49m[43m([49m[43mr[49m[43m)[49m
-[1;32m    156[0m dmr [38;5;241m=[39m safe_charset_text(r, [38;5;28mself[39m[38;5;241m.[39muser_charset)
-[1;32m    157[0m [38;5;28mself[39m[38;5;241m.[39mdataset [38;5;241m=[39m dmr_to_dataset(dmr)
+[1;32m    155[0m     verify[38;5;241m=[39m[38;5;28mself[39m[38;5;241m.[39mverify,
+[1;32m    156[0m )
+[0;32m--> 157[0m [43mpydap[49m[38;5;241;43m.[39;49m[43mnet[49m[38;5;241;43m.[39;49m[43mraise_for_status[49m[43m([49m[43mr[49m[43m)[49m
+[1;32m    158[0m dmr [38;5;241m=[39m safe_charset_text(r, [38;5;28mself[39m[38;5;241m.[39muser_charset)
+[1;32m    159[0m [38;5;28mself[39m[38;5;241m.[39mdataset [38;5;241m=[39m dmr_to_dataset(dmr)
 
-File [0;32m~/pydap/src/pydap/net.py:37[0m, in [0;36mraise_for_status[0;34m(response)[0m
+File [0;32m~/mambaforge/envs/pydap_docs/lib/python3.10/site-packages/pydap/net.py:37[0m, in [0;36mraise_for_status[0;34m(response)[0m
 [1;32m     34[0m [38;5;28;01mdef[39;00m [38;5;21mraise_for_status[39m(response):
 [1;32m     35[0m     [38;5;66;03m# Raise error if status is above 300:[39;00m
 [1;32m     36[0m     [38;5;28;01mif[39;00m response[38;5;241m.[39mstatus_code [38;5;241m>[39m[38;5;241m=[39m [38;5;241m400[39m:
