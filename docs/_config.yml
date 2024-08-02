@@ -1,0 +1,47 @@
+# Book settings
+# Learn more at https://jupyterbook.org/customize/config.html
+
+title: PyDAP tutorial
+author: OPeNDAP Community
+logo: PyDAP_logo.png
+
+# Force re-execution of notebooks on each build.
+# See https://jupyterbook.org/content/execute.html
+execute:
+  timeout: 300
+  execute_notebooks: 'auto'
+  stderr_output: "remove"
+  exclude_patters:
+  - '*.md'
+
+# Define the name of the latex output file for PDF builds
+latex:
+  latex_documents:
+    targetname: book.tex
+
+# Add sphinx autodoc to generate api reference from code files
+sphinx:
+  extra_extensions:
+  - 'sphinx.ext.autodoc'
+  - 'sphinx.ext.napoleon'
+  config:
+    html_theme: sphinx_book_theme
+    autodoc_member_order: groupwise
+    html_theme_options:
+      navigation_with_keys: false
+
+# Add a bibtex file so that we can create citations
+bibtex_bibfiles:
+- references.bib
+
+# Information about where the book exists on the web
+repository:
+  url: https://github.com/pydap/pydap
+  path_to_book: docs
+  branch: main
+
+# Add GitHub buttons to your book
+# See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
+html:
+  use_issues_button: true
+  use_repository_button: true
