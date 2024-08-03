@@ -1,6 +1,6 @@
 # Contributing to the code
 
-To contribute to the code, we recommend to install pydap within a containerized testing environment. The simplest way is to navigate to the local pydap clone repository and run:
+To contribute to the code, we recommend to install `PyDAP` within a containerized testing environment. The simplest way is to navigate to the local pydap clone repository and run:
 
 ```shell
 mamba create -n pydap_tests -c conda-forge python=3.10
@@ -21,7 +21,7 @@ At this point, you can use [git](git.md) for making commits to pydap. Make sure 
 
 ```shell
 mamba install -c conda-forge pre-commit
-pre-commit install
+pre-commit run --all
 ```
 
 The above commands install and will automatically run all the pre-commit formatting configuration specified in the yaml-file each time git commit is used.

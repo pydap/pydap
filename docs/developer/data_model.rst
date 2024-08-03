@@ -1,5 +1,8 @@
 The DAP data model
 ------------------
+.. warning::
+    The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker https://github.com/pydap/pydap/issues.
+
 
 The DAP is a protocol designed for the efficient transmission of scientific data over the internet.
 In order to transmit data from the server to a client, both must agree on a way to represent data:

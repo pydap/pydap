@@ -16,26 +16,20 @@ parts:
   - file: notebooks/PACE
   - file: notebooks/SWOT
   - file: notebooks/CMIP6
-  # - caption: DAP data model
-  #   chapters:
-  #     file: Sequences
-  #     file: Structures
-  #     file: Arrays
-  #     file: Groups
-  #     file: DAP2
-  #     file: DAP4
-  #     file: ServerSide
+- caption: Documentation
+  chapters:
+  - file: client
+  - file: responses.rst
+  - file: server.rst
+  - file: handlers.rst
+- caption: guide_to_developer
+  chapters:
+  - file: developer/data_model.rst
+  - file: developer/handlers.rst
+  - file: developer/responses.rst
 - caption: Contributing
   chapters:
-  - file: guide_to_developer
-    sections:
-    - file: contribute/git
-    - file: contribute/contr_cod
-    # - file: contribute/contr_doc
-    # - file: contribute/issue_tracker
-    # - file: contribute/community
-- caption: Template
-  chapters:
-  - file: markdown
-  - file: notebooks
-  - file: markdown-notebooks
+  - file: contribute/git
+  - file: contribute/contr_cod
+  - file: contribute/contr_issues
+  - file: contribute/docs
