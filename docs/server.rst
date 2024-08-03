@@ -1,7 +1,7 @@
 Running a server
 ================
 .. warning::
-    The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker [here](https://github.com/pydap/pydap/issues). If you have an example in which you configured pydap as a server, consider adding to this documentation. We always want to hear how PyDAP is being used.
+    The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker https://github.com/pydap/pydap/issues. If you have an example in which you configured pydap as a server, consider adding to this documentation. We always want to hear how PyDAP is being used.
 
 pydap comes with a lightweight and scalable OPeNDAP server, implemented as a `WSGI <http://wsgi.org/>`_ application. Being a WSGI `application <http://wsgi.org/wsgi/Applications>`_, pydap can run on a variety of `servers <http://wsgi.org/wsgi/Servers>`_, and frameworks including Apache, `Nginx <https://www.nginx.com/>`_, IIS, `uWSGI <https://uwsgi-docs.readthedocs.io/en/latest/>`_, `Flask <http://flask.pocoo.org/>`_ or as a standalone Python process. It can also be seamless combined with different `middleware <http://wsgi.org/wsgi/Middleware_and_Utilities>`_ for authentication/authorization, GZip compression, and much more.
 

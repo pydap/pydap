@@ -1,7 +1,7 @@
 Responses
 =========
 .. warning::
-    The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker [here](https://github.com/pydap/pydap/issues).
+    The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker https://github.com/pydap/pydap/issues.
 
 Like `handlers <handlers.html>`_, responses are special Python modules that convert between the pydap data model and an external representation. For instance, to access a given dataset an Opendap client request two diferent representations of the dataset: a *Dataset Attribute Structure* (DAS) response, describing the attributes of the dataset, and a *Dataset Descriptor Structure* (DDS), describing its structure (shape, type, hierarchy). These responses are returned by appending the extension ``.das`` and ``.dds`` to the dataset URL, respectively.
 
