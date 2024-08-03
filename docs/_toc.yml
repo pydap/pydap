@@ -22,14 +22,16 @@ parts:
   - file: responses.rst
   - file: server.rst
   - file: handlers.rst
-- caption: guide_to_developer
+- caption: Guide for Developer
   chapters:
   - file: developer/data_model.rst
   - file: developer/handlers.rst
   - file: developer/responses.rst
 - caption: Contributing
   chapters:
-  - file: contribute/git
-  - file: contribute/contr_cod
-  - file: contribute/contr_issues
-  - file: contribute/docs
+  - file: guide_to_developer
+    sections:
+    - file: contribute/git
+    - file: contribute/contr_cod
+    - file: contribute/contr_issues
+    - file: contribute/contr_docs
