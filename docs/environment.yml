@@ -9,3 +9,6 @@ dependencies:
 - cartopy
 - xarray
 - dask
+- pip
+- pip:
+  - git+https://github.com/pydap/pydap.git
