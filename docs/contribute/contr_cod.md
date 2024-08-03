@@ -21,11 +21,9 @@ At this point, you can use [git](git.md) for making commits to pydap. Make sure 
 
 ```shell
 mamba install -c conda-forge pre-commit
-pre-commit run --all
 ```
 
 The above commands install and will automatically run all the pre-commit formatting configuration specified in the yaml-file each time git commit is used.
-
 
 Lastly, make sure the code is well tested by adding or improving tests in the `src/pydap/tests` repository. pydap uses [pytest](https://docs.pytest.org/en/stable/). To run tests run the following command:
 

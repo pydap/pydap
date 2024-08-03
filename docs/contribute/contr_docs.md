@@ -27,7 +27,6 @@ pip install -e ."[server,netcdf,client]"
 
 ```shell
 mamba install -c conda-forge pre-commit
-
 ```
 
 The above commands install and will automatically run all the pre-commit formatting configuration specified in the yaml-file each time git commit is used.
@@ -37,3 +36,16 @@ The above commands install and will automatically run all the pre-commit formatt
 ```shell
 jupyter-book clean docs --all
 ```
+
+5. build the docs by running
+```shell
+jupyter-book build docs
+```
+Depending on how many changes you have done to the documentation, this last step may take a while. It also depends on the type of files added to the documentation (`ipynb` are much slower to build).
+
+6. Once the build process is finished, you can inspect the locally built html files by running:
+```shell
+open docs/_build/html/index.html
+```
+
+7. Push all changes to your forked repository and create a PR.
