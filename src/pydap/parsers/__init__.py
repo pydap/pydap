@@ -13,7 +13,7 @@ from ..exceptions import ConstraintExpressionError
 from ..lib import get_var, unquote
 
 
-def parse_projection(input):
+def parse_projection(input, protocol="dap2"):
     """Split a projection into items.
 
     The function takes into account server-side functions, and parse slices
@@ -22,6 +22,10 @@ def parse_projection(input):
     Returns a list of names and slices.
 
     """
+    if protocol == "dap2":
+        key = ","
+    elif protocol == "dap4":
+        key = ";"
 
     def tokenize(input):
         start = pos = count = 0
@@ -30,7 +34,7 @@ def parse_projection(input):
                 count += 1
             elif char == ")":
                 count -= 1
-            elif char == "," and count == 0:
+            elif char == key and count == 0:
                 yield input[start:pos]
                 start = pos + 1
             pos += 1
@@ -110,19 +114,30 @@ def parse_ce(query_string, protocol="dap2"):
     """
     if protocol == "dap2":
         key = "&"
-        tokens = [token for token in unquote(query_string).split(key) if token]
-        if not tokens:
-            projection = []
-            selection = []
-        elif re.search("<=|>=|!=|=~|>|<|=", tokens[0]):
-            projection = []
-            selection = tokens
-        else:
-            projection = parse_projection(tokens[0])
-            selection = tokens[1:]
-    else:
+        if len(query_string) > 0 and query_string[:8] == "dap4.ce=":
+            raise ConstraintExpressionError(
+                "The Constraint Expression %s does not follow the DAP2 "
+                "model specification" % query_string,
+            )
+    elif protocol == "dap4":
+        key = "|"
+        # remove `dap4.ce=` from query string if there is a query
+        if len(query_string) > 0 and query_string[:8] != "dap4.ce=":
+            raise ConstraintExpressionError(
+                "The Constraint Expression %s does not follow the DAP4"
+                "model specification " % query_string,
+            )
+        query_string = query_string[8:]
+    tokens = [token for token in unquote(query_string).split(key) if token]
+    if not tokens:
         projection = []
         selection = []
+    elif re.search("<=|>=|!=|=~|>|<|=", tokens[0]):
+        projection = []
+        selection = tokens
+    else:
+        projection = parse_projection(tokens[0], protocol)
+        selection = tokens[1:]
 
     return projection, selection
 
