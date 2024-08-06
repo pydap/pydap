@@ -1,5 +1,7 @@
 Handlers
 ========
+.. warning::
+    The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker https://github.com/pydap/pydap/issues.
 
 Handlers are special Python modules that convert between a given data format and the data model used by pydap (defined in the ``pydap.model`` module). They are necessary in order to pydap be able to actually serve a dataset. There are handlers for NetCDF, HDF 4 & 5, Matlab, relational databases, Grib 1 & 2, CSV, Seabird CTD files, and a few more.
 

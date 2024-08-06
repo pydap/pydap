@@ -2,10 +2,13 @@ name: pydap_docs
 channels:
 - conda-forge
 dependencies:
-- python=3.10
-- pandoc
-- sphinx
-- sphinx_rtd_theme
-- nbsphinx
-- numpydoc
-- pydap
+- numpy
+- jupyter-book
+- jupyterlab
+- matplotlib
+- cartopy
+- xarray
+- dask
+- pip
+- pip:
+  - git+https://github.com/pydap/pydap.git
