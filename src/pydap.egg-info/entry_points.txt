@@ -1,0 +1,22 @@
+[console_scripts]
+dods = pydap.handlers.dap:dump
+pydap = pydap.wsgi.app:main
+
+[pydap.function]
+bounds = pydap.wsgi.functions:bounds
+density = pydap.wsgi.functions:density
+mean = pydap.wsgi.functions:mean
+
+[pydap.handler]
+csv = pydap.handlers.csv:CSVHandler
+nc = pydap.handlers.netcdf:NetCDFHandler
+
+[pydap.response]
+asc = pydap.responses.ascii:ASCIIResponse
+ascii = pydap.responses.ascii:ASCIIResponse
+das = pydap.responses.das:DASResponse
+dds = pydap.responses.dds:DDSResponse
+dmr = pydap.responses.dmr:DMRResponse
+dods = pydap.responses.dods:DODSResponse
+html = pydap.responses.html:HTMLResponse
+ver = pydap.responses.version:VersionResponse
