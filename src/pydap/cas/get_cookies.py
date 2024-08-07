@@ -147,11 +147,12 @@ def soup_login(
     def get_to_url(current_url, to_url):
         spl_current = urlparse(current_url)
         spl_to = urlparse(to_url)
+        comb = []
         for val1, val2 in zip(spl_to, spl_current):
-            if val1 == " ":
-                comb = [val2]
+            if val1 == "":
+                comb.append(val2)
             else:
-                comb = [val1]
+                comb.append(val1)
         return urlunparse(comb)
 
     to_url = get_to_url(resp.url, login_form.get("action"))
