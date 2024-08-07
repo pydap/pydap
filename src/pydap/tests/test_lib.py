@@ -77,6 +77,14 @@ class TestEncode(unittest.TestCase):
     def test_numpy_string(self):
         self.assertEqual(encode(np.array("1", dtype="<U1")), '"1"')
 
+    def test_numpy_ndim_gt_0(self):
+        # test a numpy array with ndim > 0
+        # associated with Deprecation warning numpy > 1.25
+        # see GH issue https://github.com/pydap/pydap/issues/319
+        # also PR https://github.com/pydap/pydap/pull/343
+        array = np.array([(2.300110099991, 4.)])
+        self.assertEqual(encode(array), '"[[2.300110 4.000000]]"')
+
 
 class TestFixSlice(unittest.TestCase):
     """Test the ``fix_slice`` function."""

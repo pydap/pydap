@@ -178,10 +178,17 @@ def encode(obj):
     if isinstance(obj, str) or isinstance(obj, np.ndarray) and obj.dtype.char in "SU":
         return '"{0}"'.format(obj)
 
-    try:
-        return "%.6g" % obj
-    except Exception:
-        return '"{0}"'.format(obj)
+    # fix for DeprecationWarning: Conversion of an array with ndim > 0 to a 
+    # scalar is deprecated
+    if isinstance(obj, np.ndarray) and np.ndim(obj) > 0:
+        arr_str = np.array2string(obj, formatter={"float_kind": lambda x: f"{x:.6f}"})
+        # arr_str = np.array2string(obj, separator=' ', precision=7, suppress_small=True)
+        return f'"[{arr_str[1:-1]}]"'
+    else:
+        try:
+            return "%.6g" % obj
+        except Exception:
+            return '"{0}"'.format(obj)
 
 
 def fix_slice(slice_, shape):
