@@ -180,6 +180,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Authentication.html">Basic Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">PACE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/SWOT.html">SWOT</a></li>
@@ -359,13 +360,13 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="contributing-to-the-documentation">
 <h1>Contributing to the documentation<a class="headerlink" href="#contributing-to-the-documentation" title="Link to this heading">#</a></h1>
-<p>Thank your for your interest of contributing to <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s documentation. We are interests in additions that</p>
+<p>Thank your for your interest of contributing to <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s documentation. We are interested in additions that</p>
 <ol class="arabic simple">
 <li><p>Identify and correct typos.</p></li>
-<li><p>Improve the description of the pydap and overall DAP model.</p></li>
+<li><p>Improve the description of <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> and overall the DAP model.</p></li>
 <li><p>Cookbooks! We want to know how <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> and broadly <a class="reference external" href="https://www.opendap.org/">OPeNDAP</a> is being used, i.e. what kind of questions / problems is helping solve, domain of expertise, etc.</p></li>
 <li><p>Demostrate an optimization to access patterns, i.e. a benchmark.</p></li>
-<li><p>An OPeNDAP URL! We want to learn more about data available, and make it accessible for people. We are strong proponents of <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">democratization</span></code> and <code class="docutils literal notranslate"><span class="pre">open</span> <span class="pre">science</span></code>, and these begin by making your data <code class="docutils literal notranslate"><span class="pre">Findable</span></code>.</p></li>
+<li><p>An <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> URL! We want to learn more about available OPeNDAP data urls, and make it accessible for the broad community of PyDAP users. We are strong proponents of <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">democratization</span></code> and <code class="docutils literal notranslate"><span class="pre">open</span> <span class="pre">science</span></code>, and these begin by making your data <code class="docutils literal notranslate"><span class="pre">Findable</span></code>.</p></li>
 </ol>
 <p>The notebooks was build using <a class="reference external" href="https://jupyterbook.org/en/stable/intro.html">jupyter-book</a>, which supports different types of files. Here we use <code class="docutils literal notranslate"><span class="pre">rst</span></code> and <code class="docutils literal notranslate"><span class="pre">ipynb</span></code> (executable notebooks).</p>
 <p>To add/edit the documentation, we recommend you follow the previous guides on version control, forking, and branching. That said, you can follow the steps:</p>
@@ -392,7 +393,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
-<li><p>build the docs by running</p></li>
+<li><p>Build the docs by running</p></li>
 </ol>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jupyter-book<span class="w"> </span>build<span class="w"> </span>docs
 </pre></div>
@@ -404,8 +405,10 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>open<span class="w"> </span>docs/_build/html/index.html
 </pre></div>
 </div>
+<p>You should check that <strong>ALL</strong> notebooks can be successfully build. This step is important because some of the notebooks require authentications. For testing the documentation it is OK to include passwords/tokens, but when you are getting ready to submit your PR for review, do not include these in the final version of your PR.</p>
 <ol class="arabic simple" start="7">
-<li><p>Push all changes to your forked repository and create a PR.</p></li>
+<li><p>Push all changes to your forked repository and create a PR to merge on to the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> follows the recommendations of keeping the <code class="docutils literal notranslate"><span class="pre">source</span></code> files on <code class="docutils literal notranslate"><span class="pre">main</span></code>, and the <code class="docutils literal notranslate"><span class="pre">build</span></code> files on the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch. <strong>NOTE</strong> Do not include passwords or tokens. You are only submitting <code class="docutils literal notranslate"><span class="pre">source</span></code> files.</p></li>
+<li><p>Once a maintaner of <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> has approved your PR it will get merged into <code class="docutils literal notranslate"><span class="pre">main</span></code>, where all <code class="docutils literal notranslate"><span class="pre">source</span></code> files live. At this point, a maintainer of <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> can publish the documentation and update the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch. Broadly, the steps to publish the documentation (i.e. rebuild the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch) are detailed and described here: <a class="reference external" href="https://jupyterbook.org/en/stable/start/publish.html">https://jupyterbook.org/en/stable/start/publish.html</a>.</p></li>
 </ol>
 </section>
 

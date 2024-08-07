@@ -181,6 +181,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Authentication.html">Basic Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">PACE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT</a></li>
@@ -356,6 +357,8 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#access-earthdata">Access EARTHDATA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-to-session-s-headers-token-authorization">Add to session’s headers Token Authorization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-download-some-data">Lets download some data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subsetting-data">Subsetting data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-constraint-expression-to-url">Adding a Constraint Expression to URL</a></li>
@@ -399,7 +402,8 @@ document.write(`
 </div>
 </div>
 </div>
-<p><strong>PACE Access via OPeNDAP</strong></p>
+<section id="access-earthdata">
+<h2>Access EARTHDATA<a class="headerlink" href="#access-earthdata" title="Link to this heading">#</a></h2>
 <p>The PACE OPeNDAP data catalog can be found <a class="reference external" href="https://oceandata.sci.gsfc.nasa.gov/opendap/PACE_OCI/L3SMI/2024/contents.html">here</a>. Data only starts in 2024.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -409,23 +413,16 @@ document.write(`
 </div>
 </div>
 </div>
-<p><strong>Import Token Authorization</strong></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In the example above, <code class="docutils literal notranslate"><span class="pre">edl_token</span></code> is provided to construct <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s documentation, but it has since expired. When running this example notebook on your local machine or workstation, replace the <code class="docutils literal notranslate"><span class="pre">edl_token</span></code> below with your own. If you do not yet have an EDL account, go <a class="reference external" href="https://urs.earthdata.nasa.gov/home">here</a>.</p>
-</div>
+</section>
+<section id="add-to-session-s-headers-token-authorization">
+<h2>Add to session’s headers Token Authorization<a class="headerlink" href="#add-to-session-s-headers-token-authorization" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTcyNjk0OTQwOCwiaWF0IjoxNzIxNzY1NDA4LCJpc3MiOiJFYXJ0aGRhdGEgTG9naW4ifQ.IL2_mI5Za3V2liA9u178M9sPGh_GdYA2jbdwjJMMMxTpEtPswYHQ45-juyxNAobvW2lKDBuh1cCng3eeomIFiFpRtXQ5LqN-SAPk0MXJSCTtisAG1pEepkQDNf74UMt5SJ_Y_eZ67DeQ4gKzxATPkH08W9DzjpGZpemmSw92iQ6X0060jDx5wQ6tWhXjIF3yYOOMMmo4v-xjg2JWngEwNGVYjRPZgPRLngA2adMTYnS2EP3oS7u8EVQ3G_UiHw9958LLcmDGKExk3WdwMhwejTCfaIiLTTCxPUT13GBdRBufKGNkcmhVNlbfNrh_3LiQtI4kXkaWke5PKxU46g1YEg&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;YourTokenHere&quot;</span>
 
 <span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># pass Token Authorization to a new Session.</span>
+
+<span class="c1"># pass Token Authorization to a new Session.</span>
 
 <span class="n">my_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
 <span class="n">my_session</span><span class="o">.</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">auth_hdr</span><span class="p">}</span>
@@ -441,8 +438,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 54.1 ms, sys: 7.39 ms, total: 61.5 ms
-Wall time: 1.28 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 47.6 ms, sys: 6.35 ms, total: 54 ms
+Wall time: 979 ms
 </pre></div>
 </div>
 </div>
@@ -464,6 +461,10 @@ Wall time: 1.28 s
 </pre></div>
 </div>
 </div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PyDAP accesses the remote dataset’s metadata, and no data has been downloaded yet!</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -522,6 +523,7 @@ Wall time: 1.28 s
 </div>
 </div>
 </div>
+</section>
 <section id="lets-download-some-data">
 <h2>Lets download some data<a class="headerlink" href="#lets-download-some-data" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
@@ -532,8 +534,8 @@ Wall time: 1.28 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1min 4s, sys: 1min 42s, total: 2min 46s
-Wall time: 2min 53s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1min 9s, sys: 2min 3s, total: 3min 13s
+Wall time: 3min 24s
 </pre></div>
 </div>
 </div>
@@ -735,8 +737,8 @@ Wall time: 2min 53s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 782 ms, sys: 466 ms, total: 1.25 s
-Wall time: 3.13 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 963 ms, sys: 717 ms, total: 1.68 s
+Wall time: 3.62 s
 </pre></div>
 </div>
 </div>
@@ -838,6 +840,8 @@ Wall time: 3.13 s
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#access-earthdata">Access EARTHDATA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-to-session-s-headers-token-authorization">Add to session’s headers Token Authorization</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-download-some-data">Lets download some data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subsetting-data">Subsetting data</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-constraint-expression-to-url">Adding a Constraint Expression to URL</a></li>

@@ -181,6 +181,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Authentication.html">Basic Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT</a></li>
@@ -402,8 +403,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 62.8 ms, sys: 7.82 ms, total: 70.7 ms
-Wall time: 1.31 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 70.7 ms, sys: 9.3 ms, total: 80 ms
+Wall time: 1.2 s
 </pre></div>
 </div>
 </div>
@@ -633,6 +634,10 @@ Wall time: 1.31 s
 </pre></div>
 </div>
 </div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since the data is periodic in longitude, we need to append a copy to the array. We need to do this since cartopy interpolates data. If we don’t, then there will be missing longitude band of missing data in for plot as shown below:</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

@@ -181,6 +181,7 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="Authentication.html">Basic Authentication</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">SWOT</a></li>
@@ -333,7 +334,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -349,6 +352,15 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#access-earthdata">Access EARTHDATA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-to-session-s-headers-token-authorization">Add to session’s headers Token Authorization</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -381,7 +393,8 @@ document.write(`
 </div>
 </div>
 </div>
-<p><strong>Access EARTHDATA</strong></p>
+<section id="access-earthdata">
+<h2>Access EARTHDATA<a class="headerlink" href="#access-earthdata" title="Link to this heading">#</a></h2>
 <p>The access link can be found at <a class="reference external" href="https://podaac.jpl.nasa.gov/dataset/SWOT_L2_NALT_GDR_2.0">PODACC</a>. This may require to be logged on to EarthDataLogin. There is data for 2023 and 2024.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -390,14 +403,12 @@ document.write(`
 </div>
 </div>
 </div>
-<p><strong>Import Token Authorization</strong></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In the example above, <code class="docutils literal notranslate"><span class="pre">edl_token</span></code> is provided to construct <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s documentation, but it has since expired. When running this example notebook on your local machine or workstation, replace the <code class="docutils literal notranslate"><span class="pre">edl_token</span></code> below with your own. If you do not yet have an EDL account, go <a class="reference external" href="https://urs.earthdata.nasa.gov/home">here</a>.</p>
-</div>
+</section>
+<section id="add-to-session-s-headers-token-authorization">
+<h2>Add to session’s headers Token Authorization<a class="headerlink" href="#add-to-session-s-headers-token-authorization" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTcyNjk0OTQwOCwiaWF0IjoxNzIxNzY1NDA4LCJpc3MiOiJFYXJ0aGRhdGEgTG9naW4ifQ.IL2_mI5Za3V2liA9u178M9sPGh_GdYA2jbdwjJMMMxTpEtPswYHQ45-juyxNAobvW2lKDBuh1cCng3eeomIFiFpRtXQ5LqN-SAPk0MXJSCTtisAG1pEepkQDNf74UMt5SJ_Y_eZ67DeQ4gKzxATPkH08W9DzjpGZpemmSw92iQ6X0060jDx5wQ6tWhXjIF3yYOOMMmo4v-xjg2JWngEwNGVYjRPZgPRLngA2adMTYnS2EP3oS7u8EVQ3G_UiHw9958LLcmDGKExk3WdwMhwejTCfaIiLTTCxPUT13GBdRBufKGNkcmhVNlbfNrh_3LiQtI4kXkaWke5PKxU46g1YEg&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;YourTokenHere&quot;</span>
 
 <span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
 </pre></div>
@@ -483,6 +494,10 @@ document.write(`
 </div>
 </div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PyDAP accesses the remote dataset’s metadata, and no data has been downloaded yet!</p>
+</div>
 <p><strong>This is a dataset pointing to a remote data location</strong></p>
 <p>Data remains remote, no data has been downloaded.</p>
 <div class="cell docutils container">
@@ -554,8 +569,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 32.2 ms, sys: 4.73 ms, total: 37 ms
-Wall time: 5.88 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 15.1 ms, sys: 2.65 ms, total: 17.8 ms
+Wall time: 3.25 s
 </pre></div>
 </div>
 </div>
@@ -693,6 +708,7 @@ Wall time: 5.88 s
 </div>
 <p><strong>Fig 2.</strong> Along track values.</p>
 </section>
+</section>
 
     <script type="text/x-thebe-config">
     {
@@ -748,6 +764,22 @@ Wall time: 5.88 s
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#access-earthdata">Access EARTHDATA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-to-session-s-headers-token-authorization">Add to session’s headers Token Authorization</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
