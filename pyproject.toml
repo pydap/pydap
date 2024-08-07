@@ -25,6 +25,7 @@ dependencies = [
   "Jinja2",
   "docopt-ng",
   "beautifulsoup4",
+  "lxml",
   "requests"
 ]
 description = "A pure python implementation of the Data Access Protocol."
