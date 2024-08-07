@@ -82,7 +82,7 @@ class TestEncode(unittest.TestCase):
         # associated with Deprecation warning numpy > 1.25
         # see GH issue https://github.com/pydap/pydap/issues/319
         # also PR https://github.com/pydap/pydap/pull/343
-        array = np.array([(2.300110099991, 4.)])
+        array = np.array([(2.300110099991, 4.0)])
         self.assertEqual(encode(array), '"[[2.300110 4.000000]]"')
 
 
