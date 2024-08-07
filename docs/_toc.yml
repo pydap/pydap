@@ -12,6 +12,7 @@ parts:
     - file: 5_minute_tutorial
 - caption: Examples
   chapters:
+  - file: notebooks/Authentication
   - file: notebooks/ECCO
   - file: notebooks/PACE
   - file: notebooks/SWOT
