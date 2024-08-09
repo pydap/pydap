@@ -10,9 +10,9 @@ import ast
 import operator
 import re
 from functools import reduce
+from importlib.metadata import entry_points
 
 import numpy as np
-from pkg_resources import iter_entry_points
 from webob import Request
 
 from ..exceptions import ServerError
@@ -28,18 +28,12 @@ RELOP = re.compile(r"(<=|<|>=|>|=~|=|!=)")
 def load_functions():
     """Load all available functions from the system, returning a dictionary."""
     # Relative import of functions:
-    package = "pydap"
-    entry_points = "pydap.function"
-    base_dict = dict(
-        load_from_entry_point_relative(r, package)
-        for r in iter_entry_points(entry_points)
-        if r.module_name.startswith(package)
-    )
-    opts_dict = dict(
-        (r.name, r.load())
-        for r in iter_entry_points(entry_points)
-        if not r.module_name.startswith(package)
-    )
+    eps = entry_points(group="pydap.function")
+    Rs = [r for r in eps if r.module[:5] == "pydap"]
+    nRs = [r for r in eps if r.module[:5] != "pydap"]
+    base_dict = dict(load_from_entry_point_relative(r, "pydap") for r in Rs)
+
+    opts_dict = dict(load_from_entry_point_relative(r, "pydap") for r in nRs)
     base_dict.update(opts_dict)
     return base_dict
 
