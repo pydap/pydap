@@ -23,10 +23,7 @@ from itertools import chain
 import numpy
 from requests.utils import urlparse, urlunparse
 
-import pydap.handlers.lib
-import pydap.model
-import pydap.net
-import pydap.parsers
+from pydap.handlers.lib import BaseHandler, ConstraintExpression, IterData
 from pydap.lib import (
     DAP2_ARRAY_LENGTH_NUMPY_TYPE,
     DEFAULT_TIMEOUT,
@@ -40,6 +37,9 @@ from pydap.lib import (
     hyperslab,
     walk,
 )
+from pydap.model import BaseType, GridType, SequenceType, StructureType
+from pydap.net import GET, raise_for_status
+from pydap.parsers import parse_ce
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import dmr_to_dataset
@@ -51,7 +51,7 @@ logger.addHandler(logging.NullHandler())
 BLOCKSIZE = 512
 
 
-class DAPHandler(pydap.handlers.lib.BaseHandler):
+class DAPHandler(BaseHandler):
     """Build a dataset from a DAP base URL."""
 
     def __init__(
@@ -85,9 +85,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
 
         self.protocol = self.determine_protocol(protocol)
 
-        self.projection, self.selection = pydap.parsers.parse_ce(
-            self.query, self.protocol
-        )
+        self.projection, self.selection = parse_ce(self.query, self.protocol)
         arg = (
             self.scheme,
             self.netloc,
@@ -147,14 +145,14 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 self.fragment,
             )
         )
-        r = pydap.net.GET(
+        r = GET(
             dmr_url,
             self.application,
             self.session,
             timeout=self.timeout,
             verify=self.verify,
         )
-        pydap.net.raise_for_status(r)
+        raise_for_status(r)
         dmr = safe_charset_text(r, self.user_charset)
         self.dataset = dmr_to_dataset(dmr)
 
@@ -170,14 +168,14 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 self.fragment,
             )
         )
-        r = pydap.net.GET(
+        r = GET(
             dds_url,
             self.application,
             self.session,
             timeout=self.timeout,
             verify=self.verify,
         )
-        pydap.net.raise_for_status(r)
+        raise_for_status(r)
         dds = safe_charset_text(r, self.user_charset)
         self.dataset = dds_to_dataset(dds)
 
@@ -193,14 +191,14 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 self.fragment,
             )
         )
-        r = pydap.net.GET(
+        r = GET(
             das_url,
             self.application,
             self.session,
             timeout=self.timeout,
             verify=self.verify,
         )
-        pydap.net.raise_for_status(r)
+        raise_for_status(r)
         das = safe_charset_text(r, self.user_charset)
         add_attributes(self.dataset, parse_das(das))
 
@@ -212,7 +210,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
 
     def add_dap4_proxies(self):
         # remove any projection from the base_url, leaving selections
-        for var in walk(self.dataset, pydap.model.BaseType):
+        for var in walk(self.dataset, BaseType):
             if var.path is not None:
                 var_name = var.path + "/" + var.name
             else:
@@ -235,12 +233,12 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             while var:
                 token, index = var.pop(0)
                 target = target[token]
-                if isinstance(target, pydap.model.BaseType):
+                if isinstance(target, BaseType):
                     target.data.slice = fix_slice(index, target.shape)
 
     def add_dap2_proxies(self):
         # now add data proxies
-        for var in walk(self.dataset, pydap.model.BaseType):
+        for var in walk(self.dataset, BaseType):
             var.data = BaseProxyDap2(
                 self.base_url,
                 var.id,
@@ -250,7 +248,7 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
                 session=self.session,
                 timeout=self.timeout,
             )
-        for var in walk(self.dataset, pydap.model.SequenceType):
+        for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
             var.data = SequenceProxy(
                 self.base_url,
@@ -267,18 +265,18 @@ class DAPHandler(pydap.handlers.lib.BaseHandler):
             while var:
                 token, index = var.pop(0)
                 target = target[token]
-                if isinstance(target, pydap.model.BaseType):
+                if isinstance(target, BaseType):
                     target.data.slice = fix_slice(index, target.shape)
-                elif isinstance(target, pydap.model.GridType):
+                elif isinstance(target, GridType):
                     index = fix_slice(index, target.array.shape)
                     target.array.data.slice = index
                     for s, child in zip(index, target.maps):
                         target[child].data.slice = (s,)
-                elif isinstance(target, pydap.model.SequenceType):
+                elif isinstance(target, SequenceType):
                     target.data.slice = index
 
         # retrieve only main variable for grid types:
-        for var in walk(self.dataset, pydap.model.GridType):
+        for var in walk(self.dataset, GridType):
             var.set_output_grid(self.output_grid)
 
 
@@ -391,7 +389,7 @@ class BaseProxyDap2(object):
 
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
-        r = pydap.net.GET(
+        r = GET(
             url,
             self.application,
             self.session,
@@ -399,7 +397,7 @@ class BaseProxyDap2(object):
             verify=self.verify,
         )
 
-        pydap.net.raise_for_status(r)
+        raise_for_status(r)
         dds, data = safe_dds_and_data(r, self.user_charset)
 
         # Parse received dataset:
@@ -474,7 +472,7 @@ class BaseProxyDap4(BaseProxyDap2):
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
 
-        r = pydap.net.GET(
+        r = GET(
             url,
             self.application,
             self.session,
@@ -482,7 +480,7 @@ class BaseProxyDap4(BaseProxyDap2):
             verify=self.verify,
         )
 
-        pydap.net.raise_for_status(r)
+        raise_for_status(r)
         dmr, data = safe_dmr_and_data(r, self.user_charset)
 
         # Parse received dataset:
@@ -562,7 +560,7 @@ class SequenceProxy(object):
             out.template._visible_keys = key
 
         # return a copy with the added constraints
-        elif isinstance(key, pydap.handlers.lib.ConstraintExpression):
+        elif isinstance(key, ConstraintExpression):
             out.selection.extend(str(key).split("&"))
 
         # slice data
@@ -601,14 +599,14 @@ class SequenceProxy(object):
 
     def __iter__(self):
         # download and unpack data
-        r = pydap.net.GET(
+        r = GET(
             self.url,
             self.application,
             self.session,
             timeout=self.timeout,
             verify=self.verify,
         )
-        pydap.net.raise_for_status(r)
+        raise_for_status(r)
 
         i = r.app_iter
         if not hasattr(i, "__next__"):
@@ -634,49 +632,35 @@ class SequenceProxy(object):
         return unpack_sequence(stream, self.template)
 
     def __eq__(self, other):
-        return pydap.handlers.lib.ConstraintExpression(
-            "%s=%s" % (self.id, encode(other))
-        )
+        return ConstraintExpression("%s=%s" % (self.id, encode(other)))
 
     def __ne__(self, other):
-        return pydap.handlers.lib.ConstraintExpression(
-            "%s!=%s" % (self.id, encode(other))
-        )
+        return ConstraintExpression("%s!=%s" % (self.id, encode(other)))
 
     def __ge__(self, other):
-        return pydap.handlers.lib.ConstraintExpression(
-            "%s>=%s" % (self.id, encode(other))
-        )
+        return ConstraintExpression("%s>=%s" % (self.id, encode(other)))
 
     def __le__(self, other):
-        return pydap.handlers.lib.ConstraintExpression(
-            "%s<=%s" % (self.id, encode(other))
-        )
+        return ConstraintExpression("%s<=%s" % (self.id, encode(other)))
 
     def __gt__(self, other):
-        return pydap.handlers.lib.ConstraintExpression(
-            "%s>%s" % (self.id, encode(other))
-        )
+        return ConstraintExpression("%s>%s" % (self.id, encode(other)))
 
     def __lt__(self, other):
-        return pydap.handlers.lib.ConstraintExpression(
-            "%s<%s" % (self.id, encode(other))
-        )
+        return ConstraintExpression("%s<%s" % (self.id, encode(other)))
 
 
 def unpack_sequence(stream, template):
     """Unpack data from a sequence, yielding records."""
     # is this a sequence or a base type?
-    sequence = isinstance(template, pydap.model.SequenceType)
+    sequence = isinstance(template, SequenceType)
 
     # if there are no children, we use the template as the only column
     cols = list(template.children()) or [template]
 
     # if there are no strings and no nested sequences we can unpack record by
     # record easily
-    simple = all(
-        isinstance(c, pydap.model.BaseType) and c.dtype.char not in "SU" for c in cols
-    )
+    simple = all(isinstance(c, BaseType) and c.dtype.char not in "SU" for c in cols)
 
     if simple:
         dtype = numpy.dtype([("", c.dtype, c.shape) for c in cols])
@@ -706,11 +690,9 @@ def unpack_children(stream, template):
     out = []
     for col in cols:
         # sequences and other structures
-        if isinstance(col, pydap.model.SequenceType):
-            out.append(
-                pydap.handlers.lib.IterData(list(unpack_sequence(stream, col)), col)
-            )
-        elif isinstance(col, pydap.model.StructureType):
+        if isinstance(col, SequenceType):
+            out.append(IterData(list(unpack_sequence(stream, col)), col))
+        elif isinstance(col, StructureType):
             out.append(tuple(unpack_children(stream, col)))
 
         # unpack arrays
@@ -841,7 +823,7 @@ def unpack_dap4_data(xdr_stream, dataset):
     buffer = stream2bytearray(xdr_stream)
 
     start = 0
-    for variable in walk(dataset, pydap.model.BaseType):
+    for variable in walk(dataset, BaseType):
         # variable_name = variable.name
         # variable = dataset[variable_name]
         count = get_count(variable)
@@ -852,9 +834,9 @@ def unpack_dap4_data(xdr_stream, dataset):
         checksum = numpy.frombuffer(
             buffer[stop : stop + 4], dtype=checksum_dtype
         ).byteswap("=")
-        if isinstance(variable, pydap.model.BaseType):
+        if isinstance(variable, BaseType):
             variable._set_data(data)
-        elif isinstance(variable, pydap.model.GridType):
+        elif isinstance(variable, GridType):
             variable._set_data([data.data])
         variable.attributes["checksum"] = checksum
         # Jump over the 4 byte chunk_header
