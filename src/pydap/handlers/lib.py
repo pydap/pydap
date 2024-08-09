@@ -14,9 +14,9 @@ import itertools
 import operator
 import re
 import sys
+from importlib.metadata import entry_points
 
 import numpy as np
-import pkg_resources
 from numpy.lib import Arrayterator
 from webob import Request
 
@@ -39,29 +39,14 @@ BUFFER_SIZE = 2**27
 CORS_RESPONSES = ["dds", "das", "dods", "ver", "json", "dmr"]
 
 
-def load_handlers(working_set=pkg_resources.working_set):
-    r"""Load all handlers, returning them on a list.
+def load_handlers():
+    r"""Load all handlers, returning them on a list."""
+    eps = entry_points(group="pydap.handler")
+    Rs = [r for r in eps if r.module[:5] == "pydap"]
+    nRs = [r for r in eps if r.module[:5] != "pydap"]
+    base_dict = dict(load_from_entry_point_relative(r, "pydap") for r in Rs)
 
-    Passing ``working_set`` is used only for unit testing. Check the following
-    discussion for an explanation about this:
-
-        http://grokbase.com/t/python/distutils-sig/074rc4a6hb/ \
-                distutils-programmatically-adding-entry-points
-
-    """
-    # Relative import of handlers:
-    package = "pydap"
-    entry_points = "pydap.handler"
-    base_dict = dict(
-        load_from_entry_point_relative(r, package)
-        for r in working_set.iter_entry_points(entry_points)
-        if r.module_name.startswith(package)
-    )
-    opts_dict = dict(
-        (r.name, r.load())
-        for r in working_set.iter_entry_points(entry_points)
-        if not r.module_name.startswith(package)
-    )
+    opts_dict = dict(load_from_entry_point_relative(r, "pydap") for r in nRs)
     base_dict.update(opts_dict)
     return base_dict.values()
 
