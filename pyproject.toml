@@ -26,7 +26,8 @@ dependencies = [
   "docopt-ng",
   "beautifulsoup4",
   "lxml",
-  "requests"
+  "requests",
+  "importlib-metadata"
 ]
 description = "A pure python implementation of the Data Access Protocol."
 dynamic = ["version"]
