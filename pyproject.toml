@@ -27,7 +27,8 @@ dependencies = [
   "beautifulsoup4",
   "lxml",
   "requests",
-  "importlib-metadata"
+  "importlib-metadata",
+  "importlib-resources"
 ]
 description = "A pure python implementation of the Data Access Protocol."
 dynamic = ["version"]
