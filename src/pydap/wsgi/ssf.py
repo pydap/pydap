@@ -17,7 +17,7 @@ from webob import Request
 
 from ..exceptions import ServerError
 from ..handlers.lib import BaseHandler, apply_projection
-from ..lib import fix_shorthand, load_from_entry_point_relative, walk
+from ..lib import fix_shorthand, walk
 from ..model import DatasetType, SequenceType
 from ..parsers import parse_ce
 
@@ -31,9 +31,9 @@ def load_functions():
     eps = entry_points(group="pydap.function")
     Rs = [r for r in eps if r.module[:5] == "pydap"]
     nRs = [r for r in eps if r.module[:5] != "pydap"]
-    base_dict = dict(load_from_entry_point_relative(r, "pydap") for r in Rs)
+    base_dict = dict((r.name, r.load()) for r in Rs)
 
-    opts_dict = dict(load_from_entry_point_relative(r, "pydap") for r in nRs)
+    opts_dict = dict((r.name, r.load()) for r in nRs)
     base_dict.update(opts_dict)
     return base_dict
 
