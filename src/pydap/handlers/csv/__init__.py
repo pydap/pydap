@@ -9,8 +9,6 @@ import time
 from email.utils import formatdate
 from stat import ST_MTIME
 
-from pkg_resources import get_distribution
-
 from ...exceptions import OpenFileError
 from ...handlers.lib import BaseHandler, IterData
 from ...model import BaseType, DatasetType, SequenceType
@@ -106,7 +104,6 @@ class CSVHandler(BaseHandler):
         >>> temp_file.remove()
     """
 
-    __version__ = get_distribution("pydap").version
     extensions = re.compile(r"^.*\.csv$", re.IGNORECASE)
 
     def __init__(self, filepath):

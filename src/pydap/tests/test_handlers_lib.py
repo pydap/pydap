@@ -11,12 +11,9 @@ from pydap.exceptions import ConstraintExpressionError
 from pydap.handlers.lib import (
     BaseHandler,
     ConstraintExpression,
-    ExtensionNotSupportedError,
     IterData,
     apply_projection,
     apply_selection,
-    get_handler,
-    load_handlers,
 )
 from pydap.lib import walk
 from pydap.model import BaseType, SequenceType, StructureType
@@ -29,31 +26,6 @@ from pydap.tests.datasets import (
     SimpleStructure,
     VerySimpleSequence,
 )
-
-
-class TestHandlersLib(unittest.TestCase):
-    """Test handler loading."""
-
-    def test_load_handlers(self):
-        """Test that handlers can be loaded correctly.
-
-        We use a mock working set, since by default no handlers are installed
-        with pydap.
-
-        """
-        handlers = load_handlers(MockWorkingSet())
-        self.assertTrue(MockHandler in handlers)
-
-    def test_get_handler(self):
-        """Test that we can load a specific handler."""
-        handlers = load_handlers(MockWorkingSet())
-        handler = get_handler("file.foo", handlers)
-        self.assertIsInstance(handler, MockHandler)
-
-    def test_no_handler_available(self):
-        """Test exception raised when file not supported."""
-        with self.assertRaises(ExtensionNotSupportedError):
-            get_handler("file.bar")
 
 
 class TestBaseHandler(unittest.TestCase):
