@@ -14,20 +14,14 @@ import itertools
 import operator
 import re
 import sys
-from importlib.metadata import entry_points
 
 import numpy as np
+from importlib_metadata import entry_points
 from numpy.lib import Arrayterator
 from webob import Request
 
 from pydap.exceptions import ConstraintExpressionError, ExtensionNotSupportedError
-from pydap.lib import (
-    encode,
-    fix_shorthand,
-    get_var,
-    load_from_entry_point_relative,
-    walk,
-)
+from pydap.lib import encode, fix_shorthand, get_var, walk
 from pydap.model import BaseType, DatasetType, GridType, SequenceType, StructureType
 from pydap.parsers import parse_ce, parse_selection
 from pydap.responses.error import ErrorResponse
@@ -44,9 +38,9 @@ def load_handlers():
     eps = entry_points(group="pydap.handler")
     Rs = [r for r in eps if r.module[:5] == "pydap"]
     nRs = [r for r in eps if r.module[:5] != "pydap"]
-    base_dict = dict(load_from_entry_point_relative(r, "pydap") for r in Rs)
+    base_dict = dict((r.name, r.load()) for r in Rs)
 
-    opts_dict = dict(load_from_entry_point_relative(r, "pydap") for r in nRs)
+    opts_dict = dict((r.name, r.load()) for r in nRs)
     base_dict.update(opts_dict)
     return base_dict.values()
 

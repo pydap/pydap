@@ -10,9 +10,9 @@ import ast
 import operator
 import re
 from functools import reduce
-from importlib.metadata import entry_points
 
 import numpy as np
+from importlib_metadata import entry_points
 from webob import Request
 
 from ..exceptions import ServerError
