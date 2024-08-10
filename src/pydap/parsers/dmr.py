@@ -82,13 +82,38 @@ def get_dtype(element):
 
 def get_attributes(element, attributes={}):
     attribute_elements = element.findall("Attribute")
-    numType = [item for item in dmr_atomic_types if item not in ["Byte", "Char"]]
+    Float_types = ["Float32", "float", "Float64"]
+    Int_types = ["Int16", "Int32", "Int64", "int", "Int8"]
+    uInt_types = ["uInt16", "uInt32", "uInt64", "uint", "uInt8"]
     for attribute_element in attribute_elements:
         name = attribute_element.get("name")
         value = attribute_element.find("Value").text
         _type = attribute_element.get("type")
-        if _type in numType:
-            value = ast.literal_eval(value)
+        if _type in dmr_atomic_types:
+            if _type in Float_types:
+                # keep float-type of value
+                value = float(value)
+            elif _type in Int_types or _type in uInt_types:
+                # keeps integer-type of value
+                value = int(value)
+            else:
+                try:
+                    value = ast.literal_eval(value)
+                except ValueError:
+                    # leaves value as string
+                    raise Warning(
+                        """
+                        Pydap could not turn the non-string Attribute: `{}`
+                        with value `{}` into a numeric type during parsing
+                        of the `DMR`. Parsing as string value instead. If you
+                        think this is a bug consider raising a issue. To
+                        learn more about DAP's atomic types, go to:
+                        https://docs.opendap.org/index.php/
+                        DAP4:_Specification_Volume_1#Atomic_Types
+                        """.format(
+                            name, value
+                        )
+                    )
         attributes[name] = value
     return attributes
 
