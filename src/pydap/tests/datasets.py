@@ -231,12 +231,14 @@ SimpleGroup["SimpleGroup"]["Temperature"] = BaseType(
     np.arange(10, 26, 1, dtype="f4").reshape(4, 4),
     units="degrees_celsius",
     dimensions=("X", "Y"),
+    _FillValue=np.inf,
 )
 SimpleGroup["SimpleGroup"]["Salinity"] = BaseType(
     "Salinity",
     30 * np.ones(16, dtype="f4").reshape(4, 4),
     units="psu",
     dimensions=("X", "Y"),
+    _FillValue=np.nan,
 )
 SimpleGroup["/SimpleGroup/X"] = BaseType("X", np.arange(4, dtype="i2"), dimensions="X")
 SimpleGroup["/SimpleGroup/Y"] = BaseType("Y", np.arange(4, dtype="i2"), dimensions="Y")
