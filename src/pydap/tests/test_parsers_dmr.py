@@ -44,12 +44,12 @@ class DMRParser(unittest.TestCase):
         self.assertEqual(np.isnan(X_nan.attributes["missing_value"]), True)
         self.assertEqual(np.isinf(X_inf.attributes["missing_value"]), True)
 
-    def test_attribute_error(self):
+    def test_attribute_warning(self):
         byte_dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
                 <Attribute name="missing_value" type="Byte">\n
                             <Value>x00</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
-        with self.assertRaises(TypeError):
+        with self.assertRaises(Warning):
             dmr_to_dataset(byte_dmr)
 
     def test_coads_climatology2(self):
