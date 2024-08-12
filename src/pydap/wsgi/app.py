@@ -22,7 +22,7 @@ import re
 import shutil
 from datetime import datetime
 
-import pkg_resources
+import importlib_resources
 from docopt import docopt
 from gunicorn.app.wsgiapp import WSGIApplication
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, PackageLoader
@@ -224,12 +224,12 @@ class StaticMiddleware(object):
         # otherwise, load resource from package
         package, resource_path = self.static
         resource = os.path.join(resource_path, *req.path_info.split("/"))
-        if not pkg_resources.resource_exists(package, resource):
+        if not importlib_resources.is_resource(package, resource):
             return HTTPNotFound(req.path_info)
 
         content_type, content_encoding = mimetypes.guess_type(resource)
         return Response(
-            body=pkg_resources.resource_string(package, resource),
+            body=importlib_resources.read_text(package, resource),
             content_type=content_type,
             content_encoding=content_encoding,
         )
@@ -238,15 +238,19 @@ class StaticMiddleware(object):
 def init(directory):
     """Create directory with default templates."""
     # copy main templates
-    templates = pkg_resources.resource_filename("pydap.wsgi", "templates")
-    shutil.copytree(templates, directory)
+    templates = importlib_resources.files("pydap.wsgi") / "templates"
+    with importlib_resources.as_file(templates) as path:
+        shutil.copytree(templates, directory)
 
     # copy templates from HTML response
-    for resource in pkg_resources.resource_listdir("pydap.responses.html", "templates"):
-        path = pkg_resources.resource_filename(
-            "pydap.responses.html", "templates/{0}".format(resource)
-        )
-        shutil.copy(path, directory)
+    for resource in importlib_resources.files(
+        "pydap.responses.html.templates"
+    ).iterdir():
+        path = importlib_resources.files(
+            "pydap.responses.html"
+        ) / "templates/{0}".format(resource.name)
+        with importlib_resources.as_file(path) as Path:
+            shutil.copy(Path, directory)
 
 
 class PyDapApplication(WSGIApplication):

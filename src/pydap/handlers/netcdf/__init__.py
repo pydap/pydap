@@ -8,7 +8,6 @@ from email.utils import formatdate
 from stat import ST_MTIME
 
 import numpy as np
-from pkg_resources import get_distribution
 
 from pydap.exceptions import OpenFileError
 from pydap.handlers.lib import BaseHandler
@@ -35,7 +34,6 @@ class NetCDFHandler(BaseHandler):
     Here's a standard dataset for testing sequential data:
     """
 
-    __version__ = get_distribution("pydap").version
     extensions = re.compile(r"^.*\.(nc|cdf)$", re.IGNORECASE)
 
     def __init__(self, filepath):

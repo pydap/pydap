@@ -366,24 +366,6 @@ def decode_np_strings(numpy_var):
         return numpy_var
 
 
-def load_from_entry_point_relative(r, package):
-    try:
-        loaded = getattr(
-            __import__(
-                r.module_name.replace(package + ".", "", 1),
-                globals(),
-                None,
-                [r.attrs[0]],
-                1,
-            ),
-            r.attrs[0],
-        )
-        return r.name, loaded
-    except ImportError:
-        # This is only used in handlers testing:
-        return r.name, r.load()
-
-
 class StreamReader(object):
     """Class to allow reading a `urllib3.HTTPResponse`."""
 

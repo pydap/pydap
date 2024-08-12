@@ -16,18 +16,12 @@ import re
 import sys
 
 import numpy as np
-import pkg_resources
+from importlib_metadata import entry_points
 from numpy.lib import Arrayterator
 from webob import Request
 
 from pydap.exceptions import ConstraintExpressionError, ExtensionNotSupportedError
-from pydap.lib import (
-    encode,
-    fix_shorthand,
-    get_var,
-    load_from_entry_point_relative,
-    walk,
-)
+from pydap.lib import encode, fix_shorthand, get_var, walk
 from pydap.model import BaseType, DatasetType, GridType, SequenceType, StructureType
 from pydap.parsers import parse_ce, parse_selection
 from pydap.responses.error import ErrorResponse
@@ -39,29 +33,14 @@ BUFFER_SIZE = 2**27
 CORS_RESPONSES = ["dds", "das", "dods", "ver", "json", "dmr"]
 
 
-def load_handlers(working_set=pkg_resources.working_set):
-    r"""Load all handlers, returning them on a list.
+def load_handlers():
+    r"""Load all handlers, returning them on a list."""
+    eps = entry_points(group="pydap.handler")
+    Rs = [r for r in eps if r.module[:5] == "pydap"]
+    nRs = [r for r in eps if r.module[:5] != "pydap"]
+    base_dict = dict((r.name, r.load()) for r in Rs)
 
-    Passing ``working_set`` is used only for unit testing. Check the following
-    discussion for an explanation about this:
-
-        http://grokbase.com/t/python/distutils-sig/074rc4a6hb/ \
-                distutils-programmatically-adding-entry-points
-
-    """
-    # Relative import of handlers:
-    package = "pydap"
-    entry_points = "pydap.handler"
-    base_dict = dict(
-        load_from_entry_point_relative(r, package)
-        for r in working_set.iter_entry_points(entry_points)
-        if r.module_name.startswith(package)
-    )
-    opts_dict = dict(
-        (r.name, r.load())
-        for r in working_set.iter_entry_points(entry_points)
-        if not r.module_name.startswith(package)
-    )
+    opts_dict = dict((r.name, r.load()) for r in nRs)
     base_dict.update(opts_dict)
     return base_dict.values()
 

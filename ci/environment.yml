@@ -9,6 +9,7 @@ dependencies:
 - pytest-env
 - codecov
 - scipy
+- pre-commit
 - pip
 - pip:
   - werkzeug >= 2.2.2

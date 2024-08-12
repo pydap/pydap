@@ -3,7 +3,7 @@
 import sys
 from json import dumps
 
-from pkg_resources import iter_entry_points
+from importlib_metadata import entry_points
 from webob import Response
 
 from ..lib import __dap__, __version__
@@ -24,15 +24,15 @@ class VersionResponse(object):
             "dap": __dap__,
             "handlers": dict(
                 (ep.name, getattr(ep.load(), "__version__", "Unknown"))
-                for ep in iter_entry_points("pydap.handler")
+                for ep in entry_points(group="pydap.handler")
             ),
             "responses": dict(
                 (ep.name, getattr(ep.load(), "__version__", "Unknown"))
-                for ep in iter_entry_points("pydap.response")
+                for ep in entry_points(group="pydap.response")
             ),
             "functions": dict(
                 (ep.name, getattr(ep.load(), "__version__", "Unknown"))
-                for ep in iter_entry_points("pydap.function")
+                for ep in entry_points(group="pydap.function")
             ),
             "python": sys.version,
         }
