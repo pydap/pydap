@@ -9,12 +9,18 @@
             <Attribute name="units" type="str">
                 <Value>degrees_celsius</Value>
             </Attribute>
+            <Attribute name="_FillValue" type="float">
+                <Value>inf</Value>
+            </Attribute>
         </Float32>
         <Float32 name="Salinity">
             <Dim name="/SimpleGroup/X"/>
             <Dim name="/SimpleGroup/Y"/>
             <Attribute name="units" type="str">
                 <Value>psu</Value>
+            </Attribute>
+            <Attribute name="_FillValue" type="float">
+                <Value>nan</Value>
             </Attribute>
         </Float32>
         <Int16 name="X">
