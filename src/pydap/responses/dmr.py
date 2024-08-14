@@ -48,14 +48,18 @@ def dmr(var):
 
 
 @dmr.register(DatasetType)
-def _(var, level=0, path="/"):
+def _(var, level=0):
     str0 = 'Dataset xmlns="{namespace}"'.format(namespace=namespace[""])
     str1 = ' xml:base="{url}"'.format(url="http://localhost:8001")
     str2 = ' dapVersion="4.0" dmrVersion="1.0"'
     str3 = ' name="{name}">\n'.format(name=var.name)
     yield "<{indent}".format(indent=level * INDENT) + str0 + str1 + str2 + str3
+    for name, size in var.dimensions:
+        yield '{indent}<Dimension name="{name}" size="{size}"/>\n'.format(
+            indent=(level + 1) * INDENT, name=name, size=size
+        )
     for child in var.children():
-        for line in dmr(child, level + 1, path):
+        for line in dmr(child, level + 1):
             yield line
     yield "{indent}</Dataset>\n".format(indent=level * INDENT)
 
@@ -71,23 +75,20 @@ def _sequencetype(var, level=0, sequence=0):
 
 
 @dmr.register(GroupType)
-def _grouptype(var, level=0, path="/"):
-    dims = var.dimensions
+def _grouptype(var, level=0):
     yield '{indent}<Group name="{name}">\n'.format(indent=level * INDENT, name=var.name)
-    path += var.name + "/"
-    for dim in dims:
-        size = var[dim].shape[0]
+    for dim, size in var.dimensions:
         yield '{indent}<Dimension name="{name}" size="{size}"/>\n'.format(
             indent=(level + 1) * INDENT, name=dim, size=size
         )
     for child in var.children():
-        for line in dmr(child, level + 1, path):
+        for line in dmr(child, level + 1):
             yield line
     yield "{indent}</Group>\n".format(indent=level * INDENT)
 
 
 @dmr.register(BaseType)
-def _basetype(var, level=0, path="/"):
+def _basetype(var, level=0):
     _ntype = var.dtype
     _vartype = str(_ntype)[0].upper() + str(_ntype)[1:]
     yield '{indent}<{type} name="{name}">\n'.format(
@@ -96,20 +97,20 @@ def _basetype(var, level=0, path="/"):
         name=var.name,
     )
     # get dimensions
-    dims = var.dimensions
-    for dim in dims:
+    for dim in var.dims:
         yield '{indent}<Dim name="{name}"/>\n'.format(
-            indent=(level + 1) * INDENT, name=path + dim
+            indent=(level + 1) * INDENT, name=dim
         )
     for key, value in var.attributes.items():
-        _type = type(value).__name__
-        yield '{indent}<Attribute name="{name}" type="{type}">\n'.format(
-            indent=(level + 1) * INDENT, name=key, type=_type
-        )
-        yield "{indent}<Value>{val}</Value>\n".format(
-            indent=(level + 2) * INDENT, val=value
-        )
-        yield "{indent}</Attribute>\n".format(indent=(level + 1) * INDENT)
+        if key != "dims":
+            _type = type(value).__name__
+            yield '{indent}<Attribute name="{name}" type="{type}">\n'.format(
+                indent=(level + 1) * INDENT, name=key, type=_type
+            )
+            yield "{indent}<Value>{val}</Value>\n".format(
+                indent=(level + 2) * INDENT, val=value
+            )
+            yield "{indent}</Attribute>\n".format(indent=(level + 1) * INDENT)
     yield "{indent}</{type}>\n".format(indent=level * INDENT, type=_vartype)
 
     # get maps
