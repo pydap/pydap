@@ -216,8 +216,6 @@ def dmr_to_dataset(dmr):
         if "maps" in variable.keys():
             array.Maps = variable["maps"]
         var = array
-        if "skip_proxy" in variable.keys():
-            variable["attributes"]["skip"] = True
         var.attributes = variable["attributes"]
         if "parent" in variable.keys() and variable["parent"] in [
             "Sequence",
