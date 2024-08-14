@@ -162,6 +162,14 @@ def dmr_to_dataset(dmr):
     variables = get_variables(dom_et)
     named_dimensions = get_named_dimensions(dom_et)
 
+    # get Global dimensions at root level
+    global_dimensions = []
+    for name, size in named_dimensions.items():
+        if len(name.split("/")) == 1:
+            global_dimensions.append([name, size])
+
+    dataset.dimensions = tuple(tuple(item) for item in global_dimensions)
+
     # Add size entry for dimension variables
     for name, size in named_dimensions.items():
         if name in variables:
