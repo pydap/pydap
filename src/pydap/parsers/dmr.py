@@ -154,9 +154,6 @@ def get_maps(element):
 def dmr_to_dataset(dmr):
     """Return a dataset object from a DMR representation."""
 
-    # this should simple be:
-    # return DMRParser(dmr).parse()
-
     # Parse the DMR. First dropping the namespace
     dom_et = DMRParser(dmr).node
     # emtpy dataset
@@ -179,25 +176,13 @@ def dmr_to_dataset(dmr):
         variable["maps"] = get_maps(variable["element"])
         variable["shape"] = get_dim_sizes(variable["element"])
 
-    # Add size entry for dimension variables
-    for name, size in named_dimensions.items():
-        if name not in variables:
-            # We might have dimensions that only have a declaration,
-            # so we need to add them to the variables
-            variables[name] = {
-                "name": name,
-                "size": size,
-                "dims": [name],
-                "dtype": "int",
-                "maps": (),
-                "attributes": {},
-                "shape": (),
-            }
-
     # Add shape element to variables
     for name, variable in variables.items():
         for dim in variable["dims"]:
-            variable["shape"] += (variables[dim]["size"],)
+            if dim in variables.items():
+                variable["shape"] += (variables[dim]["size"],)
+            else:
+                variable["shape"] += (named_dimensions[dim],)
 
     for name, variable in variables.items():
         var_name = variable["name"]
@@ -223,6 +208,8 @@ def dmr_to_dataset(dmr):
         if "maps" in variable.keys():
             array.Maps = variable["maps"]
         var = array
+        if "skip_proxy" in variable.keys():
+            variable["attributes"]["skip"] = True
         var.attributes = variable["attributes"]
         if "parent" in variable.keys() and variable["parent"] in [
             "Sequence",
