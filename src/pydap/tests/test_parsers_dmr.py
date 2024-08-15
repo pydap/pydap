@@ -5,6 +5,8 @@ import unittest
 
 import numpy as np
 
+from ..lib import walk
+from ..model import BaseType
 from ..parsers.dmr import dmr_to_dataset
 
 
@@ -95,3 +97,24 @@ class DMRParser(unittest.TestCase):
         # pick a single variable Maps
         maps = ("/data_01/longitude", "/data_01/latitude")
         self.assertEqual(dataset["data_01/ku/swh_ocean"].Maps, maps)
+
+    def tests_global_dimensions(self):
+        dataset = load_dmr_file("data/dmrs/SimpleGroup.dmr")
+        # pick a single variable Maps
+        names = tuple([item[0] for item in dataset.dimensions])
+        sizes = tuple([item[1] for item in dataset.dimensions])
+        self.assertEqual(names, ("time", "nv"))
+        self.assertEqual(sizes, (1, 2))
+
+    def tests_named_dimension(self):
+        dataset = load_dmr_file("data/dmrs/SimpleGroup.dmr")
+        # get only names of dimensions
+        names = tuple([item[0] for item in dataset.dimensions])
+        # get all variables/arrays
+        variables = []
+        for var in walk(dataset, BaseType):
+            variables.append(var.name)
+        # assert nv is a Global dimension
+        self.assertIn("nv", names)
+        # assert nv is NOT a variable/array
+        self.assertNotIn("nv", variables)

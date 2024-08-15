@@ -224,24 +224,44 @@ SimpleGrid["y"] = SimpleGrid["SimpleGrid"]["y"] = BaseType(
     "y", np.arange(2), axis="Y", units="degrees_north"
 )
 
-SimpleGroup = DatasetType("example dataset", description="A simple group for testing.")
-SimpleGroup["SimpleGroup"] = GroupType("SimpleGroup", dimensions=("X", "Y"))
-SimpleGroup["SimpleGroup"]["Temperature"] = BaseType(
+SimpleGroup = DatasetType(
+    "example dataset",
+    description="A simple group for testing.",
+    dimensions=(("time", 1), ("nv", 2)),
+)
+SimpleGroup["SimpleGroup"] = GroupType("SimpleGroup", dimensions=(("Y", 4), ("X", 4)))
+SimpleGroup["/SimpleGroup/Temperature"] = BaseType(
     "Temperature",
-    np.arange(10, 26, 1, dtype="f4").reshape(4, 4),
+    np.arange(10, 26, 1, dtype="f4").reshape(1, 4, 4),
     units="degrees_celsius",
-    dimensions=("X", "Y"),
+    dims=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.inf,
 )
-SimpleGroup["SimpleGroup"]["Salinity"] = BaseType(
+SimpleGroup["/SimpleGroup/Salinity"] = BaseType(
     "Salinity",
-    30 * np.ones(16, dtype="f4").reshape(4, 4),
+    30 * np.ones(16, dtype="f4").reshape(1, 4, 4),
     units="psu",
-    dimensions=("X", "Y"),
+    dims=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.nan,
 )
-SimpleGroup["/SimpleGroup/X"] = BaseType("X", np.arange(4, dtype="i2"), dimensions="X")
-SimpleGroup["/SimpleGroup/Y"] = BaseType("Y", np.arange(4, dtype="i2"), dimensions="Y")
+SimpleGroup["/SimpleGroup/Y"] = BaseType(
+    "Y", np.arange(4, dtype="i2"), dims=("/SimpleGroup/Y",)
+)
+SimpleGroup["/SimpleGroup/X"] = BaseType(
+    "X", np.arange(4, dtype="i2"), dims=("/SimpleGroup/X",)
+)
+SimpleGroup["/time"] = BaseType(
+    "time",
+    np.array(0.5, dtype="f4"),
+    dims=("/time",),
+    attributes={
+        "standard_name": "time",
+        "bounds": "time_bnds",
+    },
+)
+SimpleGroup["/time_bnds"] = BaseType(
+    "time_bnds", np.arange(2, dtype="f4"), dims=("/time", "/nv")
+)
 
 
 # a faulty grid
