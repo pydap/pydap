@@ -49,7 +49,7 @@ class DMRParser(unittest.TestCase):
                 <Attribute name="missing_value" type="Byte">\n
                             <Value>x00</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
-        with self.assertRaises(Warning):
+        with self.assertWarns(UserWarning):
             dmr_to_dataset(byte_dmr)
 
     def test_coads_climatology2(self):

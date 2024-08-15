@@ -3,6 +3,7 @@
 import ast
 import collections
 import re
+import warnings
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -101,7 +102,7 @@ def get_attributes(element, attributes={}):
                     value = ast.literal_eval(value)
                 except ValueError:
                     # leaves value as string
-                    raise Warning(
+                    warnings.warn(
                         """
                         Pydap could not turn the non-string Attribute: `{}`
                         with value `{}` into a numeric type during parsing
@@ -112,7 +113,8 @@ def get_attributes(element, attributes={}):
                         DAP4:_Specification_Volume_1#Atomic_Types
                         """.format(
                             name, value
-                        )
+                        ),
+                        UserWarning,
                     )
         attributes[name] = value
     return attributes
