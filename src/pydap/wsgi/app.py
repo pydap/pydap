@@ -16,13 +16,13 @@ Options:
   --worker-class=CLASS          Gunicorn worker class [default: sync]
 """
 
+import importlib.resources
 import mimetypes
 import os
 import re
 import shutil
 from datetime import datetime
 
-import importlib_resources
 from docopt import docopt
 from gunicorn.app.wsgiapp import WSGIApplication
 from jinja2 import ChoiceLoader, Environment, FileSystemLoader, PackageLoader
@@ -223,13 +223,21 @@ class StaticMiddleware(object):
 
         # otherwise, load resource from package
         package, resource_path = self.static
-        resource = os.path.join(resource_path, *req.path_info.split("/"))
-        if not importlib_resources.is_resource(package, resource):
+        parts = resource_path.split("/")
+        resources_path = importlib.resources.files(package)
+        for i in range(len(parts)):
+            resources_path /= parts[i]
+        resource = req.path_info.split("/")[-1]
+        full_path = resources_path / resource
+
+        if not full_path.is_file():
             return HTTPNotFound(req.path_info)
 
-        content_type, content_encoding = mimetypes.guess_type(resource)
+        content_type, content_encoding = mimetypes.guess_type(full_path)
+        package += (".").join([""] + parts)
+
         return Response(
-            body=importlib_resources.read_text(package, resource),
+            body=importlib.resources.read_text(package, resource),
             content_type=content_type,
             content_encoding=content_encoding,
         )
@@ -238,18 +246,18 @@ class StaticMiddleware(object):
 def init(directory):
     """Create directory with default templates."""
     # copy main templates
-    templates = importlib_resources.files("pydap.wsgi") / "templates"
-    with importlib_resources.as_file(templates) as path:
+    templates = importlib.resources.files("pydap.wsgi") / "templates"
+    with importlib.resources.as_file(templates) as path:
         shutil.copytree(templates, directory)
 
     # copy templates from HTML response
-    for resource in importlib_resources.files(
+    for resource in importlib.resources.files(
         "pydap.responses.html.templates"
     ).iterdir():
-        path = importlib_resources.files(
+        path = importlib.resources.files(
             "pydap.responses.html"
         ) / "templates/{0}".format(resource.name)
-        with importlib_resources.as_file(path) as Path:
+        with importlib.resources.as_file(path) as Path:
             shutil.copy(Path, directory)
 
 
