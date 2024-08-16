@@ -36,7 +36,7 @@ license = {file = "LICENSE"}
 maintainers = [{name = 'Miguel Jimenez-Urias', email = 'mjimenez@opendap.org'}]
 name = "pydap"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.entry-points."console_scripts"]
 dods = "pydap.handlers.dap:dump"
