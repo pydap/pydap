@@ -9,9 +9,9 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Operating System :: MacOS",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX",
@@ -26,9 +26,7 @@ dependencies = [
   "docopt-ng",
   "beautifulsoup4",
   "lxml",
-  "requests",
-  "importlib-metadata",
-  "importlib-resources"
+  "requests"
 ]
 description = "A pure python implementation of the Data Access Protocol."
 dynamic = ["version"]
@@ -36,7 +34,7 @@ license = {file = "LICENSE"}
 maintainers = [{name = 'Miguel Jimenez-Urias', email = 'mjimenez@opendap.org'}]
 name = "pydap"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.entry-points."console_scripts"]
 dods = "pydap.handlers.dap:dump"
