@@ -1,0 +1,1422 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PyDAP as a client &#8212; PyDAP tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'client';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Responses" href="responses.html" />
+    <link rel="prev" title="CMIP6" href="notebooks/CMIP6.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
+    <script>document.write(`<img src="_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="how_to_install.html">How to install</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="5_minute_tutorial.html">5 minute tutorial</a></li>
+
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Authentication.html">Basic Authentication</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CMIP6.html">CMIP6</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">PyDAP as a client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guide for Developer</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="developer/data_model.html">The DAP data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="guide_to_developer.html">Guide for new contributors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="contribute/git.html">Guide to version control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_cod.html">Contributing to the code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_issues.html">Report Issues on GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_docs.html">Contributing to the documentation</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/client.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>PyDAP as a client</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gridded-arrays">Gridded Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabular-data">Tabular data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#erddap-in-situ-data">ERDDAP in situ data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-data">Filtering data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authentication">Authentication</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cas">CAS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#urs-nasa-earthdata">URS NASA EARTHDATA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#earth-system-grid-federation-esgf">Earth System Grid Federation (ESGF)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-cache">Using a cache</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-a-proxy">Configuring a proxy</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="pydap-as-a-client">
+<h1>PyDAP as a client<a class="headerlink" href="#pydap-as-a-client" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> can be used to “lazily”  inspect and retrieve data from any of the thousands of scientific datasets available on the internet on
+<a class="reference external" href="http://www.opendap.org/">OPeNDAP</a> servers. This way, it’s possible to instrospect and manipulate a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> as if it were stored locally, with data being downloaded on-the-fly as necessary.</p>
+<p><code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> can be used to open data structures that may fall within one of the following <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">types</span></code> (not to be confused with file format):</p>
+<ul class="simple">
+<li><p>Gridded Arrays.</p></li>
+<li><p>Sequences (Tabular data)</p></li>
+<li><p>Structures.</p></li>
+</ul>
+<p>When opening a remote URL containing one or more data types, <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> will create a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> object which acts like the <code class="docutils literal notranslate"><span class="pre">root</span></code> directly. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> can then contain multiple data types, which may be <code class="docutils literal notranslate"><span class="pre">nested</span></code>. Moreover, since <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> now supports the <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> model, it supports <code class="docutils literal notranslate"><span class="pre">Groups</span></code>, nested <code class="docutils literal notranslate"><span class="pre">Group</span></code>s which may themselves hold other data types, and other nested <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> objects named above.</p>
+<section id="gridded-arrays">
+<h2>Gridded Arrays<a class="headerlink" href="#gridded-arrays" title="Link to this heading">#</a></h2>
+<p>Let’s start by accessing <code class="docutils literal notranslate"><span class="pre">Gridded</span> <span class="pre">Array</span></code>, i.e., data that is stored as a regular multidimensional array. Here’s a simple example where we access the <a class="reference external" href="https://icoads.noaa.gov/">COADS</a> climatology from the official <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span> <span class="pre">test</span> <span class="pre">server</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydap.client</span> <span class="kn">import</span> <span class="n">open_url</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap2&#39;</span><span class="p">)</span> <span class="c1"># dap2 is the default</span>
+<span class="n">dataset</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;DatasetType with children &#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Here we used the <code class="docutils literal notranslate"><span class="pre">pydap.client.open_url</span></code> function to open an <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> URL specifying the location of the dataset. When we access the remote
+dataset the function returns a <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> object, which is a <em>Structure</em> – a fancy dictionary that stores other variables. We can
+check the names of the store variables like we would do with a Python dictionary:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Another useful way to inspect the dataset is the <code class="docutils literal notranslate"><span class="pre">.tree()</span></code> method, which provides an in-depth inspection of your dataset</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.coads_climatology.nc
+├──COADSX
+├──COADSY
+├──TIME
+├──SST
+│  ├──SST
+│  ├──TIME
+│  ├──COADSY
+│  └──COADSX
+├──AIRT
+│  ├──AIRT
+│  ├──TIME
+│  ├──COADSY
+│  └──COADSX
+├──UWND
+│  ├──UWND
+│  ├──TIME
+│  ├──COADSY
+│  └──COADSX
+└──VWND
+   ├──VWND
+   ├──TIME
+   ├──COADSY
+   └──COADSX
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>No data has been downloaded yet.</p>
+</div>
+<p>Let’s work with the <code class="docutils literal notranslate"><span class="pre">SST</span></code> variable; we can “lazly” reference it using the usual dictionary syntax of <code class="docutils literal notranslate"><span class="pre">dataset['SST']</span></code>, or <code class="docutils literal notranslate"><span class="pre">dataset.SST</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SST&#39;</span><span class="p">]</span> <span class="c1"># or dataset.SST</span>
+<span class="n">sst</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;GridType with array &#39;SST&#39; and maps &#39;TIME&#39;, &#39;COADSY&#39;, &#39;COADSX&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that the variable is of type <code class="docutils literal notranslate"><span class="pre">GridType</span></code>, a multidimensional array with specific axes defining each of its dimensions:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">dimensions</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;TIME&#39;, &#39;COADSY&#39;, &#39;COADSX&#39;)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(12, 90, 180)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">sst</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">len</span></code> and <code class="docutils literal notranslate"><span class="pre">shape</span></code> of <code class="docutils literal notranslate"><span class="pre">sst</span></code> differ! The difference between them is a property of the <code class="docutils literal notranslate"><span class="pre">GridType</span></code>: in this case <code class="docutils literal notranslate"><span class="pre">sst</span></code> packs with itself the <code class="docutils literal notranslate"><span class="pre">coordinate</span> <span class="pre">axes</span></code> necessary to be fully “self-described”. This behavior was done to mimick the <code class="docutils literal notranslate"><span class="pre">netCDF</span></code> model, that each file (in this case each <code class="docutils literal notranslate"><span class="pre">gridded</span> <span class="pre">array</span></code>) is “self-describing” and therefore contains all the relevant information to process it. The <code class="docutils literal notranslate"><span class="pre">tree</span></code> view of the dataset above further illustrates the point, with the multiple copies of coordinate data in dataset. Everytime you download a <code class="docutils literal notranslate"><span class="pre">GridType</span></code> you also download the dimension arrays used fully describe them.</p>
+</div>
+<p>It is possible to specify NOT to download the coordinate axes of a <code class="docutils literal notranslate"><span class="pre">GridType</span></code> variable when opening a URL as follows:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">,</span> <span class="n">output_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">dataset</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;DatasetType with children &#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>NO data has been downloaded into memory yet, but when you download a <code class="docutils literal notranslate"><span class="pre">GridType</span></code> array, the coordinate axes will not be downloaded. This important workaround is particularly usefull for speeding up workflows, and to not overwhelm older <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> servers that might run out of memory when attempting to retrieve both the data and the coordinate axes of a variable.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">GridType</span></code> is a <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> model specification and was dropped in the much newer <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. Nonetheless, <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span> <span class="pre">DAP4</span></code> servers support <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>. Currently <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> when opening a remote URL, if <code class="docutils literal notranslate"><span class="pre">protocol</span></code> is not specified, <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> assumes by default the DAP2 model specification. This may change in the future.</p>
+</div>
+<p>To access the URL according to the <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> model specification, run:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap4&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.coads_climatology.nc
+├──COADSX
+├──COADSY
+├──TIME
+├──SST
+├──AIRT
+├──UWND
+└──VWND
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SST&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;BaseType with data Dap4BaseProxy(&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;, &#39;SST&#39;, dtype(&#39;&gt;f4&#39;), (12, 90, 180), (slice(None, None, None), slice(None, None, None), slice(None, None, None)))&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>In <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>, the <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> is a thin wrapper to a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> with some of the same basic attributes like shape, nbytes. The <code class="docutils literal notranslate"><span class="pre">Dap4BaseProxy</span></code> is an empty data container with all the attributes of the remote array, including:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dtype</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">slice</span></code></p></li>
+</ul>
+<p>To <code class="docutils literal notranslate"><span class="pre">download</span></code> data into memory you must <code class="docutils literal notranslate"><span class="pre">slice</span></code> the array. This is:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">sst</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SST&#39;</span><span class="p">][:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Type of object: &#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
+CPU times: user 26.4 ms, sys: 11 ms, total: 37.5 ms
+Wall time: 2.51 s
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that upon download, the variable <code class="docutils literal notranslate"><span class="pre">sst</span></code> is a <code class="docutils literal notranslate"><span class="pre">BaseType</span></code>, rather than a numpy array. The <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> has CF-compliant metadata as attributes, which are defined by the data provider and contain useful information for <code class="docutils literal notranslate"><span class="pre">decoding</span></code> the variable.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">attributes</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;missing_value&#39;: -9.99999979e+33,
+ &#39;_FillValue&#39;: -9.99999979e+33,
+ &#39;long_name&#39;: &#39;SEA SURFACE TEMPERATURE&#39;,
+ &#39;history&#39;: &#39;From coads_climatology&#39;,
+ &#39;units&#39;: &#39;Deg C&#39;,
+ &#39;checksum&#39;: array([1974861177], dtype=uint32),
+ &#39;Maps&#39;: (&#39;/TIME&#39;, &#39;/COADSY&#39;, &#39;/COADSX&#39;)}
+</pre></div>
+</div>
+</div>
+</div>
+<p>To access the array for further (numerical) manipulation you must add a <code class="docutils literal notranslate"><span class="pre">.data</span></code> to the <code class="docutils literal notranslate"><span class="pre">BaseType</span></code>. This is:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>numpy.ndarray
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>One of the features of OPeNDAP is the <code class="docutils literal notranslate"><span class="pre">server-side</span> <span class="pre">subsetting</span></code>, which can be exploited by <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> via slicing of the array when downloading data. For example, if you are only interested in a localized subregion of the entire domain (e.g. finite range of latitude and longitudes of the global coverage), and you know the index that span your desired area of interest.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">sst</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SST&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">125</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Type of object: &#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">HTTPError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="n">File</span> <span class="o">&lt;</span><span class="n">timed</span> <span class="n">exec</span><span class="o">&gt;</span><span class="p">:</span><span class="mi">1</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.12/site-packages/pydap/model.py:339,</span> in <span class="ni">BaseType.__getitem__</span><span class="nt">(self, index)</span>
+<span class="g g-Whitespace">    </span><span class="mi">337</span> <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">338</span>     <span class="n">out</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">339</span>     <span class="n">out</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">340</span>     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;BaseProxyDap4&quot;</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">341</span>         <span class="n">out</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;checksum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">checksum</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.12/site-packages/pydap/model.py:371,</span> in <span class="ni">BaseType._get_data_index</span><span class="nt">(self, index)</span>
+<span class="g g-Whitespace">    </span><span class="mi">369</span>     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">decode_np_strings</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+<span class="g g-Whitespace">    </span><span class="mi">370</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">371</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.12/site-packages/pydap/handlers/dap.py:485,</span> in <span class="ni">BaseProxyDap4.__getitem__</span><span class="nt">(self, index)</span>
+<span class="g g-Whitespace">    </span><span class="mi">475</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching URL: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">477</span> <span class="n">r</span> <span class="o">=</span> <span class="n">pydap</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">478</span>     <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">479</span>     <span class="bp">self</span><span class="o">.</span><span class="n">application</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">482</span>     <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">483</span> <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">485</span> <span class="n">pydap</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">486</span> <span class="n">dmr</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">safe_dmr_and_data</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_charset</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">488</span> <span class="c1"># Parse received dataset:</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.12/site-packages/pydap/net.py:37,</span> in <span class="ni">raise_for_status</span><span class="nt">(response)</span>
+<span class="g g-Whitespace">     </span><span class="mi">34</span> <span class="k">def</span> <span class="nf">raise_for_status</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">35</span>     <span class="c1"># Raise error if status is above 300:</span>
+<span class="g g-Whitespace">     </span><span class="mi">36</span>     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">400</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">37</span>         <span class="k">raise</span> <span class="n">HTTPError</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">38</span>             <span class="n">detail</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">39</span>             <span class="n">headers</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">40</span>             <span class="n">comment</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">41</span>         <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">42</span>     <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">300</span><span class="p">:</span>
+<span class="g g-Whitespace">     </span><span class="mi">43</span>         <span class="k">try</span><span class="p">:</span>
+
+<span class="ne">HTTPError</span>: 500 500
+<span class="o">&lt;</span><span class="err">?</span><span class="n">xml</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="err">?</span><span class="o">&gt;</span>
+<span class="o">&lt;</span><span class="n">dap4</span><span class="p">:</span><span class="n">Error</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">dap4</span><span class="o">=</span><span class="s2">&quot;http://xml.opendap.org/ns/DAP/4.0#&quot;</span> <span class="n">httpcode</span><span class="o">=</span><span class="s2">&quot;500&quot;</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">dap4</span><span class="p">:</span><span class="n">Message</span><span class="o">&gt;</span><span class="n">libdap</span> <span class="n">error</span> <span class="n">transmitting</span> <span class="n">DAP4Data</span><span class="p">:</span> <span class="n">An</span> <span class="n">internal</span> <span class="n">error</span> <span class="n">was</span> <span class="n">encountered</span> <span class="ow">in</span> <span class="n">D4Maps</span><span class="o">.</span><span class="n">cc</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">42</span><span class="p">:</span>
+<span class="n">Failed</span> <span class="n">to</span> <span class="n">find</span> <span class="n">an</span> <span class="n">array</span> <span class="n">at</span><span class="p">:</span> 
+<span class="n">Please</span> <span class="n">report</span> <span class="n">this</span> <span class="n">to</span> <span class="n">support</span><span class="nd">@opendap</span><span class="o">.</span><span class="n">org</span><span class="o">&lt;/</span><span class="n">dap4</span><span class="p">:</span><span class="n">Message</span><span class="o">&gt;</span>
+  <span class="o">&lt;</span><span class="n">dap4</span><span class="p">:</span><span class="n">Context</span> <span class="o">/&gt;</span>
+  <span class="o">&lt;</span><span class="n">dap4</span><span class="p">:</span><span class="n">OtherInformation</span> <span class="o">/&gt;</span>
+<span class="o">&lt;/</span><span class="n">dap4</span><span class="p">:</span><span class="n">Error</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(12, 90, 180)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The subsetting took place close to the data thanks for OPenDAP’s server functionality, and only the data that we request in the slice, is downloaded.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Slicing the array before downloading will almost always result in better performance and speed ups. This can be significant for very large datasets, and particularly useful when automatizing workflows that require downloading data into memory for further processing.</p>
+</div>
+</section>
+<section id="tabular-data">
+<h2>Tabular data<a class="headerlink" href="#tabular-data" title="Link to this heading">#</a></h2>
+<p>Let’s look now at tabular data, which <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> calls them <code class="docutils literal notranslate"><span class="pre">Sequences</span></code> (typically asociated with Sequential in situ data). Here we consider another file from within the test OPeNDAP server for simplicity. You can access the catalog <a class="reference external" href="http://test.opendap.org/opendap/hyrax/">HERE</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Sequential data consists of one of more records of related variables, such as simultaneous measurements of temperature and wind velocity for example.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/opendap/hyrax/data/ff/gsodock1.dat&quot;</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.gsodock1.dat
+└──URI_GSO-Dock
+   ├──Time
+   ├──Depth
+   ├──Sea_Temp
+   ├──Salinity
+   ├──DO%20
+   ├──pH
+   ├──Turbidity
+   ├──Air_Temp
+   ├──Wind_Speed
+   ├──Wind_Direction
+   └──Barometric_Pres
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;URI_GSO-Dock&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;SequenceType with children &#39;Time&#39;, &#39;Depth&#39;, &#39;Sea_Temp&#39;, &#39;Salinity&#39;, &#39;DO%20&#39;, &#39;pH&#39;, &#39;Turbidity&#39;, &#39;Air_Temp&#39;, &#39;Wind_Speed&#39;, &#39;Wind_Direction&#39;, &#39;Barometric_Pres&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="erddap-in-situ-data">
+<h2>ERDDAP in situ data<a class="headerlink" href="#erddap-in-situ-data" title="Link to this heading">#</a></h2>
+<p>Consider a more complex example. Here we look at data from the <a class="reference external" href="https://oceanservice.noaa.gov/facts/ocean-gliders.html">glider</a> DAC found at the <a class="reference external" href="https://data.ioos.us/organization/glider-dac">Integrated Ocean Observing System</a> . The data can be accessed through an OPeNDAP server, as well as the <a class="reference external" href="https://gliders.ioos.us/erddap/index.html">ERRDAP</a> server. In the example below we demostrate how to access glider data from a
+Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class="docutils literal notranslate"><span class="pre">ERRDAP</span></code>.</p>
+<p>We look at the <code class="docutils literal notranslate"><span class="pre">Dataset</span> <span class="pre">ID:</span> <span class="pre">Murphy-20150809T1355</span></code>. It’s <code class="docutils literal notranslate"><span class="pre">ERDDAP</span></code> access form can be found <a class="reference external" href="https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355.html?trajectory%2Cwmo_id%2Cprofile_id%2Ctime%2Clatitude%2Clongitude%2Cdepth%2Cconductivity%2Cconductivity_qc%2Cdensity%2Cdensity_qc%2Cdepth_qc%2Cinstrument_ctd%2Clat_qc%2Clat_uv%2Clat_uv_qc%2Clon_qc%2Clon_uv%2Clon_uv_qc%2Cplatform_meta%2Cprecise_lat%2Cprecise_lon%2Cprecise_time%2Cpressure%2Cpressure_qc%2Cprofile_lat_qc%2Cprofile_lon_qc%2Cprofile_time_qc%2Cqartod_conductivity_flat_line_flag%2Cqartod_conductivity_gross_range_flag%2Cqartod_conductivity_primary_flag%2Cqartod_conductivity_rate_of_change_flag%2Cqartod_conductivity_spike_flag%2Cqartod_density_flat_line_flag%2Cqartod_density_gross_range_flag%2Cqartod_density_primary_flag%2Cqartod_density_rate_of_change_flag%2Cqartod_density_spike_flag%2Cqartod_monotonic_pressure_flag%2Cqartod_pressure_flat_line_flag%2Cqartod_pressure_gross_range_flag%2Cqartod_pressure_primary_flag%2Cqartod_pressure_rate_of_change_flag%2Cqartod_pressure_spike_flag%2Cqartod_salinity_flat_line_flag%2Cqartod_salinity_gross_range_flag%2Cqartod_salinity_primary_flag%2Cqartod_salinity_rate_of_change_flag%2Cqartod_salinity_spike_flag%2Cqartod_temperature_flat_line_flag%2Cqartod_temperature_gross_range_flag%2Cqartod_temperature_primary_flag%2Cqartod_temperature_rate_of_change_flag%2Cqartod_temperature_spike_flag%2Csalinity%2Csalinity_qc%2Ctemperature%2Ctemperature_qc%2Ctime_qc%2Ctime_uv%2Ctime_uv_qc%2Cu%2Cu_qc%2Cv%2Cv_qc&amp;amp;time%3E=2015-08-12T00%3A00%3A00Z&amp;amp;time%3C=2015-08-19T22%3A10%3A22Z">HERE</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355&quot;</span><span class="p">)[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.s
+├──trajectory
+├──wmo_id
+├──profile_id
+├──time
+├──latitude
+├──longitude
+├──depth
+├──conductivity
+├──conductivity_qc
+├──density
+├──density_qc
+├──depth_qc
+├──instrument_ctd
+├──lat_qc
+├──lat_uv
+├──lat_uv_qc
+├──lon_qc
+├──lon_uv
+├──lon_uv_qc
+├──platform_meta
+├──precise_lat
+├──precise_lon
+├──precise_time
+├──pressure
+├──pressure_qc
+├──profile_lat_qc
+├──profile_lon_qc
+├──profile_time_qc
+├──qartod_monotonic_pressure_flag
+├──salinity
+├──salinity_qc
+├──temperature
+├──temperature_qc
+├──time_qc
+├──time_uv
+├──time_uv_qc
+├──u
+├──u_qc
+├──v
+└──v_qc
+</pre></div>
+</div>
+</div>
+</div>
+<p>Where the variables <code class="docutils literal notranslate"><span class="pre">s</span></code> identifies the sequential data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pydap.model.SequenceType
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can further identify each individual glider data by looking at <code class="docutils literal notranslate"><span class="pre">profile_id</span></code>, a value that is unique for each of them. You can inspect the raw values are follows</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="nb">id</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iterdata</span><span class="p">()]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int32(1),
+ np.int32(2),
+ np.int32(3),
+ np.int32(4),
+ np.int32(5),
+ np.int32(6),
+ np.int32(7),
+ np.int32(8),
+ np.int32(9),
+ np.int32(10),
+ np.int32(11),
+ np.int32(12),
+ np.int32(13),
+ np.int32(14),
+ np.int32(15),
+ np.int32(16),
+ np.int32(17),
+ np.int32(18),
+ np.int32(19),
+ np.int32(20),
+ np.int32(21),
+ np.int32(22),
+ np.int32(23),
+ np.int32(24),
+ np.int32(25),
+ np.int32(26),
+ np.int32(27),
+ np.int32(28),
+ np.int32(29),
+ np.int32(30),
+ np.int32(31),
+ np.int32(32),
+ np.int32(33),
+ np.int32(34),
+ np.int32(35),
+ np.int32(36),
+ np.int32(37),
+ np.int32(38),
+ np.int32(39),
+ np.int32(40),
+ np.int32(41),
+ np.int32(42),
+ np.int32(43),
+ np.int32(44),
+ np.int32(45),
+ np.int32(46),
+ np.int32(47),
+ np.int32(48),
+ np.int32(49),
+ np.int32(50),
+ np.int32(51),
+ np.int32(52),
+ np.int32(53),
+ np.int32(54),
+ np.int32(55),
+ np.int32(56),
+ np.int32(57),
+ np.int32(58),
+ np.int32(59),
+ np.int32(60),
+ np.int32(61),
+ np.int32(62),
+ np.int32(63),
+ np.int32(64),
+ np.int32(65),
+ np.int32(66),
+ np.int32(67),
+ np.int32(68),
+ np.int32(69),
+ np.int32(70),
+ np.int32(71),
+ np.int32(72),
+ np.int32(73),
+ np.int32(74),
+ np.int32(75),
+ np.int32(76),
+ np.int32(77),
+ np.int32(78),
+ np.int32(79),
+ np.int32(80),
+ np.int32(81),
+ np.int32(82),
+ np.int32(83),
+ np.int32(84),
+ np.int32(85),
+ np.int32(86),
+ np.int32(87),
+ np.int32(88),
+ np.int32(89),
+ np.int32(90),
+ np.int32(91),
+ np.int32(92),
+ np.int32(93),
+ np.int32(94),
+ np.int32(95),
+ np.int32(96),
+ np.int32(97),
+ np.int32(98),
+ np.int32(99),
+ np.int32(100),
+ np.int32(101),
+ np.int32(102),
+ np.int32(103),
+ np.int32(104),
+ np.int32(105),
+ np.int32(106),
+ np.int32(107),
+ np.int32(108),
+ np.int32(109),
+ np.int32(110),
+ np.int32(111),
+ np.int32(112),
+ np.int32(113),
+ np.int32(114),
+ np.int32(115),
+ np.int32(116),
+ np.int32(117),
+ np.int32(118),
+ np.int32(119),
+ np.int32(120),
+ np.int32(121),
+ np.int32(122),
+ np.int32(123),
+ np.int32(124),
+ np.int32(125),
+ np.int32(126),
+ np.int32(127),
+ np.int32(128),
+ np.int32(129),
+ np.int32(130),
+ np.int32(131),
+ np.int32(132),
+ np.int32(133),
+ np.int32(134),
+ np.int32(135),
+ np.int32(136),
+ np.int32(137),
+ np.int32(138),
+ np.int32(139),
+ np.int32(140),
+ np.int32(141),
+ np.int32(142),
+ np.int32(143),
+ np.int32(144),
+ np.int32(145),
+ np.int32(146),
+ np.int32(147),
+ np.int32(148),
+ np.int32(149),
+ np.int32(150),
+ np.int32(151),
+ np.int32(152),
+ np.int32(153),
+ np.int32(154),
+ np.int32(155),
+ np.int32(156),
+ np.int32(157),
+ np.int32(158),
+ np.int32(159),
+ np.int32(160),
+ np.int32(161),
+ np.int32(162),
+ np.int32(163),
+ np.int32(164),
+ np.int32(165),
+ np.int32(166),
+ np.int32(167),
+ np.int32(168),
+ np.int32(169),
+ np.int32(170),
+ np.int32(171),
+ np.int32(172),
+ np.int32(173),
+ np.int32(174),
+ np.int32(175),
+ np.int32(176),
+ np.int32(177),
+ np.int32(178),
+ np.int32(179),
+ np.int32(180),
+ np.int32(181),
+ np.int32(182),
+ np.int32(183),
+ np.int32(184),
+ np.int32(185),
+ np.int32(186),
+ np.int32(187),
+ np.int32(188),
+ np.int32(189)]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> and therefore <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> support fully-qualifying names, which come in handly for complex (nested) data structures. In the case of <code class="docutils literal notranslate"><span class="pre">Sequential</span></code> data, you can access a variable <code class="docutils literal notranslate"><span class="pre">&lt;VarName&gt;</span></code> within a sequence named <code class="docutils literal notranslate"><span class="pre">&lt;Seq&gt;</span></code> as <code class="docutils literal notranslate"><span class="pre">&lt;Seq.VarName&gt;</span></code></p>
+</div>
+<p>These datasets are rich in metadata, which can be accessed through the attributes property as follows</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_FillValue&#39;: -1,
+ &#39;actual_range&#39;: [1, 189],
+ &#39;cf_role&#39;: &#39;profile_id&#39;,
+ &#39;comment&#39;: &#39;Sequential profile number within the trajectory.  This value is unique in each file that is part of a single trajectory/deployment.&#39;,
+ &#39;ioos_category&#39;: &#39;Identifier&#39;,
+ &#39;long_name&#39;: &#39;Profile ID&#39;,
+ &#39;valid_max&#39;: 2147483647,
+ &#39;valid_min&#39;: 1}
+</pre></div>
+</div>
+</div>
+</div>
+<p>The first thing we’d like to do is limit our very simple analysis. We consider only a single glider and only inspect the variables <code class="docutils literal notranslate"><span class="pre">depth</span></code> and <code class="docutils literal notranslate"><span class="pre">temperature</span></code>. This is simlar to <code class="docutils literal notranslate"><span class="pre">column-wise</span> <span class="pre">selection</span></code>.</p>
+<p>To accomplish that we use pydap’s simple logic as follows</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seq</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
+<span class="n">seq</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;pydap.model.SequenceType&#39;&gt;
+.s
+├──profile_id
+├──depth
+└──temperature
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="filtering-data">
+<h2>Filtering data<a class="headerlink" href="#filtering-data" title="Link to this heading">#</a></h2>
+<p>With <code class="docutils literal notranslate"><span class="pre">Sequential</span></code>  data we can make use of <code class="docutils literal notranslate"><span class="pre">filters</span></code> to extract only those values associated with one or more <code class="docutils literal notranslate"><span class="pre">rows</span></code>. This is, identify all the values of the sequence that are less than, equal to, or greater than.</p>
+<p>For example, lets consider <code class="docutils literal notranslate"><span class="pre">depth</span></code> and <code class="docutils literal notranslate"><span class="pre">temperature</span></code> values associated with the value <code class="docutils literal notranslate"><span class="pre">profile_id=5</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">glid5</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)][</span><span class="n">seq</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">==</span><span class="mi">5</span><span class="p">]</span>
+<span class="n">glid5</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;SequenceType with children &#39;profile_id&#39;, &#39;depth&#39;, &#39;temperature&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Depths5</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">depth</span> <span class="k">for</span> <span class="n">depth</span> <span class="ow">in</span> <span class="n">glid5</span><span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">]])</span>
+<span class="n">ids5</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">_id</span> <span class="k">for</span> <span class="n">_id</span> <span class="ow">in</span> <span class="n">glid5</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]])</span>
+<span class="n">Temps5</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">temp</span> <span class="k">for</span> <span class="n">temp</span> <span class="ow">in</span> <span class="n">glid5</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Lets try another <code class="docutils literal notranslate"><span class="pre">profile_id</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">glid6</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)][</span><span class="n">seq</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">==</span><span class="mi">6</span><span class="p">]</span>
+<span class="n">Depths6</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">depth</span> <span class="k">for</span> <span class="n">depth</span> <span class="ow">in</span> <span class="n">glid6</span><span class="p">[</span><span class="s1">&#39;depth&#39;</span><span class="p">]])</span>
+<span class="n">ids6</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">_id</span> <span class="k">for</span> <span class="n">_id</span> <span class="ow">in</span> <span class="n">glid6</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]])</span>
+<span class="n">Temps6</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">temp</span> <span class="k">for</span> <span class="n">temp</span> <span class="ow">in</span> <span class="n">glid6</span><span class="p">[</span><span class="s1">&#39;temperature&#39;</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Temps5</span><span class="p">,</span> <span class="o">-</span><span class="n">Depths5</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;o&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;profile id: &#39;</span> <span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ids5</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Temps6</span><span class="p">,</span> <span class="o">-</span><span class="n">Depths6</span><span class="p">,</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;d&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;profile id: &#39;</span> <span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ids6</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\text</span><span class="si">{Temp}</span><span class="s1"> \;[^\circ C]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mf">12.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$Z\;[m]$&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">labelpad</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="_images/42b2d9a78cd0dfb3940cfade0cd07a426159dd4dff5e6947d271cdbcb23d8190.png" src="_images/42b2d9a78cd0dfb3940cfade0cd07a426159dd4dff5e6947d271cdbcb23d8190.png" />
+</div>
+</div>
+</section>
+<section id="authentication">
+<h2>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">#</a></h2>
+<p><strong>Basic and Digest</strong></p>
+<p>To use <code class="docutils literal notranslate"><span class="pre">Basic</span></code> and <code class="docutils literal notranslate"><span class="pre">Digest</span></code> authentication, simply add your username and password to the dataset URL. Keep in mind that if the server only supports Basic authentication your credentials will be sent as plaintext, and could be sniffed on the network.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://username:password@server.example.com/path/to/dataset&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="cas">
+<h2>CAS<a class="headerlink" href="#cas" title="Link to this heading">#</a></h2>
+<p>The <a class="reference external" href="http://en.wikipedia.org/wiki/Central_Authentication_Service">Central Authentication Service</a> (<code class="docutils literal notranslate"><span class="pre">CAS</span></code>) is a single sign-on protocol for the web, usually involving a web browser and cookies. Nevertheless it’s possible to use pydap with an OPeNDAP server behind a CAS. The function <code class="docutils literal notranslate"><span class="pre">install_cas_client</span></code> below
+replaces pydap’s default HTTP function with a new version able to submit authentication data to an HTML form and store credentials in cookies. (In this particular case, the server uses Javascript to redirect the browser to a new location, so the client has to parse the location from the Javascript code; other CAS would require a tweaked function.)</p>
+<p>To use it, just attach a web browsing <code class="docutils literal notranslate"><span class="pre">session</span></code> with authentication cookies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydap.client</span> <span class="kn">import</span> <span class="n">open_url</span>
+<span class="kn">from</span> <span class="nn">pydap.cas.get_cookies</span> <span class="kn">import</span> <span class="n">setup_session</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">authentication_url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This method could work but each CAS is slightly different and might require a specifically designed <code class="docutils literal notranslate"><span class="pre">setup_session</span></code> instance. Two CAS are however explicitly supported by <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>:</p>
+</section>
+<section id="urs-nasa-earthdata">
+<h2>URS NASA EARTHDATA<a class="headerlink" href="#urs-nasa-earthdata" title="Link to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This method requires an EDL account. If you do not have one, go <a class="reference external" href="https://urs.earthdata.nasa.gov/home">HERE</a> to create one</p>
+</div>
+<p>Authentication can done through a <code class="docutils literal notranslate"><span class="pre">username</span></code> and a <code class="docutils literal notranslate"><span class="pre">password</span></code>. However, it is <code class="docutils literal notranslate"><span class="pre">highly</span> <span class="pre">recommended</span></code> to use instead <code class="docutils literal notranslate"><span class="pre">tokens</span></code>. This <a class="reference internal" href="#.notebooks/ECCO"><span class="xref myst">ECCO</span></a> provides an example of how to use tokens to authenticate.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;YourTokenHere&quot;</span>
+<span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
+<span class="n">my_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">my_session</span><span class="o">.</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">auth_hdr</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>With that you can now pass the <code class="docutils literal notranslate"><span class="pre">my_session</span></code> as an argument to <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s <code class="docutils literal notranslate"><span class="pre">open_url</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="earth-system-grid-federation-esgf">
+<h2>Earth System Grid Federation (ESGF)<a class="headerlink" href="#earth-system-grid-federation-esgf" title="Link to this heading">#</a></h2>
+<p>Authentication is done through an <code class="docutils literal notranslate"><span class="pre">openid</span></code> and a <code class="docutils literal notranslate"><span class="pre">password</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydap.client</span> <span class="kn">import</span> <span class="n">open_url</span>
+<span class="kn">from</span> <span class="nn">pydap.cas.esgf</span> <span class="kn">import</span> <span class="n">setup_session</span>
+<span class="n">dataset_url</span> <span class="o">=</span> <span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">openid</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">check_url</span><span class="o">=</span><span class="n">dataset_url</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">dataset_url</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If your <code class="docutils literal notranslate"><span class="pre">openid</span></code> contains contains the string <code class="docutils literal notranslate"><span class="pre">ceda.ac.uk</span></code>
+authentication requires an additional <code class="docutils literal notranslate"><span class="pre">username</span></code> argument:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydap.client</span> <span class="kn">import</span> <span class="n">open_url</span>
+<span class="kn">from</span> <span class="nn">pydap.cas.esgf</span> <span class="kn">import</span> <span class="n">setup_session</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">openid</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">check_url</span><span class="o">=</span><span class="n">dataset_url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">dataset_url</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>All Advanced features described below may be outdated.</p>
+</div>
+</section>
+<section id="advanced-features">
+<h2>Advanced features<a class="headerlink" href="#advanced-features" title="Link to this heading">#</a></h2>
+<p><strong>Calling server-side functions</strong></p>
+<p>When you open a remote dataset, the <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> object has a special
+attribute named <code class="docutils literal notranslate"><span class="pre">functions</span></code> that can be used to invoke any server-side
+functions. Here’s an example of using the <code class="docutils literal notranslate"><span class="pre">geogrid</span></code> function from
+Hyrax:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">geogrid</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">SST</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span><span class="o">.</span><span class="n">SST</span><span class="o">.</span><span class="n">COADSY</span><span class="p">[:]</span> 
+<span class="go">[-11. -9. -7. -5. -3. -1. 1. 3. 5. 7. 9. 11.]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span><span class="o">.</span><span class="n">SST</span><span class="o">.</span><span class="n">COADSX</span><span class="p">[:]</span>
+<span class="go">[ 21. 23. 25. 27. 29. 31. 33. 35. 37. 39. 41. 43. 45. 47. 49. 51. 53. 55. 57. 59. 61.]</span>
+</pre></div>
+</div>
+<p>Unfortunately, there’s currently no standard mechanism to discover which functions the server support. The <code class="docutils literal notranslate"><span class="pre">function</span></code> attribute will accept
+any function name the user specifies, and will try to pass the call to the remote server.</p>
+</section>
+<section id="using-a-cache">
+<h2>Using a cache<a class="headerlink" href="#using-a-cache" title="Link to this heading">#</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This may be outdated.</p>
+</div>
+<p>You can specify a cache directory in the <code class="docutils literal notranslate"><span class="pre">pydap.lib.CACHE</span></code> global variable. If this value is different than <code class="docutils literal notranslate"><span class="pre">None</span></code>, the client will try
+(if the server headers don’t prohibit) to cache the result, so repeated
+requests will be read from disk instead of the network:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pydap.lib</span>
+<span class="n">pydap</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">CACHE</span> <span class="o">=</span> <span class="s2">&quot;/tmp/pydap-cache/&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="timeout">
+<h2>Timeout<a class="headerlink" href="#timeout" title="Link to this heading">#</a></h2>
+<p>To specify a timeout for the client, just set the desired number of seconds using the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> option to <code class="docutils literal notranslate"><span class="pre">open_url(...)</span></code> or <code class="docutils literal notranslate"><span class="pre">open_dods(...)</span></code>. For example, the following commands would timeout after 30 seconds without receiving a response from the server:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_dods</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="configuring-a-proxy">
+<h2>Configuring a proxy<a class="headerlink" href="#configuring-a-proxy" title="Link to this heading">#</a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This may be outdated.</p>
+</div>
+<p>It’s possible to configure pydap to access the network through a proxy
+server. Here’s an example for an HTTP proxy running on <code class="docutils literal notranslate"><span class="pre">localhost</span></code>
+listening on port 8000:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">httplib2</span>
+<span class="kn">from</span> <span class="nn">pydap.util</span> <span class="kn">import</span> <span class="n">socks</span>
+<span class="kn">import</span> <span class="nn">pydap.lib</span>
+<span class="n">pydap</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">PROXY</span> <span class="o">=</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">ProxyInfo</span><span class="p">(</span>
+         <span class="n">socks</span><span class="o">.</span><span class="n">PROXY_TYPE_HTTP</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This way, all further calls to <code class="docutils literal notranslate"><span class="pre">pydap.client.open_url</span></code> will be routed through the proxy server. You can also authenticate to the proxy:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pydap</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">PROXY</span> <span class="o">=</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">ProxyInfo</span><span class="p">(</span>
+         <span class="n">socks</span><span class="o">.</span><span class="n">PROXY_TYPE_HTTP</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span>
+         <span class="n">proxy_user</span><span class="o">=</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">proxy_pass</span><span class="o">=</span><span class="n">PASSWORD</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A user <a class="reference external" href="http://groups.google.com/group/pydap/browse_thread/thread/425b2e1a3b3f233d">has reported</a> that <code class="docutils literal notranslate"><span class="pre">httplib2</span></code> has problems authenticating against a NTLM proxy server. In this case, a simple solution is to change the <code class="docutils literal notranslate"><span class="pre">pydap.http.request</span></code> function to use <code class="docutils literal notranslate"><span class="pre">urllib2</span></code> instead of <code class="docutils literal notranslate"><span class="pre">httplib2</span></code>, monkeypatching the code
+like in the <a class="reference internal" href="#cas"><span class="xref myst">CAS authentication example above</span></a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">urllib2</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="k">def</span> <span class="nf">install_urllib2_client</span><span class="p">():</span>
+    <span class="k">def</span> <span class="nf">new_request</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+        <span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;pydap&#39;</span><span class="p">)</span>
+        <span class="n">log</span><span class="o">.</span><span class="n">INFO</span><span class="p">(</span><span class="s1">&#39;Opening </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="n">urllib2</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;?&amp;&#39;</span><span class="p">))</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">info</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">headers</span><span class="p">,</span> <span class="n">body</span>
+
+    <span class="kn">from</span> <span class="nn">pydap.util</span> <span class="kn">import</span> <span class="n">http</span>
+    <span class="n">http</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">new_request</span>
+</pre></div>
+</div>
+<p>The function <code class="docutils literal notranslate"><span class="pre">install_urllib2_client</span></code> should then be called before doing any requests.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="notebooks/CMIP6.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">CMIP6</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="responses.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Responses</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#gridded-arrays">Gridded Arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabular-data">Tabular data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#erddap-in-situ-data">ERDDAP in situ data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-data">Filtering data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authentication">Authentication</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#cas">CAS</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#urs-nasa-earthdata">URS NASA EARTHDATA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#earth-system-grid-federation-esgf">Earth System Grid Federation (ESGF)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced features</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-cache">Using a cache</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-a-proxy">Configuring a proxy</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By OPeNDAP Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

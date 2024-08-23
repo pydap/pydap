@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% from "macros.html" import dispatch %}
+
+{% block title %}Dataset {{ location }}{% endblock %}
+
+{% block breadcrumbs %}
+<p>
+    <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        <a itemprop="url" href="{{ root }}"><span itemprop="title">Home</span></a>
+    </span>
+    {% for crumb in breadcrumbs %}
+    /<span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        <a itemprop="url" href="{{ crumb.url }}/"><span itemprop="title">{{ crumb.title }}</span></a>
+    </span>
+    {% endfor %}
+</p>
+{% endblock %}
+
+{% block content %}
+<div>
+    <form action="{{ location }}" method="POST">
+        <button type="submit">Download data</button>
+        <p>
+        <label for="dataset.url">
+            Data URL: <input name="dataset.url" id="dataset.url" type="text" value="{{ dataurl }}" size="50" readonly/>
+        </label>
+        </p>
+        {{ dispatch(dataset) }}
+        <button type="submit">Download data</button><button type="reset">Reset</button>
+    </form>
+</div>
+{% endblock %}

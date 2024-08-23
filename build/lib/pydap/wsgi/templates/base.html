@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}{% endblock %}</title>
+        <style type="text/css">
+           body {
+                background-color: #ffffff;
+                font-family: arial, verdana, sans-serif;
+                text-align: left;
+                float: left;
+            }
+            .flat {
+                border: 0px;
+            }
+            header {
+                display: inline-block;
+            }
+            table {
+                border-width: 1px;
+                border-spacing: 0px;
+                border-style: solid;
+                border-color: black;
+                border-collapse: collapse;
+                background-color: white;
+                width: 100%;
+            }
+            table th {
+                border-width: 1px;
+                padding: 5px;
+                border-style: solid;
+                border-color: gray;
+                background-color: white;
+            }
+            table td {
+                border-width: 1px;
+                padding: 5px;
+                border-style: solid;
+                border-color: gray;
+                background-color: white;
+            }
+            .header-img {
+                float: left;
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <h1>OPeNDAP <img class="header-img" src="https://www.opendap.org/sites/default/files/OPeNDAP-meatball.png" alt="OPeNDAP" title="OPeNDAP" width="90" height="90"/></h1>
+        </header>
+        <div>
+            <div class="header">
+                <div>
+                    {% block breadcrumbs %}{% endblock %}
+                </div>
+            </div>
+            <div>
+                {% block content %}{% endblock %}
+            </div>
+            <footer>
+                <p itemscope itemtype="http://schema.org/WebApplication">                       
+                    <a itemprop="url" href="http://pydap.org/"><span itemprop="name">pydap</span> <span itemprop="softwareVersion">{{ version }}</span></a>, released under the <a href="http://opensource.org/licenses/MIT">MIT license</a> (c) 2003&ndash;2013 <a href="https://www.gittip.com/robertodealmeida/">Roberto De Almeida</a>.
+                </p>                                                                            
+                <hr>
+                <a href="http://validator.w3.org/check?verbose=1&amp;uri=referer" title="Valid HTML 5!"><img class="flat" src="http://www.w3.org/html/logo/downloads/HTML5_Badge_32.png" alt="Valid HTML 5!" height="32" width="32"/></a>
+                <a href="http://jigsaw.w3.org/css-validator/check/referer" title="Valid CSS!"><img class="flat" src="http://jigsaw.w3.org/css-validator/images/vcss-blue" alt="Valid CSS!" height="31" width="88"/></a>
+            </footer>
+        </div>
+    </body>
+</html>

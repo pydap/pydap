@@ -1,0 +1,38 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+parts:
+- caption: Quickstart
+  chapters:
+  - file: how_to_install
+  - file: get_started
+    sections:
+    - file: 5_minute_tutorial
+- caption: Examples
+  chapters:
+  - file: notebooks/Authentication
+  - file: notebooks/ECCO
+  - file: notebooks/PACE
+  - file: notebooks/SWOT
+  - file: notebooks/CMIP6
+- caption: Documentation
+  chapters:
+  - file: client
+  - file: responses.rst
+  - file: server.rst
+  - file: handlers.rst
+- caption: Guide for Developer
+  chapters:
+  - file: developer/data_model.rst
+  - file: developer/handlers.rst
+  - file: developer/responses.rst
+- caption: Contributing
+  chapters:
+  - file: guide_to_developer
+    sections:
+    - file: contribute/git
+    - file: contribute/contr_cod
+    - file: contribute/contr_issues
+    - file: contribute/contr_docs
