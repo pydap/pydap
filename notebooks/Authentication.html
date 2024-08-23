@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
   
@@ -176,6 +176,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">How to install</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">5 minute tutorial</a></li>
+
 </ul>
 </details></li>
 </ul>
@@ -406,8 +407,8 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydap.cas.urs</span> <span class="kn">import</span> <span class="n">setup_session</span>
 
-<span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;YourUserName&quot;</span> <span class="c1"># Earthdata URS Login (only needed for NGAP Hyrax) Get account here https://urs.earthdata.nasa.gov/</span>
-<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;YourPassword&quot;</span>
+<span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;Mikejmnez&quot;</span> <span class="c1"># Earthdata URS Login (only needed for NGAP Hyrax) Get account here https://urs.earthdata.nasa.gov/</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;FHD!xua*zqy6mkm6fgk&quot;</span>
 
 <span class="n">hyrax_url</span> <span class="o">=</span> <span class="s1">&#39;https://opendap.earthdata.nasa.gov/collections/C2532426483-ORNL_CLOUD/granules/&#39;</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">check_url</span><span class="o">=</span><span class="n">hyrax_url</span><span class="p">)</span>
@@ -452,7 +453,7 @@ document.write(`
 <p>This is the approach that will largely will be used throughout the documentation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;YourTokenHere&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTcyODE5NjQyOCwiaWF0IjoxNzIzMDEyNDI4LCJpc3MiOiJFYXJ0aGRhdGEgTG9naW4ifQ.7BqWQ8WU6cC4eq42d7W_guy8naGp-fFrolO49mlgUSrWvR5F5C6Ryj22Xk42J7cbOiKj9bpXBuLZHxqNbr4UoFsVGeyth69Y8fbmiZIyPofjYAcDGZCX9iDCsF4CntlU5hbefBR3ZdDKgh_4DRIRj6FNlU6drcAWpsA_iViWFKvStmJfGXe_DZvvbzW2ZnPjeUleILO8-MQd4jeIl1ErhmGwOx7MM0Ztaubu5sErMU9NBLfAWIRFc6pbf0bEMst0D6ZLAbNXVF4r0Y7yzbMeTk8jeo5piEkepYrEJ-VD-aecX7wBx2El8aSfd82Iwpa-2FoymbkRUH4syWgvTzk1oA&quot;</span>
 
 <span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
 

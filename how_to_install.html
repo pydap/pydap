@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
   
@@ -176,6 +176,7 @@
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">How to install</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="5_minute_tutorial.html">5 minute tutorial</a></li>
+
 </ul>
 </details></li>
 </ul>
@@ -381,15 +382,19 @@ document.write(`
 <h2>Reproducible environments<a class="headerlink" href="#reproducible-environments" title="Link to this heading">#</a></h2>
 <p>We highly recommend using a package installation manager like conda/mamba to install pydap, and any other dependency, in a reproducible and containerized environment. This approach requires having an installation of <a class="reference external" href="https://docs.anaconda.com/miniconda/">Miniconda</a> or <a class="reference external" href="https://docs.anaconda.com/anaconda/install/">Anaconda</a>.</p>
 <p>The easiest way to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> is to use the conda-forge channel. Open a terminal, then run the following commands:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap<span class="w"> </span>numpy<span class="w"> </span>jupyterlab<span class="w"> </span>ipython<span class="w"> </span>netCDF4<span class="w"> </span>scipy<span class="w"> </span>matplotlib<span class="w"> </span>cartopy<span class="w"> </span>xarray
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap<span class="w"> </span>numpy<span class="w"> </span>jupyterlab<span class="w"> </span>ipython<span class="w"> </span>netCDF4<span class="w"> </span>scipy<span class="w"> </span>matplotlib<span class="w"> </span>cartopy<span class="w"> </span>xarray
 </pre></div>
 </div>
 <p>The code above will create a conda environment named “pydap” with many of the commonly used packages for processing and visualizing gridded data, using the latest stable versions (conda release).</p>
 <p>To start using <code class="docutils literal notranslate"><span class="pre">pydap</span></code>, you need to activate the environment with the same name, by running:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>activate<span class="w"> </span>pydap
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>pydap
 </pre></div>
 </div>
 <p>At this stage, you can install additional packages or remove them if not needed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you already have <code class="docutils literal notranslate"><span class="pre">mamba</span></code> installed, you can replace all <code class="docutils literal notranslate"><span class="pre">conda</span></code> in the commands with <code class="docutils literal notranslate"><span class="pre">mamba</span></code>.</p>
+</div>
 <p><a class="reference external" href="https://pypi.org/">PyPI</a> provides additional flexibility for installing python packages that otherwise is hard to achieve with other package installation managers. For example, you can install the latest <code class="docutils literal notranslate"><span class="pre">pydap</span></code> version directly from the github repository run within the freshly activated <code class="docutils literal notranslate"><span class="pre">pydap</span></code> environment by running:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
 </pre></div>

@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
   
@@ -175,6 +175,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">How to install</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">5 minute tutorial</a></li>
+
 </ul>
 </details></li>
 </ul>
@@ -374,16 +375,20 @@ document.write(`
 <li><p>Navitate to the cloned repository</p></li>
 <li><p>Create/activate the conda environment and install the <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> in <code class="docutils literal notranslate"><span class="pre">dev</span></code> mode.</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>docs/environment.yml
-mamba<span class="w"> </span>activate<span class="w"> </span>pydap_docs
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>docs/environment.yml
+conda<span class="w"> </span>activate<span class="w"> </span>pydap_docs
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="s2">&quot;[server,netcdf,client]&quot;</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="3">
 <li><p>At this point, you can use <a class="reference internal" href="git.html"><span class="std std-doc">git</span></a> for making commits to <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s documentation. Make sure the code follows the style guide by running:</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mamba<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>pre-commit
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>pre-commit
 </pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you already have <code class="docutils literal notranslate"><span class="pre">mamba</span></code> installed, you can replace all <code class="docutils literal notranslate"><span class="pre">conda</span></code> in the commands with <code class="docutils literal notranslate"><span class="pre">mamba</span></code>.</p>
 </div>
 <p>The above commands install and will automatically run all the pre-commit formatting configuration specified in the yaml-file each time git commit is used.</p>
 <ol class="arabic simple" start="4">

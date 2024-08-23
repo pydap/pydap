@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
   
@@ -176,6 +176,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">How to install</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">5 minute tutorial</a></li>
+
 </ul>
 </details></li>
 </ul>
@@ -418,7 +419,7 @@ document.write(`
 <h2>Add to session’s headers Token Authorization<a class="headerlink" href="#add-to-session-s-headers-token-authorization" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;YourTokenHere&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTcyODE5NjQyOCwiaWF0IjoxNzIzMDEyNDI4LCJpc3MiOiJFYXJ0aGRhdGEgTG9naW4ifQ.7BqWQ8WU6cC4eq42d7W_guy8naGp-fFrolO49mlgUSrWvR5F5C6Ryj22Xk42J7cbOiKj9bpXBuLZHxqNbr4UoFsVGeyth69Y8fbmiZIyPofjYAcDGZCX9iDCsF4CntlU5hbefBR3ZdDKgh_4DRIRj6FNlU6drcAWpsA_iViWFKvStmJfGXe_DZvvbzW2ZnPjeUleILO8-MQd4jeIl1ErhmGwOx7MM0Ztaubu5sErMU9NBLfAWIRFc6pbf0bEMst0D6ZLAbNXVF4r0Y7yzbMeTk8jeo5piEkepYrEJ-VD-aecX7wBx2El8aSfd82Iwpa-2FoymbkRUH4syWgvTzk1oA&quot;</span>
 
 <span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
 
@@ -438,8 +439,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 47.6 ms, sys: 6.35 ms, total: 54 ms
-Wall time: 979 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 55.1 ms, sys: 6.76 ms, total: 61.9 ms
+Wall time: 916 ms
 </pre></div>
 </div>
 </div>
@@ -534,8 +535,8 @@ Wall time: 979 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1min 9s, sys: 2min 3s, total: 3min 13s
-Wall time: 3min 24s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1min 3s, sys: 1min 53s, total: 2min 56s
+Wall time: 3min 7s
 </pre></div>
 </div>
 </div>
@@ -737,8 +738,8 @@ Wall time: 3min 24s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 963 ms, sys: 717 ms, total: 1.68 s
-Wall time: 3.62 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 771 ms, sys: 667 ms, total: 1.44 s
+Wall time: 3.52 s
 </pre></div>
 </div>
 </div>

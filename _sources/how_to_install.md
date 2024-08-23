@@ -15,7 +15,7 @@ We highly recommend using a package installation manager like conda/mamba to ins
 The easiest way to install `pydap` is to use the conda-forge channel. Open a terminal, then run the following commands:
 
 ```shell
-mamba create -n pydap -c conda-forge python=3.10 pydap numpy jupyterlab ipython netCDF4 scipy matplotlib cartopy xarray
+conda create -n pydap -c conda-forge python=3.10 pydap numpy jupyterlab ipython netCDF4 scipy matplotlib cartopy xarray
 ```
 
 The code above will create a conda environment named "pydap" with many of the commonly used packages for processing and visualizing gridded data, using the latest stable versions (conda release).
@@ -23,10 +23,14 @@ The code above will create a conda environment named "pydap" with many of the co
 To start using `pydap`, you need to activate the environment with the same name, by running:
 
 ```shell
-mamba activate pydap
+conda activate pydap
 ```
 
 At this stage, you can install additional packages or remove them if not needed.
+
+```{note}
+If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
+```
 
 
 [PyPI](https://pypi.org/) provides additional flexibility for installing python packages that otherwise is hard to achieve with other package installation managers. For example, you can install the latest `pydap` version directly from the github repository run within the freshly activated `pydap` environment by running:

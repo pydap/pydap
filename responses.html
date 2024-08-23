@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
   
@@ -176,6 +176,7 @@
 <li class="toctree-l1"><a class="reference internal" href="how_to_install.html">How to install</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="5_minute_tutorial.html">5 minute tutorial</a></li>
+
 </ul>
 </details></li>
 </ul>
@@ -391,7 +392,7 @@ document.write(`
 <h3>Web Map Service<a class="headerlink" href="#web-map-service" title="Link to this heading">#</a></h3>
 <p>This response enables pydap to act like a <a class="reference external" href="http://en.wikipedia.org/wiki/Web_Map_Service">Web Map Service</a> 1.1.1 server, returning images (maps) of the available data. These maps can be visualized in any WMS client like Openlayers or Google Earth.</p>
 <p>You can install the WMS response using <a class="reference external" href="http://pypi.python.org/pypi/pip">pip</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.wms]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.wms]&quot;</span>
 </pre></div>
 </div>
 <p>This will take care of the necessary dependencies, which include <a class="reference external" href="https://matplotlib.org/">Matplotlib</a> and pydap itself. Once the response is installed you can introspect the available layers at the URL:</p>
@@ -416,7 +417,7 @@ document.write(`
 <section id="google-earth">
 <h3>Google Earth<a class="headerlink" href="#google-earth" title="Link to this heading">#</a></h3>
 <p>This response converts a pydap dataset to a <a class="reference external" href="http://code.google.com/apis/kml/documentation/kmlreference.html">KML</a> representation, allowing the data to be visualized using Google Earth as a client. Simply install it with <a class="reference external" href="http://pypi.python.org/pypi/pip">pip</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.kml]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.kml]&quot;</span>
 </pre></div>
 </div>
 <p>And open a URL by appending the <code class="docutils literal notranslate"><span class="pre">.kml</span></code> extension to the dataset, say:</p>
@@ -428,7 +429,7 @@ document.write(`
 <section id="netcdf">
 <h3>NetCDF<a class="headerlink" href="#netcdf" title="Link to this heading">#</a></h3>
 <p>This response allows data to be downloaded as a NetCDF file; it works better with gridded data, but sequential data will be converted into 1D variables. To install it, just type:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.netcdf]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.netcdf]&quot;</span>
 </pre></div>
 </div>
 <p>And try to append the extension <code class="docutils literal notranslate"><span class="pre">.nc</span></code> to a request. The data will be converted on-the-fly to a NetCDF file.</p>
@@ -436,14 +437,14 @@ document.write(`
 <section id="matlab">
 <h3>Matlab<a class="headerlink" href="#matlab" title="Link to this heading">#</a></h3>
 <p>The Matlab response returns data in a Matlab v5 file. It is returned when the file is requested with the extension <code class="docutils literal notranslate"><span class="pre">.mat</span></code>, and can be installed by with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.matlab]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.matlab]&quot;</span>
 </pre></div>
 </div>
 </section>
 <section id="excel-spreadsheet">
 <h3>Excel spreadsheet<a class="headerlink" href="#excel-spreadsheet" title="Link to this heading">#</a></h3>
 <p>This response returns sequential data as an Excel spreadsheet when <code class="docutils literal notranslate"><span class="pre">.xls</span></code> is appended to the URL. Install with:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.xls]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[responses.xls]&quot;</span>
 </pre></div>
 </div>
 </section>

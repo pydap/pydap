@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
   
@@ -176,6 +176,7 @@
 <li class="toctree-l1"><a class="reference internal" href="how_to_install.html">How to install</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="5_minute_tutorial.html">5 minute tutorial</a></li>
+
 </ul>
 </details></li>
 </ul>
@@ -601,6 +602,58 @@ check the names of the store variables like we would do with a Python dictionary
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
+CPU times: user 26.4 ms, sys: 11 ms, total: 37.5 ms
+Wall time: 2.51 s
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that upon download, the variable <code class="docutils literal notranslate"><span class="pre">sst</span></code> is a <code class="docutils literal notranslate"><span class="pre">BaseType</span></code>, rather than a numpy array. The <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> has CF-compliant metadata as attributes, which are defined by the data provider and contain useful information for <code class="docutils literal notranslate"><span class="pre">decoding</span></code> the variable.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">attributes</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;missing_value&#39;: -9.99999979e+33,
+ &#39;_FillValue&#39;: -9.99999979e+33,
+ &#39;long_name&#39;: &#39;SEA SURFACE TEMPERATURE&#39;,
+ &#39;history&#39;: &#39;From coads_climatology&#39;,
+ &#39;units&#39;: &#39;Deg C&#39;,
+ &#39;checksum&#39;: array([1974861177], dtype=uint32),
+ &#39;Maps&#39;: (&#39;/TIME&#39;, &#39;/COADSY&#39;, &#39;/COADSX&#39;)}
+</pre></div>
+</div>
+</div>
+</div>
+<p>To access the array for further (numerical) manipulation you must add a <code class="docutils literal notranslate"><span class="pre">.data</span></code> to the <code class="docutils literal notranslate"><span class="pre">BaseType</span></code>. This is:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>numpy.ndarray
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>One of the features of OPeNDAP is the <code class="docutils literal notranslate"><span class="pre">server-side</span> <span class="pre">subsetting</span></code>, which can be exploited by <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> via slicing of the array when downloading data. For example, if you are only interested in a localized subregion of the entire domain (e.g. finite range of latitude and longitudes of the global coverage), and you know the index that span your desired area of interest.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">sst</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SST&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">125</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Type of object: &#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
 <span class="ne">HTTPError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
 <span class="n">File</span> <span class="o">&lt;</span><span class="n">timed</span> <span class="n">exec</span><span class="o">&gt;</span><span class="p">:</span><span class="mi">1</span>
@@ -654,56 +707,6 @@ check the names of the store variables like we would do with a Python dictionary
 </div>
 </div>
 </div>
-<p>Note that upon download, the variable <code class="docutils literal notranslate"><span class="pre">sst</span></code> is a <code class="docutils literal notranslate"><span class="pre">BaseType</span></code>, rather than a numpy array. The <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> has CF-compliant metadata as attributes, which are defined by the data provider and contain useful information for <code class="docutils literal notranslate"><span class="pre">decoding</span></code> the variable.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">attributes</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;missing_value&#39;: -9.99999979e+33,
- &#39;_FillValue&#39;: -9.99999979e+33,
- &#39;long_name&#39;: &#39;SEA SURFACE TEMPERATURE&#39;,
- &#39;history&#39;: &#39;From coads_climatology&#39;,
- &#39;units&#39;: &#39;Deg C&#39;}
-</pre></div>
-</div>
-</div>
-</div>
-<p>To access the array for further (numerical) manipulation you must add a <code class="docutils literal notranslate"><span class="pre">.data</span></code> to the <code class="docutils literal notranslate"><span class="pre">BaseType</span></code>. This is:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>list
-</pre></div>
-</div>
-</div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>One of the features of OPeNDAP is the <code class="docutils literal notranslate"><span class="pre">server-side</span> <span class="pre">subsetting</span></code>, which can be exploited by <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> via slicing of the array when downloading data. For example, if you are only interested in a localized subregion of the entire domain (e.g. finite range of latitude and longitudes of the global coverage), and you know the index that span your desired area of interest.</p>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">sst</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SST&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">125</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Type of object: &#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 5.62 ms, sys: 1.42 ms, total: 7.04 ms
-Wall time: 542 ms
-</pre></div>
-</div>
-</div>
-</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">shape</span>
@@ -711,7 +714,7 @@ Wall time: 542 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 35, 80)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(12, 90, 180)
 </pre></div>
 </div>
 </div>
@@ -812,32 +815,7 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 ├──profile_lat_qc
 ├──profile_lon_qc
 ├──profile_time_qc
-├──qartod_conductivity_flat_line_flag
-├──qartod_conductivity_gross_range_flag
-├──qartod_conductivity_primary_flag
-├──qartod_conductivity_rate_of_change_flag
-├──qartod_conductivity_spike_flag
-├──qartod_density_flat_line_flag
-├──qartod_density_gross_range_flag
-├──qartod_density_primary_flag
-├──qartod_density_rate_of_change_flag
-├──qartod_density_spike_flag
 ├──qartod_monotonic_pressure_flag
-├──qartod_pressure_flat_line_flag
-├──qartod_pressure_gross_range_flag
-├──qartod_pressure_primary_flag
-├──qartod_pressure_rate_of_change_flag
-├──qartod_pressure_spike_flag
-├──qartod_salinity_flat_line_flag
-├──qartod_salinity_gross_range_flag
-├──qartod_salinity_primary_flag
-├──qartod_salinity_rate_of_change_flag
-├──qartod_salinity_spike_flag
-├──qartod_temperature_flat_line_flag
-├──qartod_temperature_gross_range_flag
-├──qartod_temperature_primary_flag
-├──qartod_temperature_rate_of_change_flag
-├──qartod_temperature_spike_flag
 ├──salinity
 ├──salinity_qc
 ├──temperature
@@ -1177,13 +1155,13 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <p>The <a class="reference external" href="http://en.wikipedia.org/wiki/Central_Authentication_Service">Central Authentication Service</a> (<code class="docutils literal notranslate"><span class="pre">CAS</span></code>) is a single sign-on protocol for the web, usually involving a web browser and cookies. Nevertheless it’s possible to use pydap with an OPeNDAP server behind a CAS. The function <code class="docutils literal notranslate"><span class="pre">install_cas_client</span></code> below
 replaces pydap’s default HTTP function with a new version able to submit authentication data to an HTML form and store credentials in cookies. (In this particular case, the server uses Javascript to redirect the browser to a new location, so the client has to parse the location from the Javascript code; other CAS would require a tweaked function.)</p>
 <p>To use it, just attach a web browsing <code class="docutils literal notranslate"><span class="pre">session</span></code> with authentication cookies:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pydap.client</span> <span class="kn">import</span> <span class="n">open_url</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">pydap.cas.get_cookies</span> <span class="kn">import</span> <span class="n">setup_session</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">authentication_url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydap.client</span> <span class="kn">import</span> <span class="n">open_url</span>
+<span class="kn">from</span> <span class="nn">pydap.cas.get_cookies</span> <span class="kn">import</span> <span class="n">setup_session</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">authentication_url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This method could work but each CAS is slightly different and might require a specifically designed <code class="docutils literal notranslate"><span class="pre">setup_session</span></code> instance. Two CAS are however explicitly supported by <code class="docutils literal notranslate"><span class="pre">pydap</span></code>:</p>
+<p>This method could work but each CAS is slightly different and might require a specifically designed <code class="docutils literal notranslate"><span class="pre">setup_session</span></code> instance. Two CAS are however explicitly supported by <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>:</p>
 </section>
 <section id="urs-nasa-earthdata">
 <h2>URS NASA EARTHDATA<a class="headerlink" href="#urs-nasa-earthdata" title="Link to this heading">#</a></h2>
@@ -1234,7 +1212,7 @@ attribute named <code class="docutils literal notranslate"><span class="pre">fun
 functions. Here’s an example of using the <code class="docutils literal notranslate"><span class="pre">geogrid</span></code> function from
 Hyrax:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span> <span class="n">new_dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">geogrid</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">SST</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">geogrid</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">SST</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span><span class="o">.</span><span class="n">SST</span><span class="o">.</span><span class="n">COADSY</span><span class="p">[:]</span> 
 <span class="go">[-11. -9. -7. -5. -3. -1. 1. 3. 5. 7. 9. 11.]</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span><span class="o">.</span><span class="n">SST</span><span class="o">.</span><span class="n">COADSX</span><span class="p">[:]</span>

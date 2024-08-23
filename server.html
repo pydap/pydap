@@ -32,7 +32,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
   
@@ -176,6 +176,7 @@
 <li class="toctree-l1"><a class="reference internal" href="how_to_install.html">How to install</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="5_minute_tutorial.html">5 minute tutorial</a></li>
+
 </ul>
 </details></li>
 </ul>
@@ -386,15 +387,15 @@ document.write(`
 <section id="running-standalone">
 <h2>Running standalone<a class="headerlink" href="#running-standalone" title="Link to this heading">#</a></h2>
 <p>If you just want to quickly test the pydap server, you can run it as a standalone Python application using the server that comes with <a class="reference external" href="http://pythonpaste.org/">Python Paste</a> and <a class="reference external" href="http://gunicorn.org/">gunicorn</a>. To run the server, first make sure that you have installed pydap with the server extras dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[server]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[server]&quot;</span>
 </pre></div>
 </div>
 <p>and then just run the <code class="docutils literal notranslate"><span class="pre">pydap</span></code> script that pip installs into your bin directory:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--port<span class="w"> </span><span class="m">8080</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--port<span class="w"> </span><span class="m">8080</span>
 </pre></div>
 </div>
 <p>To change the default directory listing, the help page and the HTML form, you can point a switch to your template directory</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--templates<span class="w"> </span>/path/to/my/templates.
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--templates<span class="w"> </span>/path/to/my/templates.
 </pre></div>
 </div>
 <p>The HTML form template is fairly complex, since it contain some application logic and some Javascript code, so be careful to not break anything.</p>
@@ -423,8 +424,8 @@ document.write(`
 <section id="apache">
 <h2>Apache<a class="headerlink" href="#apache" title="Link to this heading">#</a></h2>
 <p>For a robust deployment you can run pydap with Apache, using <a class="reference external" href="http://modwsgi.org/">mod_wsgi</a>. After <a class="reference external" href="http://code.google.com/p/modwsgi/wiki/InstallationInstructions">installing mod_wsgi</a>, create a sandbox in a directory <em>outside</em> your DocumentRoot, say <code class="docutils literal notranslate"><span class="pre">/var/www/pydap/</span></code>, using <a class="reference external" href="https://docs.python.org/3/library/venv.html">a virtual environment</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mkdir<span class="w"> </span>/var/www/pydap
-$<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>/var/www/pydap/env
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>/var/www/pydap
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>/var/www/pydap/env
 </pre></div>
 </div>
 <p>If you want the sandbox to use your system installed packages (like Numpy, e.g.) you can use the <code class="docutils literal notranslate"><span class="pre">--system-site-packages</span></code> flag:</p>
