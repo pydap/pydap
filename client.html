@@ -603,8 +603,8 @@ check the names of the store variables like we would do with a Python dictionary
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 26.4 ms, sys: 11 ms, total: 37.5 ms
-Wall time: 2.51 s
+CPU times: user 20.2 ms, sys: 8.42 ms, total: 28.6 ms
+Wall time: 2.59 s
 </pre></div>
 </div>
 </div>
@@ -654,55 +654,9 @@ Wall time: 2.51 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">HTTPError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="n">File</span> <span class="o">&lt;</span><span class="n">timed</span> <span class="n">exec</span><span class="o">&gt;</span><span class="p">:</span><span class="mi">1</span>
-
-<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.12/site-packages/pydap/model.py:339,</span> in <span class="ni">BaseType.__getitem__</span><span class="nt">(self, index)</span>
-<span class="g g-Whitespace">    </span><span class="mi">337</span> <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">338</span>     <span class="n">out</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">339</span>     <span class="n">out</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">340</span>     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;BaseProxyDap4&quot;</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">341</span>         <span class="n">out</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;checksum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">checksum</span>
-
-<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.12/site-packages/pydap/model.py:371,</span> in <span class="ni">BaseType._get_data_index</span><span class="nt">(self, index)</span>
-<span class="g g-Whitespace">    </span><span class="mi">369</span>     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">decode_np_strings</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
-<span class="g g-Whitespace">    </span><span class="mi">370</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">371</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-
-<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.12/site-packages/pydap/handlers/dap.py:485,</span> in <span class="ni">BaseProxyDap4.__getitem__</span><span class="nt">(self, index)</span>
-<span class="g g-Whitespace">    </span><span class="mi">475</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching URL: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">477</span> <span class="n">r</span> <span class="o">=</span> <span class="n">pydap</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">GET</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">478</span>     <span class="n">url</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">479</span>     <span class="bp">self</span><span class="o">.</span><span class="n">application</span><span class="p">,</span>
-   <span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">482</span>     <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
-<span class="g g-Whitespace">    </span><span class="mi">483</span> <span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">485</span> <span class="n">pydap</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">486</span> <span class="n">dmr</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">safe_dmr_and_data</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_charset</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">488</span> <span class="c1"># Parse received dataset:</span>
-
-<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.12/site-packages/pydap/net.py:37,</span> in <span class="ni">raise_for_status</span><span class="nt">(response)</span>
-<span class="g g-Whitespace">     </span><span class="mi">34</span> <span class="k">def</span> <span class="nf">raise_for_status</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
-<span class="g g-Whitespace">     </span><span class="mi">35</span>     <span class="c1"># Raise error if status is above 300:</span>
-<span class="g g-Whitespace">     </span><span class="mi">36</span>     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">400</span><span class="p">:</span>
-<span class="ne">---&gt; </span><span class="mi">37</span>         <span class="k">raise</span> <span class="n">HTTPError</span><span class="p">(</span>
-<span class="g g-Whitespace">     </span><span class="mi">38</span>             <span class="n">detail</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">39</span>             <span class="n">headers</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">40</span>             <span class="n">comment</span><span class="o">=</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">,</span>
-<span class="g g-Whitespace">     </span><span class="mi">41</span>         <span class="p">)</span>
-<span class="g g-Whitespace">     </span><span class="mi">42</span>     <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">&gt;=</span> <span class="mi">300</span><span class="p">:</span>
-<span class="g g-Whitespace">     </span><span class="mi">43</span>         <span class="k">try</span><span class="p">:</span>
-
-<span class="ne">HTTPError</span>: 500 500
-<span class="o">&lt;</span><span class="err">?</span><span class="n">xml</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;UTF-8&quot;</span><span class="err">?</span><span class="o">&gt;</span>
-<span class="o">&lt;</span><span class="n">dap4</span><span class="p">:</span><span class="n">Error</span> <span class="n">xmlns</span><span class="p">:</span><span class="n">dap4</span><span class="o">=</span><span class="s2">&quot;http://xml.opendap.org/ns/DAP/4.0#&quot;</span> <span class="n">httpcode</span><span class="o">=</span><span class="s2">&quot;500&quot;</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dap4</span><span class="p">:</span><span class="n">Message</span><span class="o">&gt;</span><span class="n">libdap</span> <span class="n">error</span> <span class="n">transmitting</span> <span class="n">DAP4Data</span><span class="p">:</span> <span class="n">An</span> <span class="n">internal</span> <span class="n">error</span> <span class="n">was</span> <span class="n">encountered</span> <span class="ow">in</span> <span class="n">D4Maps</span><span class="o">.</span><span class="n">cc</span> <span class="n">at</span> <span class="n">line</span> <span class="mi">42</span><span class="p">:</span>
-<span class="n">Failed</span> <span class="n">to</span> <span class="n">find</span> <span class="n">an</span> <span class="n">array</span> <span class="n">at</span><span class="p">:</span> 
-<span class="n">Please</span> <span class="n">report</span> <span class="n">this</span> <span class="n">to</span> <span class="n">support</span><span class="nd">@opendap</span><span class="o">.</span><span class="n">org</span><span class="o">&lt;/</span><span class="n">dap4</span><span class="p">:</span><span class="n">Message</span><span class="o">&gt;</span>
-  <span class="o">&lt;</span><span class="n">dap4</span><span class="p">:</span><span class="n">Context</span> <span class="o">/&gt;</span>
-  <span class="o">&lt;</span><span class="n">dap4</span><span class="p">:</span><span class="n">OtherInformation</span> <span class="o">/&gt;</span>
-<span class="o">&lt;/</span><span class="n">dap4</span><span class="p">:</span><span class="n">Error</span><span class="o">&gt;</span>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
+CPU times: user 5.44 ms, sys: 1.46 ms, total: 6.9 ms
+Wall time: 593 ms
 </pre></div>
 </div>
 </div>
@@ -714,7 +668,7 @@ Wall time: 2.51 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(12, 90, 180)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 35, 80)
 </pre></div>
 </div>
 </div>
