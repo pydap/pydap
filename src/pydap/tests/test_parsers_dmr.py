@@ -101,15 +101,15 @@ class DMRParser(unittest.TestCase):
     def tests_global_dimensions(self):
         dataset = load_dmr_file("data/dmrs/SimpleGroup.dmr")
         # pick a single variable Maps
-        names = tuple([item[0] for item in dataset.dimensions])
-        sizes = tuple([item[1] for item in dataset.dimensions])
-        self.assertEqual(names, ("time", "nv"))
-        self.assertEqual(sizes, (1, 2))
+        names = [key for key in dataset.dimensions.keys()]
+        sizes = [v[1] for v in dataset.dimensions.items()]
+        self.assertEqual(names, ["time", "nv"])
+        self.assertEqual(sizes, [1, 2])
 
     def tests_named_dimension(self):
         dataset = load_dmr_file("data/dmrs/SimpleGroup.dmr")
         # get only names of dimensions
-        names = tuple([item[0] for item in dataset.dimensions])
+        names = [key for key in dataset.dimensions.keys()]
         # get all variables/arrays
         variables = []
         for var in walk(dataset, BaseType):
