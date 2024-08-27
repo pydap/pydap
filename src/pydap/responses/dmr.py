@@ -54,7 +54,7 @@ def _(var, level=0):
     str2 = ' dapVersion="4.0" dmrVersion="1.0"'
     str3 = ' name="{name}">\n'.format(name=var.name)
     yield "<{indent}".format(indent=level * INDENT) + str0 + str1 + str2 + str3
-    for name, size in var.dimensions:
+    for name, size in var.dimensions.items():
         yield '{indent}<Dimension name="{name}" size="{size}"/>\n'.format(
             indent=(level + 1) * INDENT, name=name, size=size
         )
@@ -77,7 +77,7 @@ def _sequencetype(var, level=0, sequence=0):
 @dmr.register(GroupType)
 def _grouptype(var, level=0):
     yield '{indent}<Group name="{name}">\n'.format(indent=level * INDENT, name=var.name)
-    for dim, size in var.dimensions:
+    for dim, size in var.attributes["dimensions"].items():
         yield '{indent}<Dimension name="{name}" size="{size}"/>\n'.format(
             indent=(level + 1) * INDENT, name=dim, size=size
         )
