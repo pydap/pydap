@@ -897,7 +897,7 @@ class GroupType(StructureType):
         # The Group name does (not) go into the children ids.
 
         item.id = item.name
-        self.dimensions = dimensions or []
+        self.dimensions = dimensions or dict()
         # self._dict[key] = item
 
         # # # By default added keys are visible:
