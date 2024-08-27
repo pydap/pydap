@@ -168,7 +168,7 @@ def dmr_to_dataset(dmr):
         if len(name.split("/")) == 1:
             global_dimensions.append([name, size])
 
-    dataset.dimensions = tuple(tuple(item) for item in global_dimensions)
+    dataset.dimensions = {k: v for k, v in global_dimensions}
 
     # Add size entry for dimension variables
     for name, size in named_dimensions.items():
@@ -234,6 +234,14 @@ def dmr_to_dataset(dmr):
 
         else:
             dataset[name] = var
+
+    group_dims = [
+        dim for dim in named_dimensions if dim not in dataset.dimensions.keys()
+    ]
+    for fqn in group_dims:
+        path = ("/").join(fqn.split("/")[:-1])
+        dim_name = fqn.split("/")[-1]
+        dataset[path].dimensions.update({dim_name: named_dimensions[fqn]})
 
     return dataset
 
