@@ -169,6 +169,7 @@ therefore highly recommended.
 
 import copy
 import operator
+import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 from functools import reduce
@@ -629,6 +630,65 @@ class DatasetType(StructureType):
         for var in walk(self, BaseType):
             nbytes += var.nbytes
         return nbytes
+
+    def createDapType(self, daptype, name, **attrs):
+        parts = name.split("/")
+        item = daptype(name=parts[-1], **attrs)
+        path = ("/").join(parts[:-1])
+        try:
+            for i in range(1, len(parts)):
+                self[("/").join(parts[:i])]
+        except KeyError:
+            warnings.warn(
+                """
+                Failed to create `{}` type with name `{}`. Parent with name
+                `{}` does not exist!
+                """.format(
+                    type(daptype), parts[-1], path.split("/")[-1]
+                )
+            )
+            return None
+        DatasetType.__setitem__(self, name, item)
+
+    def createGroup(self, name, **attrs):
+        """
+        Creates a Group from `root`, even in the presence of nested Groups.
+        Uses the `Fully Qualifying Name`. Parent `Group` must exist.
+
+        Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
+        """
+        return self.createDapType(GroupType, name, **attrs)
+
+    def createVariable(self, name, **attrs):
+        """
+        Creates a Variable (`BaseType`) from `root`, even in the presence of nested
+        DAPTypes (i.e. `GroupType`, `SequenceType`, `StructureType`, `GridType`).
+        Uses the `Fully Qualifying Name`. Parent `DAPType` must exist!
+
+        Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
+
+        """
+        return self.createDapType(BaseType, name, **attrs)
+
+    def createSequence(self, name, **attrs):
+        """
+        Creates a Sequence (`SequenceType`) from `root`, even in the presence of nested
+        DAPTypes (i.e. `GroupType`, `SequenceType`, `StructureType`, `GridType`).
+        Uses the `Fully Qualifying Name`. Parent `DAPType` must exist!
+
+        Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
+        """
+        return self.createDapType(SequenceType, name, **attrs)
+
+    def createStructure(self, name, **attrs):
+        """
+        Creates a Structure (`StructureType`) from `root`, even in the presence of
+        nested DAPTypes (i.e. `GroupType`, `SequenceType`, `StructureType`,
+        `GridType`). Uses the `Fully Qualifying Name`. Parent `DAPType` must exist!
+
+        Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
+        """
+        return self.createDapType(StructureType, name, **attrs)
 
 
 class SequenceType(StructureType):
