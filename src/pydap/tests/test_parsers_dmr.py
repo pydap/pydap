@@ -78,7 +78,9 @@ class DMRParser(unittest.TestCase):
         dataset = load_dmr_file(
             "data/dmrs/20220102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.dmr"
         )
-        self.assertEqual(dataset["sea_ice_fraction"].dimensions, ["time", "lat", "lon"])
+        self.assertEqual(
+            dataset["sea_ice_fraction"].dimensions, ["/time", "/lat", "/lon"]
+        )
 
     def test_mod05(self):
         dataset = load_dmr_file(
@@ -87,8 +89,8 @@ class DMRParser(unittest.TestCase):
         self.assertEqual(
             dataset["Water_Vapor_Infrared"].dimensions,
             [
-                "Cell_Along_Swath_5km",
-                "Cell_Across_Swath_5km",
+                "/Cell_Along_Swath_5km",
+                "/Cell_Across_Swath_5km",
             ],
         )
 

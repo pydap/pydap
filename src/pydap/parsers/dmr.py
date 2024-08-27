@@ -200,18 +200,18 @@ def dmr_to_dataset(dmr):
             parts = var_name.split("/")
             var_name = parts[-1]
             path = ("/").join(parts[:-1])
-            # need to do the same with dimensions
-            for i in range(len(variable["dims"])):
-                dim = variable["dims"][i].split("/")[-1]
-                variable["dims"][i] = dim
             variable["attributes"]["path"] = path
 
         data = DummyData(dtype=variable["dtype"], shape=variable["shape"], path=path)
-        array = pydap.model.BaseType(
-            name=var_name,
-            data=data,
-            dimensions=variable["dims"],
-        )
+        # make sure all dimensions have qualifying name
+        Dims = []
+        for dim in variable["dims"]:
+            if len(dim.split("/")) == 1:
+                Dims.append("/" + dim)
+            else:
+                Dims.append(dim)
+
+        array = pydap.model.BaseType(name=var_name, data=data, dimensions=Dims)
         # pass along maps
         if "maps" in variable.keys():
             array.Maps = variable["maps"]
