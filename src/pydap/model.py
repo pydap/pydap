@@ -169,6 +169,8 @@ therefore highly recommended.
 
 import copy
 import operator
+import re
+import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 from functools import reduce
@@ -517,6 +519,10 @@ class StructureType(DapType, Mapping):
             out[child.name] = copy.copy(child)
         return out
 
+    @property
+    def type(self):
+        return "Structure"
+
 
 class DatasetType(StructureType):
     """A root Dataset.
@@ -529,28 +535,29 @@ class DatasetType(StructureType):
         'B'
     """
 
-    def __setitem__(self, key, item):
-        # StructureType.__setitem__(self, key, item)
-
-        # is key a path-like?
-        N = len(key.split("/")[1:])
+    def __setitem__(self, key, item, **kwargs):
+        # key a path-like only in DAP4
+        parts = re.split(r"[/.]", key)[1:]
+        N = len(parts)
         if key[0] == "/" and N > 1:
-            parts = key.split("/")[1:]
-            # add parent group to dataset keys
+            # add parent container type if not there
             if parts[0] not in self._dict:
                 self._visible_keys.append(parts[0])
-            # iterate over all groups to reach DAP object
+            #  iterate over all groups to reach DAP object
             current = self._dict
             for j in range(N - 1):
                 if parts[j] not in current:
+                    # This current approach works when parsing a DMR
+                    # with only Groups and arrays. Need to enable
+                    # Sequences and Structures. This works with all
+                    # DAP4 when creating Dataset manally.
                     current[parts[j]] = GroupType(parts[j])
                 current = current[parts[j]]
             current[parts[-1]] = item
         else:
             if key[0] == "/":
                 key = key[1:]
-
-            key = _quote(key)  # should name be quoted?
+            key = _quote(key)
             if key != item.name:
                 raise KeyError(
                     'Key "%s" is different from variable name "%s"!' % (key, item.name)
@@ -563,8 +570,15 @@ class DatasetType(StructureType):
             # By default added keys are visible:
             self._visible_keys.append(key)
 
-        # The dataset name does not go into the children ids.
-        item.id = item.name
+        key = key.replace("%2E", ".")
+        if len(key.split(".")) == 1:
+            # The parent name does not go into the children ids.
+            item.id = item.name
+        else:
+            parts = key.split("/")[-1]
+            item.id = (".").join(parts.split("."))
+            # Set item id.
+            # item.id  = "%s.%s" % (parent_name, item.name)
 
     def _getitem_string(self, key):
         """Assume that key is a string type"""
@@ -629,6 +643,73 @@ class DatasetType(StructureType):
         for var in walk(self, BaseType):
             nbytes += var.nbytes
         return nbytes
+
+    def createDapType(self, daptype, name, **attrs):
+        # Creates a temporal quasi FQN by replacing all `.` with `/`
+        # since these are safe to escape. This catches all cases
+        # much more cleanly. User specifies FQN but DAPtype is defined
+        # within the method so OK.
+        if name[0] != "/":
+            warnings.warn(
+                """name must start with `/` to have a Fully Qualifing Name.
+                Adding a `/` to the begining of the name."""
+            )
+            # makes sure DAP4 fqn name (even when DAP2)
+            name = "/" + name
+        parts = re.split(r"[/.]", name)[1:]
+        item = daptype(name=parts[-1], **attrs)
+        try:
+            for i in range(1, len(parts)):
+                self[("/").join(parts[:i])]
+        except KeyError:
+            warnings.warn(
+                """Failed to create `{}` because parent `{}` does not exist!
+                """.format(
+                    parts[-1], parts[-2]
+                )
+            )
+            return None
+        DatasetType.__setitem__(self, name, item)
+
+    def createGroup(self, name, **attrs):
+        """
+        Creates a Group from `root`, even in the presence of nested Groups.
+        Uses the `Fully Qualifying Name`. Parent `Group` must exist.
+
+        Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
+        """
+        return self.createDapType(GroupType, name, **attrs)
+
+    def createVariable(self, name, **attrs):
+        """
+        Creates a Variable (`BaseType`) from `root`, even in the presence of nested
+        DAPTypes (i.e. `GroupType`, `SequenceType`, `StructureType`). Uses the
+        `Fully Qualifying Name`. Parent `DAPType` must exist!
+
+        Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
+
+        """
+        return self.createDapType(BaseType, name, **attrs)
+
+    def createSequence(self, name, **attrs):
+        """
+        Creates a Sequence (`SequenceType`) from `root`, even in the presence of nested
+        DAPTypes (i.e. `GroupType`, `SequenceType`, `StructureType`).
+        Uses the `Fully Qualifying Name`. Parent `DAPType` must exist!
+
+        Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
+        """
+        return self.createDapType(SequenceType, name, **attrs)
+
+    def createStructure(self, name, **attrs):
+        """
+        Creates a Structure (`StructureType`) from `root`, even in the presence of
+        nested DAPTypes (i.e. `GroupType`, `SequenceType`, `StructureType`).
+        Uses the `Fully Qualifying Name`. Parent `DAPType` must exist!
+
+        Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
+        """
+        return self.createDapType(StructureType, name, **attrs)
 
 
 class SequenceType(StructureType):
@@ -786,6 +867,10 @@ class SequenceType(StructureType):
         out.id = self.id
         return out
 
+    @property
+    def type(self):
+        return "Sequence"
+
 
 class GridType(StructureType):
     """A Grid container.
@@ -891,13 +976,13 @@ class GroupType(StructureType):
 
     """
 
-    def __setitem__(self, key, item, dimensions=None):
+    def __setitem__(self, key, item, dimensions=dict()):
         StructureType.__setitem__(self, key, item)
 
         # The Group name does (not) go into the children ids.
 
         item.id = item.name
-        self.dimesions = dimensions or ()
+        self.dimensions = dimensions or dict()
         # self._dict[key] = item
 
         # # # By default added keys are visible:
@@ -909,3 +994,7 @@ class GroupType(StructureType):
 
         for child in self.children():
             child.id = child.name
+
+    @property
+    def type(self):
+        return "Group"

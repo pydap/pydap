@@ -16,19 +16,19 @@ If you just want to quickly test the pydap server, you can run it as a standalon
 
 .. code-block:: bash
 
-    $ pip install "pydap[server]"
+    pip install "pydap[server]"
 
 and then just run the ``pydap`` script that pip installs into your bin directory:
 
 .. code-block:: bash
 
-    $ pydap --data /path/to/my/data/files --port 8080
+    pydap --data /path/to/my/data/files --port 8080
 
 To change the default directory listing, the help page and the HTML form, you can point a switch to your template directory
 
 .. code-block:: bash
 
-    $ pydap --data /path/to/my/data/files --templates /path/to/my/templates.
+    pydap --data /path/to/my/data/files --templates /path/to/my/templates.
 
 The HTML form template is fairly complex, since it contain some application logic and some Javascript code, so be careful to not break anything.
 
@@ -67,8 +67,8 @@ For a robust deployment you can run pydap with Apache, using `mod_wsgi <http://m
 
 .. code-block:: bash
 
-    $ mkdir /var/www/pydap
-    $ python3 -m venv /var/www/pydap/env
+    mkdir /var/www/pydap
+    python3 -m venv /var/www/pydap/env
 
 If you want the sandbox to use your system installed packages (like Numpy, e.g.) you can use the ``--system-site-packages`` flag:
 

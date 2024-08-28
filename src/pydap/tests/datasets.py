@@ -12,14 +12,7 @@ import numpy as np
 
 from pydap.client import open_file
 from pydap.handlers.lib import IterData
-from pydap.model import (
-    BaseType,
-    DatasetType,
-    GridType,
-    GroupType,
-    SequenceType,
-    StructureType,
-)
+from pydap.model import BaseType, DatasetType, GridType
 
 # Note that DAP2 does not support signed bytes (signed 8bits integers).
 
@@ -27,11 +20,11 @@ from pydap.model import (
 # directly to a Numpy structured array, and can be easily encoded and decoded
 # in the DAP spec.
 VerySimpleSequence = DatasetType("VerySimpleSequence")
-VerySimpleSequence["sequence"] = SequenceType("sequence")
-VerySimpleSequence["sequence"]["byte"] = BaseType("byte")
-VerySimpleSequence["sequence"]["int"] = BaseType("int")
-VerySimpleSequence["sequence"]["float"] = BaseType("float")
-VerySimpleSequence["sequence"].data = np.array(
+VerySimpleSequence.createSequence("/sequence")
+VerySimpleSequence.createVariable("/sequence.byte")
+VerySimpleSequence.createVariable("/sequence.int")
+VerySimpleSequence.createVariable("/sequence.float")
+VerySimpleSequence["/sequence"].data = np.array(
     [
         (0, 1, 10.0),
         (1, 2, 20.0),
@@ -48,15 +41,15 @@ VerySimpleSequence["sequence"].data = np.array(
 
 # A nested sequence.
 NestedSequence = DatasetType("NestedSequence")
-NestedSequence["location"] = SequenceType("location")
-NestedSequence["location"]["lat"] = BaseType("lat")
-NestedSequence["location"]["lon"] = BaseType("lon")
-NestedSequence["location"]["elev"] = BaseType("elev")
-NestedSequence["location"]["time_series"] = SequenceType("time_series")
-NestedSequence["location"]["time_series"]["time"] = BaseType("time")
-NestedSequence["location"]["time_series"]["slp"] = BaseType("slp")
-NestedSequence["location"]["time_series"]["wind"] = BaseType("wind")
-NestedSequence["location"].data = IterData(
+NestedSequence.createSequence("/location")
+NestedSequence.createVariable("/location.lat")
+NestedSequence.createVariable("/location.lon")
+NestedSequence.createVariable("/location.elev")
+NestedSequence.createSequence("/location.time_series")
+NestedSequence.createVariable("/location.time_series.time")
+NestedSequence.createVariable("/location.time_series.slp")
+NestedSequence.createVariable("/location.time_series.wind")
+NestedSequence["/location"].data = IterData(
     [
         (1, 1, 1, [(10, 11, 12), (21, 22, 23)]),
         (2, 4, 4, [(15, 16, 17)]),
@@ -70,9 +63,9 @@ NestedSequence["location"].data = IterData(
 # A simple array with bytes, strings and shorts. These types require special
 # encoding for the DODS response.
 SimpleArray = DatasetType("SimpleArray")
-SimpleArray["byte"] = BaseType("byte", np.arange(5, dtype=np.ubyte))
-SimpleArray["string"] = BaseType("string", np.array(["one", "two"]))
-SimpleArray["short"] = BaseType("short", np.array(1, dtype="h"))
+SimpleArray.createVariable("byte", data=np.arange(5, dtype=np.ubyte))
+SimpleArray.createVariable("string", data=np.array(["one", "two"]))
+SimpleArray.createVariable("short", data=np.array(1, dtype="h"))
 
 
 DODS = os.path.join(os.path.dirname(__file__), "data/rainfall_time_malaysia.cdp.dods")
@@ -82,11 +75,11 @@ dapper = open_file(DODS, DAS)
 
 # dataset from http://test.opendap.org:8080/dods/dts/D1.asc
 D1 = DatasetType("EOSDB.DBO", type="Drifters")
-D1["Drifters"] = SequenceType("Drifters")
-D1["Drifters"]["instrument_id"] = BaseType("instrument_id")
-D1["Drifters"]["location"] = BaseType("location")
-D1["Drifters"]["latitude"] = BaseType("latitude")
-D1["Drifters"]["longitude"] = BaseType("longitude")
+D1.createSequence("/Drifters")
+D1.createVariable("/Drifters.instrument_id")
+D1.createVariable("/Drifters.location")
+D1.createVariable("/Drifters.latitude")
+D1.createVariable("/Drifters.longitude")
 D1.Drifters.data = np.array(
     np.rec.fromrecords(
         list(
@@ -110,8 +103,8 @@ D1.Drifters.data = np.array(
 
 # testing structures
 SimpleStructure = DatasetType("SimpleStructure")
-SimpleStructure["types"] = StructureType(
-    name="types",
+SimpleStructure.createStructure(
+    name="/types",
     key="value",
     nested=OrderedDict(
         [
@@ -122,19 +115,19 @@ SimpleStructure["types"] = StructureType(
         ]
     ),
 )
-SimpleStructure["types"]["b"] = BaseType("b", np.array(-10, np.byte))
-SimpleStructure["types"]["ub"] = BaseType("ub", np.array(10, np.ubyte))
-SimpleStructure["types"]["i32"] = BaseType("i32", np.array(-10, np.int32))
-SimpleStructure["types"]["ui32"] = BaseType("ui32", np.array(10, np.uint32))
-SimpleStructure["types"]["i16"] = BaseType("i16", np.array(-10, np.int16))
-SimpleStructure["types"]["ui16"] = BaseType("ui16", np.array(10, np.uint16))
-SimpleStructure["types"]["f32"] = BaseType("f32", np.array(100.0, np.float32))
-SimpleStructure["types"]["f64"] = BaseType("f64", np.array(1000.0, np.float64))
-SimpleStructure["types"]["s"] = BaseType(
-    "s", np.array("This is a data test string (pass 0).")
+SimpleStructure.createVariable(name="/types.b", data=np.array(-10, np.byte))
+SimpleStructure.createVariable(name="/types.ub", data=np.array(10, np.ubyte))
+SimpleStructure.createVariable(name="/types.i32", data=np.array(-10, np.int32))
+SimpleStructure.createVariable(name="/types.ui32", data=np.array(10, np.uint32))
+SimpleStructure.createVariable(name="/types.i16", data=np.array(-10, np.int16))
+SimpleStructure.createVariable(name="/types.ui16", data=np.array(10, np.uint16))
+SimpleStructure.createVariable(name="/types.f32", data=np.array(100.0, np.float32))
+SimpleStructure.createVariable(name="/types.f64", data=np.array(1000.0, np.float64))
+SimpleStructure.createVariable(
+    name="/types.s", data=np.array("This is a data test string (pass 0).")
 )
-SimpleStructure["types"]["u"] = BaseType("u", np.array("http://www.dods.org"))
-SimpleStructure["types"]["U"] = BaseType("U", np.array("test unicode", str))
+SimpleStructure.createVariable(name="/types.u", data=np.array("http://www.dods.org"))
+SimpleStructure.createVariable(name="/types.U", data=np.array("test unicode", str))
 
 
 # test grid
@@ -149,11 +142,11 @@ rain["rain"]["y"] = BaseType("y", np.arange(2), units="degrees_north")
 
 # test for ``bounds`` function
 bounds = DatasetType("test")
-bounds["sequence"] = SequenceType("sequence")
-bounds["sequence"]["lon"] = BaseType("lon", axis="X")
-bounds["sequence"]["lat"] = BaseType("lat", axis="Y")
-bounds["sequence"]["depth"] = BaseType("depth", axis="Z")
-bounds["sequence"]["time"] = BaseType("time", axis="T", units="days since 1970-01-01")
+bounds.createSequence("/sequence")
+bounds.createVariable("/sequence.lon", axis="X")
+bounds.createVariable("/sequence.lat", axis="Y")
+bounds.createVariable("/sequence.depth", axis="Z")
+bounds.createVariable("/sequence.time", axis="T", units="days since 1970-01-01")
 bounds["sequence"]["measurement"] = BaseType("measurement")
 bounds.sequence.data = np.array(
     np.rec.fromrecords(
@@ -168,10 +161,11 @@ bounds.sequence.data = np.array(
 
 # test for density
 ctd = DatasetType("ctd")
-ctd["cast"] = SequenceType("cast")
-ctd["cast"]["temperature"] = BaseType("temperature")
-ctd["cast"]["salinity"] = BaseType("salinity")
-ctd["cast"]["pressure"] = BaseType("pressure")
+ctd.createSequence("cast")
+ctd.createVariable("/cast.temperature")
+ctd.createVariable("/cast.salinity")
+ctd.createVariable("/cast.pressure")
+
 ctd.cast.data = np.array(
     np.rec.fromrecords(
         [
@@ -186,17 +180,16 @@ ctd.cast.data = np.array(
 SimpleSequence = DatasetType(
     "SimpleSequence", description="A simple sequence for testing.", nested={"value": 42}
 )
-SimpleSequence["cast"] = SequenceType("cast")
-SimpleSequence["cast"]["id"] = BaseType("id")
-SimpleSequence["cast"]["lon"] = BaseType("lon", axis="X")
-SimpleSequence["cast"]["lat"] = BaseType("lat", axis="Y")
-SimpleSequence["cast"]["depth"] = BaseType("depth", axis="Z")
-SimpleSequence["cast"]["time"] = BaseType(
-    "time", axis="T", units="days since 1970-01-01"
-)
-SimpleSequence["cast"]["temperature"] = BaseType("temperature")
-SimpleSequence["cast"]["salinity"] = BaseType("salinity")
-SimpleSequence["cast"]["pressure"] = BaseType("pressure")
+SimpleSequence.createSequence("/cast")
+SimpleSequence.createVariable("/cast.id")
+SimpleSequence.createVariable("/cast.lon", axis="X")
+SimpleSequence.createVariable("/cast.lat", axis="Y")
+SimpleSequence.createVariable("/cast.depth", axis="Z")
+SimpleSequence.createVariable("/cast.time", axis="T", units="days since 1970-01-01")
+SimpleSequence.createVariable("/cast.temperature")
+SimpleSequence.createVariable("/cast.salinity")
+SimpleSequence.createVariable("/cast.pressure")
+
 SimpleSequence["cast"].data = np.array(
     np.rec.fromrecords(
         [
@@ -227,40 +220,40 @@ SimpleGrid["y"] = SimpleGrid["SimpleGrid"]["y"] = BaseType(
 SimpleGroup = DatasetType(
     "example dataset",
     description="A simple group for testing.",
-    dimensions=(("time", 1), ("nv", 2)),
+    dimensions={"time": 1, "nv": 2},
 )
-SimpleGroup["SimpleGroup"] = GroupType("SimpleGroup", dimensions=(("Y", 4), ("X", 4)))
-SimpleGroup["/SimpleGroup/Temperature"] = BaseType(
-    "Temperature",
-    np.arange(10, 26, 1, dtype="f4").reshape(1, 4, 4),
+SimpleGroup.createGroup("SimpleGroup", dimensions={"Y": 4, "X": 4})
+SimpleGroup.createVariable(
+    name="/SimpleGroup/Temperature",
+    data=np.arange(10, 26, 1, dtype="f4").reshape(1, 4, 4),
     units="degrees_celsius",
     dims=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.inf,
 )
-SimpleGroup["/SimpleGroup/Salinity"] = BaseType(
-    "Salinity",
-    30 * np.ones(16, dtype="f4").reshape(1, 4, 4),
+SimpleGroup.createVariable(
+    name="/SimpleGroup/Salinity",
+    data=30 * np.ones(16, dtype="f4").reshape(1, 4, 4),
     units="psu",
     dims=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.nan,
 )
-SimpleGroup["/SimpleGroup/Y"] = BaseType(
-    "Y", np.arange(4, dtype="i2"), dims=("/SimpleGroup/Y",)
+SimpleGroup.createVariable(
+    name="/SimpleGroup/Y", data=np.arange(4, dtype="i2"), dims=("/SimpleGroup/Y",)
 )
-SimpleGroup["/SimpleGroup/X"] = BaseType(
-    "X", np.arange(4, dtype="i2"), dims=("/SimpleGroup/X",)
+SimpleGroup.createVariable(
+    name="/SimpleGroup/X", data=np.arange(4, dtype="i2"), dims=("/SimpleGroup/X",)
 )
-SimpleGroup["/time"] = BaseType(
-    "time",
-    np.array(0.5, dtype="f4"),
+SimpleGroup.createVariable(
+    name="/time",
+    data=np.array(0.5, dtype="f4"),
     dims=("/time",),
     attributes={
         "standard_name": "time",
         "bounds": "time_bnds",
     },
 )
-SimpleGroup["/time_bnds"] = BaseType(
-    "time_bnds", np.arange(2, dtype="f4"), dims=("/time", "/nv")
+SimpleGroup.createVariable(
+    name="/time_bnds", data=np.arange(2, dtype="f4"), dims=("/time", "/nv")
 )
 
 

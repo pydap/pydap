@@ -21,7 +21,7 @@ You can install the WMS response using `pip <http://pypi.python.org/pypi/pip>`_:
 
 .. code-block:: bash
 
-    $ pip install "pydap[responses.wms]"
+    pip install "pydap[responses.wms]"
 
 This will take care of the necessary dependencies, which include `Matplotlib <https://matplotlib.org/>`_ and pydap itself. Once the response is installed you can introspect the available layers at the URL::
 
@@ -50,7 +50,7 @@ This response converts a pydap dataset to a `KML <http://code.google.com/apis/km
 
 .. code-block:: bash
 
-    $ pip install "pydap[responses.kml]"
+    pip install "pydap[responses.kml]"
 
 And open a URL by appending the ``.kml`` extension to the dataset, say::
 
@@ -65,7 +65,7 @@ This response allows data to be downloaded as a NetCDF file; it works better wit
 
 .. code-block:: bash
 
-    $ pip install "pydap[responses.netcdf]"
+    pip install "pydap[responses.netcdf]"
 
 And try to append the extension ``.nc`` to a request. The data will be converted on-the-fly to a NetCDF file.
 
@@ -76,7 +76,7 @@ The Matlab response returns data in a Matlab v5 file. It is returned when the fi
 
 .. code-block:: bash
 
-    $ pip install "pydap[responses.matlab]"
+    pip install "pydap[responses.matlab]"
 
 Excel spreadsheet
 ~~~~~~~~~~~~~~~~~
@@ -85,4 +85,4 @@ This response returns sequential data as an Excel spreadsheet when ``.xls`` is a
 
 .. code-block:: bash
 
-    $ pip install "pydap[responses.xls]"
+    pip install "pydap[responses.xls]"

@@ -18,16 +18,21 @@ To add/edit the documentation, we recommend you follow the previous guides on ve
 
 2. Create/activate the conda environment and install the `PyDAP` in `dev` mode.
 ```shell
-mamba env create -f docs/environment.yml
-mamba activate pydap_docs
+conda env create -f docs/environment.yml
+conda activate pydap_docs
 pip install -e ."[server,netcdf,client]"
 ```
 
 3. At this point, you can use [git](git.md) for making commits to `PyDAP`'s documentation. Make sure the code follows the style guide by running:
 
 ```shell
-mamba install -c conda-forge pre-commit
+conda install -c conda-forge pre-commit
 ```
+
+```{note}
+If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
+```
+
 
 The above commands install and will automatically run all the pre-commit formatting configuration specified in the yaml-file each time git commit is used.
 
