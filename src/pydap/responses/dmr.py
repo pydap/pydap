@@ -29,7 +29,7 @@ class DMRResponse(BaseResponse):
         BaseResponse.__init__(self, dataset)
         self.headers.extend(
             [
-                ("Content-description", "dmr++"),
+                ("Content-description", "dmr"),
                 ("Content-type", "text/plain; charset=ascii"),
             ]
         )
