@@ -222,7 +222,7 @@ SimpleGroup = DatasetType(
     description="A simple group for testing.",
     dimensions={"time": 1, "nv": 2},
 )
-SimpleGroup.createGroup("SimpleGroup", dimensions=(("Y", 4), ("X", 4)))
+SimpleGroup.createGroup("SimpleGroup", dimensions={"Y": 4, "X": 4})
 SimpleGroup.createVariable(
     name="/SimpleGroup/Temperature",
     data=np.arange(10, 26, 1, dtype="f4").reshape(1, 4, 4),
