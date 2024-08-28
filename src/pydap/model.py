@@ -663,11 +663,9 @@ class DatasetType(StructureType):
                 self[("/").join(parts[:i])]
         except KeyError:
             warnings.warn(
-                """
-                Failed to create `{}` type with name `{}`. Parent with name
-                `{}` does not exist!
+                """Failed to create `{}` because parent `{}` does not exist!
                 """.format(
-                    type(daptype), parts[-1], parts[-2]
+                    parts[-1], parts[-2]
                 )
             )
             return None

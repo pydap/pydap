@@ -477,8 +477,7 @@ def test_SequenceType_copy(sequence_example):
 
 def test_DatasetType_get_item_directory_path():
     dataset = DatasetType("dataset")
-    child = BaseType("child")
-    dataset["child"] = child
+    dataset.createVariable("/child")
     assert dataset[""] == dataset
     assert dataset["/"] == dataset
 
@@ -492,6 +491,16 @@ def test_DatasetType_set_item_directory_path(sequence_example):
     assert isinstance(dataset["Group1"], GroupType)
     assert isinstance(dataset["Group1/Group2"], GroupType)
     assert isinstance(dataset["Group1/Group2/example"], SequenceType)
+
+
+def test_DatasetType_fails_createDAPType():
+    dataset = DatasetType("dataset")
+    name = "/Group1/Group2"
+    warning = "Failed to create `Group2` because parent `Group1` does not exist!"
+    with pytest.warns(UserWarning, match=warning):
+        dataset.createGroup(name)
+    assert "Group1" not in dataset
+    assert "Group2" not in dataset
 
 
 # Test pydap grids.
