@@ -168,7 +168,7 @@ def dmr_to_dataset(dmr):
         if len(name.split("/")) == 1:
             global_dimensions.append([name, size])
 
-    dataset.dimensions = tuple(tuple(item) for item in global_dimensions)
+    dataset.dimensions = {k: v for k, v in global_dimensions}
 
     # Add size entry for dimension variables
     for name, size in named_dimensions.items():
@@ -200,18 +200,18 @@ def dmr_to_dataset(dmr):
             parts = var_name.split("/")
             var_name = parts[-1]
             path = ("/").join(parts[:-1])
-            # need to do the same with dimensions
-            for i in range(len(variable["dims"])):
-                dim = variable["dims"][i].split("/")[-1]
-                variable["dims"][i] = dim
             variable["attributes"]["path"] = path
 
         data = DummyData(dtype=variable["dtype"], shape=variable["shape"], path=path)
-        array = pydap.model.BaseType(
-            name=var_name,
-            data=data,
-            dimensions=variable["dims"],
-        )
+        # make sure all dimensions have qualifying name
+        Dims = []
+        for dim in variable["dims"]:
+            if len(dim.split("/")) == 1:
+                Dims.append("/" + dim)
+            else:
+                Dims.append(dim)
+
+        array = pydap.model.BaseType(name=var_name, data=data, dimensions=Dims)
         # pass along maps
         if "maps" in variable.keys():
             array.Maps = variable["maps"]
@@ -234,6 +234,14 @@ def dmr_to_dataset(dmr):
 
         else:
             dataset[name] = var
+
+    group_dims = [
+        dim for dim in named_dimensions if dim not in dataset.dimensions.keys()
+    ]
+    for fqn in group_dims:
+        path = ("/").join(fqn.split("/")[:-1])
+        dim_name = fqn.split("/")[-1]
+        dataset[path].dimensions.update({dim_name: named_dimensions[fqn]})
 
     return dataset
 

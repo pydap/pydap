@@ -220,7 +220,7 @@ SimpleGrid["y"] = SimpleGrid["SimpleGrid"]["y"] = BaseType(
 SimpleGroup = DatasetType(
     "example dataset",
     description="A simple group for testing.",
-    dimensions=(("time", 1), ("nv", 2)),
+    dimensions={"time": 1, "nv": 2},
 )
 SimpleGroup.createGroup("SimpleGroup", dimensions=(("Y", 4), ("X", 4)))
 SimpleGroup.createVariable(
