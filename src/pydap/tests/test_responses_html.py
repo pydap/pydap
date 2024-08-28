@@ -44,7 +44,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
             ResponseHeaders(
                 [
                     ("OPeNDAP-Server", "pydap/" + __version__),
-                    ("Content-description", "dods_form"),
+                    ("Content-description", "DAP_form"),
                     ("Content-type", "text/html; charset=utf-8"),
                     ("Content-Length", "5864"),
                 ]
