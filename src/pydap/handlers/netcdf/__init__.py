@@ -90,14 +90,12 @@ class NetCDFHandler(BaseHandler):
                             attributes = None
                         self.dataset[grid][dim] = BaseType(dim, data, None, attributes)
 
-                # add dims
-                for dim in dims:
-                    try:
-                        data = vars[dim][:]
-                        attributes = attrs(vars[dim])
-                    except KeyError:
-                        data = np.arange(dims[dim].size, dtype="i")
-                        attributes = None
+                # create basetype for dimensions that are also variables
+                # this allows for `named dimension` like `nv`.
+                vdims = [dim for dim in dims if dim in vars]
+                for dim in vdims:
+                    data = vars[dim][:]
+                    attributes = attrs(vars[dim])
                     self.dataset[dim] = BaseType(dim, data, None, attributes)
         except Exception as exc:
             raise
