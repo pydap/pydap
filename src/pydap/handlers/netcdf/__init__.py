@@ -34,7 +34,7 @@ class NetCDFHandler(BaseHandler):
     Here's a standard dataset for testing sequential data:
     """
 
-    extensions = re.compile(r"^.*\.(nc|cdf)$", re.IGNORECASE)
+    extensions = re.compile(r"^.*\.(nc4|nc|cdf)$", re.IGNORECASE)
 
     def __init__(self, filepath):
         BaseHandler.__init__(self)
