@@ -56,6 +56,7 @@ class NetCDFHandler(BaseHandler):
                 # shortcuts
                 vars = source.variables
                 dims = source.dimensions
+                groups = source.groups
 
                 # build dataset
                 name = os.path.split(filepath)[1]
@@ -90,6 +91,49 @@ class NetCDFHandler(BaseHandler):
                             attributes = None
                         self.dataset[grid][dim] = BaseType(dim, data, None, attributes)
 
+                fqn_dims = {}  # keep track of fully qualifying names of dims
+                # start at root level
+                path = source.path
+                for vdim in source.dimensions:
+                    fqn_dims.update({vdim: path + vdim})
+
+                for group in groups:
+                    path = source[group].path
+                    if path[-1] != "/":
+                        path = path + "/"
+                    # create group and attrs + dims (non-fqn)
+                    dims = source[group].dimensions
+                    Dims = {}
+                    for dim in dims:
+                        if dim not in fqn_dims.keys():
+                            fqn_dims.update({dim: path + dim})
+                        Dims.update({source[group][dim].name: source[group][dim].size})
+                    _attrs = dict(
+                        (attr, source[group].getncattr(attr))
+                        for attr in source[group].ncattrs()
+                    )
+                    self.dataset.createGroup(
+                        source.name + group, dimensions=Dims, **_attrs
+                    )
+                    # now vars
+                    Vars = source[group].variables
+                    for var in Vars:
+                        data = source[group][var][:].data  # extract data from file
+                        dims = list(
+                            source[group][var].dimensions
+                        )  # these must have fqn
+                        vdims = []  # create mapping for fqn
+                        for dim in dims:
+                            vdims.append(fqn_dims[dim])
+                        print(vdims)
+                        vattrs = dict(
+                            (attr, source[group][var].getncattr(attr))
+                            for attr in source[group][var].ncattrs()
+                        )
+                        self.dataset.createVariable(
+                            path + var, data=data, dims=tuple(vdims), **vattrs
+                        )
+
                 # create basetype for dimensions that are also variables
                 # this allows for `named dimension` like `nv`.
                 vdims = [dim for dim in dims if dim in vars]
@@ -101,6 +145,29 @@ class NetCDFHandler(BaseHandler):
             raise
             message = "Unable to open file %s: %s" % (filepath, exc)
             raise OpenFileError(message)
+
+
+def group_fqn(_source, path=""):
+    """function to help fully-qualified-names of DAP objects within a hierarchy.
+
+    Parameters:
+    ----------
+        _source: <class netCDF4 >
+            root, group, subgroup
+        _path: str, parent name.
+            default is root `/`
+
+    Returns:
+
+    Example
+
+        Group_name = path + _source.name
+        ds.createGroup(path+'SubGroup2',
+                        dimensions={"X": 2, "Y": 2}, **atrs)
+
+        ds.createVariable()
+    """
+    pass
 
 
 class LazyVariable:
