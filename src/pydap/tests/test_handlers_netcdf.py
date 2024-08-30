@@ -58,6 +58,23 @@ def simple_group_array_file(simple_Group_data, tmpdir_factory):
 
 
 @pytest.fixture(scope="module")
+def nested_group_array_file(simple_Group_data, tmpdir_factory):
+    file_name = str(tmpdir_factory.mktemp("nc").join("NestedGroup_array.nc"))
+    with Dataset(file_name, "w") as output:
+        output.createDimension("time", None)  # unlimited dimension
+        output.createVariable("time", "<f8", ("time",))
+        group1 = output.createGroup("Group")
+        subgroup1 = group1.createGroup("SubGroup")
+        subgroup1.createDimension("X", 4)
+        subgroup1.createDimension("Y", 4)
+        subgroup1.createVariable("X", "<i4", ("X",))
+        subgroup1.createVariable("Y", "<i4", ("Y",))
+        subgroup1.createVariable("temperature", np.float32, ("time", "Y", "X"))
+        subgroup1["temperature"][:] = simple_Group_data
+    return file_name
+
+
+@pytest.fixture(scope="module")
 def simple_handler(simple_nc_file):
     return NetCDFHandler(simple_nc_file)
 
@@ -65,6 +82,11 @@ def simple_handler(simple_nc_file):
 @pytest.fixture(scope="module")
 def simple_handler2(simple_group_array_file):
     return NetCDFHandler(simple_group_array_file)
+
+
+@pytest.fixture(scope="module")
+def simple_handler3(nested_group_array_file):
+    return NetCDFHandler(nested_group_array_file)
 
 
 def test_handler(simple_data, simple_handler):
@@ -86,8 +108,27 @@ def test_handler(simple_data, simple_handler):
 def test_handler_array(simple_Group_data, simple_handler2):
     """Test that dataset has the correct data proxies for grids."""
     dataset = simple_handler2.dataset
+    r_dims = dataset.dimensions
+    g_dims = dataset["Group"].attributes["dimensions"]
     temp = dataset["/Group/temperature"][:]
     np.testing.assert_array_equal(temp.data, simple_Group_data)
+    assert r_dims == {"/time": 1}
+    assert g_dims == {"X": 4, "Y": 4}
+    assert temp.dims == ("/time", "/Group/Y", "/Group/X")
+
+
+def test_handler_nested_Goup_array(simple_Group_data, simple_handler3):
+    """Test that dataset has the correct data proxies for grids."""
+    dataset = simple_handler3.dataset
+    r_dims = dataset.dimensions
+    g_dims = dataset["Group"].attributes["dimensions"]
+    sg_dims = dataset["/Group/SubGroup"].attributes["dimensions"]
+    temp = dataset["/Group/SubGroup/temperature"][:]
+    np.testing.assert_array_equal(temp.data, simple_Group_data)
+    assert r_dims == {"/time": 1}
+    assert g_dims == {}
+    assert sg_dims == {"X": 4, "Y": 4}
+    assert temp.dims == ("/time", "/Group/SubGroup/Y", "/Group/SubGroup/X")
 
 
 @pytest.fixture(scope="module")

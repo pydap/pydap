@@ -58,7 +58,7 @@ class NetCDFHandler(BaseHandler):
                 dims = source.dimensions
 
                 # Add dimensions when creating the DatasetType
-                Dims = {}
+                Dims = OrderedDict()
                 for dim in dims:
                     if dims[dim] is None:
                         self.dataset.attributes["DODS_EXTRA"] = {
@@ -93,7 +93,7 @@ class NetCDFHandler(BaseHandler):
                             attributes = None
                         self.dataset[grid][dim] = BaseType(dim, data, None, attributes)
 
-                fqn_dims = {}  # keep track of fully qualifying names of dims
+                fqn_dims = OrderedDict()  # keep track of fully qualifying names of dims
                 if len(source.groups) > 0:
                     # start at root level
                     path = source.path
@@ -112,7 +112,7 @@ class NetCDFHandler(BaseHandler):
             raise OpenFileError(message)
 
 
-def group_fqn(_dataset, _source, _fqn_dims=dict()):
+def group_fqn(_dataset, _source, _fqn_dims=OrderedDict()):
     """Function to create nested DAP objects with fully-qualified-names
     within a hierarchy. Returns a dictionary with mapping between dimension
     names used at the group/array level and their fully qualifying names.
