@@ -46,7 +46,9 @@ def simple_group_array_file(simple_Group_data, tmpdir_factory):
     file_name = str(tmpdir_factory.mktemp("nc").join("Group_array.nc"))
     with Dataset(file_name, "w") as output:
         output.createDimension("time", None)  # unlimited dimension
+        output.createDimension("nv", 2)  # unlimited dimension
         output.createVariable("time", "<f8", ("time",))
+        output.createVariable("time_nbds", "<f8", ("time", "nv"))
         group = output.createGroup("Group")
         group.createDimension("X", 4)
         group.createDimension("Y", 4)
@@ -112,12 +114,12 @@ def test_handler_array(simple_Group_data, simple_handler2):
     g_dims = dataset["Group"].attributes["dimensions"]
     temp = dataset["/Group/temperature"][:]
     np.testing.assert_array_equal(temp.data, simple_Group_data)
-    assert r_dims == {"/time": 1}
+    assert r_dims == {"/time": 1, "/nv": 2}
     assert g_dims == {"X": 4, "Y": 4}
     assert temp.dims == ("/time", "/Group/Y", "/Group/X")
 
 
-def test_handler_nested_Goup_array(simple_Group_data, simple_handler3):
+def test_handler_nested_Group_array(simple_Group_data, simple_handler3):
     """Test that dataset has the correct data proxies for grids."""
     dataset = simple_handler3.dataset
     r_dims = dataset.dimensions
