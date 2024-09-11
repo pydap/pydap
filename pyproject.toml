@@ -58,7 +58,6 @@ ver = "pydap.responses.version:VersionResponse"
 cas = ['lxml']
 docs = ['Sphinx', 'Pygments', "pandoc", "sphinx_rtd_theme", "nbsphinx", "numpydoc"]
 functions = ['gsw==3.0.6', 'coards']
-"handlers.netcdf" = ['netCDF4']
 netcdf = ['netCDF4']
 server = ['gunicorn', 'PasteDeploy', 'docopt-ng', 'Webob', 'Jinja2', 'beautifulsoup4', 'lxml']
 tests = [
