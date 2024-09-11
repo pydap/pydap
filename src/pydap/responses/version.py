@@ -1,9 +1,9 @@
 """Response with information about pydap version."""
 
 import sys
+from importlib.metadata import entry_points
 from json import dumps
 
-from importlib_metadata import entry_points
 from webob import Response
 
 from ..lib import __dap__, __version__

@@ -14,9 +14,9 @@ import itertools
 import operator
 import re
 import sys
+from importlib.metadata import entry_points
 
 import numpy as np
-from importlib_metadata import entry_points
 from numpy.lib import Arrayterator
 from webob import Request
 
