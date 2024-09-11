@@ -11,7 +11,7 @@ from webtest import TestApp as App
 
 from pydap.handlers.lib import BaseHandler
 from pydap.lib import __version__, walk
-from pydap.tests.datasets import SimpleGrid, VerySimpleSequence
+from pydap.tests.datasets import SimpleGrid, SimpleGroup, VerySimpleSequence
 
 
 class TestHTMLResponseSequence(unittest.TestCase):
@@ -44,7 +44,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
             ResponseHeaders(
                 [
                     ("OPeNDAP-Server", "pydap/" + __version__),
-                    ("Content-description", "dods_form"),
+                    ("Content-description", "DAP_form"),
                     ("Content-type", "text/html; charset=utf-8"),
                     ("Content-Length", "5864"),
                 ]
@@ -156,3 +156,31 @@ class TestHTMLTemplate(unittest.TestCase):
         req.environ["pydap.jinja2.environment"] = env
         res = req.get_response(app)
         self.assertNotEqual(res.text, "global")
+
+
+class TestHTMLResponseSimpleGroup(unittest.TestCase):
+    """Test the HTML response with a dataset containing a sequence."""
+
+    def setUp(self):
+        """Create a simple app and request HTML response."""
+        self.app = App(BaseHandler(SimpleGroup))
+
+    def test_status(self):
+        """Test the status code."""
+        res = self.app.get("/.html")
+        self.assertEqual(res.status, "200 OK")
+
+    def test_headers(self):
+        """Test the response headers."""
+        res = self.app.get("/.html")
+        self.assertEqual(
+            res.headers,
+            ResponseHeaders(
+                [
+                    ("OPeNDAP-Server", "pydap/" + __version__),
+                    ("Content-description", "DAP_form"),
+                    ("Content-type", "text/html; charset=utf-8"),
+                    ("Content-Length", "8348"),
+                ]
+            ),
+        )
