@@ -2,8 +2,10 @@
 
 import numpy as np
 import pytest
+from netCDF4 import Dataset
 
 from pydap.handlers.dap import DAPHandler
+from pydap.handlers.netcdf import NetCDFHandler
 
 
 @pytest.fixture(scope="module")
@@ -19,8 +21,6 @@ def simple_data():
 
 @pytest.fixture(scope="module")
 def simple_nc_file(simple_data, tmpdir_factory):
-    from netCDF4 import Dataset
-
     file_name = str(tmpdir_factory.mktemp("nc").join("simple.nc"))
     with Dataset(file_name, "w") as output:
         output.createDimension("index", None)
@@ -36,10 +36,59 @@ def simple_nc_file(simple_data, tmpdir_factory):
 
 
 @pytest.fixture(scope="module")
-def simple_handler(simple_nc_file):
-    from pydap.handlers.netcdf import NetCDFHandler
+def simple_Group_data():
+    data = np.arange(10, 26, 1, dtype="f4").reshape(1, 4, 4)
+    return data
 
+
+@pytest.fixture(scope="module")
+def simple_group_array_file(simple_Group_data, tmpdir_factory):
+    file_name = str(tmpdir_factory.mktemp("nc").join("Group_array.nc"))
+    with Dataset(file_name, "w") as output:
+        output.createDimension("time", None)  # unlimited dimension
+        output.createDimension("nv", 2)  # unlimited dimension
+        output.createVariable("time", "<f8", ("time",))
+        output.createVariable("time_nbds", "<f8", ("time", "nv"))
+        group = output.createGroup("Group")
+        group.createDimension("X", 4)
+        group.createDimension("Y", 4)
+        group.createVariable("X", "<i4", ("X",))
+        group.createVariable("Y", "<i4", ("Y",))
+        group.createVariable("temperature", np.float32, ("time", "Y", "X"))
+        group["temperature"][:] = simple_Group_data
+    return file_name
+
+
+@pytest.fixture(scope="module")
+def nested_group_array_file(simple_Group_data, tmpdir_factory):
+    file_name = str(tmpdir_factory.mktemp("nc").join("NestedGroup_array.nc"))
+    with Dataset(file_name, "w") as output:
+        output.createDimension("time", None)  # unlimited dimension
+        output.createVariable("time", "<f8", ("time",))
+        group1 = output.createGroup("Group")
+        subgroup1 = group1.createGroup("SubGroup")
+        subgroup1.createDimension("X", 4)
+        subgroup1.createDimension("Y", 4)
+        subgroup1.createVariable("X", "<i4", ("X",))
+        subgroup1.createVariable("Y", "<i4", ("Y",))
+        subgroup1.createVariable("temperature", np.float32, ("time", "Y", "X"))
+        subgroup1["temperature"][:] = simple_Group_data
+    return file_name
+
+
+@pytest.fixture(scope="module")
+def simple_handler(simple_nc_file):
     return NetCDFHandler(simple_nc_file)
+
+
+@pytest.fixture(scope="module")
+def simple_handler2(simple_group_array_file):
+    return NetCDFHandler(simple_group_array_file)
+
+
+@pytest.fixture(scope="module")
+def simple_handler3(nested_group_array_file):
+    return NetCDFHandler(nested_group_array_file)
 
 
 def test_handler(simple_data, simple_handler):
@@ -56,6 +105,32 @@ def test_handler(simple_data, simple_handler):
     np.testing.assert_array_equal(
         np.array(retrieved_data, dtype=dtype), np.array(simple_data, dtype=dtype)
     )
+
+
+def test_handler_array(simple_Group_data, simple_handler2):
+    """Test that dataset has the correct data proxies for grids."""
+    dataset = simple_handler2.dataset
+    r_dims = dataset.dimensions
+    g_dims = dataset["Group"].attributes["dimensions"]
+    temp = dataset["/Group/temperature"][:]
+    np.testing.assert_array_equal(temp.data, simple_Group_data)
+    assert r_dims == {"/time": 1, "/nv": 2}
+    assert g_dims == {"X": 4, "Y": 4}
+    assert temp.dims == ("/time", "/Group/Y", "/Group/X")
+
+
+def test_handler_nested_Group_array(simple_Group_data, simple_handler3):
+    """Test that dataset has the correct data proxies for grids."""
+    dataset = simple_handler3.dataset
+    r_dims = dataset.dimensions
+    g_dims = dataset["Group"].attributes["dimensions"]
+    sg_dims = dataset["/Group/SubGroup"].attributes["dimensions"]
+    temp = dataset["/Group/SubGroup/temperature"][:]
+    np.testing.assert_array_equal(temp.data, simple_Group_data)
+    assert r_dims == {"/time": 1}
+    assert g_dims == {}
+    assert sg_dims == {"X": 4, "Y": 4}
+    assert temp.dims == ("/time", "/Group/SubGroup/Y", "/Group/SubGroup/X")
 
 
 @pytest.fixture(scope="module")
