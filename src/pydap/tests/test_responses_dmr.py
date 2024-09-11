@@ -19,7 +19,7 @@ def load_dmr_file(file_path):
     return text
 
 
-class TestDMRResponseSequence(unittest.TestCase):
+class TestDMRResponseGroup(unittest.TestCase):
     """Test DRM response from sequences."""
 
     def setUp(self):
@@ -51,7 +51,7 @@ class TestDMRResponseSequence(unittest.TestCase):
             ResponseHeaders(
                 [
                     ("OPeNDAP-Server", "pydap/" + __version__),
-                    ("Content-description", "dmr++"),
+                    ("Content-description", "dmr"),
                     ("Content-type", "text/plain; charset=ascii"),
                     ("Access-Control-Allow-Origin", "*"),
                     (

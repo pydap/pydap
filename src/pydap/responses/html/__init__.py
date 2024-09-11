@@ -24,7 +24,7 @@ class HTMLResponse(BaseResponse):
         BaseResponse.__init__(self, dataset)
         self.headers.extend(
             [
-                ("Content-description", "dods_form"),
+                ("Content-description", "DAP_form"),
                 ("Content-type", "text/html; charset=utf-8"),
             ]
         )

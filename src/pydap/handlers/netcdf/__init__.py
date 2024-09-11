@@ -34,7 +34,7 @@ class NetCDFHandler(BaseHandler):
     Here's a standard dataset for testing sequential data:
     """
 
-    extensions = re.compile(r"^.*\.(nc|cdf)$", re.IGNORECASE)
+    extensions = re.compile(r"^.*\.(nc4|nc|cdf)$", re.IGNORECASE)
 
     def __init__(self, filepath):
         BaseHandler.__init__(self)
@@ -57,17 +57,20 @@ class NetCDFHandler(BaseHandler):
                 vars = source.variables
                 dims = source.dimensions
 
-                # build dataset
-                name = os.path.split(filepath)[1]
-                self.dataset = DatasetType(
-                    name, attributes=dict(NC_GLOBAL=attrs(source))
-                )
+                # Add dimensions when creating the DatasetType
+                Dims = OrderedDict()
                 for dim in dims:
                     if dims[dim] is None:
                         self.dataset.attributes["DODS_EXTRA"] = {
                             "Unlimited_Dimension": dim,
                         }
-                        break
+                    else:
+                        Dims.update({source.path + dims[dim].name: dims[dim].size})
+                # build dataset
+                name = os.path.split(filepath)[1]
+                self.dataset = DatasetType(
+                    name, dimensions=Dims, attributes=dict(NC_GLOBAL=attrs(source))
+                )
 
                 # add grids
                 grids = [var for var in vars if var not in dims]
@@ -90,19 +93,76 @@ class NetCDFHandler(BaseHandler):
                             attributes = None
                         self.dataset[grid][dim] = BaseType(dim, data, None, attributes)
 
-                # add dims
-                for dim in dims:
-                    try:
-                        data = vars[dim][:]
-                        attributes = attrs(vars[dim])
-                    except KeyError:
-                        data = np.arange(dims[dim].size, dtype="i")
-                        attributes = None
+                fqn_dims = OrderedDict()  # keep track of fully qualifying names of dims
+                if len(source.groups) > 0:
+                    # start at root level
+                    path = source.path
+                    for vdim in source.dimensions:
+                        fqn_dims.update({vdim: path + vdim})
+                    fqn_dims = group_fqn(self.dataset, source, fqn_dims)
+
+                vdims = [dim for dim in dims if dim in vars]
+                for dim in vdims:
+                    data = vars[dim][:]
+                    attributes = attrs(vars[dim])
                     self.dataset[dim] = BaseType(dim, data, None, attributes)
         except Exception as exc:
             raise
             message = "Unable to open file %s: %s" % (filepath, exc)
             raise OpenFileError(message)
+
+
+def group_fqn(_dataset, _source, _fqn_dims=OrderedDict()):
+    """Function to create nested DAP objects with fully-qualified-names
+    within a hierarchy. Returns a dictionary with mapping between dimension
+    names used at the group/array level and their fully qualifying names.
+
+    Parameters:
+    ----------
+        dataset: <pydap DatasetType>
+            dataset to `write` object to.
+        _source: <class netCDF4 >
+            root, group, subgroup.
+        _fqn_dims: dict,
+            dict to create mapping between dimension names
+            and their full-qualyfing names.
+
+    Returns:
+        _fqn_dims: dict
+            Updated dict with mapping `dim_name` <--> fqn
+    """
+    for group in _source.groups:
+        _path = _source[group].path
+        if _path[-1] != "/":
+            _path = _path + "/"
+        # create group and attrs + dims (non-fqn)
+        dims = _source[group].dimensions
+        Dims = {}
+        for dim in dims:
+            if dim not in _fqn_dims.keys():
+                _fqn_dims.update({dim: _path + dim})
+            Dims.update({_source[group][dim].name: _source[group][dim].size})
+        _attrs = dict(
+            (attr, _source[group].getncattr(attr)) for attr in _source[group].ncattrs()
+        )
+        _dataset.createGroup(_source[group].path, dimensions=Dims, **_attrs)
+        # now vars
+        Vars = _source[group].variables
+        for var in Vars:
+            data = _source[group][var][:].data  # extract data from file
+            dims = list(_source[group][var].dimensions)  # these must have fqn
+            vdims = []  # create mapping for fqn
+            for dim in dims:
+                vdims.append(_fqn_dims[dim])
+            vattrs = dict(
+                (attr, _source[group][var].getncattr(attr))
+                for attr in _source[group][var].ncattrs()
+            )
+            _dataset.createVariable(_path + var, data=data, dims=tuple(vdims), **vattrs)
+        # check if there are nested group
+        if len(_source[group].groups) > 0:
+            _fqn_dims = group_fqn(_dataset, _source[group], _fqn_dims)
+    return _fqn_dims
 
 
 class LazyVariable:
