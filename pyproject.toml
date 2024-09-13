@@ -9,7 +9,6 @@ classifiers = [
   "Intended Audience :: Science/Research",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Operating System :: MacOS",
@@ -20,15 +19,9 @@ classifiers = [
   "License :: OSI Approved :: MIT License"
 ]
 dependencies = [
-  "numpy",
-  "Webob",
-  "Jinja2",
-  "docopt-ng",
-  "beautifulsoup4",
-  "lxml",
+  "numpy >= 2.0",
   "requests",
-  "importlib-metadata",
-  "importlib-resources"
+  "scipy"
 ]
 description = "A pure python implementation of the Data Access Protocol."
 dynamic = ["version"]
@@ -36,7 +29,7 @@ license = {file = "LICENSE"}
 maintainers = [{name = 'Miguel Jimenez-Urias', email = 'mjimenez@opendap.org'}]
 name = "pydap"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 
 [project.entry-points."console_scripts"]
 dods = "pydap.handlers.dap:dump"
@@ -65,9 +58,8 @@ ver = "pydap.responses.version:VersionResponse"
 cas = ['lxml']
 docs = ['Sphinx', 'Pygments', "pandoc", "sphinx_rtd_theme", "nbsphinx", "numpydoc"]
 functions = ['gsw==3.0.6', 'coards']
-"handlers.netcdf" = ['netCDF4']
 netcdf = ['netCDF4']
-server = ['gunicorn', 'PasteDeploy']
+server = ['gunicorn', 'PasteDeploy', 'docopt-ng', 'Webob', 'Jinja2', 'beautifulsoup4', 'lxml']
 tests = [
   'pytest>=3.6',
   'pytest-cov',
@@ -79,7 +71,12 @@ tests = [
   'gunicorn',
   'cryptography',
   'gsw',
-  'coards'
+  'coards',
+  "docopt-ng",
+  "Webob",
+  "Jinja2",
+  "beautifulsoup4",
+  "lxml"
 ]
 
 [tool.isort]

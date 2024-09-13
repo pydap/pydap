@@ -10,7 +10,7 @@ KML, WMS, JSON, etc., installed as third-party Python packages that declare the
 
 """
 
-from importlib_metadata import entry_points
+from importlib.metadata import entry_points
 
 from ..lib import __version__
 from ..model import DatasetType
