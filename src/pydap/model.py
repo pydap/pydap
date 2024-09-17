@@ -523,6 +523,35 @@ class StructureType(DapType, Mapping):
     def type(self):
         return "Structure"
 
+    def structures(self):
+        out = {}
+        Gs = [key for key in self.children() if isinstance(key, StructureType)]
+        Strs = [key for key in Gs if key.type == "Structure"]
+        for var in Strs:
+            out.update({var.name: [key.name for key in var.children()]})
+        return out
+
+    def groups(self):
+        """Returns fqn for all (nested) groups"""
+        out = {}
+        for var in walk(self, GroupType):
+            out.update({var.name: var.path})
+        return out
+
+    def sequences(self):
+        out = {}
+        Sqns = [key for key in self.children() if isinstance(key, SequenceType)]
+        for var in Sqns:
+            out.update({var.name: [key.name for key in var.children()]})
+        return out
+
+    def base(self):
+        out = {}
+        Bcs = [key for key in self.children() if isinstance(key, BaseType)]
+        for var in Bcs:
+            out.update({var.name: var.dtype})
+        return out
+
 
 class DatasetType(StructureType):
     """A root Dataset.
@@ -547,6 +576,7 @@ class DatasetType(StructureType):
             current = self._dict
             for j in range(N - 1):
                 if parts[j] not in current:
+                    print(parts)
                     # This current approach works when parsing a DMR
                     # with only Groups and arrays. Need to enable
                     # Sequences and Structures. This works with all
@@ -635,6 +665,10 @@ class DatasetType(StructureType):
         self._dict = OrderedDict((k, self._dict[k]) for k in order)
 
     @property
+    def type(self):
+        return ()
+
+    @property
     def nbytes(self):
         """Returns the number of bytes occupied in aggregation by all
         uncompressed, BaseType data in the DatasetType. Attributes are
@@ -678,7 +712,12 @@ class DatasetType(StructureType):
 
         Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
         """
-        return self.createDapType(GroupType, name, **attrs)
+        path = "/"
+        if name[0] != "/":
+            name = "/" + name
+        if len(name.split("/")) > 2:
+            path = ("/").join(name.split("/")[:-1])
+        return self.createDapType(GroupType, name, **attrs, path=path)
 
     def createVariable(self, name, **attrs):
         """
