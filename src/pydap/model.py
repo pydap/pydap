@@ -546,7 +546,7 @@ class StructureType(DapType, Mapping):
             out.update({var.name: [key.name for key in var.children()]})
         return out
 
-    def base(self):
+    def variables(self):
         out = {}
         Bcs = [key for key in self.children() if isinstance(key, BaseType)]
         for var in Bcs:
