@@ -151,6 +151,30 @@ def get_maps(element):
     return Maps
 
 
+def get_groups(node, prefix="/"):
+    groups = node.findall("Group")  # may be seveal elements
+    out = {}
+    for group in groups:
+        fqname = prefix + group.attrib["name"]
+        named_dimensions = get_named_dimensions(group)
+        global_dimensions = []
+        for name, size in named_dimensions.items():
+            global_dimensions.append([name, size])
+        out.update(
+            {
+                fqname: {
+                    "attributes": get_attributes(group, {}),
+                    "Maps": get_maps(group),
+                    "dimensions": {k: v for k, v in global_dimensions},
+                }
+            }
+        )
+        subgroups = group.findall("Group")
+        if len(subgroups) > 0:
+            out.update(get_groups(group, fqname + "/"))
+    return out
+
+
 def dmr_to_dataset(dmr):
     """Return a dataset object from a DMR representation."""
 
@@ -234,15 +258,6 @@ def dmr_to_dataset(dmr):
 
         else:
             dataset[name] = var
-
-    group_dims = [
-        dim for dim in named_dimensions if dim not in dataset.dimensions.keys()
-    ]
-    for fqn in group_dims:
-        path = ("/").join(fqn.split("/")[:-1])
-        dim_name = fqn.split("/")[-1]
-        dataset[path].dimensions.update({dim_name: named_dimensions[fqn]})
-
     return dataset
 
 
@@ -266,6 +281,16 @@ class DMRParser(object):
             if subnode.get("name") in AttsNames:
                 Attrs = get_attributes(subnode, Attrs)
         dataset.attributes = Attrs
+        # create Groups via dict
+        Groups = get_groups(self.node)
+        for key in Groups:
+            dims = Groups[key].pop("dimensions", None)
+            Maps = Groups[key].pop("Maps", None)
+            attributes = Groups[key].pop("attributes", None)
+            dataset.createGroup(
+                name=key, dimensions=dims, Maps=Maps, attributes=attributes
+            )
+
         return dataset
 
 

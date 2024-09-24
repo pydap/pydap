@@ -535,7 +535,8 @@ class StructureType(DapType, Mapping):
         """Returns fqn for all (nested) groups"""
         out = {}
         for var in walk(self, GroupType):
-            out.update({var.name: var.path})
+            if var.type == "Group":
+                out.update({var.name: var.path})
         return out
 
     def sequences(self):
@@ -576,12 +577,12 @@ class DatasetType(StructureType):
             current = self._dict
             for j in range(N - 1):
                 if parts[j] not in current:
-                    print(parts)
+                    # print(parts)
                     # This current approach works when parsing a DMR
                     # with only Groups and arrays. Need to enable
                     # Sequences and Structures. This works with all
                     # DAP4 when creating Dataset manally.
-                    current[parts[j]] = GroupType(parts[j])
+                    current[parts[j]] = GroupType(parts[j])  # path here!!
                 current = current[parts[j]]
             current[parts[-1]] = item
         else:
@@ -716,7 +717,7 @@ class DatasetType(StructureType):
         if name[0] != "/":
             name = "/" + name
         if len(name.split("/")) > 2:
-            path = ("/").join(name.split("/")[:-1])
+            path = ("/").join(name.split("/")[:-1]) + "/"
         return self.createDapType(GroupType, name, **attrs, path=path)
 
     def createVariable(self, name, **attrs):
@@ -1015,13 +1016,12 @@ class GroupType(StructureType):
 
     """
 
-    def __setitem__(self, key, item, dimensions=dict()):
+    def __setitem__(self, key, item):
         StructureType.__setitem__(self, key, item)
 
         # The Group name does (not) go into the children ids.
 
         item.id = item.name
-        self.dimensions = dimensions or dict()
         # self._dict[key] = item
 
         # # # By default added keys are visible:
