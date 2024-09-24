@@ -33,6 +33,9 @@
         <Int16 name="X">
             <Dim name="/SimpleGroup/X"/>
         </Int16>
+        <Attribute name="Description" type="String">
+            <Value>Test group with numerical data</Value>
+        </Attribute>
     </Group>
     <Float32 name="time">
         <Dim name="/time"/>
