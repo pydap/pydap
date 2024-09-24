@@ -166,6 +166,7 @@ def get_groups(node, prefix="/"):
                     "attributes": get_attributes(group, {}),
                     "Maps": get_maps(group),
                     "dimensions": {k: v for k, v in global_dimensions},
+                    "path": prefix,
                 }
             }
         )
@@ -253,9 +254,8 @@ def dmr_to_dataset(dmr):
             else:
                 dapType = pydap.model.StructureType
             if parent_name not in dataset[path].keys():
-                dataset[path + parent_name] = dapType(parent_name)
+                dataset[path + parent_name] = dapType(parent_name, path=path)
             dataset[("/").join(parts)] = var
-
         else:
             dataset[name] = var
     return dataset
