@@ -159,7 +159,7 @@ def get_groups(node, prefix="/"):
         named_dimensions = get_named_dimensions(group)
         global_dimensions = []
         for name, size in named_dimensions.items():
-            global_dimensions.append([name, size])
+            global_dimensions.append([name.split("/")[-1], size])
         out.update(
             {
                 fqname: {

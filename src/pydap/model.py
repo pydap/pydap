@@ -577,12 +577,11 @@ class DatasetType(StructureType):
             current = self._dict
             for j in range(N - 1):
                 if parts[j] not in current:
-                    # print(parts)
-                    # This current approach works when parsing a DMR
-                    # with only Groups and arrays. Need to enable
-                    # Sequences and Structures. This works with all
-                    # DAP4 when creating Dataset manally.
-                    current[parts[j]] = GroupType(parts[j])  # path here!!
+                    #     # This current approach works when parsing a DMR
+                    #     # with only Groups and arrays. Need to enable
+                    #     # Sequences and Structures. This works with all
+                    #     # DAP4 when creating Dataset manally.
+                    current[parts[j]] = GroupType(parts[j])
                 current = current[parts[j]]
             current[parts[-1]] = item
         else:
