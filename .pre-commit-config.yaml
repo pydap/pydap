@@ -1,6 +1,7 @@
 # https://pre-commit.com/
 ci:
-  autofix_prs: false
+  autoupdate_schedule: monthly
+  autoupdate_commit_msg: 'Update pre-commit hooks'
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.5.0
