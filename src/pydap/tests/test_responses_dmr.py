@@ -58,7 +58,7 @@ class TestDMRResponseGroup(unittest.TestCase):
                         "Access-Control-Allow-Headers",
                         "Origin, X-Requested-With, Content-Type",
                     ),
-                    ("Content-Length", "1734"),
+                    ("Content-Length", "1977"),
                 ]
             ),
         )
