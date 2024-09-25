@@ -215,6 +215,7 @@ class DAPHandler(BaseHandler):
                 var_name = var.path + "/" + var.name
             else:
                 var_name = var.name
+            print(var_name)
             var.data = BaseProxyDap4(
                 self.base_url,
                 var_name,
@@ -223,6 +224,7 @@ class DAPHandler(BaseHandler):
                 application=self.application,
                 session=self.session,
                 timeout=self.timeout,
+                verify=self.verify,
             )
 
         # apply projections to BaseType only
@@ -247,6 +249,7 @@ class DAPHandler(BaseHandler):
                 application=self.application,
                 session=self.session,
                 timeout=self.timeout,
+                verify=self.verify,
             )
         for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
@@ -257,6 +260,7 @@ class DAPHandler(BaseHandler):
                 application=self.application,
                 session=self.session,
                 timeout=self.timeout,
+                verify=self.verify,
             )
 
         # apply projections
