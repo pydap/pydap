@@ -20,7 +20,7 @@ jobs:
     runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ['3.x', '3.10', '3.11']
+        python-version: ['3.10', '3.11', '3.12']
     name: macos-latest Python ${{ matrix.python-version }}
     steps:
     - uses: actions/checkout@v4
@@ -32,6 +32,7 @@ jobs:
         environment-name: pydap_tests
         create-args: >-
           python=${{ matrix.python-version }}
+          conda
         cache-environment: true
 
     - name: Install pydap and dependencies for testing
