@@ -215,7 +215,6 @@ class DAPHandler(BaseHandler):
                 var_name = var.path + "/" + var.name
             else:
                 var_name = var.name
-            print(var_name)
             var.data = BaseProxyDap4(
                 self.base_url,
                 var_name,
