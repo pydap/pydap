@@ -103,10 +103,8 @@ more information on how to better deploy pydap.
 
 ## Documentation
 
-For more information, see [the pydap
-documentation](https://pydap.github.io/pydap/).
+For more information, see [the pydap documentation](https://pydap.github.io/pydap/).
 
-## Help
+## Help and Community
 
-If you need any help with pydap, please feel free to send an email to
-the [mailing list](http://groups.google.com/group/pydap/)
+If you need any help with pydap, open an issue in this repository. If you have a broader OPeNDAP access question, you can reach the OPeNDAP team on the [OPeNDAP Discourse](https://opendap.discourse.group/)!
