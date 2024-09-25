@@ -23,6 +23,7 @@ The following are minimal dependencies to use pydap as a client.
 * matplotlib
 * jupyter-lab
 * cartopy
+* xarray
 
 These are only necessary to run some of the tutorial notebooks.
 
