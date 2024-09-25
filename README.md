@@ -17,7 +17,7 @@ What is pydap?
 
 Why pydap?
 ----------
-Originally developed in the 2000s, pydap is one of the oldest open-source python projects available and it gets rutinely developed and maintained by the OPeNDAP community at large.
+Originally developed in the 2000s, pydap is one of the oldest open-source python projects available and it gets rutinely developed and maintained by the OPeNDAP community at large. In addition, pydap is a long-recognized backend engine (and dependency) for [xarray](https://github.com/pydata/xarray) and chances are you have used pydap in past without knowing.
 
 
 Quickstart
@@ -53,6 +53,8 @@ dataset, and pydap will download the accessed data on-the-fly as needed. For exa
     from pydap.client import open_url
     pyds = open_url('http://test.opendap.org:8080/opendap/catalog/ghrsst/20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc', protocol='dap4')
     pyds.tree()
+```
+```python
     .20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc
     ├──time
     ├──lat
@@ -63,10 +65,14 @@ dataset, and pydap will download the accessed data on-the-fly as needed. For exa
     ├──sea_ice_fraction
     ├──dt_1km_data
     └──sst_anomaly
+```
+```python
     pyds['sst_anomaly'].shape
+```
+```python
     (1, 17999, 36000)
 ```
-**NOTE** In the example above, no data was downloaded, it was lazily evaluated using OPeNDAP's DMR (DAP4) metadata representation. For more information, please check the documentation on [using pydap
+**NOTE** In the example above, no data was downloaded, it was all lazily evaluated using OPeNDAP's DMR (DAP4) metadata representation. For more information, please check the documentation on [using pydap
 as a client](https://pydap.github.io/pydap/client.html).
 
 pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/)
