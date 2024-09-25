@@ -7,6 +7,14 @@ on:
     branches:
     - main
 
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash -l {0}
+
 jobs:
   build:
     runs-on: macos-latest
@@ -28,7 +36,8 @@ jobs:
 
     - name: Set up conda environment
       run: |
-        pip install -e .[tests]
+        python -m pip install -e .[tests]
+        conda list
 
     - name: Run tests with pytest
       run: |
