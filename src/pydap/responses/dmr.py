@@ -68,6 +68,17 @@ def _(var, level=0):
     for child in var.children():
         for line in dmr(child, level + 1):
             yield line
+    for key, value in var.attributes.items():
+        if key != "dimensions":
+            _type = type(value).__name__
+            yield '{indent}<Attribute name="{name}" type="{type}">\n'.format(
+                indent=(level + 1) * INDENT, name=key, type=_type
+            )
+            yield "{indent}<Value>{val}</Value>\n".format(
+                indent=(level + 2) * INDENT, val=value
+            )
+            yield "{indent}</Attribute>\n".format(indent=(level + 1) * INDENT)
+
     yield "{indent}</Dataset>\n".format(indent=level * INDENT)
 
 
@@ -88,6 +99,16 @@ def _grouptype(var, level=0):
         yield '{indent}<Dimension name="{name}" size="{size}"/>\n'.format(
             indent=(level + 1) * INDENT, name=dim, size=size
         )
+    for key, value in var.attributes.items():
+        if key not in ["dimensions", "path"]:
+            _type = type(value).__name__
+            yield '{indent}<Attribute name="{name}" type="{type}">\n'.format(
+                indent=(level + 1) * INDENT, name=key, type=_type
+            )
+            yield "{indent}<Value>{val}</Value>\n".format(
+                indent=(level + 2) * INDENT, val=value
+            )
+            yield "{indent}</Attribute>\n".format(indent=(level + 1) * INDENT)
     for child in var.children():
         for line in dmr(child, level + 1):
             yield line

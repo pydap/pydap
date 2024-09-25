@@ -1,13 +1,15 @@
 """Test DAP4 parsing functions."""
 
 import os
+import re
 import unittest
+from xml.etree import ElementTree as ET
 
 import numpy as np
 
 from ..lib import walk
 from ..model import BaseType
-from ..parsers.dmr import dmr_to_dataset
+from ..parsers.dmr import dmr_to_dataset, get_groups
 
 
 def load_dmr_file(file_path):
@@ -18,7 +20,7 @@ def load_dmr_file(file_path):
     return dataset
 
 
-class DMRParser(unittest.TestCase):
+class TestDMRParser(unittest.TestCase):
     """Test parsing a DMR."""
 
     def test_single_scalar(self):
@@ -120,3 +122,19 @@ class DMRParser(unittest.TestCase):
         self.assertIn("nv", names)
         # assert nv is NOT a variable/array
         self.assertNotIn("nv", variables)
+
+    def test_get_groups(self):
+        dmr_file = "data/dmrs/SimpleGroup.dmr"
+        abs_path = os.path.join(os.path.dirname(__file__), dmr_file)
+        with open(abs_path, "r") as dmr_file:
+            dmr = dmr_file.read()
+        _dmr = re.sub(' xmlns="[^"]+"', "", dmr, count=1)
+        node = ET.fromstring(_dmr)
+        groups = get_groups(node)
+        assert isinstance(groups, dict)
+        assert list(groups.keys()) == ["/SimpleGroup"]
+        entry = groups["/SimpleGroup"]
+        assert entry["attributes"] == {"Description": "Test group with numerical data"}
+        assert entry["dimensions"] == {"Y": 4, "X": 4}
+        assert entry["path"] == "/"
+        assert entry["Maps"] == ()

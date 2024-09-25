@@ -5,6 +5,9 @@
     <Group name="SimpleGroup">
         <Dimension name="Y" size="4"/>
         <Dimension name="X" size="4"/>
+        <Attribute name="Description" type="str">
+            <Value>Test group with numerical data</Value>
+        </Attribute>
         <Float32 name="Temperature">
             <Dim name="/time"/>
             <Dim name="/SimpleGroup/Y"/>
@@ -47,4 +50,7 @@
         <Dim name="/time"/>
         <Dim name="/nv"/>
     </Float32>
+    <Attribute name="Description" type="str">
+        <Value>A simple group for testing.</Value>
+    </Attribute>
 </Dataset>

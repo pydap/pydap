@@ -503,6 +503,41 @@ def test_DatasetType_fails_createDAPType():
     assert "Group2" not in dataset
 
 
+def test_DatasetType_groups(sequence_example):
+    dataset = DatasetType("dataset")
+    dataset.createGroup("/Group1")
+    dataset.createGroup("/Group1/SubGroup1")
+    dataset.createGroup("/Group2")
+    dataset.createGroup("/Group2/SubGroup2")
+    groups = dataset.groups()
+    values = {
+        "Group1": "/",
+        "SubGroup1": "/Group1/",
+        "Group2": "/",
+        "SubGroup2": "/Group2/",
+    }
+    assert groups == values
+
+
+def test_DatasetType_sequences(sequence_example):
+    dataset = DatasetType("dataset")
+    dataset.createGroup("/Group1")
+    dataset["/Group1/example"] = sequence_example
+    seq_root_level = dataset.sequences()
+    sqns = dataset["/Group1"].sequences()
+    assert seq_root_level == {}
+    assert sqns == {"example": ["index", "temperature", "site"]}
+
+
+def test_DatasetType_variables():
+    dataset = DatasetType("dataset")
+    dataset.createGroup("/Group1")
+    dataset.createVariable("/root_variable", dtype=np.float32)
+    dataset.createVariable("/Group1/other_variable", dtype=np.int64)
+    assert dataset.variables() == {"root_variable": np.dtype("float32")}
+    assert dataset["/Group1"].variables() == {"other_variable": np.dtype("int64")}
+
+
 # Test pydap grids.
 @pytest.fixture()
 def gridtype_example():

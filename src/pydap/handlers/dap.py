@@ -223,6 +223,7 @@ class DAPHandler(BaseHandler):
                 application=self.application,
                 session=self.session,
                 timeout=self.timeout,
+                verify=self.verify,
             )
 
         # apply projections to BaseType only
@@ -247,6 +248,7 @@ class DAPHandler(BaseHandler):
                 application=self.application,
                 session=self.session,
                 timeout=self.timeout,
+                verify=self.verify,
             )
         for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
@@ -257,6 +259,7 @@ class DAPHandler(BaseHandler):
                 application=self.application,
                 session=self.session,
                 timeout=self.timeout,
+                verify=self.verify,
             )
 
         # apply projections

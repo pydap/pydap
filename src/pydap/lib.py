@@ -298,8 +298,8 @@ def walk(var, type=object):
     if isinstance(var, type):
         yield var
     for child in var.children():
-        for var in walk(child, type):
-            yield var
+        for subvar in walk(child, type):
+            yield subvar
 
 
 def tree(template, prefix=""):
