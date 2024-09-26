@@ -358,8 +358,10 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required-dependencies">Minimal Required Dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependencies">Optional dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-dependencies">extra-dependencies</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-environments">Reproducible environments</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lightweight-server">Lightweight server</a></li>
 </ul>
             </nav>
         </div>
@@ -378,11 +380,56 @@ document.write(`
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap
 </pre></div>
 </div>
+<section id="minimal-required-dependencies">
+<h2>Minimal Required Dependencies<a class="headerlink" href="#minimal-required-dependencies" title="Link to this heading">#</a></h2>
+<p>The following are minimal dependencies to use pydap as a client.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">&gt;=</span> <span class="pre">3.10</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pydap</span></code>’s CI/CD against stable versions of python (<code class="docutils literal notranslate"><span class="pre">3.10</span></code>, <code class="docutils literal notranslate"><span class="pre">3.11</span></code>, <code class="docutils literal notranslate"><span class="pre">3.12</span></code>). pydap recently dropped support for version 3.9.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span> <span class="pre">&gt;=</span> <span class="pre">2.0</span></code></p>
+<ul>
+<li><p>pydap recently dropped support for <code class="docutils literal notranslate"><span class="pre">numpy&lt;2</span></code>.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scipy</span></code></p>
+<ul>
+<li><p>it may only be used if <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code> (python) library is not currently installed</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">requests</span></code></p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pydap</span></code> greatly uses the <code class="docutils literal notranslate"><span class="pre">requests</span></code> library to connect with OPeNDAP servers through the web, and setup authentication sessions.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="optional-dependencies">
+<h2>Optional dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>matplotlib</p></li>
+<li><p>jupyter-lab</p></li>
+<li><p>cartopy</p></li>
+<li><p>xarray</p></li>
+</ul>
+<p>These are only necessary to run some of the tutorial notebooks.</p>
+</section>
+<section id="extra-dependencies">
+<h2>extra-dependencies<a class="headerlink" href="#extra-dependencies" title="Link to this heading">#</a></h2>
+<p>Some extra dependencies can be installed to further exploit pydap’s capabilities. For example, to use pydap as a server, to serve netCDF4 data you can install all the required and extra dependencies as follows:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap<span class="s2">&quot;[server,netcdf]&quot;</span>
+</pre></div>
+</div>
+<p>This will install <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>-python library as well as all other dependencies to use/run <code class="docutils literal notranslate"><span class="pre">pydap</span></code> as a <strong>lightweight server</strong>. With this, <code class="docutils literal notranslate"><span class="pre">pydap</span></code> implements a lightweight <a class="reference external" href="http://wsgi.org/">WSGI</a> framework that it can easily be run behind <a class="reference external" href="https://www.apache.org/">Apache</a>.</p>
+<p>To inspect all other possible optional installation with extra dependencies, check the optional-dependencies on the <a class="reference external" href="https://github.com/pydap/pydap/blob/main/pyproject.toml#L57-L80">pyproject.toml</a>.</p>
+</section>
 <section id="reproducible-environments">
 <h2>Reproducible environments<a class="headerlink" href="#reproducible-environments" title="Link to this heading">#</a></h2>
 <p>We highly recommend using a package installation manager like conda/mamba to install pydap, and any other dependency, in a reproducible and containerized environment. This approach requires having an installation of <a class="reference external" href="https://docs.anaconda.com/miniconda/">Miniconda</a> or <a class="reference external" href="https://docs.anaconda.com/anaconda/install/">Anaconda</a>.</p>
 <p>The easiest way to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> is to use the conda-forge channel. Open a terminal, then run the following commands:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap<span class="w"> </span>numpy<span class="w"> </span>jupyterlab<span class="w"> </span>ipython<span class="w"> </span>netCDF4<span class="w"> </span>scipy<span class="w"> </span>matplotlib<span class="w"> </span>cartopy<span class="w"> </span>xarray
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap<span class="w"> </span>numpy<span class="s2">&quot;&gt;=2.0&quot;</span><span class="w"> </span>jupyterlab<span class="w"> </span>ipython<span class="w"> </span>netCDF4<span class="w"> </span>scipy<span class="w"> </span>matplotlib
 </pre></div>
 </div>
 <p>The code above will create a conda environment named “pydap” with many of the commonly used packages for processing and visualizing gridded data, using the latest stable versions (conda release).</p>
@@ -405,14 +452,6 @@ document.write(`
 </pre></div>
 </div>
 <p>This will install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> along with the minimal dependencies defined on the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> specification. For more on the <code class="docutils literal notranslate"><span class="pre">developer</span></code> approach of installing <code class="docutils literal notranslate"><span class="pre">pydap</span></code>, see <a class="reference internal" href="contribute/contr_cod.html"><span class="std std-doc">Contributing to the code</span></a>.</p>
-</section>
-<section id="lightweight-server">
-<h2>Lightweight server<a class="headerlink" href="#lightweight-server" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">pydap</span></code> also implements a lightweight <a class="reference external" href="http://wsgi.org/">WSGI</a> framework that it can easily be run behind <a class="reference external" href="https://www.apache.org/">Apache</a>. You can install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> in server mode by running</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap<span class="s2">&quot;[server]&quot;</span>
-</pre></div>
-</div>
-<p>This installation of pydap comes with handlers for NetCDF and csv files. Other handlers can have been developed and can be found in the <a class="reference external" href="https://github.com/pydap">Pydap Github Project</a>.</p>
 </section>
 </section>
 
@@ -480,8 +519,10 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required-dependencies">Minimal Required Dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependencies">Optional dependencies</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-dependencies">extra-dependencies</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-environments">Reproducible environments</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lightweight-server">Lightweight server</a></li>
 </ul>
   </nav></div>
 

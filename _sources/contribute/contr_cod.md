@@ -1,6 +1,6 @@
 # Contributing to the code
 
-To contribute to the code, we recommend to install `PyDAP` within a containerized testing environment. The simplest way is to navigate to the local pydap clone repository and run:
+To contribute to the code, we recommend to install `PyDAP` within a containerized testing environment, and to follow the approach used worflows in out CI/CD:
 
 ```shell
 conda create -n pydap_tests -c conda-forge python=3.10
@@ -17,9 +17,8 @@ If you already have `mamba` installed, you can replace all `conda` in the comman
 Then install pydap in development mode:
 
 ```shell
-pip install -e".[tests,client,netcdf]"
+pip install -e ".[tests]"
 ```
-
 
 At this point, you can use [git](git.md) for making commits to pydap. Make sure the code follows the style guide by running:
 

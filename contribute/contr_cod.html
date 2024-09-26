@@ -362,7 +362,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="contributing-to-the-code">
 <h1>Contributing to the code<a class="headerlink" href="#contributing-to-the-code" title="Link to this heading">#</a></h1>
-<p>To contribute to the code, we recommend to install <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> within a containerized testing environment. The simplest way is to navigate to the local pydap clone repository and run:</p>
+<p>To contribute to the code, we recommend to install <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> within a containerized testing environment, and to follow the approach used worflows in out CI/CD:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_tests<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10
 conda<span class="w"> </span>env<span class="w"> </span>update<span class="w"> </span>-n<span class="w"> </span>pydap_tests<span class="w"> </span>-f<span class="w"> </span>ci/environment.yml
 conda<span class="w"> </span>activate<span class="w"> </span>pydap_tests
@@ -374,7 +374,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>pydap_tests
 <p>If you already have <code class="docutils literal notranslate"><span class="pre">mamba</span></code> installed, you can replace all <code class="docutils literal notranslate"><span class="pre">conda</span></code> in the commands with <code class="docutils literal notranslate"><span class="pre">mamba</span></code>.</p>
 </div>
 <p>Then install pydap in development mode:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="s2">&quot;.[tests,client,netcdf]&quot;</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[tests]&quot;</span>
 </pre></div>
 </div>
 <p>At this point, you can use <a class="reference internal" href="git.html"><span class="std std-doc">git</span></a> for making commits to pydap. Make sure the code follows the style guide by running:</p>
