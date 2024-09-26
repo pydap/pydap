@@ -5,3 +5,4 @@ dependencies:
 - numpy >= 2.0
 - netCDF4
 - scipy
+- requests

@@ -20,7 +20,7 @@ To add/edit the documentation, we recommend you follow the previous guides on ve
 ```shell
 conda env create -f docs/environment.yml
 conda activate pydap_docs
-pip install -e ."[server,netcdf,client]"
+pip install -e ."[server,netcdf]"
 ```
 
 3. At this point, you can use [git](git.md) for making commits to `PyDAP`'s documentation. Make sure the code follows the style guide by running:

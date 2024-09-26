@@ -8,6 +8,34 @@ pydap can be installed with minimal required dependencies from [PyPI](https://py
 pip install pydap
 ```
 
+### Minimal Required Dependencies
+The following are minimal dependencies to use pydap as a client.
+* `python >= 3.10`
+	- `pydap`'s CI/CD against stable versions of python (`3.10`, `3.11`, `3.12`). pydap recently dropped support for version 3.9.
+* `numpy >= 2.0`
+	- pydap recently dropped support for `numpy<2`.
+* `scipy`
+	- it may only be used if `netCDF4` (python) library is not currently installed
+* `requests`
+	- `pydap` greatly uses the `requests` library to connect with OPeNDAP servers through the web, and setup authentication sessions.
+
+### Optional dependencies
+* matplotlib
+* jupyter-lab
+* cartopy
+* xarray
+
+These are only necessary to run some of the tutorial notebooks.
+
+### extra-dependencies
+Some extra dependencies can be installed to further exploit pydap's capabilities. For example, to use pydap as a server, to serve netCDF4 data you can install all the required and extra dependencies as follows:
+```shell
+pip install pydap"[server,netcdf]"
+```
+This will install `netCDF4`-python library as well as all other dependencies to use/run `pydap` as a **lightweight server**. With this, `pydap` implements a lightweight [WSGI](http://wsgi.org/) framework that it can easily be run behind [Apache](https://www.apache.org/).
+
+To inspect all other possible optional installation with extra dependencies, check the optional-dependencies on the [pyproject.toml](https://github.com/pydap/pydap/blob/main/pyproject.toml#L57-L80).
+
 ### Reproducible environments
 
 We highly recommend using a package installation manager like conda/mamba to install pydap, and any other dependency, in a reproducible and containerized environment. This approach requires having an installation of [Miniconda](https://docs.anaconda.com/miniconda/) or [Anaconda](https://docs.anaconda.com/anaconda/install/).
@@ -15,7 +43,7 @@ We highly recommend using a package installation manager like conda/mamba to ins
 The easiest way to install `pydap` is to use the conda-forge channel. Open a terminal, then run the following commands:
 
 ```shell
-conda create -n pydap -c conda-forge python=3.10 pydap numpy jupyterlab ipython netCDF4 scipy matplotlib cartopy xarray
+conda create -n pydap -c conda-forge python=3.10 pydap numpy">=2.0" jupyterlab ipython netCDF4 scipy matplotlib
 ```
 
 The code above will create a conda environment named "pydap" with many of the commonly used packages for processing and visualizing gridded data, using the latest stable versions (conda release).
@@ -48,14 +76,3 @@ pip install -e .
 ```
 
 This will install `pydap` along with the minimal dependencies defined on the `pyproject.toml` specification. For more on the `developer` approach of installing `pydap`, see [Contributing to the code](contribute/contr_cod.md).
-
-
-### Lightweight server
-
-`pydap` also implements a lightweight [WSGI](http://wsgi.org/) framework that it can easily be run behind [Apache](https://www.apache.org/). You can install `pydap` in server mode by running
-
-```shell
-pip install pydap"[server]"
-```
-
-This installation of pydap comes with handlers for NetCDF and csv files. Other handlers can have been developed and can be found in the [Pydap Github Project](https://github.com/pydap).
