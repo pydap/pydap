@@ -4,7 +4,7 @@ pydap
 )](https://github.com/pydap/pydap/actions/workflows/run_tests_ubuntu.yml)
 [![MacOS CI](https://github.com/pydap/pydap/actions/workflows/run_tests_macos.yml/badge.svg
 )](https://github.com/pydap/pydap/actions/workflows/run_tests_macos.yml)
-[![Python3](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/pypi/pyversions/pydap.svg)](https://pypi.python.org/pypi/pydap/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/pydap/)
 [![conda forge](https://anaconda.org/conda-forge/pydap/badges/version.svg)](https://anaconda.org/conda-forge/pydap)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
