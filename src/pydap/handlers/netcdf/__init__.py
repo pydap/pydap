@@ -137,11 +137,13 @@ def group_fqn(_dataset, _source, _fqn_dims=OrderedDict()):
             _path = _path + "/"
         # create group and attrs + dims (non-fqn)
         dims = _source[group].dimensions
-        Dims = {}
+        Dims = OrderedDict()
         for dim in dims:
             if dim not in _fqn_dims.keys():
                 _fqn_dims.update({dim: _path + dim})
-            Dims.update({_source[group][dim].name: _source[group][dim].size})
+            Dims.update({_source[group].dimensions[dim].name: _source[group].dimensions[dim].size})
+        print(Dims)
+        print(group)
         _attrs = dict(
             (attr, _source[group].getncattr(attr)) for attr in _source[group].ncattrs()
         )
