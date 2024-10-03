@@ -101,7 +101,6 @@ def nested_group_repeatdims_file(tmpdir_factory):
     return file_name
 
 
-
 @pytest.fixture(scope="module")
 def simple_handler(simple_nc_file):
     return NetCDFHandler(simple_nc_file)
@@ -116,7 +115,8 @@ def simple_handler2(simple_group_array_file):
 def simple_handler3(nested_group_array_file):
     return NetCDFHandler(nested_group_array_file)
 
-@pytest.fixture(scope='module')
+
+@pytest.fixture(scope="module")
 def simple_handler4(nested_group_repeatdims_file):
     return NetCDFHandler(nested_group_repeatdims_file)
 
@@ -167,16 +167,15 @@ def test_handler_repeatdims_Group_array(simple_handler4):
     """Test that dataset has the correct data proxies for grids."""
     dataset = simple_handler4.dataset
     r_dims = dataset.dimensions
-    g_dims = dataset['Group1'].dimensions
-    var_g1 = dataset['Group1/group_1_var'].dimensions
-    sg_dims = dataset['Group1/subgroup1'].dimensions
-    var_sg1 = dataset['Group1/subgroup1/subgroup1_var'].dimensions
-    assert r_dims == {'lat': 1, 'lon':2}
+    g_dims = dataset["Group1"].dimensions
+    var_g1 = dataset["Group1/group_1_var"].dimensions
+    sg_dims = dataset["Group1/subgroup1"].dimensions
+    var_sg1 = dataset["Group1/subgroup1/subgroup1_var"].dimensions
+    assert r_dims == {"lat": 1, "lon": 2}
     assert g_dims == {}
-    assert sg_dims == {'lat': 2}
-    assert var_g1 == ('/lat', '/lon')
-    assert var_sg1 == ('/Group1/subgroup1/lat', '/lon')
-
+    assert sg_dims == {"lat": 2}
+    assert var_g1 == ("/lat", "/lon")
+    assert var_sg1 == ("/Group1/subgroup1/lat", "/lon")
 
 
 @pytest.fixture(scope="module")
