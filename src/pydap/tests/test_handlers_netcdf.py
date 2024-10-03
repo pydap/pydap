@@ -77,6 +77,32 @@ def nested_group_array_file(simple_Group_data, tmpdir_factory):
 
 
 @pytest.fixture(scope="module")
+def nested_group_repeatdims_file(tmpdir_factory):
+    file_name = str(tmpdir_factory.mktemp("nc").join("unaligned_subgroups.nc"))
+    with Dataset(file_name, "w", format="NETCDF4") as root_group:
+        group_1 = root_group.createGroup("/Group1")
+        subgroup_1 = group_1.createGroup("/subgroup1")
+
+        root_group.createDimension("lat", 1)
+        root_group.createDimension("lon", 2)
+        root_group.createVariable("root_variable", np.float64, ("lat", "lon"))
+
+        group_1_var = group_1.createVariable("group_1_var", np.float64, ("lat", "lon"))
+        group_1_var[:] = np.array([[0.1, 0.2]])
+        group_1_var.units = "K"
+        group_1_var.long_name = "air_temperature"
+
+        subgroup_1.createDimension("lat", 2)
+
+        subgroup1_var = subgroup_1.createVariable(
+            "subgroup1_var", np.float64, ("lat", "lon")
+        )
+        subgroup1_var[:] = np.array([[0.1, 0.2]])
+    return file_name
+
+
+
+@pytest.fixture(scope="module")
 def simple_handler(simple_nc_file):
     return NetCDFHandler(simple_nc_file)
 
@@ -89,6 +115,10 @@ def simple_handler2(simple_group_array_file):
 @pytest.fixture(scope="module")
 def simple_handler3(nested_group_array_file):
     return NetCDFHandler(nested_group_array_file)
+
+@pytest.fixture(scope='module')
+def simple_handler4(nested_group_repeatdims_file):
+    return NetCDFHandler(nested_group_repeatdims_file)
 
 
 def test_handler(simple_data, simple_handler):
@@ -114,9 +144,9 @@ def test_handler_array(simple_Group_data, simple_handler2):
     g_dims = dataset["Group"].attributes["dimensions"]
     temp = dataset["/Group/temperature"][:]
     np.testing.assert_array_equal(temp.data, simple_Group_data)
-    assert r_dims == {"/time": 1, "/nv": 2}
+    assert r_dims == {"time": 1, "nv": 2}
     assert g_dims == {"X": 4, "Y": 4}
-    assert temp.dims == ("/time", "/Group/Y", "/Group/X")
+    assert temp.dimensions == ("/time", "/Group/Y", "/Group/X")
 
 
 def test_handler_nested_Group_array(simple_Group_data, simple_handler3):
@@ -127,10 +157,26 @@ def test_handler_nested_Group_array(simple_Group_data, simple_handler3):
     sg_dims = dataset["/Group/SubGroup"].attributes["dimensions"]
     temp = dataset["/Group/SubGroup/temperature"][:]
     np.testing.assert_array_equal(temp.data, simple_Group_data)
-    assert r_dims == {"/time": 1}
+    assert r_dims == {"time": 1}
     assert g_dims == {}
     assert sg_dims == {"X": 4, "Y": 4}
-    assert temp.dims == ("/time", "/Group/SubGroup/Y", "/Group/SubGroup/X")
+    assert temp.dimensions == ("/time", "/Group/SubGroup/Y", "/Group/SubGroup/X")
+
+
+def test_handler_repeatdims_Group_array(simple_handler4):
+    """Test that dataset has the correct data proxies for grids."""
+    dataset = simple_handler4.dataset
+    r_dims = dataset.dimensions
+    g_dims = dataset['Group1'].dimensions
+    var_g1 = dataset['Group1/group_1_var'].dimensions
+    sg_dims = dataset['Group1/subgroup1'].dimensions
+    var_sg1 = dataset['Group1/subgroup1/subgroup1_var'].dimensions
+    assert r_dims == {'lat': 1, 'lon':2}
+    assert g_dims == {}
+    assert sg_dims == {'lat': 2}
+    assert var_g1 == ('/lat', '/lon')
+    assert var_sg1 == ('/Group1/subgroup1/lat', '/lon')
+
 
 
 @pytest.fixture(scope="module")
