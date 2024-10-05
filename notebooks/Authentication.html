@@ -386,7 +386,6 @@ document.write(`
 <p class="admonition-title">Note</p>
 <p>For a broader introduction to authentication, check the <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> documentation on <a class="reference external" href="https://opendap.github.io/documentation/tutorials/ClientAuthentication.html">Authentication for DAP Clients</a>, and <a class="reference external" href="https://opendap.github.io/documentation/tutorials/ClientAuthenticationWithEDLTokens.html">Client Authentication With EDLTokens</a>.</p>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Author</span></code>: Miguel Jimenez-Urias, ‘24</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
@@ -408,7 +407,7 @@ document.write(`
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydap.cas.urs</span> <span class="kn">import</span> <span class="n">setup_session</span>
 
-<span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;Mikejmnez&quot;</span> <span class="c1"># Earthdata URS Login (only needed for NGAP Hyrax) Get account here https://urs.earthdata.nasa.gov/</span>
+<span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;mikejmnez&quot;</span> <span class="c1"># Earthdata URS Login (only needed for NGAP Hyrax) Get account here https://urs.earthdata.nasa.gov/</span>
 <span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;FHD!xua*zqy6mkm6fgk&quot;</span>
 
 <span class="n">hyrax_url</span> <span class="o">=</span> <span class="s1">&#39;https://opendap.earthdata.nasa.gov/collections/C2532426483-ORNL_CLOUD/granules/&#39;</span>
@@ -454,16 +453,11 @@ document.write(`
 <p>This is the approach that will largely will be used throughout the documentation.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTcyODE5NjQyOCwiaWF0IjoxNzIzMDEyNDI4LCJpc3MiOiJFYXJ0aGRhdGEgTG9naW4ifQ.7BqWQ8WU6cC4eq42d7W_guy8naGp-fFrolO49mlgUSrWvR5F5C6Ryj22Xk42J7cbOiKj9bpXBuLZHxqNbr4UoFsVGeyth69Y8fbmiZIyPofjYAcDGZCX9iDCsF4CntlU5hbefBR3ZdDKgh_4DRIRj6FNlU6drcAWpsA_iViWFKvStmJfGXe_DZvvbzW2ZnPjeUleILO8-MQd4jeIl1ErhmGwOx7MM0Ztaubu5sErMU9NBLfAWIRFc6pbf0bEMst0D6ZLAbNXVF4r0Y7yzbMeTk8jeo5piEkepYrEJ-VD-aecX7wBx2El8aSfd82Iwpa-2FoymbkRUH4syWgvTzk1oA&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTczMjk3OTUwNSwiaWF0IjoxNzI3Nzk1NTA1LCJpc3MiOiJodHRwczovL3Vycy5lYXJ0aGRhdGEubmFzYS5nb3YifQ.lTqdIyEcthndU5pPyxorT5tF7JUGPKg9Od54gn0SVfhAx4dsR4x9Fb0OWnlnW2O_jTNH2Dqsn9-dI_3qwrrtinjEOdnlyCbKCeoj0dS-NGyILDpJU-VE_TIJpZDlvbbqSGfa0oRnLM33wzcBDJ7LEFOtRpnxEq3kJddmfsRJF4XiMAd9cwgyZ2WjJ_CDH1Ox_JDofgI1JKOCGlJhGtP2GHoyKvi7uo4BuY9WAFikXOnuQ-nhj8mxO_MBJUPFivZUDQ7JAR3hHcyp04Vo5Siol9V2-Uf2VxUvGU7UxINQpXQgRHldGQ51qAivfqkMwubKJ3TxLx0ZWhHI6vantMLJcA&quot;</span>
 
 <span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># pass Token Authorization to a new Session.</span>
+
+<span class="c1"># pass Token Authorization to a new Session.</span>
 
 <span class="n">my_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
 <span class="n">my_session</span><span class="o">.</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">auth_hdr</span><span class="p">}</span>

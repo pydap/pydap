@@ -419,16 +419,11 @@ document.write(`
 <h2>Add to session’s headers Token Authorization<a class="headerlink" href="#add-to-session-s-headers-token-authorization" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTcyODE5NjQyOCwiaWF0IjoxNzIzMDEyNDI4LCJpc3MiOiJFYXJ0aGRhdGEgTG9naW4ifQ.7BqWQ8WU6cC4eq42d7W_guy8naGp-fFrolO49mlgUSrWvR5F5C6Ryj22Xk42J7cbOiKj9bpXBuLZHxqNbr4UoFsVGeyth69Y8fbmiZIyPofjYAcDGZCX9iDCsF4CntlU5hbefBR3ZdDKgh_4DRIRj6FNlU6drcAWpsA_iViWFKvStmJfGXe_DZvvbzW2ZnPjeUleILO8-MQd4jeIl1ErhmGwOx7MM0Ztaubu5sErMU9NBLfAWIRFc6pbf0bEMst0D6ZLAbNXVF4r0Y7yzbMeTk8jeo5piEkepYrEJ-VD-aecX7wBx2El8aSfd82Iwpa-2FoymbkRUH4syWgvTzk1oA&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTczMjk3OTUwNSwiaWF0IjoxNzI3Nzk1NTA1LCJpc3MiOiJodHRwczovL3Vycy5lYXJ0aGRhdGEubmFzYS5nb3YifQ.lTqdIyEcthndU5pPyxorT5tF7JUGPKg9Od54gn0SVfhAx4dsR4x9Fb0OWnlnW2O_jTNH2Dqsn9-dI_3qwrrtinjEOdnlyCbKCeoj0dS-NGyILDpJU-VE_TIJpZDlvbbqSGfa0oRnLM33wzcBDJ7LEFOtRpnxEq3kJddmfsRJF4XiMAd9cwgyZ2WjJ_CDH1Ox_JDofgI1JKOCGlJhGtP2GHoyKvi7uo4BuY9WAFikXOnuQ-nhj8mxO_MBJUPFivZUDQ7JAR3hHcyp04Vo5Siol9V2-Uf2VxUvGU7UxINQpXQgRHldGQ51qAivfqkMwubKJ3TxLx0ZWhHI6vantMLJcA&quot;</span>
 
 <span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># pass Token Authorization to a new Session.</span>
+
+<span class="c1"># pass Token Authorization to a new Session.</span>
 
 <span class="n">my_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
 <span class="n">my_session</span><span class="o">.</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">auth_hdr</span><span class="p">}</span>
@@ -444,8 +439,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 38.1 ms, sys: 5.33 ms, total: 43.4 ms
-Wall time: 1.06 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 45.7 ms, sys: 6.54 ms, total: 52.2 ms
+Wall time: 1.05 s
 </pre></div>
 </div>
 </div>
@@ -540,8 +535,8 @@ Wall time: 1.06 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1min 9s, sys: 2min 1s, total: 3min 11s
-Wall time: 3min 31s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1min 8s, sys: 1min 53s, total: 3min 2s
+Wall time: 7min 23s
 </pre></div>
 </div>
 </div>
@@ -705,7 +700,6 @@ Wall time: 3min 31s
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;?dap4.ce=/lat[500:1:2000];/lon[2000:1:4500];/chlor_a[500:1:2000][2000:1:4500]&quot;</span>
 </pre></div>
 </div>
-<p>With that in mind, the full URL is:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;dap4://oceandata.sci.gsfc.nasa.gov/opendap/PACE_OCI/L3SMI/2024/0310/PACE_OCI.20240310.L3m.DAY.CHL.V2_0.chlor_a.4km.NRT.nc?dap4.ce=/lat[500:1:2000];/lon[2000:1:4500];/chlor_a[500:1:2000][2000:1:4500]&quot;</span>
@@ -744,8 +738,8 @@ Wall time: 3min 31s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 784 ms, sys: 543 ms, total: 1.33 s
-Wall time: 3.19 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 847 ms, sys: 615 ms, total: 1.46 s
+Wall time: 12.4 s
 </pre></div>
 </div>
 </div>

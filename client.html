@@ -420,6 +420,18 @@ document.write(`
 <p>Here we used the <code class="docutils literal notranslate"><span class="pre">pydap.client.open_url</span></code> function to open an <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> URL specifying the location of the dataset. When we access the remote
 dataset the function returns a <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> object, which is a <em>Structure</em> – a fancy dictionary that stores other variables. We can
 check the names of the store variables like we would do with a Python dictionary:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">list</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;]
+</pre></div>
+</div>
+</div>
+</div>
 <p>Another useful way to inspect the dataset is the <code class="docutils literal notranslate"><span class="pre">.tree()</span></code> method, which provides an in-depth inspection of your dataset</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -591,8 +603,8 @@ check the names of the store variables like we would do with a Python dictionary
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 20.1 ms, sys: 6.6 ms, total: 26.7 ms
-Wall time: 301 ms
+CPU times: user 19 ms, sys: 5.65 ms, total: 24.6 ms
+Wall time: 417 ms
 </pre></div>
 </div>
 </div>
@@ -643,8 +655,8 @@ Wall time: 301 ms
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 5.18 ms, sys: 1.32 ms, total: 6.49 ms
-Wall time: 369 ms
+CPU times: user 5.76 ms, sys: 1.62 ms, total: 7.38 ms
+Wall time: 347 ms
 </pre></div>
 </div>
 </div>
@@ -722,7 +734,7 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <p>We look at the <code class="docutils literal notranslate"><span class="pre">Dataset</span> <span class="pre">ID:</span> <span class="pre">Murphy-20150809T1355</span></code>. It’s <code class="docutils literal notranslate"><span class="pre">ERDDAP</span></code> access form can be found <a class="reference external" href="https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355.html?trajectory%2Cwmo_id%2Cprofile_id%2Ctime%2Clatitude%2Clongitude%2Cdepth%2Cconductivity%2Cconductivity_qc%2Cdensity%2Cdensity_qc%2Cdepth_qc%2Cinstrument_ctd%2Clat_qc%2Clat_uv%2Clat_uv_qc%2Clon_qc%2Clon_uv%2Clon_uv_qc%2Cplatform_meta%2Cprecise_lat%2Cprecise_lon%2Cprecise_time%2Cpressure%2Cpressure_qc%2Cprofile_lat_qc%2Cprofile_lon_qc%2Cprofile_time_qc%2Cqartod_conductivity_flat_line_flag%2Cqartod_conductivity_gross_range_flag%2Cqartod_conductivity_primary_flag%2Cqartod_conductivity_rate_of_change_flag%2Cqartod_conductivity_spike_flag%2Cqartod_density_flat_line_flag%2Cqartod_density_gross_range_flag%2Cqartod_density_primary_flag%2Cqartod_density_rate_of_change_flag%2Cqartod_density_spike_flag%2Cqartod_monotonic_pressure_flag%2Cqartod_pressure_flat_line_flag%2Cqartod_pressure_gross_range_flag%2Cqartod_pressure_primary_flag%2Cqartod_pressure_rate_of_change_flag%2Cqartod_pressure_spike_flag%2Cqartod_salinity_flat_line_flag%2Cqartod_salinity_gross_range_flag%2Cqartod_salinity_primary_flag%2Cqartod_salinity_rate_of_change_flag%2Cqartod_salinity_spike_flag%2Cqartod_temperature_flat_line_flag%2Cqartod_temperature_gross_range_flag%2Cqartod_temperature_primary_flag%2Cqartod_temperature_rate_of_change_flag%2Cqartod_temperature_spike_flag%2Csalinity%2Csalinity_qc%2Ctemperature%2Ctemperature_qc%2Ctime_qc%2Ctime_uv%2Ctime_uv_qc%2Cu%2Cu_qc%2Cv%2Cv_qc&amp;amp;time%3E=2015-08-12T00%3A00%3A00Z&amp;amp;time%3C=2015-08-19T22%3A10%3A22Z">HERE</a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355&quot;</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap2&#39;</span><span class="p">)[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355&quot;</span><span class="p">)[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span>
 <span class="n">ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
 </pre></div>
 </div>

@@ -409,7 +409,7 @@ document.write(`
 <h2>Add to session’s headers Token Authorization<a class="headerlink" href="#add-to-session-s-headers-token-authorization" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTcyODE5NjQyOCwiaWF0IjoxNzIzMDEyNDI4LCJpc3MiOiJFYXJ0aGRhdGEgTG9naW4ifQ.7BqWQ8WU6cC4eq42d7W_guy8naGp-fFrolO49mlgUSrWvR5F5C6Ryj22Xk42J7cbOiKj9bpXBuLZHxqNbr4UoFsVGeyth69Y8fbmiZIyPofjYAcDGZCX9iDCsF4CntlU5hbefBR3ZdDKgh_4DRIRj6FNlU6drcAWpsA_iViWFKvStmJfGXe_DZvvbzW2ZnPjeUleILO8-MQd4jeIl1ErhmGwOx7MM0Ztaubu5sErMU9NBLfAWIRFc6pbf0bEMst0D6ZLAbNXVF4r0Y7yzbMeTk8jeo5piEkepYrEJ-VD-aecX7wBx2El8aSfd82Iwpa-2FoymbkRUH4syWgvTzk1oA&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTczMjk3OTUwNSwiaWF0IjoxNzI3Nzk1NTA1LCJpc3MiOiJodHRwczovL3Vycy5lYXJ0aGRhdGEubmFzYS5nb3YifQ.lTqdIyEcthndU5pPyxorT5tF7JUGPKg9Od54gn0SVfhAx4dsR4x9Fb0OWnlnW2O_jTNH2Dqsn9-dI_3qwrrtinjEOdnlyCbKCeoj0dS-NGyILDpJU-VE_TIJpZDlvbbqSGfa0oRnLM33wzcBDJ7LEFOtRpnxEq3kJddmfsRJF4XiMAd9cwgyZ2WjJ_CDH1Ox_JDofgI1JKOCGlJhGtP2GHoyKvi7uo4BuY9WAFikXOnuQ-nhj8mxO_MBJUPFivZUDQ7JAR3hHcyp04Vo5Siol9V2-Uf2VxUvGU7UxINQpXQgRHldGQ51qAivfqkMwubKJ3TxLx0ZWhHI6vantMLJcA&quot;</span>
 
 <span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
 </pre></div>
@@ -503,7 +503,7 @@ document.write(`
 <p>Data remains remote, no data has been downloaded.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset1</span><span class="p">[</span><span class="s1">&#39;data_01/ku/swh_ocean&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset1</span><span class="p">[</span><span class="s1">&#39;data_01/mean_dynamic_topography&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
 </div>
@@ -565,13 +565,13 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">swh_ocean</span> <span class="o">=</span> <span class="n">dataset1</span><span class="p">[</span><span class="s1">&#39;/data_01/ku/swh_ocean&#39;</span><span class="p">][:]</span> <span class="c1"># downloads as BaseType - a thin wrapper for numpy arrays</span>
+<span class="n">dyn_topo</span> <span class="o">=</span> <span class="n">dataset1</span><span class="p">[</span><span class="s1">&#39;data_01/mean_dynamic_topography&#39;</span><span class="p">][:]</span> <span class="c1"># downloads as BaseType - a thin wrapper for numpy arrays</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 25.3 ms, sys: 3.82 ms, total: 29.1 ms
-Wall time: 3.8 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 29.3 ms, sys: 2.89 ms, total: 32.1 ms
+Wall time: 3.11 s
 </pre></div>
 </div>
 </div>
@@ -580,7 +580,7 @@ Wall time: 3.8 s
 <p>Refers to the coverage of the Satellite track. This is, how the trajectory “<strong>maps</strong>” with <code class="docutils literal notranslate"><span class="pre">time</span></code> (i.e. the <code class="docutils literal notranslate"><span class="pre">dimension</span></code>)</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">swh_ocean</span><span class="o">.</span><span class="n">Maps</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dyn_topo</span><span class="o">.</span><span class="n">Maps</span>
 </pre></div>
 </div>
 </div>
@@ -592,8 +592,8 @@ Wall time: 3.8 s
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">longitude1</span> <span class="o">=</span> <span class="n">dataset1</span><span class="p">[</span><span class="n">swh_ocean</span><span class="o">.</span><span class="n">Maps</span><span class="p">[</span><span class="mi">0</span><span class="p">]][:]</span>
-<span class="n">latitude1</span> <span class="o">=</span> <span class="n">dataset1</span><span class="p">[</span><span class="n">swh_ocean</span><span class="o">.</span><span class="n">Maps</span><span class="p">[</span><span class="mi">1</span><span class="p">]][:]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">longitude1</span> <span class="o">=</span> <span class="n">dataset1</span><span class="p">[</span><span class="n">dyn_topo</span><span class="o">.</span><span class="n">Maps</span><span class="p">[</span><span class="mi">0</span><span class="p">]][:]</span>
+<span class="n">latitude1</span> <span class="o">=</span> <span class="n">dataset1</span><span class="p">[</span><span class="n">dyn_topo</span><span class="o">.</span><span class="n">Maps</span><span class="p">[</span><span class="mi">1</span><span class="p">]][:]</span>
 </pre></div>
 </div>
 </div>
@@ -683,31 +683,31 @@ Wall time: 3.8 s
 <span class="n">ax</span><span class="o">.</span><span class="n">set_global</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">coastlines</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">stock_img</span><span class="p">()</span> <span class="c1"># comment this line if you do not want any background color</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">decode</span><span class="p">(</span><span class="n">longitude1</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">decode</span><span class="p">(</span><span class="n">latitude1</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="n">decode</span><span class="p">(</span><span class="n">swh_ocean</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>  <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">swh_ocean</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; [&#39;</span><span class="o">+</span><span class="n">swh_ocean</span><span class="o">.</span><span class="n">units</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">decode</span><span class="p">(</span><span class="n">longitude1</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">decode</span><span class="p">(</span><span class="n">latitude1</span><span class="p">),</span> <span class="n">c</span><span class="o">=</span><span class="n">decode</span><span class="p">(</span><span class="n">dyn_topo</span><span class="p">),</span> <span class="n">marker</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span>  <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;jet&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">dyn_topo</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; [&#39;</span><span class="o">+</span><span class="n">dyn_topo</span><span class="o">.</span><span class="n">units</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/251c525579496bf982a80db2e35837f126e88095cf335a331f6a9085a8e44840.png" src="../_images/251c525579496bf982a80db2e35837f126e88095cf335a331f6a9085a8e44840.png" />
+<img alt="../_images/d9c9cf5f4e1873c6b988486db3aec5de7f4e1914632d37ab16dc0cb4b1aaaa98.png" src="../_images/d9c9cf5f4e1873c6b988486db3aec5de7f4e1914632d37ab16dc0cb4b1aaaa98.png" />
 </div>
 </div>
-<p><strong>Fig. 1</strong> Global map showing the track (trajectory) of the sampled (satellite) data. Values refer to sea wave height.</p>
+<p><strong>Fig. 1</strong> Global map showing the track (trajectory) of the sampled (satellite) data. Values refer to mean dynamic topography.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">decode</span><span class="p">(</span><span class="n">swh_ocean</span><span class="p">),</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">swh_ocean</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; [&#39;</span><span class="o">+</span><span class="n">swh_ocean</span><span class="o">.</span><span class="n">units</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">decode</span><span class="p">(</span><span class="n">dyn_topo</span><span class="p">),</span> <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">dyn_topo</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; [&#39;</span><span class="o">+</span><span class="n">dyn_topo</span><span class="o">.</span><span class="n">units</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Along Track Samples&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b08a98712fd94e3bc47c1c93aeaef52a0200ab5232be692d56a736bd41c9cf3d.png" src="../_images/b08a98712fd94e3bc47c1c93aeaef52a0200ab5232be692d56a736bd41c9cf3d.png" />
+<img alt="../_images/b4a7f959d7ec5d43ea2c79a4db0b1860fb22a1dfdd48f8da26a277efdcfcb6ae.png" src="../_images/b4a7f959d7ec5d43ea2c79a4db0b1860fb22a1dfdd48f8da26a277efdcfcb6ae.png" />
 </div>
 </div>
-<p><strong>Fig 2.</strong> Along track values.</p>
+<p><strong>Fig 2.</strong> Along track values. The first values along the track represent the North Atlantic, whereas the steep dropoff in dynamic topography represent the Southern Ocean.</p>
 </section>
 </section>
 
