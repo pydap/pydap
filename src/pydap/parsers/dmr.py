@@ -191,6 +191,7 @@ def dmr_to_dataset(dmr):
     global_dimensions = []
     for name, size in named_dimensions.items():
         if len(name.split("/")) == 1:
+            print(name)
             global_dimensions.append([name, size])
 
     dataset.dimensions = {k: v for k, v in global_dimensions}
