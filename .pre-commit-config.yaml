@@ -4,7 +4,7 @@ ci:
   autoupdate_commit_msg: 'Update pre-commit hooks'
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
+  rev: v5.0.0
   hooks:
   - id: trailing-whitespace
     exclude: src/pydap/tests/data/dmrs/MOD05_L2.A2019336.2315.061.2019337071952.hdf.dmr|src/pydap/tests/data/rainfall_time_malaysia.cdp.dods|src/pydap/wsgi/templates/base.html
@@ -17,7 +17,7 @@ repos:
   - id: mixed-line-ending
     exclude: src/pydap/tests/data/rainfall_time_malaysia.cdp.dods
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v2.12.0
+  rev: v2.14.0
   hooks:
   - id: pretty-format-yaml
     args: [--autofix, --preserve-quotes]
@@ -29,11 +29,11 @@ repos:
   - id: isort
     exclude: src/pydap/tests/test_responses_error.py|src/pydap/wsgi/templates/base.html
 - repo: https://github.com/psf/black
-  rev: 24.3.0
+  rev: 24.8.0
   hooks:
   - id: black
     exclude: src/pydap/tests/test_responses_error.py|src/pydap/wsgi/templates/base.html
 - repo: https://github.com/PyCQA/flake8
-  rev: 7.0.0
+  rev: 7.1.1
   hooks:
   - id: flake8
