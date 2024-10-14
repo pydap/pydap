@@ -13,13 +13,7 @@ except ImportError:
     from singledispatch import singledispatch
 
 from ..lib import __version__
-from ..model import (
-    BaseType,
-    DatasetType,
-    GroupType,
-    SequenceType,
-    StructureType,
-)
+from ..model import BaseType, DatasetType, GroupType, SequenceType, StructureType
 from .lib import BaseResponse
 
 INDENT = " " * 4
@@ -114,13 +108,12 @@ def _grouptype(var, level=0):
     yield "{indent}</Group>\n".format(indent=level * INDENT)
 
 
-
 @dmr.register(BaseType)
 def _basetype(var, level=0):
     _ntype = var.dtype
     _vartype = str(_ntype)[0].upper() + str(_ntype)[1:]
-    if _vartype=='<U0':
-        _vartype='String'
+    if _vartype == "<U0":
+        _vartype = "String"
     yield '{indent}<{type} name="{name}">\n'.format(
         indent=level * INDENT,
         type=_vartype,

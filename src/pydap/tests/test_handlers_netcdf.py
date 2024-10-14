@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 from netCDF4 import Dataset
 
-from pydap.handlers.dap import DAPHandler
 from pydap.handlers.netcdf import NetCDFHandler
 
 
@@ -187,7 +186,7 @@ def simple_application(simple_handler):
 
 # def test_open(simple_data, simple_application):
 #     """Test that NetCDFHandler can be read through open_url."""
-#     dataset = DAPHandler("http://localhost:8001/", simple_application, protocol='dap4').dataset
+#     dataset = DAPHandler("http://localhost:8001/", simple_application).dataset
 #     dtype = [("index", "<i4"), ("temperature", "<f8"), ("station", "S40")]
 #     retrieved_data = list(
 #         zip(

@@ -11,7 +11,7 @@ import numpy as np
 
 from pydap.exceptions import OpenFileError
 from pydap.handlers.lib import BaseHandler
-from pydap.model import BaseType, DatasetType, GridType
+from pydap.model import BaseType, DatasetType
 from pydap.pycompat import suppress
 
 # Check for netCDF4 presence:
@@ -61,13 +61,13 @@ class NetCDFHandler(BaseHandler):
                 Dims = OrderedDict()
                 fqn_dims = OrderedDict()  # keep track of fully qualifying names of dims
                 for dim in dims:
-                    fqn_dims.update({'/'+dim: dim})
+                    fqn_dims.update({"/" + dim: dim})
                     if dims[dim] is None:
                         self.dataset.attributes["DODS_EXTRA"] = {
                             "Unlimited_Dimension": dim,
                         }
                     else:
-                        Dims.update({dims[dim].name: dims[dim].size}) 
+                        Dims.update({dims[dim].name: dims[dim].size})
                 # build dataset
 
                 name = os.path.split(filepath)[1]
@@ -79,13 +79,13 @@ class NetCDFHandler(BaseHandler):
                 grids = [var for var in vars if var not in dims]
                 for grid in grids:
                     # make dimension a fully qualifying name
-                    dimensions = tuple(['/' + dim for dim in vars[grid].dimensions])
+                    dimensions = tuple(["/" + dim for dim in vars[grid].dimensions])
                     self.dataset[grid] = BaseType(
                         grid,
                         LazyVariable(source[grid], grid, grid, self.filepath),
                         dimensions=dimensions,
                         **attrs(vars[grid]),
-                     )
+                    )
 
                 if len(source.groups) > 0:
                     # start at root level
@@ -164,8 +164,10 @@ def group_fqn(_dataset, _source, _filepath, _fqn_dims=OrderedDict()):
                 for attr in _source[group][var].ncattrs()
             )
             _dataset.createVariable(
-                _path + var, data=LazyVariable(data, var, _path+var, _filepath), 
-                dimensions=tuple(vdims), **vattrs,
+                _path + var,
+                data=LazyVariable(data, var, _path + var, _filepath),
+                dimensions=tuple(vdims),
+                **vattrs,
             )
         # check if there are nested group
         if len(_source[group].groups) > 0:
