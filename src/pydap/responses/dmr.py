@@ -13,14 +13,7 @@ except ImportError:
     from singledispatch import singledispatch
 
 from ..lib import __version__
-from ..model import (
-    BaseType,
-    DatasetType,
-    GridType,
-    GroupType,
-    SequenceType,
-    StructureType,
-)
+from ..model import BaseType, DatasetType, GroupType, SequenceType, StructureType
 from .lib import BaseResponse
 
 INDENT = " " * 4
@@ -115,32 +108,19 @@ def _grouptype(var, level=0):
     yield "{indent}</Group>\n".format(indent=level * INDENT)
 
 
-@dmr.register(GridType)
-def _gridtype(var, level=0):
-    yield '{indent}<{type} name="{name}">\n'.format(
-        indent=level * INDENT,
-        type=var.dtype,
-        name=var.name,
-    )
-
-    # get dimensions
-    for dim in var.maps:
-        yield '{indent}<Dim name="{name}"/>\n'.format(
-            indent=(level + 1) * INDENT, name=dim
-        )
-
-
 @dmr.register(BaseType)
 def _basetype(var, level=0):
     _ntype = var.dtype
     _vartype = str(_ntype)[0].upper() + str(_ntype)[1:]
+    if _vartype == "<U0":
+        _vartype = "String"
     yield '{indent}<{type} name="{name}">\n'.format(
         indent=level * INDENT,
         type=_vartype,
         name=var.name,
     )
     # get dimensions
-    for dim in var.dims:
+    for dim in var.dimensions:
         yield '{indent}<Dim name="{name}"/>\n'.format(
             indent=(level + 1) * INDENT, name=dim
         )

@@ -11,7 +11,7 @@ import numpy as np
 
 from pydap.exceptions import OpenFileError
 from pydap.handlers.lib import BaseHandler
-from pydap.model import BaseType, DatasetType, GridType
+from pydap.model import BaseType, DatasetType
 from pydap.pycompat import suppress
 
 # Check for netCDF4 presence:
@@ -59,7 +59,9 @@ class NetCDFHandler(BaseHandler):
 
                 # Add dimensions when creating the DatasetType
                 Dims = OrderedDict()
+                fqn_dims = OrderedDict()  # keep track of fully qualifying names of dims
                 for dim in dims:
+                    fqn_dims.update({"/" + dim: dim})
                     if dims[dim] is None:
                         self.dataset.attributes["DODS_EXTRA"] = {
                             "Unlimited_Dimension": dim,
@@ -67,6 +69,7 @@ class NetCDFHandler(BaseHandler):
                     else:
                         Dims.update({dims[dim].name: dims[dim].size})
                 # build dataset
+
                 name = os.path.split(filepath)[1]
                 self.dataset = DatasetType(
                     name, dimensions=Dims, attributes=dict(NC_GLOBAL=attrs(source))
@@ -75,31 +78,21 @@ class NetCDFHandler(BaseHandler):
                 # add grids
                 grids = [var for var in vars if var not in dims]
                 for grid in grids:
-                    self.dataset[grid] = GridType(grid, attrs(vars[grid]))
-                    # add array
-                    self.dataset[grid][grid] = BaseType(
+                    # make dimension a fully qualifying name
+                    dimensions = tuple(["/" + dim for dim in vars[grid].dimensions])
+                    self.dataset[grid] = BaseType(
                         grid,
-                        LazyVariable(source, grid, grid, self.filepath),
-                        vars[grid].dimensions,
-                        attrs(vars[grid]),
+                        LazyVariable(source[grid], grid, grid, self.filepath),
+                        dimensions=dimensions,
+                        **attrs(vars[grid]),
                     )
-                    # add maps
-                    for dim in vars[grid].dimensions:
-                        try:
-                            data = vars[dim][:]
-                            attributes = attrs(vars[dim])
-                        except KeyError:
-                            data = np.arange(dims[dim].size, dtype="i")
-                            attributes = None
-                        self.dataset[grid][dim] = BaseType(dim, data, None, attributes)
 
-                fqn_dims = OrderedDict()  # keep track of fully qualifying names of dims
                 if len(source.groups) > 0:
                     # start at root level
                     path = source.path
                     for vdim in source.dimensions:
                         fqn_dims.update({path + vdim: vdim})  # fqn is unique
-                    fqn_dims = group_fqn(self.dataset, source, fqn_dims)
+                    fqn_dims = group_fqn(self.dataset, source, self.filepath, fqn_dims)
 
                 vdims = [dim for dim in dims if dim in vars]
                 for dim in vdims:
@@ -112,7 +105,7 @@ class NetCDFHandler(BaseHandler):
             raise OpenFileError(message)
 
 
-def group_fqn(_dataset, _source, _fqn_dims=OrderedDict()):
+def group_fqn(_dataset, _source, _filepath, _fqn_dims=OrderedDict()):
     """Function to create nested DAP objects with fully-qualified-names
     within a hierarchy. Returns a dictionary with mapping between dimension
     names used at the group/array level and their fully qualifying names.
@@ -153,11 +146,12 @@ def group_fqn(_dataset, _source, _fqn_dims=OrderedDict()):
         _attrs = dict(
             (attr, _source[group].getncattr(attr)) for attr in _source[group].ncattrs()
         )
+
         _dataset.createGroup(_source[group].path, dimensions=Dims, **_attrs)
         # now vars
         Vars = _source[group].variables
         for var in Vars:
-            data = _source[group][var][:].data  # extract data from file
+            data = _source[group][var]
             dims = list(_source[group][var].dimensions)  # these must have fqn
             vdims = []  # create mapping for fqn
             for dim in dims:
@@ -170,20 +164,23 @@ def group_fqn(_dataset, _source, _fqn_dims=OrderedDict()):
                 for attr in _source[group][var].ncattrs()
             )
             _dataset.createVariable(
-                _path + var, data=data, path=_path, dimensions=tuple(vdims), **vattrs
+                _path + var,
+                data=LazyVariable(data, var, _path + var, _filepath),
+                dimensions=tuple(vdims),
+                **vattrs,
             )
         # check if there are nested group
         if len(_source[group].groups) > 0:
-            _fqn_dims = group_fqn(_dataset, _source[group], _fqn_dims)
+            _fqn_dims = group_fqn(_dataset, _source[group], _filepath, _fqn_dims)
     return _fqn_dims
 
 
 class LazyVariable:
-    def __init__(self, source, name, path, filepath):
+    def __init__(self, var, name, path, filepath):
         self.filepath = filepath
         self.path = path
-        var = source[self.path]
-        self.dimensions = var._getdims()
+        # var = source[self.path]
+        # self.dimensions = fqn_dims
         self.dtype = np.dtype(var.dtype)
         self.datatype = var.dtype
         self.ndim = len(var.dimensions)

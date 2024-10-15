@@ -231,33 +231,33 @@ SimpleGroup.createVariable(
     name="/SimpleGroup/Temperature",
     data=np.arange(10, 26, 1, dtype="f4").reshape(1, 4, 4),
     units="degrees_celsius",
-    dims=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
+    dimensions=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.inf,
 )
 SimpleGroup.createVariable(
     name="/SimpleGroup/Salinity",
     data=30 * np.ones(16, dtype="f4").reshape(1, 4, 4),
     units="psu",
-    dims=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
+    dimensions=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.nan,
 )
 SimpleGroup.createVariable(
-    name="/SimpleGroup/Y", data=np.arange(4, dtype="i2"), dims=("/SimpleGroup/Y",)
+    name="/SimpleGroup/Y", data=np.arange(4, dtype="i2"), dimensions=("/SimpleGroup/Y",)
 )
 SimpleGroup.createVariable(
-    name="/SimpleGroup/X", data=np.arange(4, dtype="i2"), dims=("/SimpleGroup/X",)
+    name="/SimpleGroup/X", data=np.arange(4, dtype="i2"), dimensions=("/SimpleGroup/X",)
 )
 SimpleGroup.createVariable(
     name="/time",
     data=np.array(0.5, dtype="f4"),
-    dims=("/time",),
+    dimensions=("/time",),
     attributes={
         "standard_name": "time",
         "bounds": "time_bnds",
     },
 )
 SimpleGroup.createVariable(
-    name="/time_bnds", data=np.arange(2, dtype="f4"), dims=("/time", "/nv")
+    name="/time_bnds", data=np.arange(2, dtype="f4"), dimensions=("/time", "/nv")
 )
 
 
