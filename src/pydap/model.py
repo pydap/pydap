@@ -541,9 +541,9 @@ class StructureType(DapType, Mapping):
 
     def sequences(self):
         out = {}
-        Sqns = [key for key in self.children() if isinstance(key, SequenceType)]
-        for var in Sqns:
-            out.update({var.name: [key.name for key in var.children()]})
+        for var in walk(self, SequenceType):
+            if var.type == "Sequence":
+                out.update({var.name: [key.name for key in var.children()]})
         return out
 
     def variables(self):
@@ -565,18 +565,25 @@ class DatasetType(StructureType):
         'B'
     """
 
-    def __setitem__(self, key, item, **kwargs):
+    def __setitem__(self, key, item):
         # key a path-like only in DAP4
-        parts = re.split(r"[/.]", key)[1:]
+        split_by = " "
+        if len(self.groups()) > 0:
+            if key[0] == "/":
+                key = key[1:]
+            split_by += "/"
+        if len(self.sequences()) > 0 or len(self.structures()) > 0:
+            split_by += "."
+        parts = re.split("[" + split_by + "]", key)
         N = len(parts)
-        if key[0] == "/" and N > 1:
+        if N > 1:
             # add parent container type if not there
             if parts[0] not in self._dict:
                 self._visible_keys.append(parts[0])
             #  iterate over all groups to reach DAP object
             current = self._dict
             for j in range(N - 1):
-                if parts[j] not in current:
+                if parts[j] not in current:  # and Flat is not None
                     #     # This current approach works when parsing a DMR
                     #     # with only Groups and arrays. Need to enable
                     #     # Sequences and Structures. This works with all
@@ -585,7 +592,7 @@ class DatasetType(StructureType):
                 current = current[parts[j]]
             current[parts[-1]] = item
         else:
-            if key[0] == "/":
+            if key[0] == "/" and len(self.groups()) > 0:
                 key = key[1:]
             key = _quote(key)
             if key != item.name:
@@ -599,7 +606,6 @@ class DatasetType(StructureType):
             self._dict[key] = item
             # By default added keys are visible:
             self._visible_keys.append(key)
-
         key = key.replace("%2E", ".")
         if len(key.split(".")) == 1:
             # The parent name does not go into the children ids.
@@ -683,26 +689,16 @@ class DatasetType(StructureType):
         # since these are safe to escape. This catches all cases
         # much more cleanly. User specifies FQN but DAPtype is defined
         # within the method so OK.
-        if name[0] != "/":
-            warnings.warn(
-                """name must start with `/` to have a Fully Qualifing Name.
-                Adding a `/` to the begining of the name."""
-            )
-            # makes sure DAP4 fqn name (even when DAP2)
-            name = "/" + name
-        parts = re.split(r"[/.]", name)[1:]
+        split_by = " "
+        if len(self.groups()) > 0:  # true
+            split_by += "/"
+        else:
+            if name[0] == "/":
+                name = name[1:]
+        if len(self.sequences()) > 0 or len(self.structures()) > 0:
+            split_by += "."
+        parts = re.split("[" + split_by + "]", name)
         item = daptype(name=parts[-1], **attrs)
-        try:
-            for i in range(1, len(parts)):
-                self[("/").join(parts[:i])]
-        except KeyError:
-            warnings.warn(
-                """Failed to create `{}` because parent `{}` does not exist!
-                """.format(
-                    parts[-1], parts[-2]
-                )
-            )
-            return None
         DatasetType.__setitem__(self, name, item)
 
     def createGroup(self, name, **attrs):
@@ -717,7 +713,20 @@ class DatasetType(StructureType):
             name = "/" + name
         if len(name.split("/")) > 2:
             path = ("/").join(name.split("/")[:-1]) + "/"
-        return self.createDapType(GroupType, name, **attrs, path=path)
+        parts = re.split(r"[/]", name)
+        try:
+            for i in range(1, len(parts)):
+                self[("/").join(parts[:i])]
+        except KeyError:
+            warnings.warn(
+                """Failed to create `{}` because parent `{}` does not exist!
+                """.format(
+                    parts[-1], parts[-2]
+                )
+            )
+            return None
+
+        return self.createDapType(GroupType, name, path=path, **attrs)
 
     def createVariable(self, name, **attrs):
         """
@@ -996,6 +1005,10 @@ class GridType(StructureType):
     def dimensions(self):
         """Return the name of the axes."""
         return tuple(list(self.keys())[1:])
+
+    @property
+    def type(self):
+        return "Grid"
 
 
 class GroupType(StructureType):

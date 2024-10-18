@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#" xml:base="http://localhost:8001" dapVersion="4.0" dmrVersion="1.0" name="example%20dataset">
+    <Dimension name="time" size="1"/>
+    <Dimension name="nv" size="2"/>
+    <Dimension name="/SimpleGroup/Y" size="4"/>
+    <Dimension name="/SimpleGroup/X" size="4"/>
+    <Float32 name="/SimpleGroup/Temperature">
+        <Dim name="/time"/>
+        <Dim name="/SimpleGroup/Y"/>
+        <Dim name="/SimpleGroup/X"/>
+        <Attribute name="units" type="str">
+            <Value>degrees_celsius</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="float">
+            <Value>inf</Value>
+        </Attribute>
+    </Float32>
+    <Float32 name="/SimpleGroup/Salinity">
+        <Dim name="/time"/>
+        <Dim name="/SimpleGroup/Y"/>
+        <Dim name="/SimpleGroup/X"/>
+        <Attribute name="units" type="str">
+            <Value>psu</Value>
+        </Attribute>
+        <Attribute name="_FillValue" type="float">
+            <Value>nan</Value>
+        </Attribute>
+    </Float32>
+    <Int16 name="/SimpleGroup/Y">
+        <Dim name="/SimpleGroup/Y"/>
+    </Int16>
+    <Int16 name="/SimpleGroup/X">
+        <Dim name="/SimpleGroup/X"/>
+    </Int16>
+    <Float32 name="time">
+        <Dim name="/time"/>
+        <Attribute name="standard_name" type="str">
+            <Value>time</Value>
+        </Attribute>
+        <Attribute name="bounds" type="str">
+            <Value>time_bnds</Value>
+        </Attribute>
+    </Float32>
+    <Float32 name="time_bnds">
+        <Dim name="/time"/>
+        <Dim name="/nv"/>
+    </Float32>
+    <Attribute name="Description" type="str">
+        <Value>A simple flattened group for testing.</Value>
+    </Attribute>
+</Dataset>

@@ -123,6 +123,24 @@ class TestDMRParser(unittest.TestCase):
         # assert nv is NOT a variable/array
         self.assertNotIn("nv", variables)
 
+    def tests_FlatGroups(self):
+        dataset = load_dmr_file("data/dmrs/SimpleGroupFlat.dmr")
+        # pick a single variable Maps
+        Groups = dataset.groups()
+        Variables = [item for (item, _) in dataset.variables().items()]
+        self.assertEqual(Groups, {})
+        self.assertEqual(
+            Variables,
+            [
+                "SimpleGroup/Temperature",
+                "SimpleGroup/Salinity",
+                "SimpleGroup/Y",
+                "SimpleGroup/X",
+                "time",
+                "time_bnds",
+            ],
+        )
+
     def test_get_groups(self):
         dmr_file = "data/dmrs/SimpleGroup.dmr"
         abs_path = os.path.join(os.path.dirname(__file__), dmr_file)
@@ -138,3 +156,111 @@ class TestDMRParser(unittest.TestCase):
         assert entry["dimensions"] == {"Y": 4, "X": 4}
         assert entry["path"] == "/"
         assert entry["Maps"] == ()
+
+
+class TestAttrsTypesDMRParser(unittest.TestCase):
+    """Test parsing a DMR with all types"""
+
+    def test_int8(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="Int8">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], int)
+
+    def test_uint8(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="UInt8">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], int)
+
+    def test_Char(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="Char">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], int)
+
+    def test_int16(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="Int16">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], int)
+
+    def test_uint16(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="UInt16">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], int)
+
+    def test_int32(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="Int32">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], int)
+
+    def test_uint32(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="UInt32">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], int)
+
+    def test_int64(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="Int64">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], int)
+
+    def test_uint64(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="UInt64">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], int)
+
+    def test_float32(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="Float32">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], float)
+
+    def test_float64(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="Float64">\n
+                            <Value>1</Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], float)
+
+    def test_floatNone(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="Float32">\n
+                            <Value></Value>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert ds["x"].attributes["attr"] is None
+
+    def test_TDSfloat64(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+                <Attribute name="attr" type="Float64">\n
+                            <Value value="0.0"/>\n        </Attribute>\n
+                                </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert isinstance(ds["x"].attributes["attr"], float)
