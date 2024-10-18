@@ -1,0 +1,15 @@
+Dataset {
+    Grid {
+      Array:
+        Int16 /A/B/sst[ntime = 1857][nlat = 89][nlon = 180];
+      Maps:
+        Float64 /time[ntime = 1857];
+        Float32 /lat[nlat = 89];
+        Float32 /lon[nlon = 180];
+    } /A/B/sst;
+    Float32 /A/B/lat[nlat = 89];
+    Float32 /A/B/lon[nlon = 180];
+    Float64 /A/B/time[ntime = 1857];
+    Float64 /A/B/time_bnds[ntime = 1857][nbnds = 2];
+    Int16 /A/B/Vertical_binsize;
+} sst.mnmean.nc;

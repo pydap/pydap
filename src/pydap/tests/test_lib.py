@@ -254,10 +254,10 @@ class TestTree(unittest.TestCase):
     def setUp(self):
         self.dataset = DatasetType("name")
         self.dataset["a"] = BaseType("a")
-        self.dataset["Group1"] = GroupType("Group1")
-        self.dataset["/Group1/Seq1"] = SequenceType("Seq1")
-        self.dataset["/Group1/Seq1/b"] = BaseType("b")
-        self.dataset["/Group1/Seq1/c"] = BaseType("c")
+        self.dataset.createGroup("Group1")
+        self.dataset.createSequence("/Group1/Seq1")
+        self.dataset.createVariable("/Group1/Seq1/b")
+        self.dataset.createVariable("/Group1/Seq1/c")
         self.dataset["d"] = StructureType("d")
         self.dataset["e"] = SequenceType("e")
 

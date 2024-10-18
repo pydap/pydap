@@ -182,6 +182,11 @@ def dmr_to_dataset(dmr):
     # Parse the DMR. First dropping the namespace
     dom_et = DMRParser(dmr).node
     # emtpy dataset
+    if DMRParser(dmr).Groups:
+        split_by = '/'
+    else:
+        split_by = None
+
     dataset = DMRParser(dmr).init_dataset()
 
     variables = get_variables(dom_et)
@@ -190,7 +195,7 @@ def dmr_to_dataset(dmr):
     # get Global dimensions at root level
     global_dimensions = []
     for name, size in named_dimensions.items():
-        if len(name.split("/")) == 1:
+        if len(name.split(split_by)) == 1:
             global_dimensions.append([name, size])
 
     dataset.dimensions = {k: v for k, v in global_dimensions}
@@ -220,9 +225,9 @@ def dmr_to_dataset(dmr):
     for name, variable in variables.items():
         var_name = variable["name"]
         path = None
-        if len(var_name.split("/")) > 1:
+        if len(var_name.split(split_by)) > 1:
             # path-like name - Groups!
-            parts = var_name.split("/")
+            parts = var_name.split(split_by)
             var_name = parts[-1]
             path = ("/").join(parts[:-1])
             variable["attributes"]["path"] = path
@@ -231,22 +236,24 @@ def dmr_to_dataset(dmr):
         # make sure all dimensions have qualifying name
         Dims = []
         for dim in variable["dims"]:
-            if len(dim.split("/")) == 1:
+            if len(dim.split(split_by)) == 1:
                 Dims.append("/" + dim)
             else:
                 Dims.append(dim)
-
-        array = pydap.model.BaseType(name=var_name, data=data, dimensions=Dims)
         # pass along maps
+        var_kwargs = {
+                'name': name,
+                'data': data,
+                'dimensions': Dims,
+                'attributes': variable["attributes"]
+        }
         if "maps" in variable.keys():
-            array.Maps = variable["maps"]
-        var = array
-        var.attributes = variable["attributes"]
+            var_kwargs.update({'Maps': variable["maps"]}) 
         if "parent" in variable.keys() and variable["parent"] in [
             "Sequence",
             "Structure",
         ]:
-            parts = name.split("/")
+            parts = name.split(split_by)
             parent_name = parts[-2]
             path = ("/").join(parts[:-2])
             if variable["parent"] == "Sequence":
@@ -257,7 +264,8 @@ def dmr_to_dataset(dmr):
                 dataset[path + parent_name] = dapType(parent_name, path=path)
             dataset[("/").join(parts)] = var
         else:
-            dataset[name] = var
+            dataset.createVariable(**var_kwargs)
+
     return dataset
 
 
@@ -265,11 +273,14 @@ class DMRParser(object):
     """A parser for the DMR."""
 
     def __init__(self, dmr):
-        # super(DMRParser, self).__init__(dmr, re.IGNORECASE)
         self.dmr = dmr
+        self.Groups = None
 
         _dmr = re.sub(' xmlns="[^"]+"', "", self.dmr, count=1)
         self.node = ET.fromstring(_dmr)
+        if len(get_groups(self.node)) > 0:
+            # no groups here
+            self.Groups = True
 
     def init_dataset(self):
         """creates an empty dataset with a name and attributes"""

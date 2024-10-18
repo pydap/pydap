@@ -484,13 +484,17 @@ def test_DatasetType_get_item_directory_path():
 
 def test_DatasetType_set_item_directory_path(sequence_example):
     dataset = DatasetType("dataset")
+    # first create Groups, and then Sequence
+    dataset.createGroup("/Group1")
+    dataset.createGroup("/Group1/Group2")
+    dataset.createSequence("/Group1/Group2/example")
     path = "/Group1/Group2/example"
     dataset[path] = sequence_example
     assert "Group1" in list(dataset.keys())
     assert "Group2" in list(dataset["/Group1"].keys())
-    assert isinstance(dataset["Group1"], GroupType)
-    assert isinstance(dataset["Group1/Group2"], GroupType)
-    assert isinstance(dataset["Group1/Group2/example"], SequenceType)
+    assert isinstance(dataset["/Group1"], GroupType)
+    assert isinstance(dataset["/Group1/Group2"], GroupType)
+    assert isinstance(dataset["/Group1/Group2/example"], SequenceType)
 
 
 def test_DatasetType_fails_createDAPType():
@@ -522,7 +526,8 @@ def test_DatasetType_groups(sequence_example):
 def test_DatasetType_sequences(sequence_example):
     dataset = DatasetType("dataset")
     dataset.createGroup("/Group1")
-    dataset["/Group1/example"] = sequence_example
+    dataset.createSequence('/Group1/example')
+    dataset['/Group1/example'] = sequence_example
     seq_root_level = dataset.sequences()
     sqns = dataset["/Group1"].sequences()
     assert seq_root_level == {}
