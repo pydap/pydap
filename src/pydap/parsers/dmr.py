@@ -183,7 +183,7 @@ def dmr_to_dataset(dmr):
     dom_et = DMRParser(dmr).node
     # emtpy dataset
     if DMRParser(dmr).Groups:
-        split_by = '/'
+        split_by = "/"
     else:
         split_by = None
 
@@ -242,13 +242,13 @@ def dmr_to_dataset(dmr):
                 Dims.append(dim)
         # pass along maps
         var_kwargs = {
-                'name': name,
-                'data': data,
-                'dimensions': Dims,
-                'attributes': variable["attributes"]
+            "name": name,
+            "data": data,
+            "dimensions": Dims,
+            "attributes": variable["attributes"],
         }
         if "maps" in variable.keys():
-            var_kwargs.update({'Maps': variable["maps"]}) 
+            var_kwargs.update({"Maps": variable["maps"]})
         if "parent" in variable.keys() and variable["parent"] in [
             "Sequence",
             "Structure",
@@ -256,13 +256,10 @@ def dmr_to_dataset(dmr):
             parts = name.split(split_by)
             parent_name = parts[-2]
             path = ("/").join(parts[:-2])
-            if variable["parent"] == "Sequence":
-                dapType = pydap.model.SequenceType
-            else:
-                dapType = pydap.model.StructureType
-            if parent_name not in dataset[path].keys():
-                dataset[path + parent_name] = dapType(parent_name, path=path)
-            dataset[("/").join(parts)] = var
+            if variable["parent"] == "Sequence" and parent_name not in dataset[path].keys():
+                dataset.createSequence(("/").join(parts), path=path)
+            elif variable["parent"] == "Structure" and parent_name not in dataset[path].keys():
+                dataset.createStructure(("/").join(parts), path=path)
         else:
             dataset.createVariable(**var_kwargs)
 

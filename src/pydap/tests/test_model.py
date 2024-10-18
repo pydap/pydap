@@ -526,8 +526,8 @@ def test_DatasetType_groups(sequence_example):
 def test_DatasetType_sequences(sequence_example):
     dataset = DatasetType("dataset")
     dataset.createGroup("/Group1")
-    dataset.createSequence('/Group1/example')
-    dataset['/Group1/example'] = sequence_example
+    dataset.createSequence("/Group1/example")
+    dataset["/Group1/example"] = sequence_example
     seq_root_level = dataset.sequences()
     sqns = dataset["/Group1"].sequences()
     assert seq_root_level == {}

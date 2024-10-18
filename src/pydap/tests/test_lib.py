@@ -17,7 +17,7 @@ from pydap.lib import (
     tree,
     walk,
 )
-from pydap.model import BaseType, DatasetType, GroupType, SequenceType, StructureType
+from pydap.model import BaseType, DatasetType, SequenceType, StructureType
 
 
 class TestQuote(unittest.TestCase):

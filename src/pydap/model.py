@@ -570,14 +570,13 @@ class DatasetType(StructureType):
         types_ = "_"
         if len(self.groups()) > 0:
             parts = re.split(r"[/]", key)[1:]
-            types_ += 'groups_'
+            types_ += "groups_"
         elif len(self.sequences()) > 0 or len(self.structures()) > 0:
             parts = re.split(r"[.]", key)
-            types_ += 'seqs_'
+            types_ += "seqs_"
         else:
             parts = []
         N = len(parts)
-        # print(types_, N)
         if N > 1:
             # add parent container type if not there
             if parts[0] not in self._dict:
@@ -585,7 +584,7 @@ class DatasetType(StructureType):
             #  iterate over all groups to reach DAP object
             current = self._dict
             for j in range(N - 1):
-                if parts[j] not in current: # and Flat is not None
+                if parts[j] not in current:  # and Flat is not None
                     #     # This current approach works when parsing a DMR
                     #     # with only Groups and arrays. Need to enable
                     #     # Sequences and Structures. This works with all
@@ -693,11 +692,11 @@ class DatasetType(StructureType):
         # much more cleanly. User specifies FQN but DAPtype is defined
         # within the method so OK.
         Groups = self.groups()
-        if len(Groups) > 0: # true
+        if len(Groups) > 0:  # true
             parts = re.split(r"[/]", name)
         else:
-            if name[0]=='/':
-                name=name[1:]
+            if name[0] == "/":
+                name = name[1:]
             parts = re.split(r"[.]", name)
         item = daptype(name=parts[-1], **attrs)
         DatasetType.__setitem__(self, name, item)
@@ -1010,6 +1009,7 @@ class GridType(StructureType):
     @property
     def type(self):
         return "Grid"
+
 
 class GroupType(StructureType):
     """A Group container.
