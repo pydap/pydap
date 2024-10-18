@@ -1,11 +1,24 @@
 """Test DDS parsing functions."""
 
+import os
 import unittest
 
 import numpy as np
 
 from pydap.model import BaseType, StructureType
 from pydap.parsers.dds import dds_to_dataset
+
+
+def load_dds_file(file_path):
+    abs_path = os.path.join(os.path.dirname(__file__), file_path)
+    with open(abs_path, "r") as dds_file:
+        dds = dds_file.read()
+    dataset = dds_to_dataset(dds)
+    return dataset
+
+
+# DDS_FLAT = os.path.join(os.path.dirname(__file__), "data/flatgroup.dds")
+
 
 DDS = """Dataset {
     Structure {
@@ -43,6 +56,7 @@ class TestBuildDataset(unittest.TestCase):
     def setUp(self):
         """Parse the whole dataset."""
         self.dataset = dds_to_dataset(DDS)
+        self.dataset2 = load_dds_file("data/flatgroup.dds")
 
     def test_structure(self):
         """Test the structure."""
@@ -107,6 +121,20 @@ class TestBuildDataset(unittest.TestCase):
         self.assertIsInstance(self.dataset.structure.s, BaseType)
         self.assertEqual(self.dataset.structure.s.dtype, np.dtype("|S128"))
         self.assertEqual(self.dataset.structure.s.shape, ())
+
+    def test_flatgroup(self):
+        self.assertEqual(self.dataset2.groups(), {})
+        self.assertEqual(
+            list(self.dataset2.keys()),
+            [
+                "/A/B/sst",
+                "/A/B/lat",
+                "/A/B/lon",
+                "/A/B/time",
+                "/A/B/time_bnds",
+                "/A/B/Vertical_binsize",
+            ],
+        )
 
     def test_url(self):
         """Test url parsing."""
