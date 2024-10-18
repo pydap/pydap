@@ -256,9 +256,15 @@ def dmr_to_dataset(dmr):
             parts = name.split(split_by)
             parent_name = parts[-2]
             path = ("/").join(parts[:-2])
-            if variable["parent"] == "Sequence" and parent_name not in dataset[path].keys():
+            if (
+                variable["parent"] == "Sequence"
+                and parent_name not in dataset[path].keys()
+            ):
                 dataset.createSequence(("/").join(parts), path=path)
-            elif variable["parent"] == "Structure" and parent_name not in dataset[path].keys():
+            elif (
+                variable["parent"] == "Structure"
+                and parent_name not in dataset[path].keys()
+            ):
                 dataset.createStructure(("/").join(parts), path=path)
         else:
             dataset.createVariable(**var_kwargs)
