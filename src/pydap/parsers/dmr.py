@@ -84,12 +84,16 @@ def get_attributes(element, attributes={}):
     attribute_elements = element.findall("Attribute")
     Float_types = ["Float32", "float", "Float64"]
     Int_types = ["Int16", "Int32", "Int64", "int", "Int8"]
-    uInt_types = ["uInt16", "uInt32", "uInt64", "uint", "uInt8"]
+    uInt_types = ["uInt16", "uInt32", "uInt64", "uint", "uInt8", "Char"]
     for attribute_element in attribute_elements:
         name = attribute_element.get("name")
         value = attribute_element.find("Value").text
+        if value is None:
+            # This could be because server is TDS.
+            # If value is None still, then data is missing
+            value = attribute_element.find("Value").get("value")
         _type = attribute_element.get("type")
-        if _type in dmr_atomic_types:
+        if _type in dmr_atomic_types and value is not None:
             if _type in Float_types:
                 # keep float-type of value
                 value = float(value)
