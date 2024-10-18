@@ -541,9 +541,9 @@ class StructureType(DapType, Mapping):
 
     def sequences(self):
         out = {}
-        Sqns = [key for key in self.children() if isinstance(key, SequenceType)]
-        for var in Sqns:
-            out.update({var.name: [key.name for key in var.children()]})
+        for var in walk(self, SequenceType):
+            if var.type == "Sequence":
+                out.update({var.name: [key.name for key in var.children()]})
         return out
 
     def variables(self):
@@ -567,15 +567,14 @@ class DatasetType(StructureType):
 
     def __setitem__(self, key, item):
         # key a path-like only in DAP4
-        types_ = "_"
+        split_by = " "
         if len(self.groups()) > 0:
-            parts = re.split(r"[/]", key)[1:]
-            types_ += "groups_"
-        elif len(self.sequences()) > 0 or len(self.structures()) > 0:
-            parts = re.split(r"[.]", key)
-            types_ += "seqs_"
-        else:
-            parts = []
+            if key[0] == "/":
+                key = key[1:]
+            split_by += "/"
+        if len(self.sequences()) > 0 or len(self.structures()) > 0:
+            split_by += "."
+        parts = re.split("[" + split_by + "]", key)
         N = len(parts)
         if N > 1:
             # add parent container type if not there
@@ -607,7 +606,6 @@ class DatasetType(StructureType):
             self._dict[key] = item
             # By default added keys are visible:
             self._visible_keys.append(key)
-
         key = key.replace("%2E", ".")
         if len(key.split(".")) == 1:
             # The parent name does not go into the children ids.
@@ -691,13 +689,15 @@ class DatasetType(StructureType):
         # since these are safe to escape. This catches all cases
         # much more cleanly. User specifies FQN but DAPtype is defined
         # within the method so OK.
-        Groups = self.groups()
-        if len(Groups) > 0:  # true
-            parts = re.split(r"[/]", name)
+        split_by = " "
+        if len(self.groups()) > 0:  # true
+            split_by += "/"
         else:
             if name[0] == "/":
                 name = name[1:]
-            parts = re.split(r"[.]", name)
+        if len(self.sequences()) > 0 or len(self.structures()) > 0:
+            split_by += "."
+        parts = re.split("[" + split_by + "]", name)
         item = daptype(name=parts[-1], **attrs)
         DatasetType.__setitem__(self, name, item)
 
