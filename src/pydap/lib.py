@@ -136,6 +136,7 @@ DAP4_TO_NUMPY_PARSER_TYPEMAP = {
     "Byte": "B",
     "String": STRING,
     "Url": STRING,
+    "Char": ">u1",
 }
 
 
