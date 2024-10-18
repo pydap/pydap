@@ -123,6 +123,24 @@ class TestDMRParser(unittest.TestCase):
         # assert nv is NOT a variable/array
         self.assertNotIn("nv", variables)
 
+    def tests_FlatGroups(self):
+        dataset = load_dmr_file("data/dmrs/SimpleGroupFlat.dmr")
+        # pick a single variable Maps
+        Groups = dataset.groups()
+        Variables = [item for (item, _) in dataset.variables().items()]
+        self.assertEqual(Groups, {})
+        self.assertEqual(
+            Variables,
+            [
+                "SimpleGroup/Temperature",
+                "SimpleGroup/Salinity",
+                "SimpleGroup/Y",
+                "SimpleGroup/X",
+                "time",
+                "time_bnds",
+            ],
+        )
+
     def test_get_groups(self):
         dmr_file = "data/dmrs/SimpleGroup.dmr"
         abs_path = os.path.join(os.path.dirname(__file__), dmr_file)
