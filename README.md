@@ -10,6 +10,8 @@ pydap
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/pydap/pydap)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/pydap/pydap/main.svg)](https://results.pre-commit.ci/latest/github/pydap/pydap/main)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14010567.svg)](https://doi.org/10.5281/zenodo.14010567)
+
 
 What is pydap?
 ----------
