@@ -95,6 +95,7 @@ class TestDMRParser(unittest.TestCase):
                 "/Cell_Across_Swath_5km",
             ],
         )
+        self.assertEqual(dataset.attributes["Conventions"], "CF-1.7")
 
     def test_SWOT(self):
         dataset = load_dmr_file("data/dmrs/SWOT_GPR.dmr")
