@@ -81,6 +81,8 @@ pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/
 application. To use it, you first need to install the server and
 optionally a data handler:
 
+## Running pydap as a Server
+
 ```bash
     $ pip install "pydap[server,netcdf]"
 ```
