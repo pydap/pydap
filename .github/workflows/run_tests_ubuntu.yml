@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
     name: ubuntu-latest Python ${{ matrix.python-version }}
     steps:
     - uses: actions/checkout@v4
@@ -33,7 +33,7 @@ jobs:
 
     - name: Install pydap and dependencies for testing
       run: |
-        python -m pip install -e .[tests]
+        python -m pip install -e .
 
     - name: Run tests with pytest
       run: |
