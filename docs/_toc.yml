@@ -10,6 +10,7 @@ parts:
   - file: get_started
     sections:
     - file: 5_minute_tutorial
+  - file: NEWS
 - caption: Examples
   chapters:
   - file: notebooks/Authentication
