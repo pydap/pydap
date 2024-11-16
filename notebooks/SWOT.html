@@ -16,30 +16,33 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -64,14 +67,7 @@
     <link rel="prev" title="PACE" href="PACE.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-EN2VD1J32L');
-</script>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -87,19 +83,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -107,7 +92,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -115,8 +99,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -132,7 +116,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -162,21 +147,17 @@
     
     
     <img src="../_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
-    <script>document.write(`<img src="../_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
@@ -187,6 +168,7 @@
 
 </ul>
 </details></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current nav bd-sidenav">
@@ -198,7 +180,10 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../client.html">PyDAP as a client</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../client.html">PyDAP as a client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ConstraintExpressions.html">Constraint Expressions: Server-side Subsetting</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../responses.html">Responses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../server.html">Running a server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../handlers.html">Handlers</a></li>
@@ -325,24 +310,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -417,7 +394,7 @@ document.write(`
 <h2>Add to session’s headers Token Authorization<a class="headerlink" href="#add-to-session-s-headers-token-authorization" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;<YourToken>&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTczMjk3OTUwNSwiaWF0IjoxNzI3Nzk1NTA1LCJpc3MiOiJodHRwczovL3Vycy5lYXJ0aGRhdGEubmFzYS5nb3YifQ.lTqdIyEcthndU5pPyxorT5tF7JUGPKg9Od54gn0SVfhAx4dsR4x9Fb0OWnlnW2O_jTNH2Dqsn9-dI_3qwrrtinjEOdnlyCbKCeoj0dS-NGyILDpJU-VE_TIJpZDlvbbqSGfa0oRnLM33wzcBDJ7LEFOtRpnxEq3kJddmfsRJF4XiMAd9cwgyZ2WjJ_CDH1Ox_JDofgI1JKOCGlJhGtP2GHoyKvi7uo4BuY9WAFikXOnuQ-nhj8mxO_MBJUPFivZUDQ7JAR3hHcyp04Vo5Siol9V2-Uf2VxUvGU7UxINQpXQgRHldGQ51qAivfqkMwubKJ3TxLx0ZWhHI6vantMLJcA&quot;</span>
 
 <span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
 </pre></div>
@@ -451,6 +428,20 @@ document.write(`
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.SWOT_GPR_2PfP507_010_20230501_003247_20230501_012352.nc
 └──data_01
+   ├──ku
+   │  ├──iono_cor_alt_filtered_mle3
+   │  ├──sea_state_bias_mle3
+   │  ├──wvf_main_class
+   │  ├──iono_cor_alt_filtered
+   │  ├──range_ocean
+   │  ├──ssha_mle3
+   │  ├──sig0_ocean
+   │  ├──sig0_ocean_mle3
+   │  ├──sea_state_bias
+   │  ├──swh_ocean
+   │  ├──range_ocean_mle3
+   │  ├──ssha
+   │  └──swh_ocean_mle3
    ├──time
    ├──longitude
    ├──latitude
@@ -484,21 +475,7 @@ document.write(`
    ├──rain_flag
    ├──mean_sea_surface_cnescls
    ├──geo_qual
-   ├──rad_cloud_liquid_water
-   └──ku
-      ├──iono_cor_alt_filtered_mle3
-      ├──sea_state_bias_mle3
-      ├──wvf_main_class
-      ├──iono_cor_alt_filtered
-      ├──range_ocean
-      ├──ssha_mle3
-      ├──sig0_ocean
-      ├──sig0_ocean_mle3
-      ├──sea_state_bias
-      ├──swh_ocean
-      ├──range_ocean_mle3
-      ├──ssha
-      └──swh_ocean_mle3
+   └──rad_cloud_liquid_water
 </pre></div>
 </div>
 </div>
@@ -565,7 +542,8 @@ document.write(`
  &#39;comment&#39;: &#39;Time of measurement in seconds in the UTC time scale since 1 Jan 2000 00:00:00 UTC. [tai_utc_difference] is the difference between TAI and UTC reference time (seconds) for the first measurement of the data set. If a leap second occurs within the data set, the attribute [leap_second] is set to the UTC time at which the leap second occurs&#39;,
  &#39;tai_utc_difference&#39;: 37.0,
  &#39;leap_second&#39;: &#39;0000-00-00 00:00:00&#39;,
- &#39;path&#39;: &#39;/data_01&#39;}
+ &#39;path&#39;: &#39;/data_01&#39;,
+ &#39;Maps&#39;: ()}
 </pre></div>
 </div>
 </div>
@@ -578,8 +556,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 40 ms, sys: 3.86 ms, total: 43.9 ms
-Wall time: 729 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 28.4 ms, sys: 2.91 ms, total: 31.3 ms
+Wall time: 2.69 s
 </pre></div>
 </div>
 </div>
@@ -620,8 +598,8 @@ Wall time: 729 ms
  &#39;scale_factor&#39;: 1e-06,
  &#39;comment&#39;: &#39;East longitude relative to Greenwich meridian. See SWOT Nadir Altimeter User Handbook. Associated quality flag is orb_state_diode_flag for the OGDR products, orb_state_rest_flag for the IGDR and GDR products&#39;,
  &#39;path&#39;: &#39;/data_01&#39;,
- &#39;checksum&#39;: array([4151025818], dtype=uint32),
- &#39;Maps&#39;: ()}
+ &#39;Maps&#39;: (),
+ &#39;checksum&#39;: array([4151025818], dtype=uint32)}
 </pre></div>
 </div>
 </div>
@@ -640,8 +618,8 @@ Wall time: 729 ms
  &#39;scale_factor&#39;: 1e-06,
  &#39;comment&#39;: &#39;Positive latitude is North latitude, negative latitude is South latitude. See SWOT Nadir Altimeter User Handbook. Associated quality flag is orb_state_diode_flag for the OGDR products, orb_state_rest_flag for the IGDR and GDR products&#39;,
  &#39;path&#39;: &#39;/data_01&#39;,
- &#39;checksum&#39;: array([1388797074], dtype=uint32),
- &#39;Maps&#39;: ()}
+ &#39;Maps&#39;: (),
+ &#39;checksum&#39;: array([1388797074], dtype=uint32)}
 </pre></div>
 </div>
 </div>
@@ -697,7 +675,7 @@ Wall time: 729 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d9c9cf5f4e1873c6b988486db3aec5de7f4e1914632d37ab16dc0cb4b1aaaa98.png" src="../_images/d9c9cf5f4e1873c6b988486db3aec5de7f4e1914632d37ab16dc0cb4b1aaaa98.png" />
+<img alt="../_images/a1cf84e6f2a6fe79bcc911468849cb5cf834fd79dab1486977eec059d3d577c0.png" src="../_images/a1cf84e6f2a6fe79bcc911468849cb5cf834fd79dab1486977eec059d3d577c0.png" />
 </div>
 </div>
 <p><strong>Fig. 1</strong> Global map showing the track (trajectory) of the sampled (satellite) data. Values refer to mean dynamic topography.</p>
@@ -712,7 +690,7 @@ Wall time: 729 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/b4a7f959d7ec5d43ea2c79a4db0b1860fb22a1dfdd48f8da26a277efdcfcb6ae.png" src="../_images/b4a7f959d7ec5d43ea2c79a4db0b1860fb22a1dfdd48f8da26a277efdcfcb6ae.png" />
+<img alt="../_images/9407eb9fa16629c19ddaae2eec329e3a0df9ba510d20977b38ce9b37f326ed1d.png" src="../_images/9407eb9fa16629c19ddaae2eec329e3a0df9ba510d20977b38ce9b37f326ed1d.png" />
 </div>
 </div>
 <p><strong>Fig 2.</strong> Along track values. The first values along the track represent the North Atlantic, whereas the steep dropoff in dynamic topography represent the Southern Ocean.</p>
@@ -774,7 +752,8 @@ Wall time: 729 ms
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -833,8 +812,8 @@ By OPeNDAP Community
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

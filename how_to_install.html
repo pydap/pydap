@@ -16,30 +16,33 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
@@ -64,14 +67,7 @@
     <link rel="prev" title="Welcome to pydap" href="intro.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-EN2VD1J32L');
-</script>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -87,19 +83,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -107,7 +92,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -115,8 +99,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -132,7 +116,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -162,21 +147,17 @@
     
     
     <img src="_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
-    <script>document.write(`<img src="_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+    <img src="_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
@@ -187,6 +168,7 @@
 
 </ul>
 </details></li>
+<li class="toctree-l1"><a class="reference internal" href="NEWS.html">What’s New</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
@@ -198,7 +180,10 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="client.html">PyDAP as a client</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="client.html">PyDAP as a client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="ConstraintExpressions.html">Constraint Expressions: Server-side Subsetting</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="server.html">Running a server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
@@ -325,24 +310,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -366,10 +343,15 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required-dependencies">Minimal Required Dependencies</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependencies">Optional dependencies</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-dependencies">extra-dependencies</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-environments">Reproducible environments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#client-only">1. Client-only</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-installation">2. Complete installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required">Minimal Required</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependencies">Optional dependencies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-dependencies">extra-dependencies</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-conda-environments">Reproducible (conda) environments</a></li>
 </ul>
             </nav>
         </div>
@@ -383,83 +365,79 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="how-to-install">
 <h1>How to install<a class="headerlink" href="#how-to-install" title="Link to this heading">#</a></h1>
-<p>This package is available for installation from pypi or conda for the stable version, and directly from source (GitHub’s repository) for the most recent version under development.</p>
-<p>pydap can be installed with minimal required dependencies from <a class="reference external" href="https://pypi.org/">PyPI</a> via pip as follows:</p>
+<p>Starting with the latest release <code class="docutils literal notranslate"><span class="pre">3.5.1</span></code>, the installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> is now split into two possible options:</p>
+<section id="client-only">
+<h2>1. Client-only<a class="headerlink" href="#client-only" title="Link to this heading">#</a></h2>
+<p>To install pydap to use only as a client API, you can do:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap
 </pre></div>
 </div>
-<section id="minimal-required-dependencies">
-<h2>Minimal Required Dependencies<a class="headerlink" href="#minimal-required-dependencies" title="Link to this heading">#</a></h2>
-<p>The following are minimal dependencies to use pydap as a client.</p>
+<p>or</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>pydap
+</pre></div>
+</div>
+<p>This installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> will include the minimal dependencies to allow users to subset remote data on OPeNDAP servers.</p>
+</section>
+<section id="complete-installation">
+<h2>2. Complete installation<a class="headerlink" href="#complete-installation" title="Link to this heading">#</a></h2>
+<p>To recover the full installation of pydap, which includes the packages for using pydap as a client and as a server, run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>pydap-server
+</pre></div>
+</div>
+<p>This installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> will include the dependencies to allow users to a) subset remote data on OPeNDAP servers, and b) use pydap’s server to make data available.</p>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
+<section id="minimal-required">
+<h3>Minimal Required<a class="headerlink" href="#minimal-required" title="Link to this heading">#</a></h3>
+<p>The following are required to run pydap as a client.</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">&gt;=</span> <span class="pre">3.10</span></code></p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">pydap</span></code>’s CI/CD against stable versions of python (<code class="docutils literal notranslate"><span class="pre">3.10</span></code>, <code class="docutils literal notranslate"><span class="pre">3.11</span></code>, <code class="docutils literal notranslate"><span class="pre">3.12</span></code>). pydap recently dropped support for version 3.9.</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span> <span class="pre">&gt;=</span> <span class="pre">2.0</span></code></p>
-<ul>
-<li><p>pydap recently dropped support for <code class="docutils literal notranslate"><span class="pre">numpy&lt;2</span></code>.</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scipy</span></code></p>
-<ul>
-<li><p>it may only be used if <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code> (python) library is not currently installed</p></li>
-</ul>
-</li>
-<li><p><code class="docutils literal notranslate"><span class="pre">requests</span></code></p>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">pydap</span></code> greatly uses the <code class="docutils literal notranslate"><span class="pre">requests</span></code> library to connect with OPeNDAP servers through the web, and setup authentication sessions.</p></li>
-</ul>
-</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python&gt;=3.10</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scipy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">requests</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">beautifulsoup4</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">lxml</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Webob</span></code></p></li>
 </ul>
 </section>
 <section id="optional-dependencies">
-<h2>Optional dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading">#</a></h2>
+<h3>Optional dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading">#</a></h3>
 <ul class="simple">
 <li><p>matplotlib</p></li>
 <li><p>jupyter-lab</p></li>
 <li><p>cartopy</p></li>
 <li><p>xarray</p></li>
 </ul>
-<p>These are only necessary to run some of the tutorial notebooks.</p>
+<p>These last are only necessary to run some of the tutorial notebooks.</p>
 </section>
 <section id="extra-dependencies">
-<h2>extra-dependencies<a class="headerlink" href="#extra-dependencies" title="Link to this heading">#</a></h2>
-<p>Some extra dependencies can be installed to further exploit pydap’s capabilities. For example, to use pydap as a server, to serve netCDF4 data you can install all the required and extra dependencies as follows:</p>
+<h3>extra-dependencies<a class="headerlink" href="#extra-dependencies" title="Link to this heading">#</a></h3>
+<p>With <a class="reference external" href="https://pypi.org/">PyPI</a> you can install extra-dependencies. For example:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap<span class="s2">&quot;[server,netcdf]&quot;</span>
 </pre></div>
 </div>
 <p>This will install <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>-python library as well as all other dependencies to use/run <code class="docutils literal notranslate"><span class="pre">pydap</span></code> as a <strong>lightweight server</strong>. With this, <code class="docutils literal notranslate"><span class="pre">pydap</span></code> implements a lightweight <a class="reference external" href="http://wsgi.org/">WSGI</a> framework that it can easily be run behind <a class="reference external" href="https://www.apache.org/">Apache</a>.</p>
-<p>To inspect all other possible optional installation with extra dependencies, check the optional-dependencies on the <a class="reference external" href="https://github.com/pydap/pydap/blob/main/pyproject.toml#L57-L80">pyproject.toml</a>.</p>
+<p>While these are useful, we recommend to use package installation managers like <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>, as described below. This approach requires having an installation of <a class="reference external" href="https://docs.anaconda.com/miniconda/">Miniconda</a> or <a class="reference external" href="https://docs.anaconda.com/anaconda/install/">Anaconda</a>.</p>
 </section>
-<section id="reproducible-environments">
-<h2>Reproducible environments<a class="headerlink" href="#reproducible-environments" title="Link to this heading">#</a></h2>
-<p>We highly recommend using a package installation manager like conda/mamba to install pydap, and any other dependency, in a reproducible and containerized environment. This approach requires having an installation of <a class="reference external" href="https://docs.anaconda.com/miniconda/">Miniconda</a> or <a class="reference external" href="https://docs.anaconda.com/anaconda/install/">Anaconda</a>.</p>
-<p>The easiest way to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> is to use the conda-forge channel. Open a terminal, then run the following commands:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap<span class="w"> </span>numpy<span class="s2">&quot;&gt;=2.0&quot;</span><span class="w"> </span>jupyterlab<span class="w"> </span>ipython<span class="w"> </span>netCDF4<span class="w"> </span>scipy<span class="w"> </span>matplotlib
+</section>
+<section id="reproducible-conda-environments">
+<h2>Reproducible (conda) environments<a class="headerlink" href="#reproducible-conda-environments" title="Link to this heading">#</a></h2>
+<p>You can easily use conda to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> or <code class="docutils literal notranslate"><span class="pre">pydap-server</span></code>, along with any optional packages for sharing a reproducible workflow. For example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap-server<span class="w"> </span>jupyterlab<span class="w"> </span>ipython<span class="w"> </span>netCDF4<span class="w"> </span>matplotlib
+conda<span class="w"> </span>activate<span class="w"> </span>pydap
 </pre></div>
 </div>
-<p>The code above will create a conda environment named “pydap” with many of the commonly used packages for processing and visualizing gridded data, using the latest stable versions (conda release).</p>
-<p>To start using <code class="docutils literal notranslate"><span class="pre">pydap</span></code>, you need to activate the environment with the same name, by running:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>pydap
-</pre></div>
-</div>
-<p>At this stage, you can install additional packages or remove them if not needed.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you already have <code class="docutils literal notranslate"><span class="pre">mamba</span></code> installed, you can replace all <code class="docutils literal notranslate"><span class="pre">conda</span></code> in the commands with <code class="docutils literal notranslate"><span class="pre">mamba</span></code>.</p>
 </div>
-<p><a class="reference external" href="https://pypi.org/">PyPI</a> provides additional flexibility for installing python packages that otherwise is hard to achieve with other package installation managers. For example, you can install the latest <code class="docutils literal notranslate"><span class="pre">pydap</span></code> version directly from the github repository run within the freshly activated <code class="docutils literal notranslate"><span class="pre">pydap</span></code> environment by running:</p>
+<p>To install the latest <code class="docutils literal notranslate"><span class="pre">pydap</span></code> version (client-only), directly from the github repository, run:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
 </pre></div>
 </div>
-<p>This version is often not the stable in the sense that it is being actively developed and improved upon by contributors and maintainers of the <code class="docutils literal notranslate"><span class="pre">pydap</span></code> package.</p>
-<p>You can install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> in <code class="docutils literal notranslate"><span class="pre">developer</span> <span class="pre">mode</span></code>. The <code class="docutils literal notranslate"><span class="pre">developer</span></code> installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> comes in handy when actively making local changes to <code class="docutils literal notranslate"><span class="pre">pydap</span></code> (i.e. in your local clone directory), that you are interesting in incorporating into as a new feature, or fixing a bug. This is, the <code class="docutils literal notranslate"><span class="pre">pydap</span></code> installation gets updated realtime after every change to the code.navigate to a local, cloned pydap repository and run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-</pre></div>
-</div>
-<p>This will install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> along with the minimal dependencies defined on the <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> specification. For more on the <code class="docutils literal notranslate"><span class="pre">developer</span></code> approach of installing <code class="docutils literal notranslate"><span class="pre">pydap</span></code>, see <a class="reference internal" href="contribute/contr_cod.html"><span class="std std-doc">Contributing to the code</span></a>.</p>
+<p>This version is not stable as it is being actively developed and improved upon by contributors and maintainers of the <code class="docutils literal notranslate"><span class="pre">pydap</span></code> package.</p>
+<p>If you are interested in installing <code class="docutils literal notranslate"><span class="pre">pydap</span></code> in <code class="docutils literal notranslate"><span class="pre">developer</span> <span class="pre">mode</span></code>, to potentially contribute to the package, got o <a class="reference internal" href="contribute/contr_cod.html"><span class="std std-doc">Contributing to the code</span></a>.</p>
 </section>
 </section>
 
@@ -518,7 +496,8 @@ document.write(`
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -527,10 +506,15 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required-dependencies">Minimal Required Dependencies</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependencies">Optional dependencies</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-dependencies">extra-dependencies</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-environments">Reproducible environments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#client-only">1. Client-only</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-installation">2. Complete installation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required">Minimal Required</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependencies">Optional dependencies</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-dependencies">extra-dependencies</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-conda-environments">Reproducible (conda) environments</a></li>
 </ul>
   </nav></div>
 
@@ -579,8 +563,8 @@ By OPeNDAP Community
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>

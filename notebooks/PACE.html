@@ -16,30 +16,33 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!-- 
+    this give us a css class that will be invisible only if js is disabled 
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=26a4bc78f4c0ddb94549" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
-    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=87e54e7c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=26a4bc78f4c0ddb94549"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
@@ -64,14 +67,7 @@
     <link rel="prev" title="ECCOv4 access via NASA’s EarthData in the Cloud" href="ECCO.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-EN2VD1J32L');
-</script>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -87,19 +83,8 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -107,7 +92,6 @@
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -115,8 +99,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -132,7 +116,8 @@
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -162,21 +147,17 @@
     
     
     <img src="../_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
-    <script>document.write(`<img src="../_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
@@ -187,6 +168,7 @@
 
 </ul>
 </details></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="current nav bd-sidenav">
@@ -198,7 +180,10 @@
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../client.html">PyDAP as a client</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../client.html">PyDAP as a client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../ConstraintExpressions.html">Constraint Expressions: Server-side Subsetting</a></li>
+</ul>
+</details></li>
 <li class="toctree-l1"><a class="reference internal" href="../responses.html">Responses</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../server.html">Running a server</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../handlers.html">Handlers</a></li>
@@ -325,24 +310,16 @@
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
+</button>
 <button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
@@ -427,7 +404,7 @@ document.write(`
 <h2>Add to session’s headers Token Authorization<a class="headerlink" href="#add-to-session-s-headers-token-authorization" title="Link to this heading">#</a></h2>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;<YourToken>&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;eyJ0eXAiOiJKV1QiLCJvcmlnaW4iOiJFYXJ0aGRhdGEgTG9naW4iLCJzaWciOiJlZGxqd3RwdWJrZXlfb3BzIiwiYWxnIjoiUlMyNTYifQ.eyJ0eXBlIjoiVXNlciIsInVpZCI6Im1pa2VqbW5leiIsImV4cCI6MTczMjk3OTUwNSwiaWF0IjoxNzI3Nzk1NTA1LCJpc3MiOiJodHRwczovL3Vycy5lYXJ0aGRhdGEubmFzYS5nb3YifQ.lTqdIyEcthndU5pPyxorT5tF7JUGPKg9Od54gn0SVfhAx4dsR4x9Fb0OWnlnW2O_jTNH2Dqsn9-dI_3qwrrtinjEOdnlyCbKCeoj0dS-NGyILDpJU-VE_TIJpZDlvbbqSGfa0oRnLM33wzcBDJ7LEFOtRpnxEq3kJddmfsRJF4XiMAd9cwgyZ2WjJ_CDH1Ox_JDofgI1JKOCGlJhGtP2GHoyKvi7uo4BuY9WAFikXOnuQ-nhj8mxO_MBJUPFivZUDQ7JAR3hHcyp04Vo5Siol9V2-Uf2VxUvGU7UxINQpXQgRHldGQ51qAivfqkMwubKJ3TxLx0ZWhHI6vantMLJcA&quot;</span>
 
 <span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
 
@@ -447,8 +424,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 44.7 ms, sys: 5.34 ms, total: 50 ms
-Wall time: 894 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 43.7 ms, sys: 4.73 ms, total: 48.4 ms
+Wall time: 945 ms
 </pre></div>
 </div>
 </div>
@@ -464,9 +441,7 @@ Wall time: 894 ms
 ├──lat
 ├──lon
 ├──chlor_a
-├──palette
-├──rgb
-└──eightbitcolor
+└──palette
 </pre></div>
 </div>
 </div>
@@ -491,7 +466,8 @@ Wall time: 894 ms
  &#39;reference&#39;: &#39;Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.&#39;,
  &#39;display_scale&#39;: &#39;log&#39;,
  &#39;display_min&#39;: 0.00999999978,
- &#39;display_max&#39;: 20.0}
+ &#39;display_max&#39;: 20.0,
+ &#39;Maps&#39;: (&#39;/lat&#39;, &#39;/lon&#39;)}
 </pre></div>
 </div>
 </div>
@@ -503,7 +479,7 @@ Wall time: 894 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>uncompressed dataset size [GBs]:  0.14935388
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>uncompressed dataset size [GBs]:  0.149351808
 </pre></div>
 </div>
 </div>
@@ -543,8 +519,8 @@ Wall time: 894 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1min 8s, sys: 2min 1s, total: 3min 9s
-Wall time: 4min 59s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1min 9s, sys: 2min 2s, total: 3min 12s
+Wall time: 3min 26s
 </pre></div>
 </div>
 </div>
@@ -566,8 +542,8 @@ Wall time: 4min 59s
  &#39;display_scale&#39;: &#39;log&#39;,
  &#39;display_min&#39;: 0.00999999978,
  &#39;display_max&#39;: 20.0,
- &#39;checksum&#39;: array([221433038], dtype=uint32),
- &#39;Maps&#39;: (&#39;/lat&#39;, &#39;/lon&#39;)}
+ &#39;Maps&#39;: (&#39;/lat&#39;, &#39;/lon&#39;),
+ &#39;checksum&#39;: array([221433038], dtype=uint32)}
 </pre></div>
 </div>
 </div>
@@ -670,7 +646,7 @@ Wall time: 4min 59s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/15c454f4b434ff4ea7ac30329fd14f43e671f6c8a994262d3fce32b4fbb066c2.png" src="../_images/15c454f4b434ff4ea7ac30329fd14f43e671f6c8a994262d3fce32b4fbb066c2.png" />
+<img alt="../_images/53d4916b62fb68c3dd73984c08747283cc7834e1d120650b7b77a4d2b0c153ed.png" src="../_images/53d4916b62fb68c3dd73984c08747283cc7834e1d120650b7b77a4d2b0c153ed.png" />
 </div>
 </div>
 <p><strong>Fig 1.</strong> Chlorophyll A concentration for the entire dataset.</p>
@@ -693,7 +669,7 @@ Wall time: 4min 59s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5554a782737e46634738801a13d0886e18ebf775ff2a71488f7d00987d76274e.png" src="../_images/5554a782737e46634738801a13d0886e18ebf775ff2a71488f7d00987d76274e.png" />
+<img alt="../_images/7628bc3e36ff0a7eff599c0a2ab96ce7d747463a45045984c47cb5f7c6dc0399.png" src="../_images/7628bc3e36ff0a7eff599c0a2ab96ce7d747463a45045984c47cb5f7c6dc0399.png" />
 </div>
 </div>
 <p><strong>Fig 2.</strong> An approach to visually subset the global Chlorophyll A concentration. This approach allows to extract index values to construct the Constraint Expression and add it to the URL.</p>
@@ -746,8 +722,8 @@ Wall time: 4min 59s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 892 ms, sys: 965 ms, total: 1.86 s
-Wall time: 13.5 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 749 ms, sys: 614 ms, total: 1.36 s
+Wall time: 3.08 s
 </pre></div>
 </div>
 </div>
@@ -778,7 +754,7 @@ Wall time: 13.5 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/d7e5338b4038cefe599ec83d3e508ea07a9fcdaea0944c6fa3a5309cf05a5e02.png" src="../_images/d7e5338b4038cefe599ec83d3e508ea07a9fcdaea0944c6fa3a5309cf05a5e02.png" />
+<img alt="../_images/2467d4aaa2b361921634ec9c77e37e0228e876b1412a6244cd3dd408e7b0b0d9.png" src="../_images/2467d4aaa2b361921634ec9c77e37e0228e876b1412a6244cd3dd408e7b0b0d9.png" />
 </div>
 </div>
 <p><strong>Fig 3.</strong> Subset the global Chlorophyll A concentration. Only this data was requested and downloaded. The OPeNDAP server, in this case Hyrax, perform all subseting in a data-proximate way.</p>
@@ -840,7 +816,8 @@ Wall time: 13.5 s
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
   <div class="sidebar-secondary-item">
@@ -902,8 +879,8 @@ By OPeNDAP Community
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=26a4bc78f4c0ddb94549"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=26a4bc78f4c0ddb94549"></script>
 
   <footer class="bd-footer">
   </footer>
