@@ -21,6 +21,8 @@ parts:
 - caption: Documentation
   chapters:
   - file: client
+    sections:
+    - file: ConstraintExpressions
   - file: responses.rst
   - file: server.rst
   - file: handlers.rst
