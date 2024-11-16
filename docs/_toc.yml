@@ -10,6 +10,7 @@ parts:
   - file: get_started
     sections:
     - file: 5_minute_tutorial
+  - file: NEWS
 - caption: Examples
   chapters:
   - file: notebooks/Authentication
@@ -20,6 +21,8 @@ parts:
 - caption: Documentation
   chapters:
   - file: client
+    sections:
+    - file: ConstraintExpressions
   - file: responses.rst
   - file: server.rst
   - file: handlers.rst

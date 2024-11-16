@@ -20,9 +20,12 @@ classifiers = [
   "License :: OSI Approved :: MIT License"
 ]
 dependencies = [
-  "numpy >= 2.0",
+  "numpy",
   "requests",
-  "scipy"
+  "scipy",
+  "Webob",
+  "beautifulsoup4",
+  "lxml"
 ]
 description = "A pure python implementation of the Data Access Protocol."
 dynamic = ["version"]
@@ -56,29 +59,9 @@ html = "pydap.responses.html:HTMLResponse"
 ver = "pydap.responses.version:VersionResponse"
 
 [project.optional-dependencies]
-cas = ['lxml']
 docs = ['Sphinx', 'Pygments', "pandoc", "sphinx_rtd_theme", "nbsphinx", "numpydoc"]
-functions = ['gsw==3.0.6', 'coards']
 netcdf = ['netCDF4']
-server = ['gunicorn', 'PasteDeploy', 'docopt-ng', 'Webob', 'Jinja2', 'beautifulsoup4', 'lxml']
-tests = [
-  'pytest>=3.6',
-  'pytest-cov',
-  'pytest-attrib',
-  'requests-mock',
-  'WebTest',
-  'flake8',
-  'werkzeug>= 2.2.2',
-  'gunicorn',
-  'cryptography',
-  'gsw',
-  'coards',
-  "docopt-ng",
-  "Webob",
-  "Jinja2",
-  "beautifulsoup4",
-  "lxml"
-]
+server = ['werkzeug>=2.2.2', 'gunicorn', 'PasteDeploy', 'docopt-ng', 'cryptography', 'gsw', 'coards', 'Jinja2']
 
 [tool.isort]
 profile = "black"

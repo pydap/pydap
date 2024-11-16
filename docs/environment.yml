@@ -2,11 +2,11 @@ name: pydap_docs
 channels:
 - conda-forge
 dependencies:
-- numpy >= 2.0
+- python=3.11
+- pydap-server
 - jupyter-book
 - jupyterlab
 - matplotlib
 - cartopy
 - xarray
 - dask
-- requests
