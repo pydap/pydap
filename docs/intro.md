@@ -5,13 +5,13 @@
 
 ## Why Pydap?
 
-Pydap was originally developed in the mid to late 2000s, as a way to access data of OPeNDAP servers. See [this talk](https://www.youtube.com/live/rPbW_RZmIJA?feature=shared) by the original developer of PyDAP. Pydap was increadible successful, and widely used both as a client and server.
+Pydap was originally developed in the mid to late 2000s, as a way to access data in OPeNDAP servers. See [this talk](https://www.youtube.com/live/rPbW_RZmIJA?feature=shared) by the original developer of PyDAP. Pydap was increadible successful, and widely used both as a client and server.
 
 
-Since then, many more clients have been developed within the growing Python ecosystem, among them hugely successful `xarray` among many of the Pangeo tools. Many people are not aware of, but `pydap` remains a backend engine for `xarray` to access OPeNDAP data. Moreover OPeNDAP servers have gotten more sophisticated over the last 10-15 years, and so continuing support for the development of `pydap` will benefit `xarray`/Pangeo users, by providing efficient access patterns to OPeNDAP servers.
+Since then, many more clients have been developed within the growing Python ecosystem, among them the hugely successful `xarray` and many of the Pangeo tools. Many people are not aware of but `pydap` is a backend engine for `xarray` to access OPeNDAP data, is installed everytime xarray gets installed. Over the last 10-15 years, OPeNDAP servers have gotten more sophisticated, and so continuing support for the development of `pydap` will benefit `xarray`/Pangeo users, by providing efficient access patterns to OPeNDAP servers.
 
 
-Dive into the documentation to leaarn best practices for accessing remote data on OPeNDAP servers.
+Dive into the documentation to learn best practices for accessing remote data on OPeNDAP servers.
 
 ```{tableofcontents}
 ```
