@@ -16,6 +16,7 @@ import logging
 import pprint
 import re
 import sys
+import warnings
 import warnings as _warnings
 from io import BytesIO
 from itertools import chain
@@ -336,6 +337,11 @@ def safe_dmr_and_data(r, user_charset, url):
     dmr = dmr.decode(get_charset(r, user_charset))
     if "thredds" in url.split("/") or "dap4" in url.split("/"):
         data = data[2:]  # TDS
+        warnings.warn(
+            "Full DAP4 support for TDS data servers remains under development."
+            "We recommend to continue to use DAP2 protocol. See pydap/issues#401",
+            UserWarning,
+        )
     else:
         data = data[3:]  # Hyrax
     return dmr, data
