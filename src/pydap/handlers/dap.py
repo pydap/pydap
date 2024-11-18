@@ -335,9 +335,9 @@ def safe_dmr_and_data(r, user_charset, url):
     dmr = dmr[4:] + b"</Dataset>"
     dmr = dmr.decode(get_charset(r, user_charset))
     if "thredds" in url.split("/") or "dap4" in url.split("/"):
-        data = data[2:] # TDS
+        data = data[2:]  # TDS
     else:
-        data = data[3:] # Hyrax
+        data = data[3:]  # Hyrax
     return dmr, data
 
 
