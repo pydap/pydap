@@ -311,7 +311,7 @@ def safe_dds_and_data(r, user_charset):
     return dds.decode(get_charset(r, user_charset)), data
 
 
-def safe_dmr_and_data(r, user_charset):
+def safe_dmr_and_data(r, user_charset, url):
     if r.content_encoding == "gzip":
         raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
     else:
@@ -334,7 +334,11 @@ def safe_dmr_and_data(r, user_charset):
 
     dmr = dmr[4:] + b"</Dataset>"
     dmr = dmr.decode(get_charset(r, user_charset))
-    data = data[3:]
+    if 'thredds' in url.split('/') or 'dap4' in url.split('/'):
+        i0 = 2
+    else:
+        i0=3
+    data = data[i0:]  # for hyrax this is 3, for TDS this is 2 (not anymore?)
     return dmr, data
 
 
@@ -484,7 +488,7 @@ class BaseProxyDap4(BaseProxyDap2):
         )
 
         raise_for_status(r)
-        dmr, data = safe_dmr_and_data(r, self.user_charset)
+        dmr, data = safe_dmr_and_data(r, self.user_charset, self.baseurl)
 
         # Parse received dataset:
         dataset = dmr_to_dataset(dmr)
