@@ -1,6 +1,21 @@
 What's New
 ==========
 
+3.5.2
+------
+
+*Release date: 2024-Nov-19*
+
+
+* Add zenodo badge by @Mikejmnez in https://github.com/pydap/pydap/pull/405
+* Update `pre-commit` hooks by @pre-commit-ci in https://github.com/pydap/pydap/pull/408
+* Adds newer `python` versions to metadata and tests workflows by @Mikejmnez in https://github.com/pydap/pydap/pull/410
+* include `cas-extras` as minimal required dependencies to use of pydap as client only by @Mikejmnez in https://github.com/pydap/pydap/pull/413
+* Update documentation, adding info about DAP4 and Constraint Expressions under `Pydap as a Client` by @Mikejmnez in https://github.com/pydap/pydap/pull/414
+* Quick patchwork to parse TDS DAP4 responses, with proper warning message to use dap2 instead by @Mikejmnez in https://github.com/pydap/pydap/pull/415
+
+
+
 3.5.1
 -----
 
