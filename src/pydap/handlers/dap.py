@@ -16,6 +16,7 @@ import logging
 import pprint
 import re
 import sys
+import warnings
 import warnings as _warnings
 from io import BytesIO
 from itertools import chain
@@ -311,7 +312,7 @@ def safe_dds_and_data(r, user_charset):
     return dds.decode(get_charset(r, user_charset)), data
 
 
-def safe_dmr_and_data(r, user_charset):
+def safe_dmr_and_data(r, user_charset, url):
     if r.content_encoding == "gzip":
         raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
     else:
@@ -334,7 +335,16 @@ def safe_dmr_and_data(r, user_charset):
 
     dmr = dmr[4:] + b"</Dataset>"
     dmr = dmr.decode(get_charset(r, user_charset))
-    data = data[3:]
+    if "thredds" in url.split("/") or "dap4" in url.split("/"):
+        data = data[2:]  # TDS
+        warnings.warn(
+            "Full DAP4 support for TDS data servers remains under development"
+            " for pydap. We recommend to continue to use DAP2 protocol instead."
+            " See: https://github.com/pydap/pydap/issues/401",
+            UserWarning,
+        )
+    else:
+        data = data[3:]  # Hyrax
     return dmr, data
 
 
@@ -484,7 +494,7 @@ class BaseProxyDap4(BaseProxyDap2):
         )
 
         raise_for_status(r)
-        dmr, data = safe_dmr_and_data(r, self.user_charset)
+        dmr, data = safe_dmr_and_data(r, self.user_charset, self.baseurl)
 
         # Parse received dataset:
         dataset = dmr_to_dataset(dmr)
