@@ -787,8 +787,8 @@ def unpack_dap2_data(xdr_stream, dataset):
 def decode_chunktype(chunk_type):
     encoding = "{0:03b}".format(chunk_type)
     if sys.byteorder == "little":
-        #     # If our machine's byteorder is little,
-        #     # we need to swap since the chunk_type is always big endian
+        # If our machine's byteorder is little,
+        # we need to swap since the chunk_type is always big endian
         encoding = encoding[::-1]
     last_chunk = bool(int(encoding[0]))
     error = bool(int(encoding[1]))
