@@ -22,6 +22,8 @@ from io import BytesIO
 from itertools import chain
 
 import numpy
+
+from concurrent.futures import ThreadPoolExecutor
 from requests.utils import urlparse, urlunparse
 
 from pydap.handlers.lib import BaseHandler, ConstraintExpression, IterData
@@ -498,7 +500,7 @@ class BaseProxyDap4(BaseProxyDap2):
 
         # Parse received dataset:
         dataset = dmr_to_dataset(dmr)
-        dataset = unpack_dap4_data(BytesReader(data), dataset)
+        dataset = unpack_dap4_data(data, dataset)
 
         self.checksum = dataset[self.id].attributes["checksum"]
         self.data = dataset[self.id].data
@@ -786,8 +788,8 @@ def unpack_dap2_data(xdr_stream, dataset):
 def decode_chunktype(chunk_type):
     encoding = "{0:03b}".format(chunk_type)
     if sys.byteorder == "little":
-        # If our machine's byteorder is little,
-        # we need to swap since the chunk_type is always big endian
+    #     # If our machine's byteorder is little,
+    #     # we need to swap since the chunk_type is always big endian
         encoding = encoding[::-1]
     last_chunk = bool(int(encoding[0]))
     error = bool(int(encoding[1]))
@@ -805,9 +807,17 @@ def get_count(variable):
 def decode_variable(buffer, start, stop, variable, endian):
     dtype = variable.dtype
     dtype = dtype.newbyteorder(endian)
-    data = numpy.frombuffer(buffer[start:stop], dtype=dtype).astype(dtype)
+    data = numpy.frombuffer(buffer[start:stop], dtype=dtype)
     data = data.reshape(variable.shape)
     return data
+
+
+def process_chunk(data, offset, chunk_size):
+    """
+    Process a chunk of data
+    """
+    chunk_data = data[offset:offset + chunk_size]
+    return chunk_data
 
 
 def stream2bytearray(xdr_stream):
@@ -822,6 +832,45 @@ def stream2bytearray(xdr_stream):
     return buffer
 
 
+def newstream2bytearray(data):
+    """
+    Computes the buffer size of the (binary) data form dap response.
+    data is sent in chunks, with encoding in between. The encoding is 
+    sent in packs of 4 bytes, which tells info about endianness, chunk type
+    and chunk size, and whether it is last chunk or not. Data inbetween chunks
+    is numeric (array) data in binary form that needs to be turn into native
+    numpy array data of size =  len(buffer). That last bit is done outside the 
+    scope of this function.
+    """
+
+    # Precompute chunk positions
+    chunk_positions = []
+    offset = 0
+    while offset < len(data):
+        # Read the chunk header
+        chunk_header = numpy.frombuffer(data[offset:offset + 4], dtype=">u4")[0]
+        chunk_size = (chunk_header & 0x00FFFFFF)
+        chunk_type = ((chunk_header >> 24) & 0xFF)
+        last, _, _ = decode_chunktype(chunk_type)
+        chunk_positions.append((offset + 4, chunk_size))
+        offset += 4 + chunk_size
+        if last:
+            break
+    
+    # Process chunks in parallel
+    buffer = bytearray()
+    with ThreadPoolExecutor() as executor:
+        results = list(
+            executor.map(
+                lambda args: process_chunk(data, *args),
+                chunk_positions
+            )
+        )
+    # Combine results
+    for chunk_data in results:
+        buffer.extend(chunk_data)
+    return buffer
+
 def get_endianness(xdr_stream):
     chunk_header = xdr_stream.peek(4)[0:4]
     chunk_header = numpy.frombuffer(chunk_header, dtype=">u4")[0]
@@ -830,11 +879,13 @@ def get_endianness(xdr_stream):
     return endian
 
 
-def unpack_dap4_data(xdr_stream, dataset):
-    endian = get_endianness(xdr_stream)
+def unpack_dap4_data(data, dataset):
+    endian = get_endianness(BytesReader(data))
     checksum_dtype = numpy.dtype(endian + "u4")
-    buffer = stream2bytearray(xdr_stream)
-
+    try:
+        buffer = newstream2bytearray(data)
+    except:
+        buffer = stream2bytearray(BytesReader(data))
     start = 0
     for variable in walk(dataset, BaseType):
         # variable_name = variable.name
