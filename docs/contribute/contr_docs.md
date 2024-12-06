@@ -30,7 +30,7 @@ The `docs/environment.yml` file provides a ready-to-use environment (it installs
 ```shell
 pip install -e .
 ```
-or to install directly from the main branch: 
+or to install directly from the main branch:
 
 ```shell
 pip install --upgrade git+https://github.com/pydap/pydap.git
