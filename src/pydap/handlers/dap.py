@@ -806,7 +806,7 @@ def get_count(variable):
 def decode_variable(buffer, start, stop, variable, endian):
     dtype = variable.dtype
     dtype = dtype.newbyteorder(endian)
-    data = numpy.frombuffer(buffer[start:stop], dtype=dtype)
+    data = numpy.frombuffer(buffer[start:stop], dtype=dtype).astype(dtype)
     data = data.reshape(variable.shape)
     return data
 
@@ -819,19 +819,7 @@ def process_chunk(data, offset, chunk_size):
     return chunk_data
 
 
-def stream2bytearray(xdr_stream):
-    last = False
-    buffer = bytearray()
-    while not last:
-        chunk = numpy.frombuffer(xdr_stream.read(4), dtype=">u4")
-        chunk_size = (chunk & 0x00FFFFFF)[0]
-        chunk_type = ((chunk >> 24) & 0xFF)[0]
-        last, error, endian = decode_chunktype(chunk_type)
-        buffer.extend(xdr_stream.read(chunk_size))
-    return buffer
-
-
-def newstream2bytearray(data):
+def stream2bytearray(data):
     """
     Computes the buffer size of the (binary) data form dap response.
     data is sent in chunks, with encoding in between. The encoding is
@@ -879,10 +867,7 @@ def get_endianness(xdr_stream):
 def unpack_dap4_data(data, dataset):
     endian = get_endianness(BytesReader(data))
     checksum_dtype = numpy.dtype(endian + "u4")
-    try:
-        buffer = newstream2bytearray(data)
-    except:
-        buffer = stream2bytearray(BytesReader(data))
+    buffer = stream2bytearray(data)
     start = 0
     for variable in walk(dataset, BaseType):
         # variable_name = variable.name
