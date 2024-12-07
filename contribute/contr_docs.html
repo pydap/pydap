@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -376,10 +376,17 @@
 conda<span class="w"> </span>activate<span class="w"> </span>pydap_docs
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">docs/environment.yml</span></code> file provides a ready-to-use  environment (it installs <code class="docutils literal notranslate"><span class="pre">pydap-server</span></code>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you already have <code class="docutils literal notranslate"><span class="pre">mamba</span></code> installed, you can replace all <code class="docutils literal notranslate"><span class="pre">conda</span></code> in the commands with <code class="docutils literal notranslate"><span class="pre">mamba</span></code>.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">docs/environment.yml</span></code> file provides a ready-to-use environment (it installs <code class="docutils literal notranslate"><span class="pre">pydap-server</span></code>). However, if you have made new changes to the code, we recommend installing pydap in <code class="docutils literal notranslate"><span class="pre">dev</span></code> mode and making sure that all notebooks properly build.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<p>or to install directly from the main branch:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
+</pre></div>
 </div>
 <ol class="arabic simple" start="3">
 <li><p>Create a new branch, and set its upstream and use git (see <a class="reference internal" href="contr_cod.html"><span class="std std-doc">steps 3 and 4 from contributing to the code</span></a>)</p></li>

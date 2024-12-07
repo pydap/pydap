@@ -34,7 +34,7 @@
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css?v=be8a1c11" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -343,14 +343,15 @@
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.4.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.3.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.2.2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.2.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.2.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">3.1.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.4.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.3.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.2.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.2.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">3.2.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">3.1.1</a></li>
 </ul>
             </nav>
         </div>
@@ -365,7 +366,19 @@
   <section class="tex2jax_ignore mathjax_ignore" id="what-s-new">
 <h1>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h1>
 <section id="id1">
-<h2>3.5.1<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>3.5.2<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p><em>Release date: 2024-Nov-19</em></p>
+<ul class="simple">
+<li><p>Add zenodo badge by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/405">pydap/pydap#405</a></p></li>
+<li><p>Update <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> hooks by &#64;pre-commit-ci in <a class="github reference external" href="https://github.com/pydap/pydap/pull/408">pydap/pydap#408</a></p></li>
+<li><p>Adds newer <code class="docutils literal notranslate"><span class="pre">python</span></code> versions to metadata and tests workflows by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/410">pydap/pydap#410</a></p></li>
+<li><p>include <code class="docutils literal notranslate"><span class="pre">cas-extras</span></code> as minimal required dependencies to use of pydap as client only by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/413">pydap/pydap#413</a></p></li>
+<li><p>Update documentation, adding info about DAP4 and Constraint Expressions under <code class="docutils literal notranslate"><span class="pre">Pydap</span> <span class="pre">as</span> <span class="pre">a</span> <span class="pre">Client</span></code> by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/414">pydap/pydap#414</a></p></li>
+<li><p>Quick patchwork to parse TDS DAP4 responses, with proper warning message to use dap2 instead by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/415">pydap/pydap#415</a></p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>3.5.1<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2024-Oct-28</em></p>
 <ul class="simple">
 <li><p>DAP4 support:</p>
@@ -403,8 +416,8 @@
 </li>
 </ul>
 </section>
-<section id="id2">
-<h2>3.5.0<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="id3">
+<h2>3.5.0<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2024-Aug-16</em></p>
 <ul class="simple">
 <li><p>DAP4 Support:</p>
@@ -448,8 +461,8 @@
 </li>
 </ul>
 </section>
-<section id="id3">
-<h2>3.4.0<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h2>3.4.0<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2023-April-5</em></p>
 <ul class="simple">
 <li><p>DAP4/DAS Patch (#278)</p>
@@ -471,8 +484,8 @@
 </li>
 </ul>
 </section>
-<section id="id4">
-<h2>3.3.0<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h2>3.3.0<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2022-Feb-1</em></p>
 <ul class="simple">
 <li><p>There are many changes going from 3.2.0 to 3.3.0</p>
@@ -542,8 +555,8 @@
 </li>
 </ul>
 </section>
-<section id="id5">
-<h2>3.2.2<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>3.2.2<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2017-May-24</em></p>
 <ul class="simple">
 <li><p>Python 3.3 is no longer supported. This is in line with
@@ -586,8 +599,8 @@ doctests. Doctests use integers for easy continuous integration</p></li>
 <li><p>Adds timeout option to open_urls and open_dods</p></li>
 </ul>
 </section>
-<section id="id6">
-<h2>3.2.1<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>3.2.1<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2017-Mar-28</em></p>
 <ul class="simple">
 <li><p>PyDAP client fixes</p>
@@ -622,8 +635,8 @@ doctests. Doctests use integers for easy continuous integration</p></li>
 </li>
 </ul>
 </section>
-<section id="id7">
-<h2>3.2.0<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>3.2.0<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2016-Dec-01</em></p>
 <ul class="simple">
 <li><p>Adds some optimizations to the server for DAP sequences</p></li>
@@ -638,8 +651,8 @@ Grid Federation (ESGF) and NASA User Registration System (URS).</p></li>
 <li><p>Fixes HTML response to show all dimensions for BaseType variables</p></li>
 </ul>
 </section>
-<section id="id8">
-<h2>3.1.1<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>3.1.1<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <p><em>Release date: 14-Nov-2013</em></p>
 <ul class="simple">
 <li><p>Final release done by Roberto De Almeida</p></li>
@@ -712,14 +725,15 @@ Grid Federation (ESGF) and NASA User Registration System (URS).</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.4.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.3.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.2.2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.2.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.2.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">3.1.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.4.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.3.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.2.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.2.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">3.2.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">3.1.1</a></li>
 </ul>
   </nav></div>
 

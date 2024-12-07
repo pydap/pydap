@@ -21,11 +21,21 @@ To add/edit the documentation, we recommend you follow the previous guides on ve
 conda env create -f docs/environment.yml
 conda activate pydap_docs
 ```
-The `docs/environment.yml` file provides a ready-to-use  environment (it installs `pydap-server`).
-
 ```{note}
 If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
 ```
+
+The `docs/environment.yml` file provides a ready-to-use environment (it installs `pydap-server`). However, if you have made new changes to the code, we recommend installing pydap in `dev` mode and making sure that all notebooks properly build.
+
+```shell
+pip install -e .
+```
+or to install directly from the main branch:
+
+```shell
+pip install --upgrade git+https://github.com/pydap/pydap.git
+```
+
 3. Create a new branch, and set its upstream and use git (see [steps 3 and 4 from contributing to the code](contr_cod.md))
 
 4. Clean any previous built html pages with
