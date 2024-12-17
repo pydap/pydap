@@ -18,6 +18,10 @@
             <Attribute name="_FillValue" type="float">
                 <Value>inf</Value>
             </Attribute>
+            <Attribute name='Valid Range' type="int">
+                <Value>-10</Value>
+                <Value value="100"/>
+            </Attribute>
         </Float32>
         <Float32 name="Salinity">
             <Dim name="/time"/>
@@ -29,6 +33,11 @@
             <Attribute name="_FillValue" type="float">
                 <Value>nan</Value>
             </Attribute>
+            <Attribute name='Valid Range' type="float">
+                <Value>0.0</Value>
+                <Value value="50.0"/>
+            </Attribute>
+
         </Float32>
         <Int16 name="Y">
             <Dim name="/SimpleGroup/Y"/>
