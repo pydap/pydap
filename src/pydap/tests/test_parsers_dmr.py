@@ -265,3 +265,12 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
                                 </Int32>\n</Dataset>"""
         ds = dmr_to_dataset(dmr)
         assert isinstance(ds["x"].attributes["attr"], float)
+
+    def test_string(self):
+        dmr = """<Dataset name="foo">\n    <String name="bears">\n
+                <Attribute name="attr" type="Float32">\n
+                            <Value></Value>\n        </Attribute>\n
+                                </String>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert "bears" in ds.variables()
+        assert ds["bears"].dtype == "S128"
