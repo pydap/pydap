@@ -272,5 +272,21 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
                     <Value>-1</Value>\n        <Value value="1"/>\n</Attribute>\n
                         </Int32>\n</Dataset>"""
 
+        dmr2 = """<Dataset name="foo">\n    <Int32 name="x">\n
+        <Attribute name="attr" type="Float32">\n
+                    <Value value="-1"/>\n        <Value>1</Value>\n</Attribute>\n
+                        </Int32>\n</Dataset>"""
+
         ds = dmr_to_dataset(dmr)
+        ds2 = dmr_to_dataset(dmr2)
         assert ds["x"].attributes["attr"] == [-1.0, 1.0]
+        assert ds2["x"].attributes["attr"] == [-1.0, 1.0]
+
+    def test_multiple_entries2(self):
+        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        <Attribute name="attr" type="Float32">\n
+                    <Value></Value>\n        <Value>2</Value>\n
+                            <Value value="1"/>\n</Attribute>\n
+                        </Int32>\n</Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert ds["x"].attributes["attr"] == [None, 2.0, 1.0]

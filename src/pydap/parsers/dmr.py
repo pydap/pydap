@@ -89,7 +89,7 @@ def get_atomic_attr(element):
     if value.count(None) > 0:
         # This could be because server is TDS.
         # If value is None still, then data is missing
-        indexes = value.index(None)
+        indexes = [i for i, x in enumerate(value) if x is None]
         vals = [val for val in element.findall("Value")]
         if isinstance(indexes, list):
             for i in indexes:
@@ -100,10 +100,10 @@ def get_atomic_attr(element):
     if _type in dmr_atomic_types:
         if _type in Float_types:
             # keep float-type of value
-            value = [float(val) for val in value if val is not None]
+            value = [float(val) if val is not None else val for val in value]
         elif _type in Int_types or _type in uInt_types:
             # keeps integer-type of value
-            value = [int(val) for val in value if val is not None]
+            value = [int(val) if val is not None else val for val in value]
         else:
             try:
                 value = [ast.literal_eval(val) for val in value if val is not None]
