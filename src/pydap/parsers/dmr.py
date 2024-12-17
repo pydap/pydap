@@ -85,22 +85,28 @@ def get_atomic_attr(element):
     Int_types = ["Int16", "Int32", "Int64", "int", "Int8"]
     uInt_types = ["uInt16", "uInt32", "uInt64", "uint", "uInt8", "Char"]
     name = element.get("name")
-    value = element.find("Value").text
-    if value is None:
+    value = [val.text for val in element.findall("Value")]
+    if value.count(None) > 0:
         # This could be because server is TDS.
         # If value is None still, then data is missing
-        value = element.find("Value").get("value")
+        indexes = value.index(None)
+        vals = [val for val in element.findall("Value")]
+        if isinstance(indexes, list):
+            for i in indexes:
+                value[i] = vals[i].get("value")
+        else:
+            value[indexes] = vals[indexes].get("value")
     _type = element.get("type")
-    if _type in dmr_atomic_types and value is not None:
+    if _type in dmr_atomic_types:
         if _type in Float_types:
             # keep float-type of value
-            value = float(value)
+            value = [float(val) for val in value if val is not None]
         elif _type in Int_types or _type in uInt_types:
             # keeps integer-type of value
-            value = int(value)
+            value = [int(val) for val in value if val is not None]
         else:
             try:
-                value = ast.literal_eval(value)
+                value = [ast.literal_eval(val) for val in value if val is not None]
             except ValueError:
                 # leaves value as string
                 raise Warning(
@@ -110,6 +116,11 @@ def get_atomic_attr(element):
                         name
                     )
                 )
+    if len(value) <= 1:
+        if value != []:
+            value = value[0]
+        else:
+            value = None
     return name, value
 
 
