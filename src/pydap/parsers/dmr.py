@@ -54,6 +54,10 @@ def get_variables(node, prefix="") -> dict:
                 name = prefix + "/" + name
             variables[name] = {"element": subnode, "parent": node.tag}
         variables.update(get_variables(subnode, prefix))
+    strings = node.findall("String")
+    for string in strings:
+        name = string.get("name")
+        variables[name] = {"element": string, "parent": node.tag}
     return variables
 
 
