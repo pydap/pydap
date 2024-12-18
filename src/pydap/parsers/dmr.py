@@ -89,17 +89,19 @@ def get_atomic_attr(element):
     Int_types = ["Int16", "Int32", "Int64", "int", "Int8"]
     uInt_types = ["uInt16", "uInt32", "uInt64", "uint", "uInt8", "Char"]
     name = element.get("name")
-    value = [val.text for val in element.findall("Value")]
+    value = []
+    ii = 0  # default
+    if element.get("value") is not None:
+        value.append(element.get("value"))
+        ii = 1  # need to shift indexes
+    value += [val.text for val in element.findall("Value")]
     if value.count(None) > 0:
         # This could be because server is TDS.
         # If value is None still, then data is missing
         indexes = [i for i, x in enumerate(value) if x is None]
         vals = [val for val in element.findall("Value")]
-        if isinstance(indexes, list):
-            for i in indexes:
-                value[i] = vals[i].get("value")
-        else:
-            value[indexes] = vals[indexes].get("value")
+        for i in indexes:
+            value[i] = vals[i - ii].get("value")
     _type = element.get("type")
     if _type in dmr_atomic_types:
         if _type in Float_types:

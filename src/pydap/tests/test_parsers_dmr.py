@@ -284,12 +284,12 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
 
     def test_multiple_entries2(self):
         dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
-        <Attribute name="attr" type="Float32">\n
+        <Attribute name="attr" type="Float32" value="100">\n
                     <Value></Value>\n        <Value>2</Value>\n
                             <Value value="1"/>\n</Attribute>\n
                         </Int32>\n</Dataset>"""
         ds = dmr_to_dataset(dmr)
-        assert ds["x"].attributes["attr"] == [None, 2.0, 1.0]
+        assert ds["x"].attributes["attr"] == [100, None, 2.0, 1.0]
 
     def test_string(self):
         dmr = """<Dataset name="foo">\n    <String name="bears">\n
@@ -299,3 +299,13 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         ds = dmr_to_dataset(dmr)
         assert "bears" in ds.variables()
         assert ds["bears"].dtype == "S128"
+
+    def test_attr_InlineValue(self):
+        dmr = """
+        <Dataset name="foo">\n
+        <String name="bears">\n
+            <Attribute name="attr" type="Float32" value="100"/>\n
+        </String>\n
+        </Dataset>"""
+        ds = dmr_to_dataset(dmr)
+        assert ds["bears"].attributes["attr"] == 100.0
