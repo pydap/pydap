@@ -96,8 +96,7 @@ def get_atomic_attr(element):
         ii = 1  # need to shift indexes
     value += [val.text for val in element.findall("Value")]
     if value.count(None) > 0:
-        # This could be because server is TDS.
-        # If value is None still, then data is missing
+        # may be a False None -> various ways to define the attr value
         indexes = [i for i, x in enumerate(value) if x is None]
         vals = [val for val in element.findall("Value")]
         for i in indexes:
