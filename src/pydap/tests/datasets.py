@@ -233,6 +233,7 @@ SimpleGroup.createVariable(
     units="degrees_celsius",
     dimensions=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.inf,
+    ValidRange=[-10, 100],
 )
 SimpleGroup.createVariable(
     name="/SimpleGroup/Salinity",
@@ -240,6 +241,7 @@ SimpleGroup.createVariable(
     units="psu",
     dimensions=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.nan,
+    ValidRange=[0.0, 50.0],
 )
 SimpleGroup.createVariable(
     name="/SimpleGroup/Y", data=np.arange(4, dtype="i2"), dimensions=("/SimpleGroup/Y",)

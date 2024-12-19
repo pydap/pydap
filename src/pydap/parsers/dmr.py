@@ -85,26 +85,71 @@ def get_dtype(element):
 
 
 def get_atomic_attr(element):
+    """
+    Gets the attribute from an xml.ET element associated with a variable
+    in the dataset. Attributes may be defined in various ways on a DMR,
+    and must be a type that is atomic within the DAP2 and DAP4 spec:
+    see
+    https://opendap.github.io/dap4-specification/DAP4.html#_how_dap4_differs_from_dap2
+
+    Ways that an attribute can be defined according to following cases:
+    1. <Attribute name="name" type={atomic} value="val"/>
+    2. <Attribute name="name" type={atomic}>
+            <Value>val</Value>
+    3. <Attribute name="name" type={atomic}>
+            <Value value="val"/>
+
+    In the general case an attribute may have multiple values, when defined within
+    the scope of the attributes, resulting in an attribute that has a list as values
+    (e.g. range of values). By convention, the order in which the attributes are
+    defined is the way in which these appear on the list.
+
+    Example 1:
+        <Attribute name='range' type='int64'>
+            <Value>-1</Value>
+            <Value>1</Value>
+        </Attribute>
+
+    Then, range = [-1, 1].
+
+    Example 2:
+
+        <Attribute name="range" type="int64" value="-1">
+            <Value>1</Value>
+            <Value value=10/>
+        </Attribute>
+
+    Then range = [-1, 1, 10]
+
+    """
+    # get name of attribute
+    name = element.get("name")
+    # Get type, always a string. If numeric, must be turn into numeric type.
+    _type = element.get("type")
     Float_types = ["Float32", "float", "Float64"]
     Int_types = ["Int16", "Int32", "Int64", "int", "Int8"]
     uInt_types = ["uInt16", "uInt32", "uInt64", "uint", "uInt8", "Char"]
-    name = element.get("name")
-    value = element.find("Value").text
-    if value is None:
-        # This could be because server is TDS.
-        # If value is None still, then data is missing
-        value = element.find("Value").get("value")
-    _type = element.get("type")
-    if _type in dmr_atomic_types and value is not None:
+    # Get values. There may be multiple, and these may be defined in various ways
+    # according to the 3 cases above
+    value = []
+    # Case 1: Inline value definition. May be None.
+    if element.get("value") is not None:
+        value.append(element.get("value"))
+    # Case 2 and 3:
+    value += [
+        val.text if val.text is not None else val.get("value")
+        for val in element.findall("Value")
+    ]
+    if _type in dmr_atomic_types:
         if _type in Float_types:
             # keep float-type of value
-            value = float(value)
+            value = [float(val) if val is not None else val for val in value]
         elif _type in Int_types or _type in uInt_types:
             # keeps integer-type of value
-            value = int(value)
+            value = [int(val) if val is not None else val for val in value]
         else:
             try:
-                value = ast.literal_eval(value)
+                value = [ast.literal_eval(val) for val in value if val is not None]
             except ValueError:
                 # leaves value as string
                 raise Warning(
@@ -114,6 +159,11 @@ def get_atomic_attr(element):
                         name
                     )
                 )
+    if len(value) <= 1:
+        if value != []:
+            value = value[0]
+        else:
+            value = None
     return name, value
 
 

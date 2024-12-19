@@ -126,13 +126,23 @@ def _basetype(var, level=0):
         )
     for key, value in var.attributes.items():
         if key != "dims":
-            _type = type(value).__name__
-            yield '{indent}<Attribute name="{name}" type="{type}">\n'.format(
-                indent=(level + 1) * INDENT, name=key, type=_type
-            )
-            yield "{indent}<Value>{val}</Value>\n".format(
-                indent=(level + 2) * INDENT, val=value
-            )
+            if isinstance(value, list):
+                _type = type(value[0]).__name__
+                yield '{indent}<Attribute name="{name}" type="{type}">\n'.format(
+                    indent=(level + 1) * INDENT, name=key, type=_type
+                )
+                for val in value:
+                    yield "{indent}<Value>{val}</Value>\n".format(
+                        indent=(level + 2) * INDENT, val=val
+                    )
+            else:
+                _type = type(value).__name__
+                yield '{indent}<Attribute name="{name}" type="{type}">\n'.format(
+                    indent=(level + 1) * INDENT, name=key, type=_type
+                )
+                yield "{indent}<Value>{val}</Value>\n".format(
+                    indent=(level + 2) * INDENT, val=value
+                )
             yield "{indent}</Attribute>\n".format(indent=(level + 1) * INDENT)
     yield "{indent}</{type}>\n".format(indent=level * INDENT, type=_vartype)
 
