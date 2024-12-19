@@ -42,22 +42,20 @@ def dap4_to_numpy_typemap(type_string):
 
 def get_variables(node, prefix="") -> dict:
     variables = collections.OrderedDict()
-    group_name = node.get("name")
+    group_name = [
+        pydap.lib._quote(node.get("name")) if node.get("name") is not None else None
+    ][0]
     if group_name is None:
         return variables
     if node.tag != "Dataset":
         prefix = prefix + "/" + group_name
     for subnode in node:
-        if subnode.tag in dmr_atomic_types:
+        if subnode.tag in dmr_atomic_types + ("String",):
             name = subnode.get("name")
             if prefix != "":
                 name = prefix + "/" + name
             variables[name] = {"element": subnode, "parent": node.tag}
         variables.update(get_variables(subnode, prefix))
-    strings = node.findall("String")
-    for string in strings:
-        name = string.get("name")
-        variables[name] = {"element": string, "parent": node.tag}
     return variables
 
 
@@ -367,7 +365,10 @@ class DMRParser(object):
             Maps = Groups[key].pop("Maps", None)
             attributes = Groups[key].pop("attributes", None)
             dataset.createGroup(
-                name=key, dimensions=dims, Maps=Maps, attributes=attributes
+                name=pydap.lib._quote(key),
+                dimensions=dims,
+                Maps=Maps,
+                attributes=attributes,
             )
 
         return dataset
