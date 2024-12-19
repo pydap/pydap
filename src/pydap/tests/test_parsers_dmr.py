@@ -317,7 +317,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
                 <String name="Simpson"/>\n
             </Group>\n
             <Group name="First Names">\n
-                <String name="Homer"/>\n
+                <String name="Homer J."/>\n
                 <String name="Bart"/>\n
                 <String name="Lisa"/>\n
                 <String name="Maggie"/>\n

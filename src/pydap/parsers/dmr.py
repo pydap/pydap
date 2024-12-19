@@ -297,7 +297,7 @@ def dmr_to_dataset(dmr):
                 Dims.append(dim)
         # pass along maps
         var_kwargs = {
-            "name": name,
+            "name": pydap.lib._quote(name),
             "data": data,
             "dimensions": Dims,
             "attributes": variable["attributes"],
