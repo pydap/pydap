@@ -7,6 +7,7 @@ from xml.etree import ElementTree as ET
 
 import numpy as np
 
+from ..client import open_dmr_file
 from ..lib import walk
 from ..model import BaseType
 from ..parsers.dmr import dmr_to_dataset, get_groups
@@ -14,10 +15,7 @@ from ..parsers.dmr import dmr_to_dataset, get_groups
 
 def load_dmr_file(file_path):
     abs_path = os.path.join(os.path.dirname(__file__), file_path)
-    with open(abs_path, "r") as dmr_file:
-        dmr = dmr_file.read()
-    dataset = dmr_to_dataset(dmr)
-    return dataset
+    return open_dmr_file(abs_path)
 
 
 class TestDMRParser(unittest.TestCase):

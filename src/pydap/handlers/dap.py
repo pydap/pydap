@@ -872,7 +872,7 @@ class UNPACKDAP4DATA(object):
 
     def __init__(self, r, user_charset="ascii"):
         self.user_charset = user_charset
-        if isinstance(r, Response):
+        if isinstance(r, Response):  # a Webob response
             self.r = r
             if self.r.content_encoding == "gzip":
                 self.raw = BytesReader(
@@ -885,7 +885,12 @@ class UNPACKDAP4DATA(object):
             self.r = Response()  # make empty response
             self.raw = BytesReader(r.read())
         else:
-            print("warning that type not recognized")
+            raise TypeError(
+                """
+                Unrecognized file type object for unpacking dap4 binary data.
+                Acceptable formats are Webob.response and io.BufferedReader
+                """
+            )
         self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
         # need to split dmr from data
         dataset = dmr_to_dataset(self.dmr)

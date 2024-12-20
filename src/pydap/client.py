@@ -106,8 +106,12 @@ def open_file(file_path, das_path=None):
 
 
 def open_dmr_file(file_path):
+    """
+    Opens a DMR. This differs from a dap response, since it is a single chunk,
+    and there is no chunk header at the top of the file.
+    """
     with open(file_path, "rb") as f:
-        dmr = UNPACKDAP4DATA(f).dmr
+        dmr = f.read()
     dmr = dmr.decode("ascii")
     dataset = pydap.parsers.dmr.dmr_to_dataset(dmr)
     return dataset
