@@ -313,37 +313,6 @@ def safe_dds_and_data(r, user_charset):
     return dds.decode(get_charset(r, user_charset)), data
 
 
-def safe_dmr_and_data(r, user_charset, url):
-    """
-    gets the response, extracts and splits the dap response into
-    dmr (first chunk) and data (any subsequent chunks of data).
-    """
-    if r.content_encoding == "gzip":
-        raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
-    else:
-        raw = BytesReader(r.body)
-    logger.info("Saving and splitting dmr+")
-    try:
-        raw.read(2)  # First 2 bytes are CRLF
-        dmr_length = int(raw.read(2).hex(), 16)  # Compute length of DMR
-        dmr = raw.read(dmr_length).decode(get_charset(r, user_charset))
-        data = raw.data
-    except ValueError:
-        logger.exception("Failed to split the following DMR+ \n %s" % raw)
-        import codecs
-        import pickle
-
-        picked_response = str(codecs.encode(pickle.dumps(r), "base64").decode())
-        header = "pickled response (base64)"
-        logger.exception(
-            header
-            + ": \n ----BEGIN PICKLE----- \n %s \n -----END PICKLE-----"
-            % picked_response
-        )
-
-    return dmr, data
-
-
 class BaseProxyDap2(object):
     """A proxy for remote base types.
 
@@ -490,11 +459,11 @@ class BaseProxyDap4(BaseProxyDap2):
         )
 
         raise_for_status(r)
-        dmr, data = safe_dmr_and_data(r, self.user_charset, self.baseurl)
+        dmr, data, endian = safe_dmr_and_data(r, self.user_charset, self.baseurl)
 
         # Parse received dataset:
         dataset = dmr_to_dataset(dmr)
-        dataset = unpack_dap4_data(data, dataset)
+        dataset = unpack_dap4_data(data, dataset, endian)
 
         self.checksum = dataset[self.id].attributes["checksum"]
         self.data = dataset[self.id].data
@@ -779,7 +748,51 @@ def unpack_dap2_data(xdr_stream, dataset):
     return unpack_children(xdr_stream, dataset)
 
 
+def safe_dmr_and_data(r, user_charset, url):
+    """
+    Gets the dap response and splits it into a dmr (first chunk)
+    and the (binary) data. It also
+    """
+    if r.content_encoding == "gzip":
+        raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
+    else:
+        raw = BytesReader(r.body)
+    logger.info("Saving and splitting dmr+")
+    try:
+        # decode the first 4 bytes are CRLF
+        chunk_header = numpy.frombuffer(raw.read(4), dtype=">u4")[0]
+        dmr_length = chunk_header & 0x00FFFFFF
+        chunk_type = (chunk_header >> 24) & 0xFF
+
+        dmr = raw.read(dmr_length).decode(get_charset(r, user_charset))
+        data = raw.data
+
+        # get endianness from first chunk
+        _, _, endian = decode_chunktype(chunk_type)
+    except ValueError:
+        logger.exception("Failed to split the following DMR+ \n %s" % raw)
+        import codecs
+        import pickle
+
+        picked_response = str(codecs.encode(pickle.dumps(r), "base64").decode())
+        header = "pickled response (base64)"
+        logger.exception(
+            header
+            + ": \n ----BEGIN PICKLE----- \n %s \n -----END PICKLE-----"
+            % picked_response
+        )
+
+    return dmr, data, endian
+
+
 def decode_chunktype(chunk_type):
+    """
+    Takes the chunk_type from chunk header embeded in the dap response,
+    and returns a tuple of
+        last_chunk: bool
+        error: bool
+        endian
+    """
     encoding = "{0:03b}".format(chunk_type)
     if sys.byteorder == "little":
         # If our machine's byteorder is little,
@@ -859,8 +872,16 @@ def get_endianness(xdr_stream):
     return endian
 
 
-def unpack_dap4_data(data, dataset):
-    endian = get_endianness(BytesReader(data))
+# class UNPACKDAP4DATA(object):
+
+#     def __init__(self, data):
+
+#     _slots_ = (data, dataset)
+
+
+def unpack_dap4_data(data, dataset, endian=None):
+    if not endian:
+        endian = get_endianness(BytesReader(data))
     checksum_dtype = numpy.dtype(endian + "u4")
     buffer = stream2bytearray(data)
     start = 0
