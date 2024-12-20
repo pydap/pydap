@@ -145,7 +145,6 @@ def open_dap_file(file_path, das_path=None):
 
     with open(file_path, "rb") as f:
         dmr_len = get_dmr_length(file_path)
-        # if f.peek()[0:2] == b'\x04\x00':
         f.seek(dmr_len)
         _ = f.read(4)
         pydap.handlers.dap.unpack_dap4_data(f.read(), dataset)

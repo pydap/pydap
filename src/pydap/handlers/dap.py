@@ -314,13 +314,20 @@ def safe_dds_and_data(r, user_charset):
 
 
 def safe_dmr_and_data(r, user_charset, url):
+    """
+    gets the response, extracts and splits the dap response into
+    dmr (first chunk) and data (any subsequent chunks of data).
+    """
     if r.content_encoding == "gzip":
         raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
     else:
-        raw = r.body
+        raw = BytesReader(r.body)
     logger.info("Saving and splitting dmr+")
     try:
-        dmr, data = raw.split(b"</Dataset>", 1)
+        raw.read(2)  # First 2 bytes are CRLF
+        dmr_length = int(raw.read(2).hex(), 16)  # Compute length of DMR
+        dmr = raw.read(dmr_length).decode(get_charset(r, user_charset))
+        data = raw.data
     except ValueError:
         logger.exception("Failed to split the following DMR+ \n %s" % raw)
         import codecs
@@ -334,18 +341,6 @@ def safe_dmr_and_data(r, user_charset, url):
             % picked_response
         )
 
-    dmr = dmr[4:] + b"</Dataset>"
-    dmr = dmr.decode(get_charset(r, user_charset))
-    if "thredds" in url.split("/") or "dap4" in url.split("/"):
-        data = data[2:]  # TDS
-        warnings.warn(
-            "Full DAP4 support for TDS data servers remains under development"
-            " for pydap. We recommend to continue to use DAP2 protocol instead."
-            " See: https://github.com/pydap/pydap/issues/401",
-            UserWarning,
-        )
-    else:
-        data = data[3:]  # Hyrax
     return dmr, data
 
 
