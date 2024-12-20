@@ -19,11 +19,12 @@ import sys
 import warnings
 import warnings as _warnings
 from concurrent.futures import ThreadPoolExecutor
-from io import BytesIO
+from io import BufferedReader, BytesIO
 from itertools import chain
 
 import numpy
 from requests.utils import urlparse, urlunparse
+from webob.response import Response
 
 from pydap.handlers.lib import BaseHandler, ConstraintExpression, IterData
 from pydap.lib import (
@@ -459,12 +460,7 @@ class BaseProxyDap4(BaseProxyDap2):
         )
 
         raise_for_status(r)
-        dmr, data, endian = safe_dmr_and_data(r, self.user_charset, self.baseurl)
-
-        # Parse received dataset:
-        dataset = dmr_to_dataset(dmr)
-        dataset = unpack_dap4_data(data, dataset, endian)
-
+        dataset = UNPACKDAP4DATA(r, self.user_charset).dataset
         self.checksum = dataset[self.id].attributes["checksum"]
         self.data = dataset[self.id].data
         return self.data
@@ -748,41 +744,29 @@ def unpack_dap2_data(xdr_stream, dataset):
     return unpack_children(xdr_stream, dataset)
 
 
-def safe_dmr_and_data(r, user_charset, url):
+def find_pattern_in_string_iter(pattern, i):
+    last_chunk = b""
+    length = len(pattern)
+    for this_chunk in i:
+        last_chunk += this_chunk
+        m = re.search(pattern, last_chunk)
+        if m:
+            return last_chunk[m.end() :]
+        last_chunk = last_chunk[-length:]
+
+
+def dump():  # pragma: no cover
+    """Unpack dods response into lists.
+
+    Return pretty-printed data.
+
     """
-    Gets the dap response and splits it into a dmr (first chunk)
-    and the (binary) data. It also
-    """
-    if r.content_encoding == "gzip":
-        raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
-    else:
-        raw = BytesReader(r.body)
-    logger.info("Saving and splitting dmr+")
-    try:
-        # decode the first 4 bytes are CRLF
-        chunk_header = numpy.frombuffer(raw.read(4), dtype=">u4")[0]
-        dmr_length = chunk_header & 0x00FFFFFF
-        chunk_type = (chunk_header >> 24) & 0xFF
-
-        dmr = raw.read(dmr_length).decode(get_charset(r, user_charset))
-        data = raw.data
-
-        # get endianness from first chunk
-        _, _, endian = decode_chunktype(chunk_type)
-    except ValueError:
-        logger.exception("Failed to split the following DMR+ \n %s" % raw)
-        import codecs
-        import pickle
-
-        picked_response = str(codecs.encode(pickle.dumps(r), "base64").decode())
-        header = "pickled response (base64)"
-        logger.exception(
-            header
-            + ": \n ----BEGIN PICKLE----- \n %s \n -----END PICKLE-----"
-            % picked_response
-        )
-
-    return dmr, data, endian
+    dods = sys.stdin.read()
+    dds, xdrdata = dods.split(b"\nData:\n", 1)
+    dataset = dds_to_dataset(dds)
+    xdr_stream = io.BytesIO(xdrdata)
+    data = unpack_dap2_data(xdr_stream, dataset)
+    pprint.pprint(data)
 
 
 def decode_chunktype(chunk_type):
@@ -864,68 +848,92 @@ def stream2bytearray(data):
     return buffer
 
 
-def get_endianness(xdr_stream):
-    chunk_header = xdr_stream.peek(4)[0:4]
+def get_endianness(chunk_header):
     chunk_header = numpy.frombuffer(chunk_header, dtype=">u4")[0]
     chunk_type = (chunk_header >> 24) & 0xFF
-    last, error, endian = decode_chunktype(chunk_type)
+    _, _, endian = decode_chunktype(chunk_type)
     return endian
 
 
-# class UNPACKDAP4DATA(object):
-
-#     def __init__(self, data):
-
-#     _slots_ = (data, dataset)
-
-
-def unpack_dap4_data(data, dataset, endian=None):
-    if not endian:
-        endian = get_endianness(BytesReader(data))
-    checksum_dtype = numpy.dtype(endian + "u4")
-    buffer = stream2bytearray(data)
-    start = 0
-    for variable in walk(dataset, BaseType):
-        # variable_name = variable.name
-        # variable = dataset[variable_name]
-        count = get_count(variable)
-        stop = start + count
-        data = decode_variable(
-            buffer, start=start, stop=stop, variable=variable, endian=endian
-        )
-        checksum = numpy.frombuffer(
-            buffer[stop : stop + 4], dtype=checksum_dtype
-        ).byteswap("=")
-        if isinstance(variable, BaseType):
-            variable._set_data(data)
-        elif isinstance(variable, GridType):
-            variable._set_data([data.data])
-        variable.attributes["checksum"] = checksum
-        # Jump over the 4 byte chunk_header
-        start = stop + 4
-    return dataset
-
-
-def find_pattern_in_string_iter(pattern, i):
-    last_chunk = b""
-    length = len(pattern)
-    for this_chunk in i:
-        last_chunk += this_chunk
-        m = re.search(pattern, last_chunk)
-        if m:
-            return last_chunk[m.end() :]
-        last_chunk = last_chunk[-length:]
-
-
-def dump():  # pragma: no cover
-    """Unpack dods response into lists.
-
-    Return pretty-printed data.
-
+class UNPACKDAP4DATA(object):
     """
-    dods = sys.stdin.read()
-    dds, xdrdata = dods.split(b"\nData:\n", 1)
-    dataset = dds_to_dataset(dds)
-    xdr_stream = io.BytesIO(xdrdata)
-    data = unpack_dap2_data(xdr_stream, dataset)
-    pprint.pprint(data)
+    Unpacks DAP4 response, remote or local, which is split into chunks. The
+    first chunk contains the DMR response, and the endianness is defined in the first
+    4 bytes before the DMR. Once the endianness is set, is kept unfixed. This makes
+    the assumption that the all variables within dataset have the same endianness.
+
+    Parameters:
+    -----------
+        r: dap response.
+            May be a Webob.response.Response created from pydap.net.GET if the dataset
+            is remote, or a `io.BufferedReader` if the data is local within a
+            filesystem.
+    """
+
+    def __init__(self, r, user_charset="ascii"):
+        self.user_charset = user_charset
+        if isinstance(r, Response):
+            self.r = r
+            if self.r.content_encoding == "gzip":
+                self.raw = BytesReader(
+                    gzip.GzipFile(fileobj=BytesIO(self.r.body)).read()
+                )
+            else:
+                self.raw = BytesReader(r.body)
+        elif isinstance(r, BufferedReader):
+            # r comes from reading a local file
+            self.r = Response()  # make empty response
+            self.raw = BytesReader(r.read())
+        else:
+            print("warning that type not recognized")
+        self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
+        # need to split dmr from data
+        dataset = dmr_to_dataset(self.dmr)
+        self.dataset = self.unpack_dap4_data(dataset)
+
+    def safe_dmr_and_data(self):
+        """
+        Splits the dap response (.dap) into the dmr (metadata), and the raw
+        (binary) data. It also computes the endianness of the data.
+
+        Returns:
+            dmr, data, endianness
+        """
+        # decode the first 4 bytes are CRLF
+        chunk_header = numpy.frombuffer(self.raw.read(4), dtype=">u4")[0]
+        dmr_length = chunk_header & 0x00FFFFFF
+        chunk_type = (chunk_header >> 24) & 0xFF
+        dmr = self.raw.read(dmr_length).decode(get_charset(self.r, self.user_charset))
+        data = self.raw.data
+        # get endianness from first chunk
+        _, _, endianness = decode_chunktype(chunk_type)
+        return dmr, data, endianness
+
+    def unpack_dap4_data(self, dataset):
+        """
+        Takes a pydap.DatasetType previously created, and populates its variables
+        (BaseType only) with data that is currently in binary form (within a dap
+        response).
+        """
+        # need self. data and self.dataset
+        checksum_dtype = numpy.dtype(self.endianness + "u4")
+        buffer = stream2bytearray(self.data)
+        start = 0
+        for variable in walk(dataset, BaseType):
+            count = get_count(variable)
+            stop = start + count
+            data = decode_variable(
+                buffer,
+                start=start,
+                stop=stop,
+                variable=variable,
+                endian=self.endianness,
+            )
+            checksum = numpy.frombuffer(
+                buffer[stop : stop + 4], dtype=checksum_dtype
+            ).byteswap("=")
+            variable._set_data(data)
+            variable.attributes["checksum"] = checksum
+            # Jump over the 4 byte chunk_header
+            start = stop + 4
+        return dataset
