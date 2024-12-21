@@ -46,7 +46,6 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 from io import BytesIO, open
 
-import numpy
 from requests.utils import urlparse, urlunparse
 
 import pydap.handlers.dap
@@ -56,6 +55,7 @@ import pydap.net
 import pydap.parsers.das
 import pydap.parsers.dds
 import pydap.parsers.dmr
+from pydap.handlers.dap import UNPACKDAP4DATA
 from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
 
 
@@ -105,51 +105,24 @@ def open_file(file_path, das_path=None):
         return open_dmr_file(file_path=file_path)
 
 
-def get_dmr_length(file_path):
-    with open(file_path, "rb") as f:
-        # First two bytes are CRLF
-        if f.peek()[0:2] == b"\x04\x00":
-            f.seek(2)
-            dmr_len = numpy.frombuffer(f.read(2), dtype=">u2")[0]
-        else:
-            dap = f.read()
-            dmr = b"<?xml" + dap.split(b"<?xml")[1]
-            dmr = dmr.split(b"</Dataset>")[0] + b"</Dataset>\n\r\n"
-            dmr_len = len(dmr)
-    return dmr_len
-
-
 def open_dmr_file(file_path):
-    dmr_len = get_dmr_length(file_path)
+    """
+    Opens a DMR. This differs from a dap response, since it is a single chunk,
+    and there is no chunk header at the top of the file.
+    """
     with open(file_path, "rb") as f:
-        if f.peek()[0:2] == b"\x04\x00":
-            # First 2 bytes are CRLF, second two bytes give the length of the
-            # DMR; we skip over them
-            f.seek(4)
-            # We read the DMR minus the CRLF and newline (3 bytes)
-        dmr = f.read(dmr_len)
+        dmr = f.read()
     dmr = dmr.decode("ascii")
     dataset = pydap.parsers.dmr.dmr_to_dataset(dmr)
     return dataset
 
 
-def open_dap_file(file_path, das_path=None):
-    """Open a file downloaded from a `.dap` (dap4) response, retunring a
-    dataset.
-
-    Optionally, read also the `.das` response to assign attributes to the
+def open_dap_file(file_path):
+    """Open a file downloaded from a `.dap` (dap4) response, returning a
     dataset.
     """
-
-    dataset = open_dmr_file(file_path)
-
     with open(file_path, "rb") as f:
-        dmr_len = get_dmr_length(file_path)
-        # if f.peek()[0:2] == b'\x04\x00':
-        f.seek(dmr_len)
-        _ = f.read(4)
-        pydap.handlers.dap.unpack_dap4_data(f.read(), dataset)
-    return dataset
+        return UNPACKDAP4DATA(f).dataset
 
 
 def open_dods_file(file_path, das_path=None):
