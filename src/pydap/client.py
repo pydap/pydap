@@ -118,7 +118,7 @@ def open_dmr_file(file_path):
 
 
 def open_dap_file(file_path):
-    """Open a file downloaded from a `.dap` (dap4) response, retunring a
+    """Open a file downloaded from a `.dap` (dap4) response, returning a
     dataset.
     """
     with open(file_path, "rb") as f:

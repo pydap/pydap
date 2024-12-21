@@ -859,15 +859,15 @@ class UNPACKDAP4DATA(object):
     """
     Unpacks DAP4 response, remote or local, which is split into chunks. The
     first chunk contains the DMR response, and the endianness is defined in the first
-    4 bytes before the DMR. Once the endianness is set, is kept unfixed. This makes
-    the assumption that the all variables within dataset have the same endianness.
+    4 bytes before the DMR. Once the endianness is set, it remains unchanged. This
+    makes the assumption that the all variables within dataset have the same endianness.
 
     Parameters:
     -----------
-        r: dap response.
+        r: contains the dap response.
             May be a Webob.response.Response created from pydap.net.GET if the dataset
-            is remote, or a `io.BufferedReader` if the data is local within a
-            filesystem.
+            is remote (from a url), or a `io.BufferedReader` if the data is local within
+            a filesystem. See `pydap.net.get.open_dap_file`
     """
 
     def __init__(self, r, user_charset="ascii"):
@@ -888,7 +888,8 @@ class UNPACKDAP4DATA(object):
             raise TypeError(
                 """
                 Unrecognized file type object for unpacking dap4 binary data.
-                Acceptable formats are Webob.response and io.BufferedReader
+                Acceptable formats are `webob.response.Response` and
+                `io.BufferedReader`
                 """
             )
         self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
