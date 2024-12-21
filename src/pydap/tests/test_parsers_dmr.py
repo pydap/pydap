@@ -309,3 +309,27 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         </Dataset>"""
         ds = dmr_to_dataset(dmr)
         assert ds["bears"].attributes["attr"] == 100.0
+
+    def test_escapedcharacters(self):
+        dmr = """
+        <Dataset name="FamilyNames.h5">\n
+            <Group name="Last Names">\n
+                <String name="Simpson"/>\n
+            </Group>\n
+            <Group name="First Names">\n
+                <String name="Homer J."/>\n
+                <String name="Bart"/>\n
+                <String name="Lisa"/>\n
+                <String name="Maggie"/>\n
+            </Group>\n
+            <Group name="Ages">\n
+                <String name="35.0"/>\n
+                <String name="8.5"/>\n
+                <String name="7.1"/>\n
+                <String name="2.1"/>\n
+            </Group>\n
+            <Attribute name='description' type='String' value='hello'/>\n
+        </Dataset>
+        """
+        ds = dmr_to_dataset(dmr)
+        assert ds["Last Names"].name == "Last%20Names"
