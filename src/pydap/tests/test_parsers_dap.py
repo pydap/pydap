@@ -2,13 +2,12 @@ import os
 
 import numpy
 
-import pydap.client
+from ..client import open_dap_file
 
 
 def load_dap(file_path):
     abs_path = os.path.join(os.path.dirname(__file__), file_path)
-    dataset = pydap.client.open_dap_file(abs_path)
-    return dataset
+    return open_dap_file(abs_path)
 
 
 def test_jpl1():

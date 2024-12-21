@@ -1,14 +1,18 @@
 """Test the DAP handler, which forms the core of the client."""
 
+import os
 import unittest
 
 import numpy as np
+from webob.response import Response
 
 import pydap.model
 from pydap.handlers.dap import (
+    UNPACKDAP4DATA,
     BaseProxyDap2,
     DAPHandler,
     SequenceProxy,
+    dmr_to_dataset,
     find_pattern_in_string_iter,
     walk,
 )
@@ -600,3 +604,27 @@ class TestArrayStringBaseType(unittest.TestCase):
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:], self.original_data)
+
+
+class TestUnpackDap4Data(unittest.TestCase):
+    """
+    Tests some properties of the class UNPACKDAP4DATA.
+    """
+
+    def setUp(self):
+        file_path = "data/daps/coads_climatology.nc.dap"
+        abs_path = os.path.join(os.path.dirname(__file__), file_path)
+        with open(abs_path, "rb") as f:
+            self.unpacker = UNPACKDAP4DATA(f)
+
+    def testEndian(self):
+        """test the endianness of the first chunk encoded within the dap file"""
+        endian = self.unpacker.endianness
+        self.assertEqual(endian, "<")
+
+    def testDMR(self):
+        ds = dmr_to_dataset(self.unpacker.dmr)
+        self.assertEqual(ds.variables(), {"SST": np.dtype(">f4")})
+
+    def testResponse(self):
+        self.assertIsInstance(self.unpacker.r, Response)
