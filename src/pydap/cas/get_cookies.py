@@ -1,4 +1,5 @@
 import copy
+import netrc
 import warnings
 
 import requests
@@ -196,3 +197,31 @@ def soup_login(
             payload.pop(input.get("name"), None)
 
     return session.post(to_url, data=payload)
+
+
+def read_netrc(filename=None):
+    """Reads a .netrc file and returns a dictionary of hosts and their credentials.
+
+    Parameters:
+    ----------
+        filename: str | None
+            fully qualifying filename (including path). In None, read_netrc will search
+            in the user's home directory.
+
+    Returns:
+    -------
+        credencials: dict
+            {host: {username: password}}
+    """
+    try:
+        # If no filename is provided, it will look for the
+        # .netrc file in the user's home directory
+        auth_data = netrc.netrc(filename)
+        credentials = {}
+        for host in auth_data.hosts:
+            login, _, password = auth_data.authenticators(host)
+            credentials[host] = {"username": login, "password": password}
+        return credentials
+    except (netrc.NetrcParseError, FileNotFoundError) as e:
+        print("Error reading .netrc file:", e)
+        return None
