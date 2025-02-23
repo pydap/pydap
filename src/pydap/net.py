@@ -26,8 +26,8 @@ def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT, verify=Tru
     response = follow_redirect(
         url, application=application, session=session, timeout=timeout, verify=verify
     )
-    # Decode request response (i.e. gzip)
-    response.decode_content()
+    # # Decode request response (i.e. gzip)
+    # response.decode_content()
     return response
 
 
@@ -75,17 +75,21 @@ def follow_redirect(
     headers as the passed session.
     """
 
-    req = create_request(url, session=session, timeout=timeout, verify=verify)
+    req = create_request(url,application=application, session=session, timeout=timeout, verify=verify)
     return get_response(req, application, verify=verify)
 
 
-def get_response(req, application, verify=True):
+def get_response(req, application=None, verify=True):
     """
     If verify=False, use the ssl library to temporarily disable
     ssl verification.
     """
     if verify:
-        resp = req.get_response(application)
+        if application:
+            resp = req.get_response(application)
+        else:
+            # this is a remote request
+            return req
     else:
         # Here, we use monkeypatching. Webob does not provide a way
         # to bypass SSL verification.
@@ -102,7 +106,11 @@ def get_response(req, application, verify=True):
             _create_default_https_ctx = None
 
         try:
-            resp = req.get_response(application)
+            if application:
+                resp = req.get_response(application)
+            else:
+                # this is a remote request
+                return req                
         finally:
             if _create_default_https_ctx is not None:
                 # Restore verified context
@@ -110,53 +118,35 @@ def get_response(req, application, verify=True):
     return resp
 
 
-def create_request(url, session=None, timeout=DEFAULT_TIMEOUT, verify=True):
-    if session is not None:
-        # If session is set and cookies were loaded using pydap.cas.get_cookies
-        # using the check_url option, then we can legitimately expect that
-        # the connection will go through seamlessly. However, there might be
-        # redirects that might want to modify the cookies. Webob is not
-        # really up to the task here. The approach used here is to
-        # piggy back on the requests library and use it to fetch the
-        # head of the requested url. Requests will follow redirects and
-        # adjust the cookies as needed. We can then use the final url and
-        # the final cookies to set up a webob Request object that will
-        # be guaranteed to have all the needed credentials:
-        return create_request_from_session(url, session, timeout=timeout, verify=verify)
-    else:
+def create_request(url, application=None, session=None, timeout=DEFAULT_TIMEOUT, verify=True):
+    """
+    If session is set and cookies were loaded using pydap.cas.get_cookies
+    using the check_url option, then we can legitimately expect that
+    the connection will go through seamlessly. However, there might be
+    redirects that might want to modify the cookies. Webob is not
+    really up to the task here. The approach used here is to
+    piggy back on the requests library and use it to fetch the
+    head of the requested url. Requests will follow redirects and
+    adjust the cookies as needed. We can then use the final url and
+    the final cookies to set up a webob Request object that will
+    be guaranteed to have all the needed credentials:
+    """
+    if session is None:
         # If a session object was not passed, we simply pass a new
         # requests.Session() object. The requests library allows the
         # handling of redirects that are not naturally handled by Webob.
-        return create_request_from_session(
-            url, requests.Session(), timeout=timeout, verify=verify
-        )
+        session = requests.Session()
+    return create_request_from_session(url, session, timeout=timeout, application=application, verify=verify)
 
 
-def create_request_from_session(url, session, timeout=DEFAULT_TIMEOUT, verify=True):
+def create_request_from_session(url, session, timeout=DEFAULT_TIMEOUT, application=None, verify=True):
     try:
-        # Use session to follow redirects:
-        with closing(
-            session.head(url, allow_redirects=True, timeout=timeout, verify=verify)
-        ) as head:
-            req = Request.blank(head.url)
+        if application:
+            # local datset, webob request.
+            req = Request.blank(url)
             req.environ["webob.client.timeout"] = timeout
-
-            # Get cookies from head:
-            cookies_dict = head.cookies.get_dict()
-
-            # Set request cookies to the head cookies:
-            req.headers["Cookie"] = ",".join(
-                name + "=" + cookies_dict[name] for name in cookies_dict
-            )
-            # Set the headers to the session headers:
-            for item in head.request.headers:
-                req.headers[item] = head.request.headers[item]
-            return req
-    except (MissingSchema, InvalidSchema):
-        # Missing schema can occur in tests when the url
-        # is not pointing to any resource. Simply pass.
-        req = Request.blank(url)
-        req.environ["webob.client.timeout"] = timeout
-        return req
+        else:
+            req = requests.get(url, cookies=session.cookies, headers=session.headers, timeout=timeout, verify=verify)
+        return req          
     except Timeout:
         raise HTTPError("Timeout")
