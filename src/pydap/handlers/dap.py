@@ -25,6 +25,7 @@ from itertools import chain
 import numpy
 from requests.utils import urlparse, urlunparse
 from webob.response import Response
+import requests
 
 from pydap.handlers.lib import BaseHandler, ConstraintExpression, IterData
 from pydap.lib import (
@@ -294,25 +295,38 @@ def get_charset(r, user_charset):
 
 
 def safe_charset_text(r, user_charset):
-    if r.content_encoding == "gzip":
-        return (
-            gzip.GzipFile(fileobj=BytesIO(r.body))
-            .read()
-            .decode(get_charset(r, user_charset))
-        )
-    else:
-        r.charset = get_charset(r, user_charset)
-        return r.text
+    if isinstance(r, Response):
+        if r.content_encoding == "gzip":
+            return (
+                gzip.GzipFile(fileobj=BytesIO(r.body))
+                .read()
+                .decode(get_charset(r, user_charset))
+            )
+        else:
+            r.charset = get_charset(r, user_charset)
+    return r.text
+    # elif isinstance(r, requests.Response):
+    #     return r.text
 
 
 def safe_dds_and_data(r, user_charset):
-    if r.content_encoding == "gzip":
-        raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
-    else:
-        raw = r.body
-    dds, data = raw.split(b"\nData:\n", 1)
-    return dds.decode(get_charset(r, user_charset)), data
-
+    """
+    Takes the raw response of a dap2 request and splits it into the dds and data.
+    If the response is gzipped, it is decompressed first.
+    """
+    dds,data = None, None # initialize
+    if isinstance(r, Response):
+        if r.content_encoding == "gzip":
+            raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
+        else:
+            raw = r.body
+        _dds, data = raw.split(b"\nData:\n", 1)
+        dds = _dds.decode(get_charset(r, user_charset))
+    elif isinstance(r, requests.Response):
+        raw = r.content
+        _dds, data = raw.split(b"\nData:\n", 1)
+        dds = _dds.decode(user_charset)
+    return dds, data
 
 class BaseProxyDap2(object):
     """A proxy for remote base types.
@@ -884,6 +898,10 @@ class UNPACKDAP4DATA(object):
             # r comes from reading a local file
             self.r = Response()  # make empty response
             self.raw = BytesReader(r.read())
+        elif isinstance(r, requests.Response):
+            # r comes from reading a remote dataset
+            self.r = r
+            self.raw = BytesReader(r.content)
         else:
             raise TypeError(
                 """
@@ -909,7 +927,10 @@ class UNPACKDAP4DATA(object):
         chunk_header = numpy.frombuffer(self.raw.read(4), dtype=">u4")[0]
         dmr_length = chunk_header & 0x00FFFFFF
         chunk_type = (chunk_header >> 24) & 0xFF
-        dmr = self.raw.read(dmr_length).decode(get_charset(self.r, self.user_charset))
+        if isinstance(self.r, Response):
+            dmr = self.raw.read(dmr_length).decode(get_charset(self.r, self.user_charset))
+        else:
+            dmr = self.raw.read(dmr_length).decode(self.user_charset)
         data = self.raw.data
         # get endianness from first chunk
         _, _, endianness = decode_chunktype(chunk_type)
