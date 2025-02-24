@@ -596,10 +596,13 @@ class SequenceProxy(object):
         )
         raise_for_status(r)
 
-        i = r.app_iter
-        if not hasattr(i, "__next__"):
-            i = iter(i)
-
+        if isinstance(r, Response):
+            i = r.app_iter
+            if not hasattr(i, "__next__"):
+                i = iter(i)
+        elif isinstance(r, requests.Response):
+            i = r.iter_content()
+ 
         # Fast forward past the DDS header
         # the pattern could span chunk boundaries though so make sure to check
         pattern = b"Data:\n"
