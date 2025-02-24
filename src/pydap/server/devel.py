@@ -137,7 +137,7 @@ class LocalTestServer(object):
                 # When checking whether server has started, do
                 # not verify ssl:
                 resp = get_response(
-                    Request.blank(self.url + ".dds"), None, verify=False
+                    Request.blank(self.url + ".dds"), self.application, verify=False
                 )
                 ok = resp.status_code == 200
             except HTTPError:
