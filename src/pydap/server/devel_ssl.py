@@ -1,9 +1,7 @@
 import multiprocessing
 import sys
 import time
-import warnings
 
-import requests
 from werkzeug.serving import run_simple
 
 from ..handlers.lib import BaseHandler

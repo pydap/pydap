@@ -9,11 +9,11 @@ it could work with more data formats.
 
 import ssl
 import sys
+import time
 
 import numpy as np
 import pytest
 import requests
-import time
 
 from pydap.client import open_url
 from pydap.handlers.lib import BaseHandler
@@ -59,6 +59,7 @@ def test_open(sequence_type_data):
         np.array(sequence_type_data.data[:], dtype=sequence_type_data.data.dtype),
     )
 
+
 @pytest.mark.filterwarnings("ignore::urllib3.exceptions.InsecureRequestWarning")
 @server
 def test_verify_open_url(sequence_type_data):
@@ -72,7 +73,9 @@ def test_verify_open_url(sequence_type_data):
     with LocalTestServerSSL(application, ssl_context="adhoc") as server:
         try:
             time.sleep(0.1)
-            open_url(server.url, verify=False, session=requests.Session(), protocol="dap2")
+            open_url(
+                server.url, verify=False, session=requests.Session(), protocol="dap2"
+            )
         except (ssl.SSLError, requests.exceptions.SSLError):
             pytest.fail("SSLError should not be raised.")
 

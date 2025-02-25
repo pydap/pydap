@@ -1,8 +1,7 @@
 import ssl
-from contextlib import closing
 
 import requests
-from requests.exceptions import InvalidSchema, MissingSchema, Timeout
+from requests.exceptions import Timeout
 from requests.utils import urlparse, urlunparse
 from webob.exc import HTTPError
 from webob.request import Request
@@ -75,7 +74,9 @@ def follow_redirect(
     headers as the passed session.
     """
 
-    req = create_request(url,application=application, session=session, timeout=timeout, verify=verify)
+    req = create_request(
+        url, application=application, session=session, timeout=timeout, verify=verify
+    )
     return get_response(req, application, verify=verify)
 
 
@@ -110,7 +111,7 @@ def get_response(req, application=None, verify=True):
                 resp = req.get_response(application)
             else:
                 # this is a remote request
-                return req                
+                return req
         finally:
             if _create_default_https_ctx is not None:
                 # Restore verified context
@@ -118,7 +119,9 @@ def get_response(req, application=None, verify=True):
     return resp
 
 
-def create_request(url, application=None, session=None, timeout=DEFAULT_TIMEOUT, verify=True):
+def create_request(
+    url, application=None, session=None, timeout=DEFAULT_TIMEOUT, verify=True
+):
     """
     If session is set and cookies were loaded using pydap.cas.get_cookies
     using the check_url option, then we can legitimately expect that
@@ -136,17 +139,27 @@ def create_request(url, application=None, session=None, timeout=DEFAULT_TIMEOUT,
         # requests.Session() object. The requests library allows the
         # handling of redirects that are not naturally handled by Webob.
         session = requests.Session()
-    return create_request_from_session(url, session, timeout=timeout, application=application, verify=verify)
+    return create_request_from_session(
+        url, session, timeout=timeout, application=application, verify=verify
+    )
 
 
-def create_request_from_session(url, session, timeout=DEFAULT_TIMEOUT, application=None, verify=True):
+def create_request_from_session(
+    url, session, timeout=DEFAULT_TIMEOUT, application=None, verify=True
+):
     try:
         if application:
             # local datset, webob request.
             req = Request.blank(url)
             req.environ["webob.client.timeout"] = timeout
         else:
-            req = requests.get(url, cookies=session.cookies, headers=session.headers, timeout=timeout, verify=verify)
-        return req          
+            req = requests.get(
+                url,
+                cookies=session.cookies,
+                headers=session.headers,
+                timeout=timeout,
+                verify=verify,
+            )
+        return req
     except Timeout:
         raise HTTPError("Timeout")

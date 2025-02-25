@@ -14,8 +14,9 @@ def test_redirect():
     # mock_url is redirected to https:
     redirect_url = "http://www.test2.com/"
     with requests_mock.Mocker() as m:
-        m.register_uri("GET", mock_url, status_code=302, 
-        headers={"Location": redirect_url})
+        m.register_uri(
+            "GET", mock_url, status_code=302, headers={"Location": redirect_url}
+        )
         m.register_uri("GET", redirect_url, text="Final Destination", status_code=200)
         req = create_request(mock_url)
         assert req.url == redirect_url
@@ -40,7 +41,6 @@ def test_redirect():
         assert req.url == redirect_url
         assert req.status_code == 200
         assert req.text == "resp2"
-
 
     # With session:
     with requests_mock.Mocker() as m:
