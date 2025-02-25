@@ -13,6 +13,7 @@ import sys
 import numpy as np
 import pytest
 import requests
+import time
 
 from pydap.client import open_url
 from pydap.handlers.lib import BaseHandler
@@ -48,7 +49,8 @@ def test_open(sequence_type_data):
     TestDataset = DatasetType("Test")
     TestDataset["sequence"] = sequence_type_data
     with LocalTestServerSSL(BaseHandler(TestDataset)) as server:
-        dataset = open_url(server.url)
+        time.sleep(0.1)
+        dataset = open_url(server.url, protocol="dap2")
         seq = dataset["sequence"]
         retrieved_data = [line for line in seq]
 
@@ -56,7 +58,6 @@ def test_open(sequence_type_data):
         np.array(retrieved_data, dtype=sequence_type_data.data.dtype),
         np.array(sequence_type_data.data[:], dtype=sequence_type_data.data.dtype),
     )
-
 
 @pytest.mark.filterwarnings("ignore::urllib3.exceptions.InsecureRequestWarning")
 @server
@@ -70,7 +71,8 @@ def test_verify_open_url(sequence_type_data):
     application = BaseHandler(TestDataset)
     with LocalTestServerSSL(application, ssl_context="adhoc") as server:
         try:
-            open_url(server.url, verify=False, session=requests.Session())
+            time.sleep(0.1)
+            open_url(server.url, verify=False, session=requests.Session(), protocol="dap2")
         except (ssl.SSLError, requests.exceptions.SSLError):
             pytest.fail("SSLError should not be raised.")
 

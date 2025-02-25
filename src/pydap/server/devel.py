@@ -60,7 +60,7 @@ class LocalTestServer(object):
 
     As an instance:
     >>> with LocalTestServer(application) as server:
-    ...     dataset = open_url("http://localhost:%s" % server.port)
+    ...     dataset = open_url("http://localhost:%s" % server.port, protocol='dap2')
     ...     dataset
     ...     print(dataset['byte'].data[:])
     ...     print(dataset['string'].data[:])
@@ -73,7 +73,7 @@ class LocalTestServer(object):
     Or by managing connection and deconnection:
     >>> server = LocalTestServer(application)
     >>> server.start()
-    >>> dataset = open_url("http://localhost:%s" % server.port)
+    >>> dataset = open_url("http://localhost:%s" % server.port, protocol='dap2')
     >>> dataset
     <DatasetType with children 'byte', 'string', 'short'>
     >>> print(dataset['byte'].data[:])
