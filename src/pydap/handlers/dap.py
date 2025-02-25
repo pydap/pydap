@@ -305,8 +305,6 @@ def safe_charset_text(r, user_charset):
         else:
             r.charset = get_charset(r, user_charset)
     return r.text
-    # elif isinstance(r, requests.Response):
-    #     return r.text
 
 
 def safe_dds_and_data(r, user_charset):
