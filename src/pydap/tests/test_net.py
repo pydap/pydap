@@ -6,8 +6,12 @@ import pytest
 import requests
 import requests_mock
 
-from pydap.net import create_request
-
+from pydap.handlers.lib import BaseHandler
+from pydap.tests.datasets import SimpleGroup
+from pydap.net import create_request, GET, get_response
+from requests.exceptions import RequestException
+from webob.request import Request
+from webob.response import Response
 
 def test_redirect():
     """Test that redirection is handled properly"""
@@ -62,8 +66,28 @@ def test_redirect():
         assert req.text == "resp2"
 
 
-def test_httperror():
+def test_raise_httperror():
     """test that raise_for_status raises the correct HTTPerror"""
     fake_url = "https://httpstat.us/404"  # this url will return a 404
     with pytest.raises(requests.exceptions.HTTPError):
         create_request(fake_url)
+
+@pytest.fixture
+def appGroup():
+    """Creates an application from the SimpleGroup dataset"""
+    return BaseHandler(SimpleGroup)
+
+def test_GET_application(appGroup):
+    """Test that local url are handled properly"""
+    data_url = "http://localhost:8080/"
+    r = GET(data_url+'.dmr', application=appGroup)
+    assert r.status_code == 200
+
+
+def test_create_request_application(appGroup):
+    """Test that local url are handled properly"""
+    req = create_request('/.dmr', application=appGroup, verify=True)
+    assert isinstance(req, Request)
+    resp = get_response(req, application=appGroup, verify=True)
+    assert isinstance(resp, Response)
+    assert resp.status_code == 200

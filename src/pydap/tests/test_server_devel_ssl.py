@@ -72,7 +72,7 @@ def test_verify_open_url(sequence_type_data):
     application = BaseHandler(TestDataset)
     with LocalTestServerSSL(application, ssl_context="adhoc") as server:
         try:
-            time.sleep(0.1)
+            time.sleep(0.2)
             open_url(
                 server.url, verify=False, session=requests.Session(), protocol="dap2"
             )

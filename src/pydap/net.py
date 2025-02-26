@@ -2,9 +2,10 @@ import ssl
 
 import requests
 from requests.adapters import HTTPAdapter
-from requests.exceptions import HTTPError, Timeout
+from requests.exceptions import ConnectTimeout, HTTPError, ReadTimeout
 from requests.utils import urlparse, urlunparse
 from urllib3 import Retry
+from urllib3.exceptions import ConnectionError, MaxRetryError, TimeoutError
 from webob.request import Request
 
 from .lib import DEFAULT_TIMEOUT, _quote
@@ -22,9 +23,6 @@ def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT, verify=Tru
     if application:
         _, _, path, _, query, fragment = urlparse(url)
         url = urlunparse(("", "", path, "", _quote(query), fragment))
-
-    if session is None:
-        session = requests.Session()
 
     req = create_request(
         url, application=application, session=session, timeout=timeout, verify=verify
@@ -81,6 +79,7 @@ def create_request(
     session=None,
     timeout=DEFAULT_TIMEOUT,
     verify=True,
+    **retry_args,
 ):
     """
     Creates a requests.get request object for a local or remote url.
@@ -96,31 +95,47 @@ def create_request(
     the final url and the final cookies to set up a requests's Request object
     that will be guaranteed to have all the needed credentials:
     """
-    try:
-        if application:
-            # local dataset, webob request.
-            req = Request.blank(url)
-            req.environ["webob.client.timeout"] = timeout
-        else:
-            # we pass any cookies, headers, if session has these attrs
+
+    if application:
+        # local dataset, webob request.
+        req = Request.blank(url)
+        req.environ["webob.client.timeout"] = timeout
+        return req
+    else:
+        # we pass any cookies, headers, if session has these attrs
+        args= {"timeout": timeout, "verify": verify}
+        if session:
+            # get any cookies and headers from previous session
             keys = ["cookies", "headers"]
             kwargs = {k: getattr(session, k) for k in keys if hasattr(session, k)}
-            args = {**kwargs, "timeout": timeout, "verify": verify}
-            session = requests.Session()
+            args = {**kwargs, **args}
+        else:
+            args = {"headers": {"Connection": "close"}, **args}
+        # parse any retry arguments passed to HTTPAdapter
+        # and create a Retry object.
+        # Create some default values in case NONE are passed:
+        if "total" not in retry_args:
+            retry_args["total"] = 5
+        if "status_forcelist" not in retry_args:
+            retry_args["status_forcelist"] = [500, 502, 503, 504]
+        if "backoff_factor" not in retry_args:
+            retry_args["backoff_factor"] = 0.1
+        if "allows_methods" not in retry_args:
+            retry_args["allowed_methods"] = ["GET"]
+        retries = Retry(**retry_args)
+        adapter = HTTPAdapter(max_retries=retries)
+        # create new session
+        session = requests.Session()
+        # mount the adapter to the session
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+        # move session get into try
+        # otherwise it does not get the last exception
+        req = session.get(url, **args, allow_redirects=True)
+        try:
+            req.raise_for_status()
+            return req
+        except HTTPError as ex:
+            raise ex
 
-            retries = Retry(
-                total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504]
-            )
-            adapter = HTTPAdapter(max_retries=retries)
-            session.mount("http://", adapter)
-            session.mount("https://", adapter)
-            req = session.get(url, **args)
-            try:
-                req.raise_for_status()
-            except HTTPError as e:
-                raise e
-        return req
-    except Timeout:
-        raise HTTPError("Timeout")
-    except ConnectionError as ce:
-        print(ce)
+
