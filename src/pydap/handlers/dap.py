@@ -25,7 +25,9 @@ from itertools import chain
 import numpy
 import requests
 from requests.utils import urlparse, urlunparse
+from requests.exceptions import HTTPError
 from webob.response import Response
+
 
 from pydap.handlers.lib import BaseHandler, ConstraintExpression, IterData
 from pydap.lib import (
@@ -42,7 +44,7 @@ from pydap.lib import (
     walk,
 )
 from pydap.model import BaseType, GridType, SequenceType, StructureType
-from pydap.net import GET, raise_for_status
+from pydap.net import GET
 from pydap.parsers import parse_ce
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
@@ -156,7 +158,6 @@ class DAPHandler(BaseHandler):
             timeout=self.timeout,
             verify=self.verify,
         )
-        raise_for_status(r)
         dmr = safe_charset_text(r, self.user_charset)
         self.dataset = dmr_to_dataset(dmr)
 
@@ -179,7 +180,7 @@ class DAPHandler(BaseHandler):
             timeout=self.timeout,
             verify=self.verify,
         )
-        raise_for_status(r)
+
         dds = safe_charset_text(r, self.user_charset)
         self.dataset = dds_to_dataset(dds)
 
@@ -202,7 +203,6 @@ class DAPHandler(BaseHandler):
             timeout=self.timeout,
             verify=self.verify,
         )
-        raise_for_status(r)
         das = safe_charset_text(r, self.user_charset)
         add_attributes(self.dataset, parse_das(das))
 
@@ -388,8 +388,7 @@ class BaseProxyDap2(object):
             timeout=self.timeout,
             verify=self.verify,
         )
-
-        raise_for_status(r)
+    
         dds, data = safe_dds_and_data(r, self.user_charset)
 
         # Parse received dataset:
@@ -472,7 +471,8 @@ class BaseProxyDap4(BaseProxyDap2):
             verify=self.verify,
         )
 
-        raise_for_status(r)
+
+        
         dataset = UNPACKDAP4DATA(r, self.user_charset).dataset
         self.checksum = dataset[self.id].attributes["checksum"]
         self.data = dataset[self.id].data
@@ -593,7 +593,6 @@ class SequenceProxy(object):
             timeout=self.timeout,
             verify=self.verify,
         )
-        raise_for_status(r)
 
         if isinstance(r, Response):
             i = r.app_iter

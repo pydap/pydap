@@ -173,7 +173,6 @@ def open_dods_url(
     """Open a `.dods` response directly, returning a dataset."""
 
     r = pydap.net.GET(url, application, session, timeout=timeout)
-    pydap.net.raise_for_status(r)
 
     dds, data = r.body.split(b"\nData:\n", 1)
     dds = dds.decode(r.content_encoding or "ascii")
@@ -187,7 +186,7 @@ def open_dods_url(
             (scheme, netloc, path[:-4] + "das", params, query, fragment)
         )
         r = pydap.net.GET(dasurl, application, session, timeout=timeout, verify=verify)
-        pydap.net.raise_for_status(r)
+
         das = pydap.parsers.das.parse_das(r.text)
         pydap.parsers.das.add_attributes(dataset, das)
 
