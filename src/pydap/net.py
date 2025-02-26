@@ -148,5 +148,7 @@ def create_request(
         try:
             req.raise_for_status()
             return req
-        except HTTPError as ex:
-            raise ex
+        except HTTPError as http_err:
+            raise HTTPError(
+                f"HTTP Error occurred {http_err} - Failed to fetch data from `{url}`"
+            ) from http_err
