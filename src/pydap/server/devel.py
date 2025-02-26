@@ -7,7 +7,7 @@ import time
 from wsgiref.simple_server import make_server
 
 import numpy as np
-from webob.exc import HTTPError
+from requests.exceptions import HTTPError
 from webob.request import Request
 
 from ..handlers.lib import BaseHandler
