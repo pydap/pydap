@@ -9,6 +9,7 @@ it could work with more data formats.
 
 import ssl
 import sys
+import time
 
 import numpy as np
 import pytest
@@ -48,7 +49,8 @@ def test_open(sequence_type_data):
     TestDataset = DatasetType("Test")
     TestDataset["sequence"] = sequence_type_data
     with LocalTestServerSSL(BaseHandler(TestDataset)) as server:
-        dataset = open_url(server.url)
+        time.sleep(0.1)
+        dataset = open_url(server.url, protocol="dap2")
         seq = dataset["sequence"]
         retrieved_data = [line for line in seq]
 
@@ -70,7 +72,10 @@ def test_verify_open_url(sequence_type_data):
     application = BaseHandler(TestDataset)
     with LocalTestServerSSL(application, ssl_context="adhoc") as server:
         try:
-            open_url(server.url, verify=False, session=requests.Session())
+            time.sleep(0.2)
+            open_url(
+                server.url, verify=False, session=requests.Session(), protocol="dap2"
+            )
         except (ssl.SSLError, requests.exceptions.SSLError):
             pytest.fail("SSLError should not be raised.")
 
