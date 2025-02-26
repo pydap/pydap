@@ -6,7 +6,6 @@ from requests.exceptions import HTTPError
 from requests.utils import urlparse, urlunparse
 from urllib3 import Retry
 from webob.request import Request as webob_Request
-from webob.response import Response as webob_Response
 
 from .lib import DEFAULT_TIMEOUT, _quote
 
@@ -52,7 +51,7 @@ def GET(
         verify=verify,
         **retry_args,
     )
-    if isinstance(res,  webob_Request):
+    if isinstance(res, webob_Request):
         res = get_response(res, application, verify=verify)
         # requests library automatically decodes the response
         res.decode_content()
