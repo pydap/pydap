@@ -4,7 +4,8 @@ import requests
 from requests.exceptions import Timeout, HTTPError
 from requests.utils import urlparse, urlunparse
 from webob.request import Request
-
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
 from .lib import DEFAULT_TIMEOUT, _quote
 
 
@@ -99,18 +100,17 @@ def create_request(
             keys = ['cookies', 'headers']
             kwargs = {k: getattr(session, k) for k in keys if hasattr(session, k)}
             args = {**kwargs, 'timeout': timeout, 'verify': verify}
-            for retry in range(retries):
-                req = requests.get(url,**args)
-                try:
-                    req.raise_for_status
-                except HTTPError as e:
-                    if req.status_code in [500, 503]:
-                        print("Retrying in %s seconds" % delay)
-                        time.sleep(delay)
-                        continue
-                    else:
-                        raise e
-                break
+            session = requests.Session()
+
+            retries = Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+            adapter = HTTPAdapter(max_retries=retries)
+            session.mount('http://', adapter)
+            session.mount('https://', adapter)
+            req = session.get(url, **args)
+            try:
+                req.raise_for_status()
+            except HTTPError as e:
+                raise e
         return req
     except Timeout:
         raise HTTPError("Timeout")
