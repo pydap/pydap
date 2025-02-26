@@ -19,13 +19,26 @@ def GET(
     verify=True,
     **retry_args,
 ):
-    """Open a remote URL returning a webob.response.Response object
+    """Open a remote URL returning a requests.GET object
 
-    Optional parameters:
-    session: a requests.Session() object (potentially) containing
-             authentication cookies.
+    Parameters:
+    -----------
+        url: str
+            open a remote URL
+        application: a WSGI application object | None
+            When set, we are dealing with a local application, and a webob.response is
+            returned. When None, a requests.Response object is returned.
+        session: requests.Session() | None
+            object (potentially) containing authentication cookies.
+        timeout: int | None (default: 512)
+            timeout in seconds.
+        verify: bool (default: True)
+            verify SSL certificates
+        retry_args: dict
+            retry arguments passed to HTTPAdapter
 
-    Optionally open a URL to a local WSGI application
+    Returns:
+        response: requests.Response object | webob.Response object
     """
     if application:
         _, _, path, _, query, fragment = urlparse(url)
