@@ -25,7 +25,7 @@ from itertools import chain
 import numpy
 import requests
 from requests.utils import urlparse, urlunparse
-from webob.response import Response
+from webob.response import Response as webob_Response
 
 from pydap.handlers.lib import BaseHandler, ConstraintExpression, IterData
 from pydap.lib import (
@@ -293,7 +293,7 @@ def get_charset(r, user_charset):
 
 
 def safe_charset_text(r, user_charset):
-    if isinstance(r, Response):
+    if isinstance(r, webob_Response):
         if r.content_encoding == "gzip":
             return (
                 gzip.GzipFile(fileobj=BytesIO(r.body))
@@ -311,7 +311,7 @@ def safe_dds_and_data(r, user_charset):
     If the response is gzipped, it is decompressed first.
     """
     dds, data = None, None  # initialize
-    if isinstance(r, Response):
+    if isinstance(r, webob_Response):
         if r.content_encoding == "gzip":
             raw = gzip.GzipFile(fileobj=BytesIO(r.body)).read()
         else:
@@ -590,7 +590,7 @@ class SequenceProxy(object):
             verify=self.verify,
         )
 
-        if isinstance(r, Response):
+        if isinstance(r, webob_Response):
             i = r.app_iter
             if not hasattr(i, "__next__"):
                 i = iter(i)
@@ -876,14 +876,15 @@ class UNPACKDAP4DATA(object):
     Parameters:
     -----------
         r: contains the dap response.
-            May be a Webob.response.Response created from pydap.net.GET if the dataset
-            is remote (from a url), or a `io.BufferedReader` if the data is local within
-            a filesystem. See `pydap.net.get.open_dap_file`
+            May be a Webob.response.Response or requests.response created from
+            pydap.net.GET if the dataset is remote (from a url), or a
+            `io.BufferedReader` if the data is local within a filesystem.
+            See `pydap.net.get.open_dap_file`
     """
 
     def __init__(self, r, user_charset="ascii"):
         self.user_charset = user_charset
-        if isinstance(r, Response):  # a Webob response
+        if isinstance(r, webob_Response):  # a Webob response
             self.r = r
             if self.r.content_encoding == "gzip":
                 self.raw = BytesReader(
@@ -893,7 +894,7 @@ class UNPACKDAP4DATA(object):
                 self.raw = BytesReader(r.body)
         elif isinstance(r, BufferedReader):
             # r comes from reading a local file
-            self.r = Response()  # make empty response
+            self.r = webob_Response()  # make empty response
             self.raw = BytesReader(r.read())
         elif isinstance(r, requests.Response):
             # r comes from reading a remote dataset
@@ -924,7 +925,7 @@ class UNPACKDAP4DATA(object):
         chunk_header = numpy.frombuffer(self.raw.read(4), dtype=">u4")[0]
         dmr_length = chunk_header & 0x00FFFFFF
         chunk_type = (chunk_header >> 24) & 0xFF
-        if isinstance(self.r, Response):
+        if isinstance(self.r, webob_Response):
             dmr = self.raw.read(dmr_length).decode(
                 get_charset(self.r, self.user_charset)
             )

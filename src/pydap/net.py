@@ -5,12 +5,20 @@ from requests.adapters import HTTPAdapter
 from requests.exceptions import HTTPError
 from requests.utils import urlparse, urlunparse
 from urllib3 import Retry
-from webob.request import Request
+from webob.request import Request as webob_Request
+from webob.response import Response as webob_Response
 
 from .lib import DEFAULT_TIMEOUT, _quote
 
 
-def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT, verify=True):
+def GET(
+    url,
+    application=None,
+    session=None,
+    timeout=DEFAULT_TIMEOUT,
+    verify=True,
+    **retry_args,
+):
     """Open a remote URL returning a webob.response.Response object
 
     Optional parameters:
@@ -24,11 +32,17 @@ def GET(url, application=None, session=None, timeout=DEFAULT_TIMEOUT, verify=Tru
         url = urlunparse(("", "", path, "", _quote(query), fragment))
 
     req = create_request(
-        url, application=application, session=session, timeout=timeout, verify=verify
+        url,
+        application=application,
+        session=session,
+        timeout=timeout,
+        verify=verify,
+        **retry_args,
     )
     response = get_response(req, application, verify=verify)
-    # # Decode request response (i.e. gzip)
-    # response.decode_content()
+    if isinstance(response, webob_Response):
+        # requests library automatically decodes the response
+        response.decode_content()
     return response
 
 
@@ -97,7 +111,7 @@ def create_request(
 
     if application:
         # local dataset, webob request.
-        req = Request.blank(url)
+        req = webob_Request.blank(url)
         req.environ["webob.client.timeout"] = timeout
         return req
     else:
