@@ -44,7 +44,7 @@ def GET(
         _, _, path, _, query, fragment = urlparse(url)
         url = urlunparse(("", "", path, "", _quote(query), fragment))
 
-    req = create_request(
+    res = create_request(
         url,
         application=application,
         session=session,
@@ -52,11 +52,11 @@ def GET(
         verify=verify,
         **retry_args,
     )
-    response = get_response(req, application, verify=verify)
-    if isinstance(response, webob_Response):
+    if isinstance(res,  webob_Request):
+        res = get_response(res, application, verify=verify)
         # requests library automatically decodes the response
-        response.decode_content()
-    return response
+        res.decode_content()
+    return res
 
 
 def get_response(req, application=None, verify=True):
@@ -65,11 +65,7 @@ def get_response(req, application=None, verify=True):
     ssl verification.
     """
     if verify:
-        if application:
-            resp = req.get_response(application)
-        else:
-            # this is a remote request
-            return req
+        resp = req.get_response(application)
     else:
         # Here, we use monkeypatching. Webob does not provide a way
         # to bypass SSL verification.
@@ -86,12 +82,7 @@ def get_response(req, application=None, verify=True):
             _create_default_https_ctx = None
 
         try:
-            if application:
-                # local dataset, webob request.
-                resp = req.get_response(application)
-            else:
-                # this is a remote request
-                return req
+            resp = req.get_response(application)
         finally:
             if _create_default_https_ctx is not None:
                 # Restore verified context
