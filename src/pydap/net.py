@@ -2,10 +2,9 @@ import ssl
 
 import requests
 from requests.adapters import HTTPAdapter
-from requests.exceptions import ConnectTimeout, HTTPError, ReadTimeout
+from requests.exceptions import HTTPError
 from requests.utils import urlparse, urlunparse
 from urllib3 import Retry
-from urllib3.exceptions import ConnectionError, MaxRetryError, TimeoutError
 from webob.request import Request
 
 from .lib import DEFAULT_TIMEOUT, _quote
@@ -103,7 +102,7 @@ def create_request(
         return req
     else:
         # we pass any cookies, headers, if session has these attrs
-        args= {"timeout": timeout, "verify": verify}
+        args = {"timeout": timeout, "verify": verify}
         if session:
             # get any cookies and headers from previous session
             keys = ["cookies", "headers"]
@@ -137,5 +136,3 @@ def create_request(
             return req
         except HTTPError as ex:
             raise ex
-
-
