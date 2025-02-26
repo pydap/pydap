@@ -2,14 +2,12 @@
 Test the follow redirects and handling of more complex routing situations
 """
 
+import pytest
 import requests
 import requests_mock
 
-from requests.adapters import HTTPAdapter
-from urllib3.util.retry import Retry
-
 from pydap.net import create_request
-import pytest
+
 
 def test_redirect():
     """Test that redirection is handled properly"""
@@ -66,6 +64,6 @@ def test_redirect():
 
 def test_httperror():
     """test that raise_for_status raises the correct HTTPerror"""
-    fake_url = 'https://httpstat.us/404' # this url will return a 404
+    fake_url = "https://httpstat.us/404"  # this url will return a 404
     with pytest.raises(requests.exceptions.HTTPError):
         create_request(fake_url)

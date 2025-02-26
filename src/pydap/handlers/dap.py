@@ -25,9 +25,7 @@ from itertools import chain
 import numpy
 import requests
 from requests.utils import urlparse, urlunparse
-from requests.exceptions import HTTPError
 from webob.response import Response
-
 
 from pydap.handlers.lib import BaseHandler, ConstraintExpression, IterData
 from pydap.lib import (
@@ -388,7 +386,7 @@ class BaseProxyDap2(object):
             timeout=self.timeout,
             verify=self.verify,
         )
-    
+
         dds, data = safe_dds_and_data(r, self.user_charset)
 
         # Parse received dataset:
@@ -471,8 +469,6 @@ class BaseProxyDap4(BaseProxyDap2):
             verify=self.verify,
         )
 
-
-        
         dataset = UNPACKDAP4DATA(r, self.user_charset).dataset
         self.checksum = dataset[self.id].attributes["checksum"]
         self.data = dataset[self.id].data
