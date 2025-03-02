@@ -1,9 +1,7 @@
 import multiprocessing
 import sys
 import time
-import warnings
 
-import requests
 from werkzeug.serving import run_simple
 
 from ..handlers.lib import BaseHandler
@@ -46,6 +44,7 @@ class LocalTestServerSSL(LocalTestServer):
 
     Usage:
     >>> import numpy as np
+    >>> import time
     >>> from pydap.handlers.lib import BaseHandler
     >>> from pydap.model import DatasetType, BaseType
     >>> DefaultDataset = DatasetType("Default")
@@ -59,12 +58,14 @@ class LocalTestServerSSL(LocalTestServer):
     >>> from pydap.client import open_url
     >>> application = BaseHandler(DefaultDataset)
     >>> with LocalTestServerSSL(application) as server:
+    ...     time.sleep(0.1)
     ...     dataset = open_url("http://localhost:%s" % server.port)
 
 
     Or by managing connection and deconnection:
     >>> server = LocalTestServerSSL(application)
     >>> server.start()
+    >>> time.sleep(0.1)
     >>> dataset = open_url("http://localhost:%s" % server.port)
     >>> dataset
     <DatasetType with children 'byte', 'string', 'short'>
@@ -119,13 +120,6 @@ class LocalTestServerSSL(LocalTestServer):
     # https://werkzeug.palletsprojects.com/en/2.2.x/serving/#shutting-down-the-server
     def shutdown(self):
         # Shutdown the server:
-        url = "http://0.0.0.0:%s/shutdown"
-        if self._ssl_context is not None:
-            url = url.replace("http", "https")
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            requests.head(url % self.port, verify=False)
         time.sleep(self._wait)
-        # self._server.join()
         self._server.terminate()
         del self._server
