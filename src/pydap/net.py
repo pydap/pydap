@@ -7,7 +7,7 @@ from requests.utils import urlparse, urlunparse
 from urllib3 import Retry
 from webob.request import Request as webob_Request
 
-from .lib import DEFAULT_TIMEOUT, _quote, __version__
+from .lib import DEFAULT_TIMEOUT, __version__, _quote
 
 
 def GET(
@@ -130,7 +130,9 @@ def create_request(
         req.environ["webob.client.timeout"] = timeout
         return req
     else:
-        session_kwargs = kwargs.pop("session_kwargs", {})  # Extract session-specific kwargs
+        session_kwargs = kwargs.pop(
+            "session_kwargs", {}
+        )  # Extract session-specific kwargs
         if session is None:
             # Create a new session with user-specified kwargs
             session = requests.Session()
@@ -150,7 +152,9 @@ def create_request(
             # Mount the adapter to the session
             session.mount("http://", adapter)
             session.mount("https://", adapter)
-        req = session.get(url, timeout=timeout, verify=verify, allow_redirects=True, **kwargs)
+        req = session.get(
+            url, timeout=timeout, verify=verify, allow_redirects=True, **kwargs
+        )
         try:
             req.raise_for_status()
             return req
