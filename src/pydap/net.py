@@ -7,7 +7,7 @@ from requests.utils import urlparse, urlunparse
 from urllib3 import Retry
 from webob.request import Request as webob_Request
 
-from .lib import DEFAULT_TIMEOUT, __version__, _quote
+from .lib import DEFAULT_TIMEOUT, _quote
 
 
 def GET(
