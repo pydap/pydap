@@ -140,7 +140,13 @@ def create_request(
             session is None.
         cache_kwargs: dict | None
             keyword arguments used to create a new cache object. Only used if
-            use_cache is True.
+            use_cache is True. When `None`, and `use` is `True`, the default
+            cache settings used are as follows: {
+                "cache_name": "http_cache",
+                "backend": "sqlite",
+                "use_temp": True,
+                "expire_after": timeout,  # seconds
+            }
         get_kwargs: dict
             additional keyword arguments passed to `requests.get`.
     """
@@ -156,6 +162,14 @@ def create_request(
             session_kwargs = session_kwargs or {}
             cache_kwargs = cache_kwargs or {}
             if use_cache:
+                if len(cache_kwargs) == 0:
+                    cache_kwargs = {
+                        "cache_name": "http_cache",
+                        "backend": "sqlite",
+                        "use_temp": True,
+                        "expire_after": timeout,  # seconds
+                    }
+                # Create a new session with cache
                 session = CachedSession(**{**session_kwargs, **cache_kwargs})
             else:
                 if len(cache_kwargs) > 0:
