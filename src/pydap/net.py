@@ -1,9 +1,11 @@
 import ssl
+import warnings
 
 import requests
 from requests.adapters import HTTPAdapter
 from requests.exceptions import HTTPError
 from requests.utils import urlparse, urlunparse
+from requests_cache import CachedSession
 from urllib3 import Retry
 from webob.request import Request as webob_Request
 
@@ -97,7 +99,10 @@ def create_request(
     session=None,
     timeout=DEFAULT_TIMEOUT,
     verify=True,
-    **kwargs,
+    use_cache=False,
+    session_kwargs=None,
+    cache_kwargs=None,
+    **get_kwargs,
 ):
     """
     Creates a requests.get request object for a local or remote url.
@@ -118,10 +123,16 @@ def create_request(
             timeout in seconds.
         verify: bool (default: True)
             verify SSL certificates
-        kwargs: dict
-            additional keyword arguments passed to `requests.get`. Optional arguments
-            include `retry_args` and `session_kwargs`, which are only passed to the
-            session object iff session is None.
+        use_cache: bool (default: False)
+            use cache to store requests. Uses the `requests_cache` library.
+        session_kwargs: dict | None
+            keyword arguments used to create a new session object. Only used if
+            session is None.
+        cache_kwargs: dict | None
+            keyword arguments used to create a new cache object. Only used if
+            use_cache is True.
+        get_kwargs: dict
+            additional keyword arguments passed to `requests.get`.
     """
 
     if application:
@@ -130,17 +141,28 @@ def create_request(
         req.environ["webob.client.timeout"] = timeout
         return req
     else:
-        session_kwargs = kwargs.pop(
-            "session_kwargs", {}
-        )  # Extract session-specific kwargs
+        # remote dataset, requests request.
         if session is None:
-            # Create a new session with user-specified kwargs
-            session = requests.Session()
-            for key, value in session_kwargs.items():
-                setattr(session, key, value)
-
+            session_kwargs = session_kwargs or {}
+            cache_kwargs = cache_kwargs or {}
+            if use_cache:
+                session = CachedSession(**{**session_kwargs, **cache_kwargs})
+            else:
+                if len(cache_kwargs) > 0:
+                    warnings.warn(
+                        "`cache_kwargs` are being set, but use_cache is `False`. "
+                        " when `use_cache` is `False`, `cache_kwargs` are ignored."
+                        " set `use_cache` to `True` to use `cache_kwargs`, or remove "
+                        "`cache_kwargs`. ",
+                        category=UserWarning,
+                        stacklevel=1,
+                    )
+                # Create a new session with user-specified kwargs
+                session = requests.Session()
+                for key, value in session_kwargs.items():
+                    setattr(session, key, value)
             # Handle retry arguments separately
-            retry_args = kwargs.pop("retry_args", {})
+            retry_args = session_kwargs.pop("retry_args", {})
             retry_args.setdefault("total", 5)
             retry_args.setdefault("status_forcelist", [500, 502, 503, 504])
             retry_args.setdefault("backoff_factor", 0.1)
@@ -153,7 +175,7 @@ def create_request(
             session.mount("http://", adapter)
             session.mount("https://", adapter)
         req = session.get(
-            url, timeout=timeout, verify=verify, allow_redirects=True, **kwargs
+            url, timeout=timeout, verify=verify, allow_redirects=True, **get_kwargs
         )
         try:
             req.raise_for_status()
