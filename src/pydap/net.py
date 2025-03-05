@@ -18,7 +18,10 @@ def GET(
     session=None,
     timeout=DEFAULT_TIMEOUT,
     verify=True,
-    **kwargs,
+    use_cache=False,
+    session_kwargs=None,
+    cache_kwargs=None,
+    **get_kwargs,
 ):
     """Open a remote URL returning a requests.GET object
 
@@ -35,10 +38,14 @@ def GET(
             timeout in seconds.
         verify: bool (default: True)
             verify SSL certificates
-        kwargs: dict
-            additional keyword arguments passed to `requests.get`. Optional arguments
-            include `retry_args` and `session_kwargs`, which are only passed to the
-            session object iff session is None.
+        session_kwargs: dict | None
+            keyword arguments used to create a new session object. Only used if
+            session is None.
+        cache_kwargs: dict | None
+            keyword arguments used to create a new cache object. Only used if
+            use_cache is True.
+        get_kwargs: dict
+            additional keyword arguments passed to `requests.get`.
 
     Returns:
         response: requests.Response object | webob.Response object
@@ -53,7 +60,10 @@ def GET(
         session=session,
         timeout=timeout,
         verify=verify,
-        **kwargs,
+        use_cache=use_cache,
+        session_kwargs=session_kwargs,
+        cache_kwargs=cache_kwargs,
+        **get_kwargs,
     )
     if isinstance(res, webob_Request):
         res = get_response(res, application, verify=verify)
