@@ -4,9 +4,11 @@ import os
 
 import numpy as np
 import pytest
+import requests
 
 from pydap.client import open_dods_url, open_file, open_url
 from pydap.handlers.lib import BaseHandler
+from pydap.model import DatasetType
 from pydap.tests.datasets import SimpleGrid, SimpleSequence, SimpleStructure
 
 DODS = os.path.join(os.path.dirname(__file__), "data/test.01.dods")
@@ -89,6 +91,45 @@ def test_open_url_seqCE(remote_url):
     assert len([var for var in dsCE[seq_name]["Time"]]) < len(
         [var for var in data_original[seq_name]["Time"]]
     )
+
+
+@pytest.mark.parametrize(
+    "session",
+    [None, requests.session()],
+)
+def test_session_client(session):
+    """Test that session is passed correctly from user and no changes are made
+    to it.
+    """
+    url = "http://test.opendap.org:8080/opendap/data/nc/123bears.nc"
+    cache_kwargs = {
+        "cache_name": "http_cache",
+        "backend": "sqlite",
+        "use_temp": True,
+        "expire_after": 100,  # seconds
+    }
+    use_cache = False  # this triggers a user warning when cache_kwargs are
+    # passed to create_session. However that only happens when session is None
+    # provide a session.
+    if not session:
+        with pytest.warns(UserWarning):
+            ds = open_url(
+                url,
+                session=session,
+                protocol="dap2",
+                use_cache=use_cache,
+                cache_kwargs=cache_kwargs,
+            )
+    else:
+        ds = open_url(
+            url,
+            session=session,
+            protocol="dap2",
+            use_cache=use_cache,
+            cache_kwargs=cache_kwargs,
+        )
+
+    assert isinstance(ds, DatasetType)
 
 
 @pytest.mark.client
@@ -277,3 +318,30 @@ def test_uint16(structure_app):
     Load an uint16 -> should yield '>u2' type."""
     dataset = open_url("http://localhost:8001/", structure_app)
     assert dataset.types.ui16.dtype == np.dtype(">u2")
+
+
+@pytest.mark.parametrize(
+    "use_cache",
+    [False, True],
+)
+def test_cache(use_cache):
+    """Test that caching is passed from user correctly"""
+    url = "http://test.opendap.org:8080/opendap/data/nc/123bears.nc"
+    # cache_kwargs are being set, but only used when use_cache is True
+    # thus - raise a warning if cache_kwargs are set and use_cache is False
+    cache_kwargs = {
+        "cache_name": "http_cache",
+        "backend": "sqlite",
+        "use_temp": True,
+        "expire_after": 100,  # seconds
+    }
+    if not use_cache:
+        with pytest.warns(UserWarning):
+            open_url(
+                url, protocol="dap2", use_cache=use_cache, cache_kwargs=cache_kwargs
+            )
+    else:
+        ds = open_url(
+            url, protocol="dap2", use_cache=use_cache, cache_kwargs=cache_kwargs
+        )
+        assert isinstance(ds, DatasetType)
