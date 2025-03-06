@@ -73,7 +73,7 @@ def open_url(
     use_cache=False,
     session_kwargs=None,
     cache_kwargs=None,
-    **get_kwargs,
+    get_kwargs=None,
 ):
     """
     Open a remote OPeNDAP URL, or a local (wsgi) application returning a pydap
@@ -112,7 +112,7 @@ def open_url(
     cache_kwargs: dict | None
         keyword arguments used to create a new cache object. Only used if
         use_cache is True. See `pydap.net.GET`.
-    get_kwargs: dict
+    get_kwargs: dict | None
         additional keyword arguments passed to `requests.get`.
 
 
@@ -132,7 +132,7 @@ def open_url(
         verify=verify,
         user_charset=user_charset,
         protocol=protocol,
-        **get_kwargs,
+        get_kwargs=get_kwargs,
     )
     dataset = handler.dataset
 

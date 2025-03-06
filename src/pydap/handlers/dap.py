@@ -89,7 +89,7 @@ class DAPHandler(BaseHandler):
         self.fragment = fragment
 
         self.protocol = self.determine_protocol(protocol)
-        self.get_kwargs = get_kwargs
+        self.get_kwargs = get_kwargs or {}
 
         self.projection, self.selection = parse_ce(self.query, self.protocol)
         arg = (
@@ -180,6 +180,7 @@ class DAPHandler(BaseHandler):
             self.session,
             timeout=self.timeout,
             verify=self.verify,
+            get_kwargs=self.get_kwargs,
         )
 
         dds = safe_charset_text(r, self.user_charset)
@@ -203,6 +204,7 @@ class DAPHandler(BaseHandler):
             self.session,
             timeout=self.timeout,
             verify=self.verify,
+            get_kwargs=self.get_kwargs,
         )
         das = safe_charset_text(r, self.user_charset)
         add_attributes(self.dataset, parse_das(das))
@@ -229,6 +231,7 @@ class DAPHandler(BaseHandler):
                 session=self.session,
                 timeout=self.timeout,
                 verify=self.verify,
+                get_kwargs={**self.get_kwargs, "stream": True},
             )
 
         # apply projections to BaseType only
@@ -254,6 +257,7 @@ class DAPHandler(BaseHandler):
                 session=self.session,
                 timeout=self.timeout,
                 verify=self.verify,
+                get_kwargs={**self.get_kwargs, "stream": True},
             )
         for var in walk(self.dataset, SequenceType):
             template = copy.copy(var)
@@ -265,6 +269,7 @@ class DAPHandler(BaseHandler):
                 session=self.session,
                 timeout=self.timeout,
                 verify=self.verify,
+                get_kwargs={**self.get_kwargs, "stream": True},
             )
 
         # apply projections
@@ -347,6 +352,7 @@ class BaseProxyDap2(object):
         timeout=DEFAULT_TIMEOUT,
         verify=True,
         user_charset="ascii",
+        get_kwargs=None,
     ):
         self.baseurl = baseurl
         self.id = id
@@ -358,6 +364,7 @@ class BaseProxyDap2(object):
         self.timeout = timeout
         self.verify = verify
         self.user_charset = user_charset
+        self.get_kwargs = get_kwargs or {}
 
     def __repr__(self):
         return "BaseProxy(%s)" % ", ".join(
@@ -388,7 +395,7 @@ class BaseProxyDap2(object):
             self.session,
             timeout=self.timeout,
             verify=self.verify,
-            use_cache=True,
+            get_kwargs=self.get_kwargs,
         )
 
         dds, data = safe_dds_and_data(r, self.user_charset)
@@ -438,6 +445,7 @@ class BaseProxyDap4(BaseProxyDap2):
         timeout=DEFAULT_TIMEOUT,
         verify=True,
         user_charset="ascii",
+        get_kwargs=None,
     ):
         self.baseurl = baseurl
         self.id = id
@@ -449,6 +457,7 @@ class BaseProxyDap4(BaseProxyDap2):
         self.timeout = timeout
         self.verify = verify
         self.user_charset = user_charset
+        self.get_kwargs = get_kwargs or {}
 
     def __repr__(self):
         return "Dap4BaseProxy(%s)" % ", ".join(
@@ -471,7 +480,7 @@ class BaseProxyDap4(BaseProxyDap2):
             self.session,
             timeout=self.timeout,
             verify=self.verify,
-            use_cache=True,
+            get_kwargs=self.get_kwargs,
         )
 
         dataset = UNPACKDAP4DATA(r, self.user_charset).dataset
@@ -502,6 +511,7 @@ class SequenceProxy(object):
         session=None,
         timeout=DEFAULT_TIMEOUT,
         verify=True,
+        get_kwargs=None,
     ):
         self.baseurl = baseurl
         self.template = template
@@ -514,6 +524,7 @@ class SequenceProxy(object):
 
         # this variable is true when only a subset of the children are selected
         self.sub_children = False
+        self.get_kwargs = get_kwargs or {}
 
     @property
     def dtype(self):
@@ -593,8 +604,7 @@ class SequenceProxy(object):
             self.session,
             timeout=self.timeout,
             verify=self.verify,
-            use_cache=True,
-            get_kwargs={"stream": True},
+            get_kwargs=self.get_kwargs,
         )
 
         if isinstance(r, webob_Response):
