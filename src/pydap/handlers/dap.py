@@ -68,6 +68,7 @@ class DAPHandler(BaseHandler):
         verify=True,
         user_charset="ascii",
         protocol=None,
+        get_kwargs=None,
     ):
 
         self.application = application
@@ -88,6 +89,7 @@ class DAPHandler(BaseHandler):
         self.fragment = fragment
 
         self.protocol = self.determine_protocol(protocol)
+        self.get_kwargs = get_kwargs
 
         self.projection, self.selection = parse_ce(self.query, self.protocol)
         arg = (
@@ -155,6 +157,7 @@ class DAPHandler(BaseHandler):
             self.session,
             timeout=self.timeout,
             verify=self.verify,
+            get_kwargs=self.get_kwargs,
         )
         dmr = safe_charset_text(r, self.user_charset)
         self.dataset = dmr_to_dataset(dmr)
@@ -385,6 +388,7 @@ class BaseProxyDap2(object):
             self.session,
             timeout=self.timeout,
             verify=self.verify,
+            use_cache=True,
         )
 
         dds, data = safe_dds_and_data(r, self.user_charset)
@@ -467,6 +471,7 @@ class BaseProxyDap4(BaseProxyDap2):
             self.session,
             timeout=self.timeout,
             verify=self.verify,
+            use_cache=True,
         )
 
         dataset = UNPACKDAP4DATA(r, self.user_charset).dataset
@@ -588,6 +593,8 @@ class SequenceProxy(object):
             self.session,
             timeout=self.timeout,
             verify=self.verify,
+            use_cache=True,
+            get_kwargs={"stream": True},
         )
 
         if isinstance(r, webob_Response):
