@@ -55,8 +55,10 @@ import pydap.net
 import pydap.parsers.das
 import pydap.parsers.dds
 import pydap.parsers.dmr
-from pydap.handlers.dap import UNPACKDAP4DATA
+from pydap.handlers.dap import UNPACKDAP4DATA, DAPHandler
 from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
+
+from .net import create_session
 
 
 def open_url(
@@ -68,14 +70,60 @@ def open_url(
     verify=True,
     user_charset="ascii",
     protocol=None,
+    use_cache=False,
+    session_kwargs=None,
+    cache_kwargs=None,
+    get_kwargs=None,
 ):
     """
-    Open a remote URL, returning a dataset.
+    Open a remote OPeNDAP URL, or a local (wsgi) application returning a pydap
+    dataset.
 
-    set output_grid to `False` to retrieve only main arrays and
-    never retrieve coordinate axes.
+    Parameters
+    ----------
+    url : str
+        The URL of the dataset.
+    application: a WSGI application object | None
+        When set, we are dealing with a local application, and a webob.response is
+        returned. When None, a requests.Response object is returned.
+    session : requests.Session
+        A requests session object.
+    output_grid : bool Default is True
+        Whether to output grid arrays or not. If `False` only main arrays are
+        retrieved and not the coordinate axes.
+    timeout : int
+        The timeout for the request.
+    verify : bool
+        Verify SSL certificates.
+    user_charset : str
+        The charset to use when decoding strings.
+    protocol : str | bool (Default: None)
+        The OPeNDAP protocol to use when creating the OPeNDAP request. Default is
+        `None`. Other  options are 'dap2' and 'dap4'. When None, pydap attempts to
+        infer the protocol from the URL. If the URL ends with '.dap', the protocol
+        is 'dap4'. If the URL ends with '.dods', the protocol is 'dap2'. Another
+        option to specify the protocol is to use replace the url scheme (http, https)
+        with 'dap2' or 'dap4'.
+    use_cache : bool (Default: False)
+        Whether to use the cache or not in the requests.
+    session_kwargs: dict | None
+        keyword arguments used to create a new session object. Only used if
+        session is None. A `token` for authentication can be passed here.
+    cache_kwargs: dict | None
+        keyword arguments used to create a new cache object. Only used if
+        use_cache is True. See `pydap.net.GET`.
+    get_kwargs: dict | None
+        additional keyword arguments passed to `requests.get`.
+
+
+    Returns:
+        pydap.model.dataset
     """
-    handler = pydap.handlers.dap.DAPHandler(
+
+    if not session:
+        session = create_session(use_cache, session_kwargs, cache_kwargs)
+
+    handler = DAPHandler(
         url,
         application,
         session,
@@ -84,6 +132,7 @@ def open_url(
         verify=verify,
         user_charset=user_charset,
         protocol=protocol,
+        get_kwargs=get_kwargs,
     )
     dataset = handler.dataset
 

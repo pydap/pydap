@@ -5,8 +5,8 @@ Test the follow redirects and handling of more complex routing situations
 import pytest
 import requests
 import requests_mock
-from webob.request import Request
-from webob.response import Response
+from webob.request import Request as webob_Request
+from webob.response import Response as webob_Response
 
 from pydap.handlers.lib import BaseHandler
 from pydap.net import GET, create_request, get_response
@@ -66,6 +66,29 @@ def test_redirect():
         assert req.text == "resp2"
 
 
+@pytest.mark.parametrize(
+    "use_cache",
+    [False, True],
+)
+def test_cache(use_cache):
+    """Test that caching is handled properly"""
+    url = "http://test.opendap.org:8080/opendap/data/nc/123bears.nc"
+    # cache_kwargs are being set, but only used when use_cache is True
+    # thus - raise a warning if cache_kwargs are set and use_cache is False
+    cache_kwargs = {
+        "cache_name": "http_cache",
+        "backend": "sqlite",
+        "use_temp": True,
+        "expire_after": 100,  # seconds
+    }
+    if not use_cache:
+        with pytest.warns(UserWarning):
+            create_request(url, use_cache=use_cache, cache_kwargs=cache_kwargs)
+    else:
+        r = create_request(url, use_cache=use_cache, cache_kwargs=cache_kwargs)
+        assert r.status_code == 200
+
+
 def test_raise_httperror():
     """test that raise_for_status raises the correct HTTPerror"""
     fake_url = "https://httpstat.us/404"  # this url will return a 404
@@ -89,7 +112,7 @@ def test_GET_application(appGroup):
 def test_create_request_application(appGroup):
     """Test that local url are handled properly"""
     req = create_request("/.dmr", application=appGroup, verify=True)
-    assert isinstance(req, Request)
+    assert isinstance(req, webob_Request)
     resp = get_response(req, application=appGroup, verify=True)
-    assert isinstance(resp, Response)
+    assert isinstance(resp, webob_Response)
     assert resp.status_code == 200

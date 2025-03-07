@@ -7,7 +7,7 @@ def setup_session(username, password, check_url=None, session=None, verify=True)
     Please use new_function instead.
     """
     warn(
-        "`urs.setup_session` is deprecated and will be removed in the next release. "
+        "`urs.setup_session` is deprecated. "
         "Instead, use a `.netrc` file instead for your EDL authentication credentials."
         "With the `.netrc file`, authentication with URS EARTHDATA at NASA credentials"
         "is now handled automatically by requests.session object. "
