@@ -200,7 +200,8 @@ def create_request(
                 else:
                     raise HTTPError(
                         "HTTP Error - Failed to correctly authenticate on this "
-                        "Thredds Data server under the DAP4 protocol"
+                        "Thredds Data server under the DAP4 protocol. See GH issue"
+                        "https://github.com/pydap/pydap/issues/442"
                     )
             raise HTTPError(
                 f"HTTP Error occurred {http_err} - Failed to fetch data from `{url}`"
