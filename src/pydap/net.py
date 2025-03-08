@@ -9,7 +9,7 @@ from requests_cache import CachedSession
 from urllib3 import Retry
 from webob.request import Request as webob_Request
 
-from .lib import DEFAULT_TIMEOUT, _quote
+from .lib import DEFAULT_TIMEOUT, _quote, __version__
 
 
 def GET(
@@ -240,6 +240,7 @@ def create_session(
     session_kwargs = session_kwargs or {}
     token = session_kwargs.pop("token", None)
     cache_kwargs = cache_kwargs or {}
+    headers = [("User-agent", "pydap/{}".format(__version__))]
     if use_cache:
         expire_after = cache_kwargs.pop("expire_after", None)
         if not expire_after:
@@ -257,7 +258,7 @@ def create_session(
                 "expire_after": expire_after,
             }
             # Create a new session with cache
-        session = CachedSession(**{**session_kwargs, **cache_kwargs})
+        session = CachedSession(**{**session_kwargs, **cache_kwargs}) 
     else:
         if len(cache_kwargs) > 0:
             warnings.warn(
@@ -272,6 +273,7 @@ def create_session(
         session = requests.Session()
         for key, value in session_kwargs.items():
             setattr(session, key, value)
+    session.headers.update(headers)
     # Handle retry arguments separately
     retry_args = session_kwargs.pop("retry_args", {})
     if "total" not in retry_args:
