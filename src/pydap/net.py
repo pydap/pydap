@@ -9,7 +9,7 @@ from requests_cache import CachedSession
 from urllib3 import Retry
 from webob.request import Request as webob_Request
 
-from .lib import DEFAULT_TIMEOUT, _quote, __version__
+from .lib import DEFAULT_TIMEOUT, __version__, _quote
 
 
 def GET(
@@ -258,7 +258,7 @@ def create_session(
                 "expire_after": expire_after,
             }
             # Create a new session with cache
-        session = CachedSession(**{**session_kwargs, **cache_kwargs}) 
+        session = CachedSession(**{**session_kwargs, **cache_kwargs})
     else:
         if len(cache_kwargs) > 0:
             warnings.warn(
