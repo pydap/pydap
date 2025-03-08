@@ -169,6 +169,36 @@ def create_request(
             req.raise_for_status()
             return req
         except HTTPError as http_err:
+            path = urlparse(url).path.split("/")[1:]
+            if req.status_code == 400 and set(("thredds", "dap4")).issubset(set(path)):
+                # this is an issue with thredds+dap4 and incorrect redirect url
+                # by requests.session. See https://github.com/pydap/pydap/issues/442
+                url = "https" + url[4:]  # schema: `https` - we are disabling redirects
+                req = session.get(url, allow_redirects=False, verify=True)
+                if not req.status_code == 307:
+                    raise HTTPError(
+                        "HTTP Error - attempting to retrieve data failed ",
+                        f"from {url} ",
+                    )
+                re_url = req.headers.get("Location")
+                # replace http --> https in redirect url
+                re_url = "https" + re_url[4:]
+                retry_response = session.get(re_url, allow_redirects=False, verify=True)
+                if retry_response.status_code == 403:
+                    # now reuse session with original arguments!
+                    req = session.get(
+                        url,
+                        timeout=timeout,
+                        verify=verify,
+                        allow_redirects=True,
+                        **get_kwargs,
+                    )
+                    return req
+                else:
+                    raise HTTPError(
+                        "HTTP Error - Failed to correctly authenticate on this "
+                        "Thredds Data server under the DAP4 protocol"
+                    )
             raise HTTPError(
                 f"HTTP Error occurred {http_err} - Failed to fetch data from `{url}`"
             ) from http_err
@@ -259,3 +289,12 @@ def create_session(
     if token:
         session.headers.update({"Authorization": f"Bearer {token}"})
     return session
+
+
+def save_cookies(url, sesssion):
+    """
+    some tds servers fail upon first try to authenticate.
+    Needs to store cookies
+    """
+
+    pass
