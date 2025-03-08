@@ -173,21 +173,24 @@ def create_request(
             if req.status_code == 400 and set(("thredds", "dap4")).issubset(set(path)):
                 # this is an issue with thredds+dap4 and incorrect redirect url
                 # by requests.session. See https://github.com/pydap/pydap/issues/442
-                url = "https" + url[4:]  # schema: `https` - we are disabling redirects
-                req = session.get(url, allow_redirects=False, verify=True)
+                _, net, path, params, query, frag = urlparse(url)
+                # make sure scheme is `https` - we are disabling redirects
+                nurl = urlunparse(("https", net, path, params, query, frag))
+                req = session.get(nurl, allow_redirects=False, verify=True)
                 if not req.status_code == 307:
                     raise HTTPError(
                         "HTTP Error - attempting to retrieve data failed ",
                         f"from {url} ",
                     )
                 re_url = req.headers.get("Location")
-                # replace http --> https in redirect url
-                re_url = "https" + re_url[4:]
+                # make sure scheme is `https` - we are disabling redirects
+                _, net, path, params, query, frag = urlparse(re_url)
+                re_url = urlunparse(("https", net, path, params, query, frag))
                 retry_response = session.get(re_url, allow_redirects=False, verify=True)
                 if retry_response.status_code == 403:
                     # now reuse session with original arguments!
                     req = session.get(
-                        url,
+                        url,  # original - unchanged url
                         timeout=timeout,
                         verify=verify,
                         allow_redirects=True,
