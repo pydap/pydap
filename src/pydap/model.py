@@ -603,15 +603,13 @@ class DatasetType(StructureType):
         if self.session:
             raise AttributeError("Cannot modify `session` after it has been set.")
         else:
-            if value is not None and not isinstance(
-                value, (requests.Session, requests_cache.CachedSession)
-            ):
+            if isinstance(value, (requests.Session, requests_cache.CachedSession)):
+                self._session = value
+            else:
                 raise TypeError(
                     "`session` must be a `requests.Session` or "
                     "`requests_cache.CachedSession` instance"
                 )
-            else:
-                self._session = value
 
     def __setitem__(self, key, item):
         # key a path-like only in DAP4
