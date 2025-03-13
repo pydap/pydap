@@ -174,6 +174,9 @@ import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 from functools import reduce
+from typing import Union, Optional
+import requests
+import requests_cache
 
 import numpy as np
 
@@ -564,6 +567,13 @@ class DatasetType(StructureType):
         >>> dataset["B"].id
         'B'
     """
+
+    def __init__(self, name="nameless", attributes=None, session: Optional[Union[requests.Session, requests_cache.CachedSession]] = None, **kwargs):
+        super().__init__(name, attributes, **kwargs)
+        # Explicit type checking to enforce the allowed types
+        if session is not None and not isinstance(session, (requests.Session, requests_cache.CachedSession)):
+            raise TypeError("`session` must be a `requests.Session` or `requests_cache.CachedSession` instance")
+        self.session = session 
 
     def __setitem__(self, key, item):
         # key a path-like only in DAP4
