@@ -4,6 +4,7 @@ import os
 import unittest
 
 import numpy as np
+import pytest
 from webob.response import Response
 
 import pydap.model
@@ -324,6 +325,38 @@ class TestBaseProxy(unittest.TestCase):
         np.testing.assert_array_equal(self.data <= 2, np.arange(5) <= 2)
         np.testing.assert_array_equal(self.data > 2, np.arange(5) > 2)
         np.testing.assert_array_equal(self.data < 2, np.arange(5) < 2)
+
+
+test_url = "http://test.opendap.org/opendap/data/nc/coads_climatology.nc"
+
+
+@pytest.mark.parametrize(
+    "url, app, expect",
+    [
+        ("dap2://test.opendap.org/opendap/data/nc/coads_climatology.nc", None, "dap2"),
+        ("dap4://test.opendap.org/opendap/data/nc/coads_climatology.nc", None, "dap4"),
+        (test_url, None, "warn"),
+        (
+            test_url + "?dap4.ce=/TIME",
+            None,
+            "dap4",
+        ),
+        ("a://test.opendap.org/opendap/data/nc/coads_climatology.nc", None, "error"),
+        (" ", BaseHandler(SimpleGrid), "dap2"),
+    ],
+)
+def test_protocols(url, app, expect):
+    if app:
+        assert DAPHandler(url=url, application=app).protocol == expect
+    else:
+        if expect == "error":
+            with pytest.raises(TypeError):
+                DAPHandler(url=url)
+        elif expect == "warn":
+            with pytest.warns(UserWarning):
+                DAPHandler(url=url)
+        else:
+            assert DAPHandler(url=url).protocol == expect
 
 
 class TestBaseProxyShort(unittest.TestCase):

@@ -88,7 +88,12 @@ class DAPHandler(BaseHandler):
         self.query = query
         self.fragment = fragment
 
-        self.protocol = self.determine_protocol(protocol)
+        if protocol:
+            if protocol not in ["dap2", "dap4"]:
+                raise TypeError("protocol must be one of `dap2` or `dap4")
+            self.protocol = protocol
+        else:
+            self.protocol = self.determine_protocol()
         self.get_kwargs = get_kwargs or {}
 
         self.projection, self.selection = parse_ce(self.query, self.protocol)
@@ -104,32 +109,31 @@ class DAPHandler(BaseHandler):
         self.make_dataset()
         self.add_proxies()
 
-    def determine_protocol(self, protocol):
-        if protocol == "dap4":
-            self.scheme = "http"
-            return protocol
-        elif protocol == "dap2":
-            return protocol
-        elif self.scheme == "dap4":
-            self.scheme = "http"
-            return "dap4"
-        elif self.query[:4] == "dap4":
-            self.sheme = "http"
+    def determine_protocol(self):
+        # determines the opendap protocol from url scheme, query, or extension
+        if self.application:
+            # server - only dap2 for now.
+            return "dap2"
+        if self.scheme not in ["http", "https"]:
+            if self.scheme in ["dap4", "dap2"]:
+                protocol = self.scheme
+                self.scheme = "http"  # revert to http
+                return protocol
+            else:
+                raise TypeError(
+                    "Invalid URL scheme - acceptable options are"
+                    "`dap2`, `dap4`. `https` and `http`",
+                )
+        if self.query[:4] == "dap4":
             return "dap4"
         else:
-            extension = self.path.split(".")[-1]
-            if extension in ["dmr", "dap"]:
-                return "dap4"
-            elif extension in ["dds", "dods"]:
-                return "dap2"
-            else:
-                _warnings.warn(
-                    "PyDAP was unable to determine the DAP protocol "
-                    "defaulting to DAP2 which is consider legacy and "
-                    "may result in slower responses. For more, see "
-                    "go to https://www.opendap.org/faq-page."
-                )
-                return "dap2"
+            _warnings.warn(
+                "PyDAP was unable to determine the DAP protocol defaulting "
+                "to DAP2. DAP2 is consider legacy and may result in slower "
+                "responses. \n For more information about, see go to  "
+                "https://www.opendap.org/faq-page."
+            )
+            return "dap2"
 
     def make_dataset(
         self,
