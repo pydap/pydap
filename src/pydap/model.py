@@ -174,11 +174,11 @@ import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
 from functools import reduce
-from typing import Union, Optional
-import requests
-import requests_cache
+from typing import Optional, Union
 
 import numpy as np
+import requests
+import requests_cache
 
 from .lib import _quote, decode_np_strings, tree, walk
 
@@ -568,12 +568,44 @@ class DatasetType(StructureType):
         'B'
     """
 
-    def __init__(self, name="nameless", attributes=None, session: Optional[Union[requests.Session, requests_cache.CachedSession]] = None, **kwargs):
+    def __init__(
+        self,
+        name="nameless",
+        attributes=None,
+        session: Optional[Union[requests.Session, requests_cache.CachedSession]] = None,
+        **kwargs,
+    ):
         super().__init__(name, attributes, **kwargs)
         # Explicit type checking to enforce the allowed types
-        if session is not None and not isinstance(session, (requests.Session, requests_cache.CachedSession)):
-            raise TypeError("`session` must be a `requests.Session` or `requests_cache.CachedSession` instance")
-        self.session = session 
+        if session is not None and not isinstance(
+            session, (requests.Session, requests_cache.CachedSession)
+        ):
+            raise TypeError(
+                "`session` must be a `requests.Session` or "
+                "`requests_cache.CachedSession` instance"
+            )
+        self._session = session
+
+    @property
+    def session(self):
+        """Read-only property for session."""
+        return self._session
+
+    @session.setter
+    def session(self, value):
+        """Prevent re-assignment of session."""
+        if self.session:
+            raise AttributeError("Cannot modify `session` after it has been set.")
+        else:
+            if value is not None and not isinstance(
+                value, (requests.Session, requests_cache.CachedSession)
+            ):
+                raise TypeError(
+                    "`session` must be a `requests.Session` or "
+                    "`requests_cache.CachedSession` instance"
+                )
+            else:
+                self._session = value
 
     def __setitem__(self, key, item):
         # key a path-like only in DAP4
