@@ -357,6 +357,9 @@ def test_protocols(url, app, expect):
                 DAPHandler(url=url)
         else:
             assert DAPHandler(url=url).protocol == expect
+    with pytest.raises(TypeError):
+        # only protocol='dap2' or `dap4` is supported
+        DAPHandler(url=url,application=app, protocol="errdap")
 
 
 class TestBaseProxyShort(unittest.TestCase):
