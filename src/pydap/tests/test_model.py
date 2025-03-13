@@ -570,6 +570,30 @@ def test_DatasetType_nbytes(gridtype_example):
     assert dataset.nbytes == Nbytes
 
 
+def test_DatasetType_grids():
+    """test that correctly identifies grid variable
+    and its mappings
+    """
+    # fictitious dataset
+    # grid and groups do not belong to same DAP protocol
+    # but for now, this test accuracy of property
+    pyds = DatasetType("example")
+    pyds.createGroup("Group1")
+    pyds.createSequence("Group1/Seq")
+    pyds.createVariable("Group1/Seq.var")
+    pyds.createVariable("Group1/Seq.foo")
+
+    example = GridType("example")
+    example["a"] = BaseType("a", data=np.arange(30 * 50).reshape(30, 50))
+    example["x"] = BaseType("x", data=np.arange(30))
+    example["y"] = BaseType("y", data=np.arange(50))
+
+    pyds["/example"] = example
+    grids = pyds.grids()
+    assert len(grids) == 1
+    assert grids["example"] == {"shape": (30, 50), "maps": ["x", "y"]}
+
+
 def test_GridType_repr(gridtype_example):
     """Test ``__repr__`` of grids."""
     assert repr(gridtype_example) == "<GridType with array 'a' and maps 'x', 'y'>"
