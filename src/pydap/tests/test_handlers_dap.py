@@ -5,6 +5,7 @@ import unittest
 
 import numpy as np
 import pytest
+from requests.utils import urlparse
 from webob.response import Response
 
 import pydap.model
@@ -26,7 +27,7 @@ from pydap.tests.datasets import (
     SimpleSequence,
     VerySimpleSequence,
 )
-from requests.utils import urlparse
+
 try:
     from unittest.mock import patch
 except ImportError:
