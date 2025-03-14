@@ -92,7 +92,11 @@ class DAPHandler(BaseHandler):
             if protocol not in ["dap2", "dap4"]:
                 raise TypeError("protocol must be one of `dap2` or `dap4")
             self.protocol = protocol
-            self.scheme = "http"
+            if self.scheme == protocol:
+                # the other alternative occurs during testing
+                # the server - only when protocol and scheme match,
+                # should pydap change the scheme provided by user
+                self.scheme = "http"
         else:
             self.protocol = self.determine_protocol()
         self.get_kwargs = get_kwargs or {}
