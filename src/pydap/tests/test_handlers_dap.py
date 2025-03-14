@@ -26,7 +26,7 @@ from pydap.tests.datasets import (
     SimpleSequence,
     VerySimpleSequence,
 )
-
+from requests.utils import urlparse
 try:
     from unittest.mock import patch
 except ImportError:
@@ -357,6 +357,9 @@ def test_protocols(url, app, expect):
                 DAPHandler(url=url)
         else:
             assert DAPHandler(url=url).protocol == expect
+    if urlparse(url).scheme in ["dap2", "dap4"]:
+        assert DAPHandler(url=url).protocol == expect
+        assert isinstance(DAPHandler(url=url).dataset, DatasetType)
     with pytest.raises(TypeError):
         # only protocol='dap2' or `dap4` is supported
         DAPHandler(url=url, application=app, protocol="errdap")

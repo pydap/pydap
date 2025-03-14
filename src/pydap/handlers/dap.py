@@ -92,6 +92,7 @@ class DAPHandler(BaseHandler):
             if protocol not in ["dap2", "dap4"]:
                 raise TypeError("protocol must be one of `dap2` or `dap4")
             self.protocol = protocol
+            self.scheme="http"
         else:
             self.protocol = self.determine_protocol()
         self.get_kwargs = get_kwargs or {}
