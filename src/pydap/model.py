@@ -548,16 +548,14 @@ class StructureType(DapType, Mapping):
         return out
 
     def grids(self) -> dict:
-        """returns all GridType (DAP2) objects in a 
-        """
+        """returns all GridType (DAP2) objects in a"""
         out = {}
         for var in walk(self, GridType):
             out.update({var.name: {"shape": var.shape, "maps": list(var.maps)}})
         return out
 
     def variables(self) -> dict:
-        """returns all variables at the present hierarcy
-        """
+        """returns all variables at the present hierarcy"""
         out = {}
         Bcs = [key for key in self.children() if isinstance(key, BaseType)]
         for var in Bcs:

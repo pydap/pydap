@@ -288,25 +288,25 @@ def dmr_to_dataset(dmr):
             variable["attributes"]["path"] = path
         data = DummyData(dtype=variable["dtype"], shape=variable["shape"], path=path)
         # make sure all dimensions have qualifying name
-        Dims = [] # dims with fully qualifying names (fqn)
-        nqfDims = [] # non-fqn when `dims` and `vars` share same path
+        Dims = []  # dims with fully qualifying names (fqn)
+        nqfDims = []  # non-fqn when `dims` and `vars` share same path
         for dim in variable["dims"]:
             parts = dim.split(split_by)
             if len(parts) == 1:
                 Dims.append("/" + dim)
-            else: # there is a group
+            else:  # there is a group
                 Dims.append(dim)
-            if len(parts)==len(variable["name"].split(split_by)):
+            if len(parts) == len(variable["name"].split(split_by)):
                 # if path to dim is identical to path to variable
-                dim_name = parts[-1] # only keep the local dim name
+                dim_name = parts[-1]  # only keep the local dim name
                 nqfDims.append(dim_name)
             else:
                 # dimension name will have a fully qualifying name
                 if len(parts) == 1:
-                    nqfDims.append("/"+dim)
+                    nqfDims.append("/" + dim)
                 else:
                     nqfDims.append(dim)
-        
+
         # pass along maps
         var_kwargs = {
             "name": pydap.lib._quote(name),

@@ -127,8 +127,11 @@ class TestDMRParser(unittest.TestCase):
         `dims` (semi-fully qualifgying names) and `dimensions` (fully-qualifying name)
         """
         dataset = load_dmr_file("data/dmrs/SimpleGroup.dmr")
-        self.assertEqual(dataset['/SimpleGroup/Temperature'].dims, ['/time', 'Y', 'X'])
-        self.assertEqual(dataset['/SimpleGroup/Temperature'].dimensions, ['/time', '/SimpleGroup/Y', '/SimpleGroup/X'])
+        self.assertEqual(dataset["/SimpleGroup/Temperature"].dims, ["/time", "Y", "X"])
+        self.assertEqual(
+            dataset["/SimpleGroup/Temperature"].dimensions,
+            ["/time", "/SimpleGroup/Y", "/SimpleGroup/X"],
+        )
 
     def tests_FlatGroups(self):
         dataset = load_dmr_file("data/dmrs/SimpleGroupFlat.dmr")
