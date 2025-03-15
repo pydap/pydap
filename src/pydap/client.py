@@ -135,6 +135,7 @@ def open_url(
         get_kwargs=get_kwargs,
     )
     dataset = handler.dataset
+    dataset._session = session
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session, timeout=timeout)
