@@ -271,7 +271,7 @@ class BaseType(DapType):
     def path(self):
         try:
             return self.data.path
-        except:
+        except AttributeError:
             return None
 
     @property
@@ -279,20 +279,19 @@ class BaseType(DapType):
         """Property that returns the data dtype."""
         return self.data.dtype
 
-
     @property
     def shape(self):
         """Property that returns the data shape."""
         try:
             return self.data.shape
-        except:
+        except AttributeError:
             return self._shape
 
     def reshape(self, *args):
         """Method that reshapes the data:"""
         self.data = self.data.reshape(*args)
         return self
-    
+
     @property
     def ndim(self):
         return len(self.shape)
@@ -565,11 +564,13 @@ class StructureType(DapType, Mapping):
         out = {}
         Bcs = [key for key in self.children() if isinstance(key, BaseType)]
         for var in Bcs:
-            if 'dims' in var.attributes:
+            if "dims" in var.attributes:
                 dims = var.dims
             else:
                 dims = []
-            out.update({var.name: {"dtype": var.dtype, "shape": var.shape, "dims": dims}})
+            out.update(
+                {var.name: {"dtype": var.dtype, "shape": var.shape, "dims": dims}}
+            )
         return out
 
 
