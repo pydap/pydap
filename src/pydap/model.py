@@ -258,7 +258,6 @@ class BaseType(DapType):
         super(BaseType, self).__init__(name, attributes, **kwargs)
         self.data = data
         self.dimensions = dimensions or ()
-
         # these are set when not data is present (eg, when parsing a DDS)
         self._dtype = None
         self._shape = ()
@@ -270,23 +269,30 @@ class BaseType(DapType):
 
     @property
     def path(self):
-        return self.data.path
+        try:
+            return self.data.path
+        except:
+            return None
 
     @property
     def dtype(self):
         """Property that returns the data dtype."""
         return self.data.dtype
 
+
     @property
     def shape(self):
         """Property that returns the data shape."""
-        return self.data.shape
+        try:
+            return self.data.shape
+        except:
+            return self._shape
 
     def reshape(self, *args):
         """Method that reshapes the data:"""
         self.data = self.data.reshape(*args)
         return self
-
+    
     @property
     def ndim(self):
         return len(self.shape)
@@ -559,7 +565,11 @@ class StructureType(DapType, Mapping):
         out = {}
         Bcs = [key for key in self.children() if isinstance(key, BaseType)]
         for var in Bcs:
-            out.update({var.name: var.dtype})
+            if 'dims' in var.attributes:
+                dims = var.dims
+            else:
+                dims = []
+            out.update({var.name: {"dtype": var.dtype, "shape": var.shape, "dims": dims}})
         return out
 
 

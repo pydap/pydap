@@ -539,8 +539,8 @@ def test_DatasetType_variables():
     dataset.createGroup("/Group1")
     dataset.createVariable("/root_variable", dtype=np.float32)
     dataset.createVariable("/Group1/other_variable", dtype=np.int64)
-    assert dataset.variables() == {"root_variable": np.dtype("float32")}
-    assert dataset["/Group1"].variables() == {"other_variable": np.dtype("int64")}
+    assert dataset.variables() == {"root_variable": {'dtype': np.dtype("float32"), 'shape': (), "dims": []}}
+    assert dataset["/Group1"].variables() == {"other_variable": {'dtype': np.dtype("int64"), "shape": (), "dims": []}}
 
 
 # Test pydap grids.
