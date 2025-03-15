@@ -30,6 +30,7 @@ def test_open_url(sequence_app):
     """Open an URL and check dataset keys."""
     dataset = open_url("http://localhost:8001/", sequence_app)
     assert list(dataset.keys()) == ["cast"]
+    assert isinstance(dataset.session, requests.Session)
 
 
 @pytest.fixture

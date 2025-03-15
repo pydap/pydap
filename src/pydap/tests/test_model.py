@@ -6,6 +6,8 @@ from collections.abc import Mapping
 
 import numpy as np
 import pytest
+import requests
+import requests_cache
 
 from pydap.model import (
     BaseType,
@@ -678,3 +680,31 @@ def test_GridType_maps(gridtype_example):
 def test_GridType_dimensions(gridtype_example):
     """Test ``dimensions`` property."""
     assert gridtype_example.dimensions == ("x", "y")
+
+
+@pytest.mark.parametrize(
+    "session",
+    [None, requests.Session(), requests_cache.CachedSession(), "session"],
+)
+def test_error_session(session):
+    """test that trying to set a session with other than a `None`,
+    a `requests.Session` or a `requests_cached.CachedSession()` object
+    returns a TypeError
+    """
+    if not session:
+        # is session is None (default) then session can be changed later
+        pyds = DatasetType("name")
+        assert pyds.session == session  # asserts default
+        pyds.session = (
+            requests_cache.CachedSession()
+        )  # sets the session to a new cached session
+        assert isinstance(pyds.session, requests_cache.CachedSession)
+    elif isinstance(session, (requests.Session, requests_cache.CachedSession)):
+        pyds = DatasetType("name", session=session)
+        assert pyds.session == session
+        with pytest.raises(AttributeError):
+            pyds.session = None  # session cannot be modify once set
+    else:
+        # test attemps to set the session object with a string type - not allowed
+        with pytest.raises(TypeError):
+            DatasetType("name", session=session)
