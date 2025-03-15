@@ -5,6 +5,7 @@ import unittest
 
 import numpy as np
 import pytest
+from requests.utils import urlparse
 from webob.response import Response
 
 import pydap.model
@@ -357,6 +358,9 @@ def test_protocols(url, app, expect):
                 DAPHandler(url=url)
         else:
             assert DAPHandler(url=url).protocol == expect
+    if urlparse(url).scheme in ["dap2", "dap4"]:
+        assert DAPHandler(url=url).protocol == expect
+        assert isinstance(DAPHandler(url=url).dataset, DatasetType)
     with pytest.raises(TypeError):
         # only protocol='dap2' or `dap4` is supported
         DAPHandler(url=url, application=app, protocol="errdap")
@@ -660,7 +664,10 @@ class TestUnpackDap4Data(unittest.TestCase):
 
     def testDMR(self):
         ds = dmr_to_dataset(self.unpacker.dmr)
-        self.assertEqual(ds.variables(), {"SST": np.dtype(">f4")})
+        self.assertEqual(
+            ds.variables(),
+            {"SST": {"dtype": np.dtype(">f4"), "shape": (1, 4, 4), "dims": []}},
+        )
 
     def testResponse(self):
         self.assertIsInstance(self.unpacker.r, Response)

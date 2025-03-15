@@ -122,6 +122,17 @@ class TestDMRParser(unittest.TestCase):
         # assert nv is NOT a variable/array
         self.assertNotIn("nv", variables)
 
+    def test_non_fqn_dims(self):
+        """Test that highlights the different behavior between variable attribtues
+        `dims` (semi-fully qualifgying names) and `dimensions` (fully-qualifying name)
+        """
+        dataset = load_dmr_file("data/dmrs/SimpleGroup.dmr")
+        self.assertEqual(dataset["/SimpleGroup/Temperature"].dims, ["/time", "Y", "X"])
+        self.assertEqual(
+            dataset["/SimpleGroup/Temperature"].dimensions,
+            ["/time", "/SimpleGroup/Y", "/SimpleGroup/X"],
+        )
+
     def tests_FlatGroups(self):
         dataset = load_dmr_file("data/dmrs/SimpleGroupFlat.dmr")
         # pick a single variable Maps

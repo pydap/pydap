@@ -261,7 +261,6 @@ class BaseType(DapType):
         super(BaseType, self).__init__(name, attributes, **kwargs)
         self.data = data
         self.dimensions = dimensions or ()
-
         # these are set when not data is present (eg, when parsing a DDS)
         self._dtype = None
         self._shape = ()
@@ -273,7 +272,10 @@ class BaseType(DapType):
 
     @property
     def path(self):
-        return self.data.path
+        try:
+            return self.data.path
+        except AttributeError:
+            return None
 
     @property
     def dtype(self):
@@ -283,7 +285,10 @@ class BaseType(DapType):
     @property
     def shape(self):
         """Property that returns the data shape."""
-        return self.data.shape
+        try:
+            return self.data.shape
+        except AttributeError:
+            return self._shape
 
     def reshape(self, *args):
         """Method that reshapes the data:"""
@@ -526,7 +531,7 @@ class StructureType(DapType, Mapping):
     def type(self):
         return "Structure"
 
-    def structures(self):
+    def structures(self) -> dict:
         out = {}
         Gs = [key for key in self.children() if isinstance(key, StructureType)]
         Strs = [key for key in Gs if key.type == "Structure"]
@@ -534,7 +539,7 @@ class StructureType(DapType, Mapping):
             out.update({var.name: [key.name for key in var.children()]})
         return out
 
-    def groups(self):
+    def groups(self) -> dict:
         """Returns fqn for all (nested) groups"""
         out = {}
         for var in walk(self, GroupType):
@@ -542,24 +547,33 @@ class StructureType(DapType, Mapping):
                 out.update({var.name: var.path})
         return out
 
-    def sequences(self):
+    def sequences(self) -> dict:
+        "returns all (nested) sequences"
         out = {}
         for var in walk(self, SequenceType):
             if var.type == "Sequence":
                 out.update({var.name: [key.name for key in var.children()]})
         return out
 
-    def grids(self):
+    def grids(self) -> dict:
+        """returns all GridType (DAP2) objects in a"""
         out = {}
         for var in walk(self, GridType):
             out.update({var.name: {"shape": var.shape, "maps": list(var.maps)}})
         return out
 
-    def variables(self):
+    def variables(self) -> dict:
+        """returns all variables at the present hierarcy"""
         out = {}
         Bcs = [key for key in self.children() if isinstance(key, BaseType)]
         for var in Bcs:
-            out.update({var.name: var.dtype})
+            if "dims" in var.attributes:
+                dims = var.dims
+            else:
+                dims = []
+            out.update(
+                {var.name: {"dtype": var.dtype, "shape": var.shape, "dims": dims}}
+            )
         return out
 
 
