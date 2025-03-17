@@ -210,8 +210,8 @@ def test_open_dods_16bits(sequence_app):
 def test_open_dods_with_attributes(sequence_app):
     """Open the dods response together with the das response."""
     dataset = open_dods_url(".dods", metadata=True, application=sequence_app)
-    assert dataset.NC_GLOBAL == {}
-    assert dataset.DODS_EXTRA == {}
+    assert "NC_GLOBAL" not in dataset.attributes
+    assert "DODS_EXTRA" not in dataset.attributes
     assert dataset.description == "A simple sequence for testing."
     assert dataset.cast.lon.axis == "X"
     assert dataset.cast.lat.axis == "Y"
