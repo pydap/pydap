@@ -108,8 +108,20 @@ def add_attributes(dataset, attributes):
     Returns the dataset with added attributes.
 
     """
-    dataset.attributes["NC_GLOBAL"] = attributes.get("NC_GLOBAL", {})
-    dataset.attributes["DODS_EXTRA"] = attributes.get("DODS_EXTRA", {})
+    # identify all global attributes that are dicts but that
+    # do not have a variable associated with them
+    deprecated_global_attrs = ["NC_GLOBAL", "DODS_EXTRA"]
+    global_dict_attrs_keys = [
+        key
+        for key in attributes
+        if isinstance(attributes[key], dict) and key in deprecated_global_attrs
+    ]
+    global_dict_attrs = {}
+    for key in global_dict_attrs_keys:
+        dicts = attributes.pop(key, {})
+        global_dict_attrs = {**global_dict_attrs, **dicts}
+
+    dataset.attributes = global_dict_attrs
 
     for var in list(walk(dataset))[::-1]:
         # attributes can be flat, eg, "foo.bar" : {...}
