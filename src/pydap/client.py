@@ -121,7 +121,11 @@ def open_url(
     """
 
     if not session:
-        session = create_session(use_cache, session_kwargs, cache_kwargs)
+        session = create_session(
+            use_cache=use_cache,
+            session_kwargs=session_kwargs,
+            cache_kwargs=cache_kwargs,
+        )
     handler = DAPHandler(
         url,
         application,

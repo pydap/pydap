@@ -135,8 +135,10 @@ class DAPHandler(BaseHandler):
             _warnings.warn(
                 "PyDAP was unable to determine the DAP protocol defaulting "
                 "to DAP2. DAP2 is consider legacy and may result in slower "
-                "responses. \n For more information about, see go to  "
-                "https://www.opendap.org/faq-page."
+                "responses. \nConsider replacing `http` in your `url` with "
+                "either `dap2` or `dap4` to specify the DAP protocol (e.g. "
+                "`dap2://<data_url>` or `dap4://<data_url>`).  For more \n"
+                "information, go to https://www.opendap.org/faq-page."
             )
             return "dap2"
 
