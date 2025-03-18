@@ -65,7 +65,7 @@ def open_url(
     url,
     application=None,
     session=None,
-    output_grid=True,
+    output_grid=False,
     timeout=DEFAULT_TIMEOUT,
     verify=True,
     user_charset="ascii",
@@ -122,7 +122,6 @@ def open_url(
 
     if not session:
         session = create_session(use_cache, session_kwargs, cache_kwargs)
-
     handler = DAPHandler(
         url,
         application,
