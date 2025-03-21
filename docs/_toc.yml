@@ -20,8 +20,9 @@ parts:
   - file: notebooks/CMIP6
 - caption: Documentation
   chapters:
-  - file: client
+  - file: PydapAsClient
     sections:
+    - file: DAP_Protocol
     - file: ConstraintExpressions
   - file: responses.rst
   - file: server.rst

@@ -1,6 +1,35 @@
 What's New
 ==========
 
+3.5.4
+------
+*Release date: 2025-March-18*
+
+* Update pre-commit hooks by @pre-commit-ci in #431
+* Drop Webob from client use of pydap. Instead use requests's library which handles authentication by @Mikejmnez in #434
+* Update pre-commit hooks by @pre-commit-ci in #436
+* `New feature`: pydap now uses `request_cache` to initialize a session. Thus, responses can now be cached! by @Mikejmnez in #438
+* New `.grids()` property to identify all grid objects within dataset by @Mikejmnez in #446
+* Fixed bug: Replaces `dap2` with `http` when using schema to determine dap protocol by @Mikejmnez in #451
+* Support to return the a session object as attribute to `pydap.dataset`. The session can now be retrieved/recovered by user by @Mikejmnez in #447
+* Collect/provide more metadata about dimension names per variable by @Mikejmnez in #453
+* Flattens global attributes NC_GLOBAL and DODS_EXTRA inherited from das parser by @Mikejmnez in #455
+* Change default: `output_grid=False` is now the default argument for `open_url` by @Mikejmnez in #457
+
+
+3.5.3
+------
+*Release date: 2025-Jan-6*
+
+* Improved parallelism to chunk reader of binary data. This becomed an issue specially for datasets with lots of very small chunks. No longer the case by @Mikejmnez in #419
+* Docs cleanup by @Mikejmnez in #420
+* New support to parse dmr with String variables by @Mikejmnez in #423
+* New support for dmr parser to allow multiple values on single attribute by @Mikejmnez in #421
+* New Support to escape empty white spaces in names of Groups/Variables by @Mikejmnez in #426
+* Support to decode chunk header to set length of DMR in a generic way and endianness of data. This enables pydap to efficiently parse TDS and Hyrax DAP4 dap responses
+in a generaic way, without the need for extra logic to discern which server produced the dap response. By @Mikejmnez in #428
+
+
 3.5.2
 ------
 

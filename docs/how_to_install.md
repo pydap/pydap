@@ -3,7 +3,7 @@
 Starting with the latest release `3.5.1`, the installation of `pydap` is now split into two possible options:
 
 ## 1. Client-only
-To install pydap to use only as a client API, you can do:
+To install `pydap` to use only as a client API, you can do:
 
 
 ```shell
@@ -15,6 +15,9 @@ or
 conda install pydap
 ```
 
+```{note}
+If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
+```
 This installation of `pydap` will include the minimal dependencies to allow users to subset remote data on OPeNDAP servers.
 
 ## 2. Complete installation
@@ -27,7 +30,6 @@ conda install pydap-server
 This installation of `pydap` will include the dependencies to allow users to a) subset remote data on OPeNDAP servers, and b) use pydap's server to make data available.
 
 
-
 ## Dependencies
 ### Minimal Required
 The following are required to run pydap as a client.
@@ -36,18 +38,19 @@ The following are required to run pydap as a client.
 - `numpy`
 - `scipy`
 - `requests`
+- `requests_cache`
 - `beautifulsoup4`
 - `lxml`
 - `Webob`
 
 
-### Optional dependencies
-- matplotlib
-- jupyter-lab
-- cartopy
-- xarray
+### Optional to run notebooks in this documentation
+- `matplotlib`
+- `jupyter-lab`
+- `cartopy`
+- `xarray`
 
-These last are only necessary to run some of the tutorial notebooks.
+
 
 ### extra-dependencies
 With [PyPI](https://pypi.org/) you can install extra-dependencies. For example:

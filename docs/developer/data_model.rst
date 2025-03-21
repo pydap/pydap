@@ -1,4 +1,4 @@
-The DAP data model
+The Pydap data model
 ------------------
 .. warning::
     The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker https://github.com/pydap/pydap/issues.
