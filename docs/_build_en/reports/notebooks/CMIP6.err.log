@@ -1,0 +1,43 @@
+Traceback (most recent call last):
+  File "/Users/jimenezm/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/Users/jimenezm/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1319, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jimenezm/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/jimenezm/miniforge3/envs/pydap_docs/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/jimenezm/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/Users/jimenezm/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/Users/jimenezm/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+Lon, Lat = np.meshgrid(GTS['lon'].data, GTS['lat'].data)
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mIndexError[39m                                Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[16][39m[32m, line 1[39m
+[32m----> [39m[32m1[39m Lon, Lat = np.meshgrid([43mGTS[49m[43m[[49m[33;43m'[39;49m[33;43mlon[39;49m[33;43m'[39;49m[43m][49m.data, GTS[[33m'[39m[33mlat[39m[33m'[39m].data)
+
+[36mFile [39m[32m~/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:349[39m, in [36mBaseType.__getitem__[39m[34m(self, index)[39m
+[32m    347[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34m__getitem__[39m([38;5;28mself[39m, index):
+[32m    348[39m     out = copy.copy([38;5;28mself[39m)
+[32m--> [39m[32m349[39m     out.data = [38;5;28;43mself[39;49m[43m.[49m[43m_get_data_index[49m[43m([49m[43mindex[49m[43m)[49m
+[32m    350[39m     [38;5;28;01mif[39;00m [38;5;28mtype[39m([38;5;28mself[39m.data).[34m__name__[39m == [33m"[39m[33mBaseProxyDap4[39m[33m"[39m:
+[32m    351[39m         out.attributes[[33m"[39m[33mchecksum[39m[33m"[39m] = [38;5;28mself[39m.data.checksum
+
+[36mFile [39m[32m~/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:381[39m, in [36mBaseType._get_data_index[39m[34m(self, index)[39m
+[32m    379[39m     [38;5;28;01mreturn[39;00m np.vectorize(decode_np_strings)([38;5;28mself[39m._data[index])
+[32m    380[39m [38;5;28;01melse[39;00m:
+[32m--> [39m[32m381[39m     [38;5;28;01mreturn[39;00m [38;5;28;43mself[39;49m[43m.[49m[43m_data[49m[43m[[49m[43mindex[49m[43m][49m
+
+[31mIndexError[39m: only integers, slices (`:`), ellipsis (`...`), numpy.newaxis (`None`) and integer or boolean arrays are valid indices
+

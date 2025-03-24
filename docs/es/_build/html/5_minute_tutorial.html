@@ -1,0 +1,1207 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Tutorial de 5 minutos &#8212; PyDAP tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '5_minute_tutorial';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Lo Nuevo" href="NEWS.html" />
+    <link rel="prev" title="Comenzar Aqui" href="get_started.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
+    <script>document.write(`<img src="_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="how_to_install.html">Como Installar</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="get_started.html">Comenzar Aqui</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Tutorial de 5 minutos</a></li>
+
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="NEWS.html">Lo Nuevo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Autenticacion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Creating a .netrc file</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CMIP6.html">CMIP6</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/5_minute_tutorial.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Tutorial de 5 minutos</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial de 5 minutos</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#opendap-la-vision-original">OPeNDAP - La vision original</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydap"><code class="docutils literal notranslate"><span class="pre">PyDAP</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#como-descargar-el-arreglo-numerico-de-la-variable-remota"><strong>Como Descargar el Arreglo numerico de la variable remota</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utiliza-el-servidor-remoto">Utiliza el Servidor Remoto</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#xarray">Xarray</a></li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="tutorial-de-5-minutos">
+<h1>Tutorial de 5 minutos<a class="headerlink" href="#tutorial-de-5-minutos" title="Link to this heading">#</a></h1>
+<p>La manera mas accesible de usar <code class="docutils literal notranslate"><span class="pre">pydap</span></code> es como <code class="docutils literal notranslate"><span class="pre">cliente</span></code> de acceso a datos cientificos en servidores de <a class="reference external" href="https://www.opendap.org/">OPeNDAP</a>. Para ello, puedes utilizar <code class="docutils literal notranslate"><span class="pre">pydap</span></code> de directamente por medio del metodo  <code class="docutils literal notranslate"><span class="pre">open_url</span></code>, or usa <code class="docutils literal notranslate"><span class="pre">pydap</span></code> como <a class="reference external" href="https://docs.xarray.dev/en/stable/user-guide/io.html#opendap">engine</a> por medio de <code class="docutils literal notranslate"><span class="pre">xarray</span></code> directamente. <code class="docutils literal notranslate"><span class="pre">xarray</span></code> hace possible el uso de las herramientas del ecosistema de <a class="reference external" href="https://pangeo.io/">Pangeo</a>.</p>
+<section id="opendap-la-vision-original">
+<h2>OPeNDAP - La vision original<a class="headerlink" href="#opendap-la-vision-original" title="Link to this heading">#</a></h2>
+<p>La vision original de <a class="reference external" href="https://www.opendap.org/">OPeNDAP</a> (<a class="reference external" href="https://zenodo.org/records/10610992">Cornillion, et al 1993</a>) fue el hacer la equivalencia:</p>
+<p><span class="math notranslate nohighlight">\( \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \boxed{\text{URL} \approx \text{Dataset Remoto} }\)</span></p>
+<p>Y ademas,</p>
+<p><span class="math notranslate nohighlight">\( \;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\;\; \boxed{\text{URL + Restricciones} \approx \text{Subregion de un Dataset Remoto}} \)</span></p>
+<p>En este corto tutorial demostraremos el accesso a informacion cientifica en un servidor de OPeNDAP por medio de</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">pydap</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code></p></li>
+</ul>
+<p>For more information about <a class="reference external" href="https://www.opendap.org/">OPeNDAP</a> and Hyrax you can go to the official <a class="reference external" href="https://opendap.github.io/documentation/UserGuideComprehensive.html">OPeNDAP documentation</a>.</p>
+<p>El dataset remote que utilizaremos en este tutorial puede ser inspeccionado <a class="reference external" href="http://test.opendap.org:8080/opendap/tutorials/20220531090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc.dmr.html">aqui</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Ahora definimos el <code class="docutils literal notranslate"><span class="pre">URL</span></code> que apunta al dataset remoto en el servidor de <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;http://test.opendap.org:8080/opendap/tutorials/20220531090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pydap">
+<h2><code class="docutils literal notranslate"><span class="pre">PyDAP</span></code><a class="headerlink" href="#pydap" title="Link to this heading">#</a></h2>
+<p>Empezamos primero el acceso al archivo usando solamente <code class="docutils literal notranslate"><span class="pre">Pydap</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pydap_ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap4&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Ademas del argumento <code class="docutils literal notranslate"><span class="pre">url</span></code> que define al dataset, tambien definimos el argumento <code class="docutils literal notranslate"><span class="pre">protocol=&quot;dap4&quot;</span></code>. Esto hace referencia al Protocol de OPeNDAP. Otra opcion es:  <code class="docutils literal notranslate"><span class="pre">protocol='dap2'</span></code>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There exists many many many servers, but only two DAP implementation: <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> and <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. The differences between the two go beyond this 5 minute intro. We will simply restrict to say that <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> is newer, that any server implementing <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> can implement <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>, and so will only focus on <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> in this short tutorial. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> accepts a <code class="docutils literal notranslate"><span class="pre">protocol</span></code> argument which specifies <code class="docutils literal notranslate"><span class="pre">&quot;dap2&quot;</span></code> vs <code class="docutils literal notranslate"><span class="pre">&quot;dap4&quot;</span></code>. <code class="docutils literal notranslate"><span class="pre">xarray</span></code> <strong>does not</strong>.</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">pydap</span></code> descarga del servidor OPeNDAP los metadatos, es decir, la informacion que describe los contenidos del archivo remote. Sin embargo, ningun dato numerico or binario a sido descargado hasta este momento. Para visualizar las variables que existen dentro del archivo, executamos el metodo <code class="docutils literal notranslate"><span class="pre">.tree()</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pydap_ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.20220531090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc
+├──time
+├──lat
+├──lon
+├──analysed_sst
+├──analysis_error
+├──mask
+├──sea_ice_fraction
+├──dt_1km_data
+└──sst_anomaly
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pydap_ds</span><span class="p">[</span><span class="s1">&#39;sst_anomaly&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 17999, 36000)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;La variable numerica `sst_anomaly` ocupa: &#39;</span><span class="p">,</span> <span class="n">pydap_ds</span><span class="p">[</span><span class="s1">&#39;sst_anomaly&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nbytes</span><span class="o">/</span><span class="mf">1e9</span><span class="p">,</span> <span class="s1">&#39;[GBs] de memoria&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>La variable numerica `sst_anomaly` ocupa:  1.295928 [GBs] de memoria
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Solo los metadatos han sido descargados. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> processa estos metadatos del URL remoto para create el <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> que hace referencia al contenido del archivo remoto.</p>
+</div>
+<p>Cada variable contiene <code class="docutils literal notranslate"><span class="pre">atributos</span></code> que describen los valores, y algunas de las transformaciones que deben efectuarse para darle sentido fisico a las variables en si. Por ejemplo,  <code class="docutils literal notranslate"><span class="pre">scale_factor</span></code>, <code class="docutils literal notranslate"><span class="pre">offsets</span></code> and <code class="docutils literal notranslate"><span class="pre">_FillValue</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pydap_ds</span><span class="p">[</span><span class="s1">&#39;sst_anomaly&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;long_name&#39;: &#39;SST anomaly from a seasonal SST climatology based on the MUR data over 2003-2014 period&#39;,
+ &#39;units&#39;: &#39;kelvin&#39;,
+ &#39;_FillValue&#39;: -32768,
+ &#39;add_offset&#39;: 0.0,
+ &#39;scale_factor&#39;: 0.001,
+ &#39;valid_min&#39;: -32767,
+ &#39;valid_max&#39;: 32767,
+ &#39;comment&#39;: &#39;anomaly reference to the day-of-year average between 2003 and 2014&#39;,
+ &#39;coordinates&#39;: &#39;lon lat&#39;,
+ &#39;dims&#39;: [&#39;time&#39;, &#39;lat&#39;, &#39;lon&#39;],
+ &#39;Maps&#39;: (&#39;/time&#39;, &#39;/lat&#39;, &#39;/lon&#39;)}
+</pre></div>
+</div>
+</div>
+</div>
+<p>Los metadatos cientificos siguen las convenciones definidas en: <a class="reference external" href="https://cfconventions.org/cf-conventions/cf-conventions.html">NetCDF Climate and Forcasts (CF) Metadata Conventions</a>.</p>
+<section id="como-descargar-el-arreglo-numerico-de-la-variable-remota">
+<h3><strong>Como Descargar el Arreglo numerico de la variable remota</strong><a class="headerlink" href="#como-descargar-el-arreglo-numerico-de-la-variable-remota" title="Link to this heading">#</a></h3>
+<p>Como se menciono, <code class="docutils literal notranslate"><span class="pre">Pydap</span></code> no ha descargado ningun arreglo numerico. Para descargar los valores de digamos una vbariable de interes, uno debe de indexar la varible de <code class="docutils literal notranslate"><span class="pre">Pydap</span></code>. Por ejemplo, la variable</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">pydap_ds</span><span class="p">[</span><span class="s1">&#39;sst_anomaly&#39;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>tiene las siguientes dimensiones: <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">17999,</span> <span class="pre">36000)</span></code>. Uno puede descarga una fraccion de la variable, por ejemplo el elemento <code class="docutils literal notranslate"><span class="pre">0</span></code> de la primera dimension, los primeros <code class="docutils literal notranslate"><span class="pre">10</span></code> elementos de la segunda dimension, y los primeros <code class="docutils literal notranslate"><span class="pre">10</span></code> de la tercera dimension, de la manera siguiente:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">array</span> <span class="o">=</span> <span class="n">pydap_ds</span><span class="p">[</span><span class="s1">&#39;sst_anomaly&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 37.4 ms, sys: 1.84 ms, total: 39.3 ms
+Wall time: 308 ms
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 10, 10)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Como se demonstro, el nuevo tamano de la variable <code class="docutils literal notranslate"><span class="pre">array</span></code> es <code class="docutils literal notranslate"><span class="pre">(1,</span> <span class="pre">10,</span> <span class="pre">10)</span></code>.</p>
+<p>Al descargar la variable <code class="docutils literal notranslate"><span class="pre">sst_anomaly</span></code> y assignarla al objecto: <code class="docutils literal notranslate"><span class="pre">array</span></code>, este objeto no es todavia un arreglo NumPy, sino es un <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> del model de <code class="docutils literal notranslate"><span class="pre">pydap</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pydap.model.BaseType
+</pre></div>
+</div>
+</div>
+</div>
+<p>Para extraer el arreglo NumPy de cada <code class="docutils literal notranslate"><span class="pre">BaseType</span></code>, uno tiene que executar la siguiente instruccion:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>numpy.ndarray
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="utiliza-el-servidor-remoto">
+<h2>Utiliza el Servidor Remoto<a class="headerlink" href="#utiliza-el-servidor-remoto" title="Link to this heading">#</a></h2>
+<p>Cuando el usuario hace la siguiente operacion:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pydap_ds</span><span class="p">[</span><span class="s1">&#39;sst_anomaly&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">10</span><span class="p">]</span>
+<span class="err">``</span>
+
+<span class="n">Lo</span> <span class="n">que</span> <span class="err">`</span><span class="n">Pydap</span><span class="err">`</span> <span class="n">hace</span> <span class="n">internamente</span> <span class="n">es</span> <span class="n">general</span> <span class="n">el</span> <span class="n">URL</span> <span class="n">con</span> <span class="n">la</span> <span class="n">Expression</span> <span class="n">de</span> <span class="n">Restriccion</span><span class="o">.</span> <span class="n">EL</span> <span class="n">Servidor</span> <span class="n">de</span> <span class="n">OPeNDAP</span> <span class="n">reconoce</span> <span class="n">este</span> <span class="n">URL</span> <span class="n">y</span> <span class="n">manda</span> <span class="n">la</span> <span class="n">informacion</span> <span class="n">numerica</span> <span class="n">especificada</span> <span class="n">en</span> <span class="n">el</span> <span class="n">resultante</span> <span class="n">URL</span><span class="o">.</span> <span class="n">Eso</span> <span class="n">significa</span> <span class="n">que</span> <span class="n">el</span> <span class="n">archivo</span> <span class="n">completo</span> <span class="n">nunca</span> <span class="n">fue</span> <span class="n">descargado</span><span class="err">!</span> <span class="n">Solo</span> <span class="n">parte</span> <span class="n">espeficidada</span> <span class="n">en</span> <span class="n">el</span> <span class="n">URL</span><span class="o">.</span> <span class="n">En</span> <span class="n">este</span> <span class="n">caso</span><span class="p">,</span> <span class="n">Pydap</span> <span class="n">incluyo</span> <span class="n">la</span> <span class="n">siguiente</span> <span class="n">informacion</span> <span class="n">al</span> <span class="n">URL</span><span class="p">:</span>
+
+<span class="err">```</span><span class="n">python</span>
+<span class="o">&lt;</span><span class="n">OPeNDAP_URL</span><span class="o">&gt;</span> <span class="o">+</span> <span class="s2">&quot;?dap4.ce=\sst_anomaly[0][0:1:9][0:1:9]&quot;</span>
+</pre></div>
+</div>
+<p>Un usuario puede realizar esta operacion manual, pero <code class="docutils literal notranslate"><span class="pre">pydap</span></code> facilita y automatiza este procedimiento. El URL de arriba implica que de todo el dataset original, solo la variable <code class="docutils literal notranslate"><span class="pre">sst_anomaly</span></code> es requerida, y de todo el dominio de la variable, solo la region especificada por las indexes <code class="docutils literal notranslate"><span class="pre">[0][0:1:9][0:1:9]</span></code> debe ser mandada por el servidor OPeNDAP. ENtonces, es el Servidor OPeNDAP remote el que realiza la operacion de abrir y mandar la informacion numerica al usuario. Lo indexes en el URL implican</p>
+<ul class="simple">
+<li><p>El primer elemento dela primera dimension (en este caso, <code class="docutils literal notranslate"><span class="pre">time</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[0:1:9]</span></code> indica los primeros <code class="docutils literal notranslate"><span class="pre">10</span></code> elementos de la segunda dimension (llamada <code class="docutils literal notranslate"><span class="pre">lat</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">[0:1:9]</span></code> indica los primeros <code class="docutils literal notranslate"><span class="pre">10</span></code> elementos de la tercera dimension (llamada <code class="docutils literal notranslate"><span class="pre">lon</span></code>).</p></li>
+</ul>
+<section id="id1">
+<h3><a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p>A continuacion, utilizamos <code class="docutils literal notranslate"><span class="pre">pydap</span></code> con el URL que incluye la condicion de Restriccion (CE) para descargar las variables <code class="docutils literal notranslate"><span class="pre">lat</span></code> y <code class="docutils literal notranslate"><span class="pre">sst_anomaly</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CE</span> <span class="o">=</span> <span class="s2">&quot;?dap4.ce=/lat;/sst_anomaly[0][0:1:9][0:1:9]&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pydap_ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">url</span><span class="o">+</span><span class="n">CE</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap4&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pydap_ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.20220531090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc
+├──lat
+└──sst_anomaly
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pydap_ds</span><span class="p">[</span><span class="s1">&#39;sst_anomaly&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 10, 10)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pydap_ds</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(17999,)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>El servidor de <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> solo applico la restriccion espacial a la variable <code class="docutils literal notranslate"><span class="pre">sst_anomaly</span></code>, mientras que <code class="docutils literal notranslate"><span class="pre">lat</span></code> (y cualquier otra) mantuvo su tamano original size. Para asegurar que tambien la variable <code class="docutils literal notranslate"><span class="pre">lat</span></code> mantenga el mismo tamano en la dimension compartida con <code class="docutils literal notranslate"><span class="pre">sst_anomaly</span></code>, uno puede especicar en el URL que <code class="docutils literal notranslate"><span class="pre">lat</span></code> tambien debe ser restringida espacialmente.</p>
+</div>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="xarray">
+<h1>Xarray<a class="headerlink" href="#xarray" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>se puede utilizar internamente desde <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, al definir el parametro</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span>
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Para especificar que protocolo <code class="docutils literal notranslate"><span class="pre">dap2</span></code> o <code class="docutils literal notranslate"><span class="pre">dap4</span></code> se debe usar en <code class="docutils literal notranslate"><span class="pre">xarray</span></code> cuando se especifica <code class="docutils literal notranslate"><span class="pre">engine=pydap</span></code>, hay que reemplazar el esquema del URL <code class="docutils literal notranslate"><span class="pre">https</span></code> con <code class="docutils literal notranslate"><span class="pre">dap2</span></code> o <code class="docutils literal notranslate"><span class="pre">dap4</span></code>.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;dap4&#39;</span><span class="o">+</span><span class="n">url</span><span class="p">[</span><span class="mi">4</span><span class="p">:]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;dap4://test.opendap.org:8080/opendap/tutorials/20220531090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc&#39;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s1">&#39;dap4&#39;</span><span class="o">+</span><span class="n">url</span><span class="p">[</span><span class="mi">4</span><span class="p">:],</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">)</span>
+<span class="n">dataset</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
+ *
+ */
+
+:root {
+  --xr-font-color0: var(--jp-content-font-color0, rgba(0, 0, 0, 1));
+  --xr-font-color2: var(--jp-content-font-color2, rgba(0, 0, 0, 0.54));
+  --xr-font-color3: var(--jp-content-font-color3, rgba(0, 0, 0, 0.38));
+  --xr-border-color: var(--jp-border-color2, #e0e0e0);
+  --xr-disabled-color: var(--jp-layout-color3, #bdbdbd);
+  --xr-background-color: var(--jp-layout-color0, white);
+  --xr-background-color-row-even: var(--jp-layout-color1, white);
+  --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
+}
+
+html[theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.vscode-dark {
+  --xr-font-color0: rgba(255, 255, 255, 1);
+  --xr-font-color2: rgba(255, 255, 255, 0.54);
+  --xr-font-color3: rgba(255, 255, 255, 0.38);
+  --xr-border-color: #1f1f1f;
+  --xr-disabled-color: #515151;
+  --xr-background-color: #111111;
+  --xr-background-color-row-even: #111111;
+  --xr-background-color-row-odd: #313131;
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: solid 1px var(--xr-border-color);
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-array-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type {
+  color: var(--xr-font-color2);
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item input {
+  display: inline-block;
+  opacity: 0;
+  height: 0;
+}
+
+.xr-section-item input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item input:focus + label {
+  border: 2px solid var(--xr-font-color0);
+}
+
+.xr-section-item input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.5em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: "►";
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: "▼";
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  display: none;
+  grid-column: 1 / -1;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: "(";
+}
+
+.xr-dim-list:after {
+  content: ")";
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ",";
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  margin-bottom: 0;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  background-color: var(--xr-background-color) !important;
+  padding-bottom: 5px !important;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 29GB
+Dimensions:           (/time: 1, /lat: 17999, /lon: 36000)
+Coordinates:
+    lat               (/lat) float32 72kB ...
+    lon               (/lon) float32 144kB ...
+Dimensions without coordinates: /time, /lat, /lon
+Data variables:
+    time              (/time) datetime64[ns] 8B ...
+    analysed_sst      (/time, /lat, /lon) float64 5GB ...
+    analysis_error    (/time, /lat, /lon) float64 5GB ...
+    mask              (/time, /lat, /lon) float32 3GB ...
+    sea_ice_fraction  (/time, /lat, /lon) float64 5GB ...
+    dt_1km_data       (/time, /lat, /lon) timedelta64[ns] 5GB ...
+    sst_anomaly       (/time, /lat, /lon) float64 5GB ...
+Attributes: (12/47)
+    Conventions:                CF-1.7
+    title:                      Daily MUR SST, Final product
+    summary:                    A merged, multi-sensor L4 Foundation SST anal...
+    references:                 http://podaac.jpl.nasa.gov/Multi-scale_Ultra-...
+    institution:                Jet Propulsion Laboratory
+    history:                    created at nominal 4-day latency; replaced nr...
+    ...                         ...
+    project:                    NASA Making Earth Science Data Records for Us...
+    publisher_name:             GHRSST Project Office
+    publisher_url:              http://www.ghrsst.org
+    publisher_email:            ghrsst-po@nceo.ac.uk
+    processing_level:           L4
+    cdm_data_type:              grid</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-e56c5f3e-a5fd-4539-bded-a67f0a5c9eeb' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-e56c5f3e-a5fd-4539-bded-a67f0a5c9eeb' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>/time</span>: 1</li><li><span>/lat</span>: 17999</li><li><span>/lon</span>: 36000</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-5a35f409-e8e3-4b1a-a375-03f0cfd06d1f' class='xr-section-summary-in' type='checkbox'  checked><label for='section-5a35f409-e8e3-4b1a-a375-03f0cfd06d1f' class='xr-section-summary' >Coordinates: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>lat</span></div><div class='xr-var-dims'>(/lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-4d57d953-0eac-4c14-bc51-691e520eeeb5' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-4d57d953-0eac-4c14-bc51-691e520eeeb5' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3e62159d-0cf7-47ae-8acd-5b0d82ea47e0' class='xr-var-data-in' type='checkbox'><label for='data-3e62159d-0cf7-47ae-8acd-5b0d82ea47e0' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>axis :</span></dt><dd>Y</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>valid_min :</span></dt><dd>-90.0</dd><dt><span>valid_max :</span></dt><dd>90.0</dd><dt><span>comment :</span></dt><dd>geolocations inherited from the input data without correction</dd><dt><span>dims :</span></dt><dd>[&#x27;lat&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[17999 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>lon</span></div><div class='xr-var-dims'>(/lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-22a889d1-f449-4046-978d-39a32edd0ab4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-22a889d1-f449-4046-978d-39a32edd0ab4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a3052f55-25ac-4d29-bc7b-7da45c689459' class='xr-var-data-in' type='checkbox'><label for='data-a3052f55-25ac-4d29-bc7b-7da45c689459' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>axis :</span></dt><dd>X</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>valid_min :</span></dt><dd>-180.0</dd><dt><span>valid_max :</span></dt><dd>180.0</dd><dt><span>comment :</span></dt><dd>geolocations inherited from the input data without correction</dd><dt><span>dims :</span></dt><dd>[&#x27;lon&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[36000 values with dtype=float32]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-41e3c463-1e48-4f90-a92b-5d22287ddb05' class='xr-section-summary-in' type='checkbox'  checked><label for='section-41e3c463-1e48-4f90-a92b-5d22287ddb05' class='xr-section-summary' >Data variables: <span>(7)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>time</span></div><div class='xr-var-dims'>(/time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-409bb2d3-d672-4ff4-87ee-e84263f98744' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-409bb2d3-d672-4ff4-87ee-e84263f98744' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-bb6b4b87-7d17-47d4-974c-6a0e75ad1bde' class='xr-var-data-in' type='checkbox'><label for='data-bb6b4b87-7d17-47d4-974c-6a0e75ad1bde' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>reference time of sst field</dd><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>axis :</span></dt><dd>T</dd><dt><span>comment :</span></dt><dd>Nominal time of analyzed fields</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[1 values with dtype=datetime64[ns]]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>analysed_sst</span></div><div class='xr-var-dims'>(/time, /lat, /lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-ea22c0f4-42de-4c26-8dec-86928bbe2f74' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-ea22c0f4-42de-4c26-8dec-86928bbe2f74' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-202da2b8-33b5-4f0a-8380-e81f26b1659f' class='xr-var-data-in' type='checkbox'><label for='data-202da2b8-33b5-4f0a-8380-e81f26b1659f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>analysed sea surface temperature</dd><dt><span>standard_name :</span></dt><dd>sea_surface_foundation_temperature</dd><dt><span>units :</span></dt><dd>kelvin</dd><dt><span>valid_min :</span></dt><dd>-32767</dd><dt><span>valid_max :</span></dt><dd>32767</dd><dt><span>comment :</span></dt><dd>&quot;Final&quot; version using Multi-Resolution Variational Analysis (MRVA) method for interpolation</dd><dt><span>source :</span></dt><dd>MODIS_T-JPL, MODIS_A-JPL, AMSR2-REMSS, AVHRRMTB_G-NAVO, iQUAM-NOAA/NESDIS, Ice_Conc-OSISAF</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;lat&#x27;, &#x27;lon&#x27;]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><pre>[647964000 values with dtype=float64]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>analysis_error</span></div><div class='xr-var-dims'>(/time, /lat, /lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-8ed42883-b177-4dcc-bccb-354a78794c79' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-8ed42883-b177-4dcc-bccb-354a78794c79' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-eb42356a-32ae-4750-abfa-6ca01ff5ec77' class='xr-var-data-in' type='checkbox'><label for='data-eb42356a-32ae-4750-abfa-6ca01ff5ec77' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>estimated error standard deviation of analysed_sst</dd><dt><span>units :</span></dt><dd>kelvin</dd><dt><span>valid_min :</span></dt><dd>0</dd><dt><span>valid_max :</span></dt><dd>32767</dd><dt><span>comment :</span></dt><dd>uncertainty in &quot;analysed_sst&quot;</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;lat&#x27;, &#x27;lon&#x27;]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><pre>[647964000 values with dtype=float64]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>mask</span></div><div class='xr-var-dims'>(/time, /lat, /lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-861873ca-49a4-4c42-85bd-7035b41b7008' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-861873ca-49a4-4c42-85bd-7035b41b7008' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5eaa03b6-e671-467d-a4cd-1754332ff441' class='xr-var-data-in' type='checkbox'><label for='data-5eaa03b6-e671-467d-a4cd-1754332ff441' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>sea/land field composite mask</dd><dt><span>valid_min :</span></dt><dd>1</dd><dt><span>valid_max :</span></dt><dd>31</dd><dt><span>flag_masks :</span></dt><dd>[1, 2, 4, 8, 16]</dd><dt><span>flag_meanings :</span></dt><dd>open_sea land open_lake open_sea_with_ice_in_the_grid open_lake_with_ice_in_the_grid</dd><dt><span>comment :</span></dt><dd>mask can be used to further filter the data.</dd><dt><span>source :</span></dt><dd>GMT &quot;grdlandmask&quot;, ice flag from sea_ice_fraction data</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;lat&#x27;, &#x27;lon&#x27;]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><pre>[647964000 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>sea_ice_fraction</span></div><div class='xr-var-dims'>(/time, /lat, /lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-fb287cbd-596b-4bd3-afde-37cf3209e20f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-fb287cbd-596b-4bd3-afde-37cf3209e20f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d0f3f848-1fdb-430d-9d77-c5d56f8efe50' class='xr-var-data-in' type='checkbox'><label for='data-d0f3f848-1fdb-430d-9d77-c5d56f8efe50' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>sea ice area fraction</dd><dt><span>standard_name :</span></dt><dd>sea_ice_area_fraction</dd><dt><span>valid_min :</span></dt><dd>0</dd><dt><span>valid_max :</span></dt><dd>100</dd><dt><span>source :</span></dt><dd>EUMETSAT OSI-SAF, copyright EUMETSAT</dd><dt><span>comment :</span></dt><dd>ice fraction is a dimensionless quantity between 0 and 1; it has been interpolated by a nearest neighbor approach.</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;lat&#x27;, &#x27;lon&#x27;]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><pre>[647964000 values with dtype=float64]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>dt_1km_data</span></div><div class='xr-var-dims'>(/time, /lat, /lon)</div><div class='xr-var-dtype'>timedelta64[ns]</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-9e060238-8727-46c9-95b8-2a7704859076' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9e060238-8727-46c9-95b8-2a7704859076' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ee649404-39b4-4f70-9f27-58eb07cfa4e1' class='xr-var-data-in' type='checkbox'><label for='data-ee649404-39b4-4f70-9f27-58eb07cfa4e1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>time to most recent 1km data</dd><dt><span>valid_min :</span></dt><dd>-127</dd><dt><span>valid_max :</span></dt><dd>127</dd><dt><span>source :</span></dt><dd>MODIS and VIIRS pixels ingested by MUR</dd><dt><span>comment :</span></dt><dd>The grid value is hours between the analysis time and the most recent MODIS or VIIRS 1km L2P datum within 0.01 degrees from the grid point.  &quot;Fill value&quot; indicates absence of such 1km data at the grid point.</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;lat&#x27;, &#x27;lon&#x27;]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><pre>[647964000 values with dtype=timedelta64[ns]]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>sst_anomaly</span></div><div class='xr-var-dims'>(/time, /lat, /lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-5407552a-c635-4553-9282-733071a80dda' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-5407552a-c635-4553-9282-733071a80dda' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7ae82971-700e-4218-a76e-c8a1f07b070d' class='xr-var-data-in' type='checkbox'><label for='data-7ae82971-700e-4218-a76e-c8a1f07b070d' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>SST anomaly from a seasonal SST climatology based on the MUR data over 2003-2014 period</dd><dt><span>units :</span></dt><dd>kelvin</dd><dt><span>valid_min :</span></dt><dd>-32767</dd><dt><span>valid_max :</span></dt><dd>32767</dd><dt><span>comment :</span></dt><dd>anomaly reference to the day-of-year average between 2003 and 2014</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;lat&#x27;, &#x27;lon&#x27;]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><pre>[647964000 values with dtype=float64]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-4e7aec5c-4fa7-4c77-89e8-ee59783e95a0' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-4e7aec5c-4fa7-4c77-89e8-ee59783e95a0' class='xr-section-summary'  title='Expand/collapse section'>Indexes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'></ul></div></li><li class='xr-section-item'><input id='section-85bfeee1-9df7-4dc1-8540-c94570c55da3' class='xr-section-summary-in' type='checkbox'  ><label for='section-85bfeee1-9df7-4dc1-8540-c94570c55da3' class='xr-section-summary' >Attributes: <span>(47)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>Conventions :</span></dt><dd>CF-1.7</dd><dt><span>title :</span></dt><dd>Daily MUR SST, Final product</dd><dt><span>summary :</span></dt><dd>A merged, multi-sensor L4 Foundation SST analysis product from JPL.</dd><dt><span>references :</span></dt><dd>http://podaac.jpl.nasa.gov/Multi-scale_Ultra-high_Resolution_MUR-SST</dd><dt><span>institution :</span></dt><dd>Jet Propulsion Laboratory</dd><dt><span>history :</span></dt><dd>created at nominal 4-day latency; replaced nrt (1-day latency) version.</dd><dt><span>comment :</span></dt><dd>MUR = &quot;Multi-scale Ultra-high Resolution&quot;</dd><dt><span>license :</span></dt><dd>These data are available free of charge under data policy of JPL PO.DAAC.</dd><dt><span>id :</span></dt><dd>MUR-JPL-L4-GLOB-v04.1</dd><dt><span>naming_authority :</span></dt><dd>org.ghrsst</dd><dt><span>product_version :</span></dt><dd>04.1</dd><dt><span>uuid :</span></dt><dd>27665bc0-d5fc-11e1-9b23-0800200c9a66</dd><dt><span>gds_version_id :</span></dt><dd>2.0</dd><dt><span>netcdf_version_id :</span></dt><dd>4.1</dd><dt><span>date_created :</span></dt><dd>20220609T072338Z</dd><dt><span>start_time :</span></dt><dd>20220531T090000Z</dd><dt><span>stop_time :</span></dt><dd>20220531T090000Z</dd><dt><span>time_coverage_start :</span></dt><dd>20220530T210000Z</dd><dt><span>time_coverage_end :</span></dt><dd>20220531T210000Z</dd><dt><span>file_quality_level :</span></dt><dd>3</dd><dt><span>source :</span></dt><dd>MODIS_T-JPL, MODIS_A-JPL, AMSR2-REMSS, AVHRRMTB_G-NAVO, iQUAM-NOAA/NESDIS, Ice_Conc-OSISAF</dd><dt><span>platform :</span></dt><dd>Terra, Aqua, GCOM-W, MetOp-B, Buoys/Ships</dd><dt><span>sensor :</span></dt><dd>MODIS, AMSR2, AVHRR, in-situ</dd><dt><span>Metadata_Conventions :</span></dt><dd>Unidata Observation Dataset v1.0</dd><dt><span>metadata_link :</span></dt><dd>http://podaac.jpl.nasa.gov/ws/metadata/dataset/?format=iso&amp;shortName=MUR-JPL-L4-GLOB-v04.1</dd><dt><span>keywords :</span></dt><dd>Oceans &gt; Ocean Temperature &gt; Sea Surface Temperature</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>standard_name_vocabulary :</span></dt><dd>NetCDF Climate and Forecast (CF) Metadata Convention</dd><dt><span>southernmost_latitude :</span></dt><dd>-90.0</dd><dt><span>northernmost_latitude :</span></dt><dd>90.0</dd><dt><span>westernmost_longitude :</span></dt><dd>-180.0</dd><dt><span>easternmost_longitude :</span></dt><dd>180.0</dd><dt><span>spatial_resolution :</span></dt><dd>0.01 degrees</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees north</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>0.00999999978</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees east</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>0.00999999978</dd><dt><span>acknowledgment :</span></dt><dd>Please acknowledge the use of these data with the following statement:  These data were provided by JPL under support by NASA MEaSUREs program.</dd><dt><span>creator_name :</span></dt><dd>JPL MUR SST project</dd><dt><span>creator_email :</span></dt><dd>ghrsst@podaac.jpl.nasa.gov</dd><dt><span>creator_url :</span></dt><dd>http://mur.jpl.nasa.gov</dd><dt><span>project :</span></dt><dd>NASA Making Earth Science Data Records for Use in Research Environments (MEaSUREs) Program</dd><dt><span>publisher_name :</span></dt><dd>GHRSST Project Office</dd><dt><span>publisher_url :</span></dt><dd>http://www.ghrsst.org</dd><dt><span>publisher_email :</span></dt><dd>ghrsst-po@nceo.ac.uk</dd><dt><span>processing_level :</span></dt><dd>L4</dd><dt><span>cdm_data_type :</span></dt><dd>grid</dd></dl></div></li></ul></div></div></div></div>
+</div>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="get_started.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Comenzar Aqui</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="NEWS.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Lo Nuevo</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Tutorial de 5 minutos</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#opendap-la-vision-original">OPeNDAP - La vision original</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydap"><code class="docutils literal notranslate"><span class="pre">PyDAP</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#como-descargar-el-arreglo-numerico-de-la-variable-remota"><strong>Como Descargar el Arreglo numerico de la variable remota</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utiliza-el-servidor-remoto">Utiliza el Servidor Remoto</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1"></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#xarray">Xarray</a></li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By OPeNDAP Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
