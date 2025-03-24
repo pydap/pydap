@@ -6,6 +6,8 @@ from collections.abc import Mapping
 
 import numpy as np
 import pytest
+import requests
+import requests_cache
 
 from pydap.model import (
     BaseType,
@@ -539,8 +541,12 @@ def test_DatasetType_variables():
     dataset.createGroup("/Group1")
     dataset.createVariable("/root_variable", dtype=np.float32)
     dataset.createVariable("/Group1/other_variable", dtype=np.int64)
-    assert dataset.variables() == {"root_variable": np.dtype("float32")}
-    assert dataset["/Group1"].variables() == {"other_variable": np.dtype("int64")}
+    assert dataset.variables() == {
+        "root_variable": {"dtype": np.dtype("float32"), "shape": (), "dims": []}
+    }
+    assert dataset["/Group1"].variables() == {
+        "other_variable": {"dtype": np.dtype("int64"), "shape": (), "dims": []}
+    }
 
 
 # Test pydap grids.
@@ -568,6 +574,30 @@ def test_DatasetType_nbytes(gridtype_example):
     Nbytes = a_nb + x_nb + y_nb + v_nb
 
     assert dataset.nbytes == Nbytes
+
+
+def test_DatasetType_grids():
+    """test that correctly identifies grid variable
+    and its mappings
+    """
+    # fictitious dataset
+    # grid and groups do not belong to same DAP protocol
+    # but for now, this test accuracy of property
+    pyds = DatasetType("example")
+    pyds.createGroup("Group1")
+    pyds.createSequence("Group1/Seq")
+    pyds.createVariable("Group1/Seq.var")
+    pyds.createVariable("Group1/Seq.foo")
+
+    example = GridType("example")
+    example["a"] = BaseType("a", data=np.arange(30 * 50).reshape(30, 50))
+    example["x"] = BaseType("x", data=np.arange(30))
+    example["y"] = BaseType("y", data=np.arange(50))
+
+    pyds["/example"] = example
+    grids = pyds.grids()
+    assert len(grids) == 1
+    assert grids["example"] == {"shape": (30, 50), "maps": ["x", "y"]}
 
 
 def test_GridType_repr(gridtype_example):
@@ -654,3 +684,31 @@ def test_GridType_maps(gridtype_example):
 def test_GridType_dimensions(gridtype_example):
     """Test ``dimensions`` property."""
     assert gridtype_example.dimensions == ("x", "y")
+
+
+@pytest.mark.parametrize(
+    "session",
+    [None, requests.Session(), requests_cache.CachedSession(), "session"],
+)
+def test_error_session(session):
+    """test that trying to set a session with other than a `None`,
+    a `requests.Session` or a `requests_cached.CachedSession()` object
+    returns a TypeError
+    """
+    if not session:
+        # is session is None (default) then session can be changed later
+        pyds = DatasetType("name")
+        assert pyds.session == session  # asserts default
+        pyds.session = (
+            requests_cache.CachedSession()
+        )  # sets the session to a new cached session
+        assert isinstance(pyds.session, requests_cache.CachedSession)
+    elif isinstance(session, (requests.Session, requests_cache.CachedSession)):
+        pyds = DatasetType("name", session=session)
+        assert pyds.session == session
+        with pytest.raises(AttributeError):
+            pyds.session = None  # session cannot be modify once set
+    else:
+        # test attemps to set the session object with a string type - not allowed
+        with pytest.raises(TypeError):
+            DatasetType("name", session=session)

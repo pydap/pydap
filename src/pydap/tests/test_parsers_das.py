@@ -83,3 +83,12 @@ class TestParseDAS(unittest.TestCase):
         self.assertEqual(self.dataset.floats["b"], float("-inf"))
         self.assertEqual(self.dataset.floats["c"], float("inf"))
         self.assertEqual(self.dataset.floats["d"], 17.0)
+
+    def test_global_attributes(self):
+        """test that there are no global nor dods_extra attributes on dataset"""
+        attrs = parse_das(DAS)
+        dataset = dds_to_dataset(DDS)
+        dataset = add_attributes(dataset, attrs)  # new dataset instance
+        self.assertNotIn("NC_GLOBAL", dataset.attributes)
+        self.assertNotIn("DODS_EXTRA", dataset.attributes)
+        # self.assertTrue(all(not isinstance(v, dict) for v in attrs.values()))

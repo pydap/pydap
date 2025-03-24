@@ -8,7 +8,7 @@ import requests
 
 from pydap.client import open_dods_url, open_file, open_url
 from pydap.handlers.lib import BaseHandler
-from pydap.model import DatasetType
+from pydap.model import BaseType, DatasetType, GridType
 from pydap.tests.datasets import SimpleGrid, SimpleSequence, SimpleStructure
 
 DODS = os.path.join(os.path.dirname(__file__), "data/test.01.dods")
@@ -30,6 +30,7 @@ def test_open_url(sequence_app):
     """Open an URL and check dataset keys."""
     dataset = open_url("http://localhost:8001/", sequence_app)
     assert list(dataset.keys()) == ["cast"]
+    assert isinstance(dataset.session, requests.Session)
 
 
 @pytest.fixture
@@ -91,6 +92,22 @@ def test_open_url_seqCE(remote_url):
     assert len([var for var in dsCE[seq_name]["Time"]]) < len(
         [var for var in data_original[seq_name]["Time"]]
     )
+
+
+@pytest.mark.parametrize(
+    "output_grid",
+    [False, True],
+)
+def test_output_grid(output_grid, remote_url):
+    """tests the behavior of output_grid as argument to open_url"""
+    url = remote_url + "nc/coads_climatology.nc"
+    pyds = open_url(url, output_grid=output_grid, protocol="dap2")
+    assert list(pyds.grids()) == ["SST", "AIRT", "UWND", "VWND"]
+    sst = pyds["SST"][0, :, :]
+    if output_grid:
+        assert isinstance(sst, GridType)
+    else:
+        assert isinstance(sst, BaseType)
 
 
 @pytest.mark.parametrize(
@@ -209,8 +226,8 @@ def test_open_dods_16bits(sequence_app):
 def test_open_dods_with_attributes(sequence_app):
     """Open the dods response together with the das response."""
     dataset = open_dods_url(".dods", metadata=True, application=sequence_app)
-    assert dataset.NC_GLOBAL == {}
-    assert dataset.DODS_EXTRA == {}
+    assert "NC_GLOBAL" not in dataset.attributes
+    assert "DODS_EXTRA" not in dataset.attributes
     assert dataset.description == "A simple sequence for testing."
     assert dataset.cast.lon.axis == "X"
     assert dataset.cast.lat.axis == "Y"

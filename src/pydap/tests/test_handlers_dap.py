@@ -4,6 +4,8 @@ import os
 import unittest
 
 import numpy as np
+import pytest
+from requests.utils import urlparse
 from webob.response import Response
 
 import pydap.model
@@ -326,6 +328,44 @@ class TestBaseProxy(unittest.TestCase):
         np.testing.assert_array_equal(self.data < 2, np.arange(5) < 2)
 
 
+test_url = "http://test.opendap.org/opendap/data/nc/coads_climatology.nc"
+
+
+@pytest.mark.parametrize(
+    "url, app, expect",
+    [
+        ("dap2://test.opendap.org/opendap/data/nc/coads_climatology.nc", None, "dap2"),
+        ("dap4://test.opendap.org/opendap/data/nc/coads_climatology.nc", None, "dap4"),
+        (test_url, None, "warn"),
+        (
+            test_url + "?dap4.ce=/TIME",
+            None,
+            "dap4",
+        ),
+        ("a://test.opendap.org/opendap/data/nc/coads_climatology.nc", None, "error"),
+        (" ", BaseHandler(SimpleGrid), "dap2"),
+    ],
+)
+def test_protocols(url, app, expect):
+    if app:
+        assert DAPHandler(url=url, application=app).protocol == expect
+    else:
+        if expect == "error":
+            with pytest.raises(TypeError):
+                DAPHandler(url=url)
+        elif expect == "warn":
+            with pytest.warns(UserWarning):
+                DAPHandler(url=url)
+        else:
+            assert DAPHandler(url=url).protocol == expect
+    if urlparse(url).scheme in ["dap2", "dap4"]:
+        assert DAPHandler(url=url).protocol == expect
+        assert isinstance(DAPHandler(url=url).dataset, DatasetType)
+    with pytest.raises(TypeError):
+        # only protocol='dap2' or `dap4` is supported
+        DAPHandler(url=url, application=app, protocol="errdap")
+
+
 class TestBaseProxyShort(unittest.TestCase):
     """Test `BaseProxy` objects with short dtype."""
 
@@ -624,7 +664,10 @@ class TestUnpackDap4Data(unittest.TestCase):
 
     def testDMR(self):
         ds = dmr_to_dataset(self.unpacker.dmr)
-        self.assertEqual(ds.variables(), {"SST": np.dtype(">f4")})
+        self.assertEqual(
+            ds.variables(),
+            {"SST": {"dtype": np.dtype(">f4"), "shape": (1, 4, 4), "dims": []}},
+        )
 
     def testResponse(self):
         self.assertIsInstance(self.unpacker.r, Response)
