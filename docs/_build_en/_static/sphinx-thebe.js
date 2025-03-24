@@ -30,7 +30,7 @@ var configureThebe = () => {
 
     const button = document.querySelector(".thebe-launch-button ");
     button.classList.replace(
-	    `thebe-status-${thebeStatus}`, 
+	    `thebe-status-${thebeStatus}`,
 	    `thebe-status-${data.status}`
     )
     button.querySelector(".loading-text")

@@ -78,6 +78,6 @@ Para instalar la version mas reciente de `pydap` directamente del repositorio de
 ```shell
 pip install --upgrade git+https://github.com/pydap/pydap.git
 ```
-La version que se instalara sera la reciente en el projecto, y muy posiblemente no sea la version estable oficial. 
+La version que se instalara sera la reciente en el projecto, y muy posiblemente no sea la version estable oficial.
 
 Si estas interesado en instalar `pydap` en modo "desarrollo", sigue la siguente liga [Contributing to the code](contribute/contr_cod.md).

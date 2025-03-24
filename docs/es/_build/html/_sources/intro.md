@@ -20,8 +20,8 @@ Los usuarios principiantes de `OPeNDAP`, sin embargo, usualmente tienen que inve
 ## <font size="5.5"><span style='color:#ff6666'>**¿Porque Pydap?**<font size="3">
 
 
-| ![WhyPydap](/images/WhyPydap.png) | 
-|:--:| 
+| ![WhyPydap](/images/WhyPydap.png) |
+|:--:|
 | *Figure 1. Comparacion entre dos maneras de descargar una subregion de archivo cientifico remoto en un servidor de OPeNDAP. En este ejemplo, la cobertura de los datos dentro del archivo remoto es global, y el usuario de pydap descarga solamente la region de interes al indexar el arreglo numerico de pydap. La mandera comun de OPeNDAP es por medio del `Data Request Form` que permite al usuario contruir manualmente el URL con su Expression de Restriccion.* |
 
 
@@ -41,7 +41,7 @@ Conocimiento y dominio de como construir las Expresiones de Restriccion (Constra
 
 `Pydap` una libreria en python bastante sencilla, y por ende ofrece muy poco paralelismp, modulos de manipulacion, o visualizacion. Librarias pueden, sin embargo, ser utilizadas como por ejemplo `xarray`, `Dask` / `Coiled`, y `matplotlib`.
 
-`Pydap` continua en dearrolo! Para ver las mas nuevas contribuciones, navega a la seccion [Lo Nuevo](NEWS) . Si te gustaria contribuir a este proyector, navega hacia [Github](https://github.com/pydap/pydap/issues). `Pydap` es open-source, y nos gustaria crecer la base de aplicaciones y contribuidores al proyecto, aunque sea con un tutorial en la documentacion. 
+`Pydap` continua en dearrolo! Para ver las mas nuevas contribuciones, navega a la seccion [Lo Nuevo](NEWS) . Si te gustaria contribuir a este proyector, navega hacia [Github](https://github.com/pydap/pydap/issues). `Pydap` es open-source, y nos gustaria crecer la base de aplicaciones y contribuidores al proyecto, aunque sea con un tutorial en la documentacion.
 
 En seguida esta el Contenido de la Documentacion para apprender mas sobre pydap, y las mejores practicas para acceder a informacion cientifica de servidores de OPeNDAP.
 

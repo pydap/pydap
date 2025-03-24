@@ -82,7 +82,7 @@ var initToggleItems = () => {
         } else {
           summary.querySelector("span.toggle-details__summary-text").innerText = toggleHintHide;
         }
-        
+
       });
 
       // If we have a toggle-shown class, open details block should be open
@@ -161,7 +161,7 @@ if (toggleOpenOnPrint == "true") {
       el.dataset["togglestatus"] = el.open;
       el.open = true;
     });
-  
+
     // Open the admonitions
     document.querySelectorAll(".admonition.toggle.toggle-hidden").forEach((el) => {
       console.log(el);
@@ -175,7 +175,7 @@ if (toggleOpenOnPrint == "true") {
       el.open = el.dataset["togglestatus"] == "true";
       delete el.dataset["togglestatus"];
     });
-  
+
     // Re-close the admonition toggle buttons
     document.querySelectorAll(".admonition.toggle").forEach((el) => {
       if (el.dataset["toggle_after_print"] == "true") {

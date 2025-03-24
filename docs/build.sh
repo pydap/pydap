@@ -19,5 +19,3 @@ mkdir -p _build/es
 rsync -a --delete es/_build/html/ _build/es/
 
 echo "Both versions built successfully!"
-
-
