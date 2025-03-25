@@ -11,6 +11,7 @@ parts:
     sections:
     - file: 5_minute_tutorial
   - file: NEWS
+  - file: faqs
 - caption: Examples
   chapters:
   - file: notebooks/Authentication
