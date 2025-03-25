@@ -1,0 +1,12 @@
+name: pydap_docs
+channels:
+- conda-forge
+dependencies:
+- python=3.11
+- pydap-server
+- jupyter-book
+- jupyterlab
+- matplotlib
+- cartopy
+- xarray
+- dask

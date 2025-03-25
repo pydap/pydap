@@ -1,0 +1,22 @@
+# Table of contents
+# Learn more at https://jupyterbook.org/customize/toc.html
+
+format: jb-book
+root: intro
+parts:
+- caption: Quickstart
+  chapters:
+  - file: how_to_install
+  - file: get_started
+    sections:
+    - file: 5_minute_tutorial
+  - file: NEWS
+- caption: Examples
+  chapters:
+  - file: notebooks/Authentication
+    sections:
+    - file: notebooks/netrc
+  - file: notebooks/ECCO
+  - file: notebooks/PACE
+  - file: notebooks/SWOT
+  - file: notebooks/CMIP6

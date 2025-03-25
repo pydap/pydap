@@ -27,7 +27,15 @@ pip-log.txt
 _version.py
 
 # Sphinx documentation
-docs/_build/
+docs/_build/*
+docs/_build/.*
+docs/.ipynb_checkpoints
+docs/en/_build/*
+docs/en/_build/.*
+
+docs/es/_build/*
+docs/es/_build/.*
+
 
 # Unit test / coverage reports
 .coverage
