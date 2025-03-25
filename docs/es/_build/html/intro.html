@@ -187,13 +187,11 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Autenticacion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Como crear el archivo .netrc</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/CMIP6.html">CMIP6</a></li>
 </ul>
 
     </div>
@@ -358,7 +356,8 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
 
-  <section class="tex2jax_ignore mathjax_ignore" id="bienvenido-a-pydap">
+  <p><a class="reference internal" href="#/es/intro.html"><span class="xref myst">Leer en Español</span></a> | <a class="reference internal" href="#/en/intro.html"><span class="xref myst">Read in English</span></a></p>
+<section class="tex2jax_ignore mathjax_ignore" id="bienvenido-a-pydap">
 <h1><font size="7"><span style='color:#0066cc'> <strong>Bienvenido a Pydap</strong><font size="3"><a class="headerlink" href="#bienvenido-a-pydap" title="Link to this heading">#</a></h1>
 <p><code class="docutils literal notranslate"><span class="pre">Pydap</span></code> es un paquete de python que implementa el protocolo <strong>DAP</strong> (<strong>Data Access Protocol</strong> por sus siglas en ingles), tambien conocido como <a class="reference external" href="http://www.opendap.org/">OPeNDAP</a>. Uno puede usar <code class="docutils literal notranslate"><span class="pre">pydap</span></code> como cliente de acceso a miles archivos de informacion cientifica en servidores de <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> de una manera segura, transparente, y efficiente por el internet, o puede tambien utilizar <code class="docutils literal notranslate"><span class="pre">pydap</span></code> como su propio servidor para hacer que sus archivos de informacion cientifica puedas ser accedidos por el internet.</p>
 <section id="porque-opendap">
@@ -368,7 +367,7 @@ document.write(`
 <p>Los usuarios principiantes de <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>, sin embargo, usualmente tienen que invertir tiempo para comprender mejor los protocolos y elementos de <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>. Algunos de los elementos de OPeNDAP que mas requieren estudio y comprension por parte del usuario para aprovechar mejor OPeNDAP son:</p>
 <ol class="arabic simple">
 <li><p>Expressiones de Restriccion (Constraint Expressions en ingles).</p></li>
-<li><p>La codificacion de los URL para la tranmision efficiente de datos atraves de la web.</p></li>
+<li><p>La codificacion de los URL para la transmision efficiente de datos atraves de la web.</p></li>
 <li><p>Diferencias entre las versiones DAP2 y DAP4 del protocolo de OPeNDAP.</p></li>
 </ol>
 </section>
@@ -385,23 +384,23 @@ document.write(`
 </tbody>
 </table>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Pydap</span></code> permite el acceso de informacion cientifica disponible en servidores de OPeNDAP de una manera pythonica, interactive y exploratoria. En breve, <code class="docutils literal notranslate"><span class="pre">pydap</span></code>:</p>
+<p><code class="docutils literal notranslate"><span class="pre">Pydap</span></code> permite el acceso de informacion cientifica disponible en servidores de OPeNDAP de una manera pythonica, interactiva y exploratoria. En breve, <code class="docutils literal notranslate"><span class="pre">pydap</span></code>:</p>
 <ol class="arabic simple">
 <li><p>Construye la Expresion de Restriccion (Constraint Expression) al indexar el arreglo de pydap como si fuera un arreglo numerico (For ejemplo, vea la <a class="reference internal" href="#WhyPydap"><span class="xref myst">Figura 1</span></a>).</p></li>
-<li><p>Codifica los parameteros del URL para asi asegurar la transmicion de datos cientificos a traves del internet.</p></li>
+<li><p>Codifica los parameteros del URL para asi asegurar la transmision de datos cientificos a traves del internet.</p></li>
 <li><p>Descarga la informacion en formato binario del tipo DAP2 (<code class="docutils literal notranslate"><span class="pre">.dods</span></code>) y DAP4 (<code class="docutils literal notranslate"><span class="pre">.dap</span></code>), proveniente de servidores de OPeNDAP, convirtiendolos un arreglo numerico de numpy.</p></li>
 <li><p>Cubre el protocolo DAP2 y (<em>la mayoria</em>) del DAP4.</p></li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Conocimiento y dominio de como construir las Expresiones de Restriccion (Constraint Expressions) continue siendo importante, ya que se pueden utilizar para mejorar el rendimiento de pydap.</p>
+<p>Conocimiento y dominio de como construir las Expresiones de Restriccion (Constraint Expressions) continua siendo importante, ya que se pueden utilizar para mejorar el rendimiento de pydap.</p>
 </div>
 </section>
 <section id="lo-que-pydap-no-es">
 <h2><font size="5.5"><span style='color:#ff6666'><strong>Lo que Pydap no es</strong><font size="3"><a class="headerlink" href="#lo-que-pydap-no-es" title="Link to this heading">#</a></h2>
 <p><code class="docutils literal notranslate"><span class="pre">Pydap</span></code> una libreria en python bastante sencilla, y por ende ofrece muy poco paralelismp, modulos de manipulacion, o visualizacion. Librarias pueden, sin embargo, ser utilizadas como por ejemplo <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, <code class="docutils literal notranslate"><span class="pre">Dask</span></code> / <code class="docutils literal notranslate"><span class="pre">Coiled</span></code>, y <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">Pydap</span></code> continua en dearrolo! Para ver las mas nuevas contribuciones, navega a la seccion <a class="reference internal" href="NEWS.html"><span class="doc std std-doc">Lo Nuevo</span></a> . Si te gustaria contribuir a este proyector, navega hacia <a class="reference external" href="https://github.com/pydap/pydap/issues">Github</a>. <code class="docutils literal notranslate"><span class="pre">Pydap</span></code> es open-source, y nos gustaria crecer la base de aplicaciones y contribuidores al proyecto, aunque sea con un tutorial en la documentacion.</p>
-<p>En seguida esta el Contenido de la Documentacion para apprender mas sobre pydap, y las mejores practicas para acceder a informacion cientifica de servidores de OPeNDAP.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Pydap</span></code> continua en desarrolo! Para ver las mas recientes contribuciones, navega a la seccion <a class="reference internal" href="NEWS.html"><span class="doc std std-doc">Lo Nuevo</span></a>. Si te gustaria contribuir a este proyecto, navega hacia <a class="reference external" href="https://github.com/pydap/pydap/issues">Github</a> para ver una lista de posibles contribuciones. <code class="docutils literal notranslate"><span class="pre">Pydap</span></code> es open-source, y nos gustaria crecer la base de aplicaciones y contribuidores al proyecto, aunque sea con un tutorial en la documentacion.</p>
+<p>En seguida esta el Contenido de la Documentacion para apprender mas sobre <code class="docutils literal notranslate"><span class="pre">pydap</span></code>, y las mejores practicas para acceder a informacion cientifica de servidores de OPeNDAP.</p>
 <div class="toctree-wrapper compound">
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
 <ul>
@@ -414,10 +413,8 @@ document.write(`
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/Authentication.html">Autenticacion</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/CMIP6.html">CMIP6</a></li>
 </ul>
 </div>
 </section>

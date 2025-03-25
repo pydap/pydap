@@ -343,7 +343,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
 
     </div>
@@ -359,6 +361,14 @@ document.write(`
     <div id="print-main-content">
         <div id="jb-print-toc">
 
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#new-default-behavior">New Default behavior</a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -407,13 +417,13 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap2&#39;</span><span class="p">)</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap2&#39;</span><span class="p">,</span> <span class="n">output_grid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 13.8 ms, sys: 3.33 ms, total: 17.1 ms
-Wall time: 455 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 14.6 ms, sys: 3.54 ms, total: 18.2 ms
+Wall time: 488 ms
 </pre></div>
 </div>
 </div>
@@ -549,19 +559,7 @@ Wall time: 455 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;BaseType with data array([[[248.65997, 248.28497, 248.15997, ..., 249.53497, 249.65997,
-         249.15997],
-        [251.65997, 250.78497, 250.53497, ..., 252.65997, 252.40997,
-         251.65997],
-        [251.03497, 250.15997, 249.03497, ..., 255.03497, 253.53497,
-         253.03497],
-        ...,
-        [224.5918 , 224.67487, 225.22243, ..., 226.25885, 225.4502 ,
-         224.54295],
-        [219.77655, 220.37973, 221.11984, ..., 218.04332, 218.55197,
-         219.16682],
-        [220.43169, 220.94601, 221.48468, ..., 220.07048, 219.97438,
-         220.07361]]], shape=(1, 64, 128), dtype=&#39;&gt;f4&#39;)&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;GridType with array &#39;ts&#39; and maps &#39;time&#39;, &#39;lat&#39;, &#39;lon&#39;&gt;
 </pre></div>
 </div>
 </div>
@@ -573,7 +571,17 @@ Wall time: 455 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;standard_name&#39;: &#39;surface_temperature&#39;,
+ &#39;long_name&#39;: &#39;Surface Temperature&#39;,
+ &#39;comment&#39;: &#39;Temperature of the lower boundary of the atmosphere&#39;,
+ &#39;units&#39;: &#39;K&#39;,
+ &#39;original_name&#39;: &#39;GT&#39;,
+ &#39;cell_methods&#39;: &#39;area: time: mean&#39;,
+ &#39;cell_measures&#39;: &#39;area: areacella&#39;,
+ &#39;history&#39;: &#39;2019-08-20T21:03:55Z altered by CMOR: Reordered dimensions, original order: lat lon time. 2019-08-20T21:03:55Z altered by CMOR: replaced missing value flag (1e+38) and corresponding data with standard missing value (1e+20).&#39;,
+ &#39;missing_value&#39;: 1e+20,
+ &#39;_FillValue&#39;: 1e+20,
+ &#39;_ChunkSizes&#39;: [1, 64, 128]}
 </pre></div>
 </div>
 </div>
@@ -597,21 +605,41 @@ Wall time: 455 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, numpy.ndarray)
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(4, list)
 </pre></div>
 </div>
 </div>
 </div>
 <p><code class="docutils literal notranslate"><span class="pre">NOTE</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># why are the two different?</span>
-<span class="nb">len</span><span class="p">(</span><span class="n">GTS</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="n">GTS</span><span class="o">.</span><span class="n">shape</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># why is it greater than 1?</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">GTS</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span>
 </pre></div>
 </div>
-<p>this is because downloading the Grid array downloads too its coordinate dimensions, resulting in a list!</p>
+<p>this is because downloading the <code class="docutils literal notranslate"><span class="pre">Grid</span></code> array downloads its coordinate dimensions too, resulting in a list of length 4!</p>
+<section id="new-default-behavior">
+<h2>New Default behavior<a class="headerlink" href="#new-default-behavior" title="Link to this heading">#</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>As of version <code class="docutils literal notranslate"><span class="pre">3.5.4</span></code>, the default behavior now is <code class="docutils literal notranslate"><span class="pre">output_grid=False</span></code>, when using <code class="docutils literal notranslate"><span class="pre">open_url</span></code> . This has a very different behavior as with <code class="docutils literal notranslate"><span class="pre">output_grid=True</span></code></p>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># download the only Array, single snapshot</span>
-<span class="n">TS</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">][</span><span class="s1">&#39;ts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap2&#39;</span><span class="p">)</span> <span class="c1"># output_grid=False as defaiult</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 12.8 ms, sys: 2.11 ms, total: 14.9 ms
+Wall time: 413 ms
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># download the entire GridType, single snapshot</span>
+<span class="n">TS</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
 <span class="n">TS</span>
 </pre></div>
 </div>
@@ -636,45 +664,28 @@ Wall time: 455 ms
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">TS</span><span class="o">.</span><span class="n">attributes</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">TS</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">TS</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{}
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, numpy.ndarray)
 </pre></div>
 </div>
 </div>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">NOTE</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">TS</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>And <code class="docutils literal notranslate"><span class="pre">TS</span></code> is a <code class="docutils literal notranslate"><span class="pre">BaseType</span></code>, this means it did not download coordinate data when slicing the array</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Since the data is periodic in longitude, we need to append a copy to the array. We need to do this since cartopy interpolates data. If we don’t, then there will be missing longitude band of missing data in for plot as shown below:</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Lon</span><span class="p">,</span> <span class="n">Lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">GTS</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">GTS</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">IndexError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">16</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">Lon</span><span class="p">,</span> <span class="n">Lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">GTS</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">GTS</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-
-<span class="nn">File ~/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:349,</span> in <span class="ni">BaseType.__getitem__</span><span class="nt">(self, index)</span>
-<span class="g g-Whitespace">    </span><span class="mi">347</span> <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">348</span>     <span class="n">out</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-<span class="ne">--&gt; </span><span class="mi">349</span>     <span class="n">out</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">350</span>     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;BaseProxyDap4&quot;</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">351</span>         <span class="n">out</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="s2">&quot;checksum&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">checksum</span>
-
-<span class="nn">File ~/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:381,</span> in <span class="ni">BaseType._get_data_index</span><span class="nt">(self, index)</span>
-<span class="g g-Whitespace">    </span><span class="mi">379</span>     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">decode_np_strings</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
-<span class="g g-Whitespace">    </span><span class="mi">380</span> <span class="k">else</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">381</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
-
-<span class="ne">IndexError</span>: only integers, slices (`:`), ellipsis (`...`), numpy.newaxis (`None`) and integer or boolean arrays are valid indices
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Lon</span><span class="p">,</span> <span class="n">Lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -690,8 +701,12 @@ Wall time: 455 ms
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<img alt="../_images/e0e423883bbb6de2d2ed1336e5494259949d507856370f44b120d47532967b12.png" src="../_images/e0e423883bbb6de2d2ed1336e5494259949d507856370f44b120d47532967b12.png" />
+</div>
 </div>
 <p><strong>Fig 1</strong>. Global Near surface temperature on a (longitude)-periodic domain.</p>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -748,6 +763,21 @@ Wall time: 455 ms
             </div>
 
 
+
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#new-default-behavior">New Default behavior</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
 
 
           </div>

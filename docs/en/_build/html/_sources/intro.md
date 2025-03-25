@@ -1,3 +1,5 @@
+[Leer en Español](/es/intro.html) | [Read in English](/en/intro.html)
+
 # <font size="7"><span style='color:#0066cc'> **Welcome to pydap**<font size="3">
 
 
@@ -38,7 +40,7 @@ Knowledge of how to construct URLs with Constraint Expressions remains important
 
 ## <font size="5.5"><span style='color:#ff6666'>**What Pydap is not**<font size="3">
 
-`Pydap` is very lightweight, which is great! However, as a result it offers little parallelism, compute or plotting. Most of that is enable by external python libraries. However, `Pydap` remains a backend store for `xarray`, which fosters a growing community of developers, and `xarray` can add parallelism via `Dask` / `Coiled` and plotting via its oww use of matplotlib.
+`Pydap` is very lightweight, which is great! However, as a result it offers little parallelism, compute or plotting. Most of that is enable by external python libraries. However, `Pydap` remains a `backend engine for xarray`, which fosters a growing community of users and developers, and `xarray` can add parallelism via `Dask` / `Coiled` and plotting via its oww use of matplotlib.
 
 That said, we recognize that `pydap` native approaches may provide boost in performance, before using the resulting pydap dataset to create xarray dataaset. And so `Pydap` remains under development! See the [What's New](NEWS) section If you would like to contribute, head to the [issue tracker](https://github.com/pydap/pydap/issues). We welcome contributions! You can pick an existing issue, open a new one. You can contribute to improve our code base, or you can also help improve our documentation with a tutorial example!
 

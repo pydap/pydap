@@ -38,20 +38,22 @@ pip install --upgrade git+https://github.com/pydap/pydap.git
 
 3. Create a new branch, and set its upstream and use git (see [steps 3 and 4 from contributing to the code](contr_cod.md))
 
-4. Clean any previous built html pages with
+4. Clean any previous built html and build the documentation using the provided shell script in the `docs` folder. Note that to support both English and Spanish languagues, you may need to build these individually. FOr example, to build the documentation in English:
 ```shell
-jupyter-book clean docs --all
+jupyter-book clean docs/en --all
+jupyter-book build docs/en
 ```
 
-5. Build the docs by running
+5. `optional`: The repo a shell script which you may execute to automatically clean and build the documentation
 ```shell
-jupyter-book build docs
+cd docs
+./build.sh
 ```
-Depending on how many changes you have done to the documentation, this last step may take a while. It also depends on the type of files added to the documentation (`ipynb` are slower to build).
+You may need to change the `mode` of the shell script to an executable. This is `chmod +x build.sh`. The shell script will automatically clean and build the documentation.
 
-6. Once the build process is finished, you can inspect the locally built html files by running:
+6. Once the build process is finished (with the `build.sh` script), you can inspect the locally built html files by running:
 ```shell
-open docs/_build/html/index.html
+open docs/_build/html/en/index.html
 ```
 
 ```{note}

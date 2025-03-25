@@ -1,24 +1,24 @@
 # Como Installar
 
-A partir de la version `3.5.1`, la installacion de `pydap` esta dividida en  dos partes, dependiendo del use que se le quiera dar.
-## 1. Pydap (uso de acceso)
-Esta forma de instalacion minimna de `Pydap` permite al usuario acceder  a archivos cientificos remotos en servidores de `OPeNDAP`. En la terminal ejecute lo siguiente:
+A partir de la version `3.5.1`, la instalacion de `pydap` esta dividida en  dos partes, dependiendo del use que se le quiera dar.
+## 1. `Pydap` (solo acceso)
+Esta forma de instalacion minima de `Pydap` permite al usuario acceder a archivos cientificos remotos en servidores de `OPeNDAP`. En la terminal ejecute lo siguiente:
 
 ```shell
 pip install pydap
 ```
-o usando el manejador de paquetes `conda`
+o usando el manejador de entornos virtuales `conda`
 
 ```shell
 conda install pydap
 ```
 
 ```{note}
-Si ya tiene `mamba` instalado, puede reemplazar `conda` por `mamba` en los comandos.
+Si ya tiene `mamba` instalado, puede reemplazar `conda` por `mamba` en cualquiera de los comandos.
 ```
 
-## 2. Installacion Completa de `Pydap
-Para installar `pydap` con todas su funcionalidades, includendo su uso como servidor, execute:
+## 2. Instalacion Completa de `Pydap`
+Para installar `pydap` con todas su funcionalidades, incluyendo para uso como servidor de OPeNDAP, ejecute el siguiente comando en la terminal:
 
 ```shell
 conda install pydap-server
@@ -54,7 +54,7 @@ Con [PyPI](https://pypi.org/) uno tambien puede instalar las dependencias extras
 pip install pydap"[server,netcdf]"
 ```
 
-Este comando instalara la libreria `netCDF4` as como otras dependencias para user/ejecutar `pydap` como un servidor. Con esto, ser podra user `pydap` como un servidor detras de [Apache](https://www.apache.org/).
+Este comando instalara la libreria `netCDF4` asi como otras dependencias para user/ejecutar `pydap` como un servidor. Con esto, ser podra user `pydap` como un servidor detras de [Apache](https://www.apache.org/).
 
 ```{note}
 De todas las opciones para instalacion presentadas, recomendamos usar `conda`/`mamba`. Eso requiere la instalacion de [Miniconda](https://docs.anaconda.com/miniconda/) o [Anaconda](https://docs.anaconda.com/anaconda/install/).
@@ -66,7 +66,7 @@ Como ejemplo presentamos los siguientes comandos para crear un entorno virtual d
 
 ```shell
 conda create -n pydap_env -c conda-forge python=3.10 pydap-server jupyterlab ipython netCDF4 matplotlib
-conda activate pydap
+conda activate pydap_env
 ```
 
 ## Version mas reciente de `pydap`

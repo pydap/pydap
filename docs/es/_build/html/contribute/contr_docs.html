@@ -184,13 +184,11 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../notebooks/Authentication.html">Autenticacion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../notebooks/netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/netrc.html">Como crear el archivo .netrc</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">PACE</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/SWOT.html">SWOT</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/CMIP6.html">CMIP6</a></li>
 </ul>
 
     </div>
@@ -387,22 +385,24 @@ conda<span class="w"> </span>activate<span class="w"> </span>pydap_docs
 </div>
 <ol class="arabic simple" start="3">
 <li><p>Create a new branch, and set its upstream and use git (see <a class="reference internal" href="contr_cod.html"><span class="std std-doc">steps 3 and 4 from contributing to the code</span></a>)</p></li>
-<li><p>Clean any previous built html pages with</p></li>
+<li><p>Clean any previous built html and build the documentation using the provided shell script in the <code class="docutils literal notranslate"><span class="pre">docs</span></code> folder. Note that to support both English and Spanish languagues, you may need to build these individually. FOr example, to build the documentation in English:</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jupyter-book<span class="w"> </span>clean<span class="w"> </span>docs<span class="w"> </span>--all
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jupyter-book<span class="w"> </span>clean<span class="w"> </span>docs/en<span class="w"> </span>--all
+jupyter-book<span class="w"> </span>build<span class="w"> </span>docs/en
 </pre></div>
 </div>
 <ol class="arabic simple" start="5">
-<li><p>Build the docs by running</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">optional</span></code>: The repo a shell script which you may execute to automatically clean and build the documentation</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jupyter-book<span class="w"> </span>build<span class="w"> </span>docs
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
+./build.sh
 </pre></div>
 </div>
-<p>Depending on how many changes you have done to the documentation, this last step may take a while. It also depends on the type of files added to the documentation (<code class="docutils literal notranslate"><span class="pre">ipynb</span></code> are slower to build).</p>
+<p>You may need to change the <code class="docutils literal notranslate"><span class="pre">mode</span></code> of the shell script to an executable. This is <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span> <span class="pre">build.sh</span></code>. The shell script will automatically clean and build the documentation.</p>
 <ol class="arabic simple" start="6">
-<li><p>Once the build process is finished, you can inspect the locally built html files by running:</p></li>
+<li><p>Once the build process is finished (with the <code class="docutils literal notranslate"><span class="pre">build.sh</span></code> script), you can inspect the locally built html files by running:</p></li>
 </ol>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>open<span class="w"> </span>docs/_build/html/index.html
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>open<span class="w"> </span>docs/_build/html/en/index.html
 </pre></div>
 </div>
 <div class="admonition note">

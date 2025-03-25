@@ -1,6 +1,6 @@
 # Comenzar Aqui
 
-Para empezar con una descripcion muy general del use de `pydap` como herramienta de acceso, navegue al [tutorial de 5 minuts](5_minute_tutorial.ipynb). O puede navegar a uno de los siguientes ejemplos
+Para empezar con una descripcion muy general del uso de `pydap` como herramienta de acceso, navegue al [tutorial de 5 minutos](5_minute_tutorial). O puede navegar a uno de los siguientes ejemplos
 
 ::::{grid} 1 1 1 3
 :class-container: text-center

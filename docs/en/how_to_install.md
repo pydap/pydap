@@ -30,6 +30,9 @@ conda install pydap-server
 This installation of `pydap` will include the dependencies to allow users to a) subset remote data on OPeNDAP servers, and b) use pydap's server to make data available.
 
 
+We recommend to use package installation managers like `conda`/`mamba`. This approach requires having an installation of [Miniconda](https://docs.anaconda.com/miniconda/) or [Anaconda](https://docs.anaconda.com/anaconda/install/).
+
+
 ## Dependencies
 ### Minimal Required
 The following are required to run pydap as a client.
@@ -42,40 +45,28 @@ The following are required to run pydap as a client.
 - `beautifulsoup4`
 - `lxml`
 - `Webob`
-
-
-### Optional to run notebooks in this documentation
-- `matplotlib`
-- `jupyter-lab`
-- `cartopy`
-- `xarray`
-
-
-
-### extra-dependencies
-With [PyPI](https://pypi.org/) you can install extra-dependencies. For example:
-```shell
-pip install pydap"[server,netcdf]"
-```
-
-This will install `netCDF4`-python library as well as all other dependencies to use/run `pydap` as a **lightweight server**. With this, `pydap` implements a lightweight [WSGI](http://wsgi.org/) framework that it can easily be run behind [Apache](https://www.apache.org/).
-
-
-While these are useful, we recommend to use package installation managers like `conda`/`mamba`, as described below. This approach requires having an installation of [Miniconda](https://docs.anaconda.com/miniconda/) or [Anaconda](https://docs.anaconda.com/anaconda/install/).
-
-
+-
 ## Reproducible (conda) environments
 
 You can easily use conda to install `pydap` or `pydap-server`, along with any optional packages for sharing a reproducible workflow. For example:
 
 ```shell
-conda create -n pydap_env -c conda-forge python=3.10 pydap-server jupyterlab ipython netCDF4 matplotlib
-conda activate pydap
+conda create -n pydap_env -c conda-forge python=3.10 pydap-server
+conda activate pydap_env
 ```
 
 ```{note}
 If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
 ```
+
+### Optional to run notebooks in this documentation
+- `matplotlib`
+- `jupyterlab`
+- `cartopy`
+- `xarray`
+
+
+
 
 To install the latest `pydap` version (client-only), directly from the github repository, run:
 

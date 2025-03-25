@@ -184,13 +184,11 @@
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Autenticacion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Como crear el archivo .netrc</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/CMIP6.html">CMIP6</a></li>
 </ul>
 
     </div>
@@ -339,8 +337,8 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydap-uso-de-acceso">1. Pydap (uso de acceso)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installacion-completa-de-pydap">2. Installacion Completa de `Pydap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydap-solo-acceso">1. <code class="docutils literal notranslate"><span class="pre">Pydap</span></code> (solo acceso)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#instalacion-completa-de-pydap">2. Instalacion Completa de <code class="docutils literal notranslate"><span class="pre">Pydap</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencias">Dependencias</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimas-requerias">Minimas requerias</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#addicionales">Addicionales</a></li>
@@ -362,25 +360,25 @@ document.write(`
 
   <section class="tex2jax_ignore mathjax_ignore" id="como-installar">
 <h1>Como Installar<a class="headerlink" href="#como-installar" title="Link to this heading">#</a></h1>
-<p>A partir de la version <code class="docutils literal notranslate"><span class="pre">3.5.1</span></code>, la installacion de <code class="docutils literal notranslate"><span class="pre">pydap</span></code> esta dividida en  dos partes, dependiendo del use que se le quiera dar.</p>
-<section id="pydap-uso-de-acceso">
-<h2>1. Pydap (uso de acceso)<a class="headerlink" href="#pydap-uso-de-acceso" title="Link to this heading">#</a></h2>
-<p>Esta forma de instalacion minimna de <code class="docutils literal notranslate"><span class="pre">Pydap</span></code> permite al usuario acceder  a archivos cientificos remotos en servidores de <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>. En la terminal ejecute lo siguiente:</p>
+<p>A partir de la version <code class="docutils literal notranslate"><span class="pre">3.5.1</span></code>, la instalacion de <code class="docutils literal notranslate"><span class="pre">pydap</span></code> esta dividida en  dos partes, dependiendo del use que se le quiera dar.</p>
+<section id="pydap-solo-acceso">
+<h2>1. <code class="docutils literal notranslate"><span class="pre">Pydap</span></code> (solo acceso)<a class="headerlink" href="#pydap-solo-acceso" title="Link to this heading">#</a></h2>
+<p>Esta forma de instalacion minima de <code class="docutils literal notranslate"><span class="pre">Pydap</span></code> permite al usuario acceder a archivos cientificos remotos en servidores de <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>. En la terminal ejecute lo siguiente:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap
 </pre></div>
 </div>
-<p>o usando el manejador de paquetes <code class="docutils literal notranslate"><span class="pre">conda</span></code></p>
+<p>o usando el manejador de entornos virtuales <code class="docutils literal notranslate"><span class="pre">conda</span></code></p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>pydap
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Si ya tiene <code class="docutils literal notranslate"><span class="pre">mamba</span></code> instalado, puede reemplazar <code class="docutils literal notranslate"><span class="pre">conda</span></code> por <code class="docutils literal notranslate"><span class="pre">mamba</span></code> en los comandos.</p>
+<p>Si ya tiene <code class="docutils literal notranslate"><span class="pre">mamba</span></code> instalado, puede reemplazar <code class="docutils literal notranslate"><span class="pre">conda</span></code> por <code class="docutils literal notranslate"><span class="pre">mamba</span></code> en cualquiera de los comandos.</p>
 </div>
 </section>
-<section id="installacion-completa-de-pydap">
-<h2>2. Installacion Completa de `Pydap<a class="headerlink" href="#installacion-completa-de-pydap" title="Link to this heading">#</a></h2>
-<p>Para installar <code class="docutils literal notranslate"><span class="pre">pydap</span></code> con todas su funcionalidades, includendo su uso como servidor, execute:</p>
+<section id="instalacion-completa-de-pydap">
+<h2>2. Instalacion Completa de <code class="docutils literal notranslate"><span class="pre">Pydap</span></code><a class="headerlink" href="#instalacion-completa-de-pydap" title="Link to this heading">#</a></h2>
+<p>Para installar <code class="docutils literal notranslate"><span class="pre">pydap</span></code> con todas su funcionalidades, incluyendo para uso como servidor de OPeNDAP, ejecute el siguiente comando en la terminal:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>pydap-server
 </pre></div>
 </div>
@@ -418,7 +416,7 @@ document.write(`
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap<span class="s2">&quot;[server,netcdf]&quot;</span>
 </pre></div>
 </div>
-<p>Este comando instalara la libreria <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code> as como otras dependencias para user/ejecutar <code class="docutils literal notranslate"><span class="pre">pydap</span></code> como un servidor. Con esto, ser podra user <code class="docutils literal notranslate"><span class="pre">pydap</span></code> como un servidor detras de <a class="reference external" href="https://www.apache.org/">Apache</a>.</p>
+<p>Este comando instalara la libreria <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code> asi como otras dependencias para user/ejecutar <code class="docutils literal notranslate"><span class="pre">pydap</span></code> como un servidor. Con esto, ser podra user <code class="docutils literal notranslate"><span class="pre">pydap</span></code> como un servidor detras de <a class="reference external" href="https://www.apache.org/">Apache</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>De todas las opciones para instalacion presentadas, recomendamos usar <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>. Eso requiere la instalacion de <a class="reference external" href="https://docs.anaconda.com/miniconda/">Miniconda</a> o <a class="reference external" href="https://docs.anaconda.com/anaconda/install/">Anaconda</a>.</p>
@@ -429,7 +427,7 @@ document.write(`
 <h2>Ejemplo de entorno virtual<a class="headerlink" href="#ejemplo-de-entorno-virtual" title="Link to this heading">#</a></h2>
 <p>Como ejemplo presentamos los siguientes comandos para crear un entorno virtual de conda, con los paquetes necesarios para usar <code class="docutils literal notranslate"><span class="pre">pydap</span></code>.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap-server<span class="w"> </span>jupyterlab<span class="w"> </span>ipython<span class="w"> </span>netCDF4<span class="w"> </span>matplotlib
-conda<span class="w"> </span>activate<span class="w"> </span>pydap
+conda<span class="w"> </span>activate<span class="w"> </span>pydap_env
 </pre></div>
 </div>
 </section>
@@ -512,8 +510,8 @@ conda<span class="w"> </span>activate<span class="w"> </span>pydap
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydap-uso-de-acceso">1. Pydap (uso de acceso)</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installacion-completa-de-pydap">2. Installacion Completa de `Pydap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydap-solo-acceso">1. <code class="docutils literal notranslate"><span class="pre">Pydap</span></code> (solo acceso)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#instalacion-completa-de-pydap">2. Instalacion Completa de <code class="docutils literal notranslate"><span class="pre">Pydap</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencias">Dependencias</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimas-requerias">Minimas requerias</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#addicionales">Addicionales</a></li>

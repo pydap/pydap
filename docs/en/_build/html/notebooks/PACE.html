@@ -368,9 +368,11 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#access-earthdata">Access EARTHDATA</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-to-session-s-headers-token-authorization">Add to session’s headers Token Authorization</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-download-some-data">Lets download some data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subsetting-data">Subsetting data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-constraint-expression-to-url">Adding a Constraint Expression to URL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-data-by-indexing-the-array">Download data by indexing the array</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-one-dimensional-lat-and-lon-values">Download one-dimensional lat and lon values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-area-subset-of-interest">Define area / subset of interest</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-inspection-of-coordinate-arrays">Visual Inspection of coordinate arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-only-the-subset">Download only the subset</a></li>
 </ul>
             </nav>
         </div>
@@ -390,6 +392,7 @@ document.write(`
 <li><p>Have an Earth Data Login account</p></li>
 <li><p>Have a Bearer Token.</p></li>
 </ol>
+<p>You can also use <code class="docutils literal notranslate"><span class="pre">username/password</span></code> method described in <a class="reference internal" href="Authentication.html"><span class="doc std std-doc">Authentication</span></a>, instead of the <code class="docutils literal notranslate"><span class="pre">token</span></code> approach.</p>
 <p><strong>Objectives</strong></p>
 <p>Use <a class="reference external" href="https://pydap.github.io/pydap/">pydap</a>’s client API to demonstrate</p>
 <ul class="simple">
@@ -443,8 +446,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 39.5 ms, sys: 6.14 ms, total: 45.6 ms
-Wall time: 546 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 36.8 ms, sys: 3.8 ms, total: 40.6 ms
+Wall time: 601 ms
 </pre></div>
 </div>
 </div>
@@ -529,58 +532,9 @@ Wall time: 546 ms
 </div>
 </div>
 </section>
-<section id="lets-download-some-data">
-<h2>Lets download some data<a class="headerlink" href="#lets-download-some-data" title="Link to this heading">#</a></h2>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">chlor_a</span> <span class="o">=</span> <span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">][:]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 583 ms, sys: 193 ms, total: 777 ms
-Wall time: 2.7 s
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">chlor_a</span><span class="o">.</span><span class="n">attributes</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;long_name&#39;: &#39;Chlorophyll Concentration, OCI Algorithm&#39;,
- &#39;units&#39;: &#39;mg m^-3&#39;,
- &#39;standard_name&#39;: &#39;mass_concentration_of_chlorophyll_in_sea_water&#39;,
- &#39;_FillValue&#39;: -32767.0,
- &#39;valid_min&#39;: 0.00100000005,
- &#39;valid_max&#39;: 100.0,
- &#39;reference&#39;: &#39;Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.&#39;,
- &#39;display_scale&#39;: &#39;log&#39;,
- &#39;display_min&#39;: 0.00999999978,
- &#39;display_max&#39;: 20.0,
- &#39;dims&#39;: [&#39;lat&#39;, &#39;lon&#39;],
- &#39;Maps&#39;: (&#39;/lat&#39;, &#39;/lon&#39;),
- &#39;checksum&#39;: array([221433038], dtype=uint32)}
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">chlor_a</span><span class="o">.</span><span class="n">nbytes</span><span class="o">/</span><span class="mf">1e9</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.1492992
-</pre></div>
-</div>
-</div>
-</div>
+<section id="download-data-by-indexing-the-array">
+<h2>Download data by indexing the array<a class="headerlink" href="#download-data-by-indexing-the-array" title="Link to this heading">#</a></h2>
+<p>When downloading, it is important to verify and check any necessary <code class="docutils literal notranslate"><span class="pre">decoding</span></code> in order to make sense of the data, in particular when trying to <code class="docutils literal notranslate"><span class="pre">define</span> <span class="pre">a</span> <span class="pre">subset</span> <span class="pre">region</span> <span class="pre">of</span> <span class="pre">interest</span> <span class="pre">by</span> <span class="pre">latitude</span> <span class="pre">and</span> <span class="pre">longitude</span> <span class="pre">ranges</span></code>. And so, we download <code class="docutils literal notranslate"><span class="pre">latitude</span></code> and <code class="docutils literal notranslate"><span class="pre">longitude</span></code>. each a one-dimensional array, thus keeping at a minimum the download amount.</p>
 <p><strong>Decoding data values:</strong></p>
 <p><code class="docutils literal notranslate"><span class="pre">xarray</span></code> decodes time and spatial values internally by default, everytime one accesses the data values, whereas currently there is no such method within <code class="docutils literal notranslate"><span class="pre">pydap</span></code> to do so. But it is often useful to understand how this works internally, and what type of parameters are used for decoding. Because OPeNDAP is based on the NetCDF data model, it if a CF-compliant software. Below are some of the most used metadata attributes associated for decoding data:</p>
 <p><strong>CF - Conventions</strong></p>
@@ -617,167 +571,199 @@ Wall time: 2.7 s
 </div>
 </div>
 </div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CHLOR_A</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">chlor_a</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CHLOR_A</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(4320, 8640)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(8640,)
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Lon</span><span class="p">,</span> <span class="n">Lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">decode</span><span class="p">(</span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">][:]),</span> <span class="n">decode</span><span class="p">(</span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">][:]))</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_global</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">coastlines</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Lon</span><span class="p">[::</span><span class="mi">4</span><span class="p">],</span> <span class="n">Lat</span><span class="p">[::</span><span class="mi">4</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">CHLOR_A</span><span class="p">[::</span><span class="mi">4</span><span class="p">]),</span> <span class="mi">400</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;nipy_spectral&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">chlor_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; [&#39;</span><span class="o">+</span><span class="n">chlor_a</span><span class="o">.</span><span class="n">units</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">);</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/2c8ba8c50580b7710cf21d66b90cee62cca99bc4d2adc4286243edf794c029a7.png" src="../_images/2c8ba8c50580b7710cf21d66b90cee62cca99bc4d2adc4286243edf794c029a7.png" />
-</div>
-</div>
-<p><strong>Fig 1.</strong> Chlorophyll A concentration for the entire dataset.</p>
 </section>
-<section id="subsetting-data">
-<h2>Subsetting data<a class="headerlink" href="#subsetting-data" title="Link to this heading">#</a></h2>
-<p>We can use the figure above to find a region of interest, in index space. Then we can combine <code class="docutils literal notranslate"><span class="pre">xarray</span></code> and <code class="docutils literal notranslate"><span class="pre">OPeNDAP's</span> <span class="pre">Hyrax</span></code> to access only the data we want.</p>
-<ul class="simple">
-<li><p><strong>NorthAtlantic</strong></p></li>
-</ul>
+<section id="download-one-dimensional-lat-and-lon-values">
+<h2>Download one-dimensional lat and lon values<a class="headerlink" href="#download-one-dimensional-lat-and-lon-values" title="Link to this heading">#</a></h2>
+<p>To make sense of these, we make sure to decode their values</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
-<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_global</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">coastlines</span><span class="p">()</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Lon</span><span class="p">[</span><span class="mi">500</span><span class="p">:</span><span class="mi">2000</span><span class="p">,</span><span class="mi">2000</span><span class="p">:</span><span class="mi">4500</span><span class="p">],</span> <span class="n">Lat</span><span class="p">[</span><span class="mi">500</span><span class="p">:</span><span class="mi">2000</span><span class="p">,</span><span class="mi">2000</span><span class="p">:</span><span class="mi">4500</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">CHLOR_A</span><span class="p">[</span><span class="mi">500</span><span class="p">:</span><span class="mi">2000</span><span class="p">,</span><span class="mi">2000</span><span class="p">:</span><span class="mi">4500</span><span class="p">]),</span> <span class="mi">400</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;nipy_spectral&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">chlor_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; [&#39;</span><span class="o">+</span><span class="n">chlor_a</span><span class="o">.</span><span class="n">units</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">);</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lon</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">][:])</span>
+<span class="n">lat</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">][:])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of the latitude array &quot;</span><span class="p">,</span> <span class="n">lat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9349176488b897d81b8a1605b1c48415a6595e34a575015f83ae2a26f119b1ef.png" src="../_images/9349176488b897d81b8a1605b1c48415a6595e34a575015f83ae2a26f119b1ef.png" />
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Size of the latitude array  (4320,)
+</pre></div>
 </div>
 </div>
-<p><strong>Fig 2.</strong> An approach to visually subset the global Chlorophyll A concentration. This approach allows to extract index values to construct the Constraint Expression and add it to the URL.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spatial range of values &quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">lat</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">lat</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Spatial range of values  (np.float32(-89.97917), np.float32(89.979164))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of the longitude array &quot;</span><span class="p">,</span> <span class="n">lat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Size of the longitude array  (4320,)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Spatial range of values &quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">lon</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">lon</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Spatial range of values  (np.float32(-179.97917), np.float32(179.97917))
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Not all array values of <code class="docutils literal notranslate"><span class="pre">lat/lon</span></code> coordinates are monotonic. Always make sure that is the case, even when data is Level 3 or Level 4</p>
+</div>
 </section>
-<section id="adding-a-constraint-expression-to-url">
-<h2>Adding a Constraint Expression to URL<a class="headerlink" href="#adding-a-constraint-expression-to-url" title="Link to this heading">#</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>’s <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expressions</span></code>, <code class="docutils literal notranslate"><span class="pre">hyper_slices</span></code> define index range as follows: <code class="docutils literal notranslate"><span class="pre">start:step:stop</span></code>, and these include the last index (<code class="docutils literal notranslate"><span class="pre">stop</span></code>).</p>
-</div>
-<p>You can pass the index range to the URL, in the form of a <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expression</span> <span class="pre">(CE)</span></code>. The syntax for <code class="docutils literal notranslate"><span class="pre">CE</span></code>s in <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> is:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;?dap4.ce=/lat[500:1:2000];/lon[2000:1:4500];/chlor_a[500:1:2000][2000:1:4500]&quot;</span>
-</pre></div>
-</div>
+<section id="define-area-subset-of-interest">
+<h2>Define area / subset of interest<a class="headerlink" href="#define-area-subset-of-interest" title="Link to this heading">#</a></h2>
+<p>It is good practice to perform some exploratory data analysis to reduce the size of the download. Below we identify the spatial index that define our coverage, and will use that to index the array, and only download that subset.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;dap4://oceandata.sci.gsfc.nasa.gov/opendap/PACE_OCI/L3SMI/2024/0310/PACE_OCI.20240310.L3m.DAY.CHL.V2_0.chlor_a.4km.NRT.nc?dap4.ce=/lat[500:1:2000];/lon[2000:1:4500];/chlor_a[500:1:2000][2000:1:4500]&quot;</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Min/max of lon values</span>
+<span class="n">minLon</span><span class="p">,</span> <span class="n">maxLon</span> <span class="o">=</span> <span class="o">-</span><span class="mi">96</span><span class="p">,</span> <span class="mi">10</span>
+
+<span class="c1"># Min/Max of lat values</span>
+<span class="n">minLat</span><span class="p">,</span> <span class="n">maxLat</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">70</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
-<span class="n">ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">iLon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">lon</span><span class="o">&gt;</span><span class="n">minLon</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">lon</span> <span class="o">&lt;</span> <span class="n">maxLon</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">iLat</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">lat</span><span class="o">&gt;</span><span class="n">minLat</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">lat</span> <span class="o">&lt;</span> <span class="n">maxLat</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="visual-inspection-of-coordinate-arrays">
+<h2>Visual Inspection of coordinate arrays<a class="headerlink" href="#visual-inspection-of-coordinate-arrays" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lon</span><span class="p">,</span> <span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iLon</span><span class="p">,</span><span class="n">lon</span><span class="p">[</span><span class="n">iLon</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;x-indexes of original remote file&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Longitudes&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span><span class="s1">&#39;k--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">iLat</span><span class="p">,</span><span class="n">lat</span><span class="p">[</span><span class="n">iLat</span><span class="p">],</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;y-indexes of original remote file&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Latitude&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.PACE_OCI.20240310.L3m.DAY.CHL.V2_0.chlor_a.4km.NRT.nc
-├──lat
-├──lon
-└──chlor_a
-</pre></div>
+<img alt="../_images/dcd95f6140d484d0f080b03e9b2b5e4964cd01dbdc1f5fda5603a03d41799588.png" src="../_images/dcd95f6140d484d0f080b03e9b2b5e4964cd01dbdc1f5fda5603a03d41799588.png" />
 </div>
 </div>
-</div>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Lon</span><span class="p">,</span> <span class="n">Lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">decode</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">][:]),</span> <span class="n">decode</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">][:]))</span>
-</pre></div>
-</div>
-</div>
-</div>
+<p><strong>Fig 1.</strong> Lon and Lat values are continuous, and only cover data/region of interest.</p>
+</section>
+<section id="download-only-the-subset">
+<h2>Download only the subset<a class="headerlink" href="#download-only-the-subset" title="Link to this heading">#</a></h2>
+<p>and decode the values of the variable of interest.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">chlor_a</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">][:]</span>
+<span class="n">CHLOR_A</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">][</span><span class="n">iLat</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">iLat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span><span class="n">iLon</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">iLon</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 104 ms, sys: 28.3 ms, total: 132 ms
-Wall time: 595 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 134 ms, sys: 43.2 ms, total: 177 ms
+Wall time: 3.46 s
 </pre></div>
 </div>
 </div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CHLOR_A</span> <span class="o">=</span> <span class="n">decode</span><span class="p">(</span><span class="n">chlor_a</span><span class="p">)</span>
-<span class="n">CHLOR_A</span><span class="o">.</span><span class="n">shape</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Original size of array: &quot;</span><span class="p">,</span> <span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1501, 2501)
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Original size of array:  (4320, 8640)
 </pre></div>
 </div>
 </div>
 </div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Size of downloaded subset: &quot;</span><span class="p">,</span><span class="n">CHLOR_A</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Size of downloaded subset:  (1535, 2543)
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Lon</span><span class="p">,</span> <span class="n">Lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">lon</span><span class="p">[</span><span class="n">iLon</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">iLon</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span> <span class="n">lat</span><span class="p">[</span><span class="n">iLat</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">iLat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_global</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">coastlines</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Lon</span><span class="p">,</span> <span class="n">Lat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">CHLOR_A</span><span class="p">),</span> <span class="mi">400</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;nipy_spectral&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; [&#39;</span><span class="o">+</span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">units</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8e343aaa323d7be97bf7f3211fdf205c7cbd5bdaa73d6586dbdb4e1c1b74d070.png" src="../_images/8e343aaa323d7be97bf7f3211fdf205c7cbd5bdaa73d6586dbdb4e1c1b74d070.png" />
+</div>
+</div>
+<p><strong>Fig 2.</strong> An approach to visually subset the global Chlorophyll A concentration. This approach allows to extract index values to construct the Constraint Expression and add it to the URL.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">axes</span><span class="p">(</span><span class="n">projection</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">())</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">coastlines</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Lon</span><span class="p">,</span> <span class="n">Lat</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">CHLOR_A</span><span class="p">),</span> <span class="mi">400</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;nipy_spectral&#39;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">chlor_a</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; [&#39;</span><span class="o">+</span><span class="n">chlor_a</span><span class="o">.</span><span class="n">units</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s1">&#39; [&#39;</span><span class="o">+</span><span class="n">ds_full</span><span class="p">[</span><span class="s1">&#39;chlor_a&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">units</span><span class="o">+</span><span class="s1">&#39;]&#39;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/ed44535d38423d59a81b1dec4af7ff6c7aa1a07c78e13898fbae8065ca699cf6.png" src="../_images/ed44535d38423d59a81b1dec4af7ff6c7aa1a07c78e13898fbae8065ca699cf6.png" />
+<img alt="../_images/6453f1693cfdeb0eabf2d74737e76312fde11a1710eb86710e2dc3071bc4f3cd.png" src="../_images/6453f1693cfdeb0eabf2d74737e76312fde11a1710eb86710e2dc3071bc4f3cd.png" />
 </div>
 </div>
-<p><strong>Fig 3.</strong> Subset the global Chlorophyll A concentration. Only this data was requested and downloaded. The OPeNDAP server, in this case Hyrax, perform all subseting in a data-proximate way.</p>
+<p><strong>Fig 3.</strong> Same as in Figure 2, but now the plot shows only where data was downloaded.</p>
 </section>
 </section>
 
@@ -847,9 +833,11 @@ Wall time: 595 ms
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#access-earthdata">Access EARTHDATA</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#add-to-session-s-headers-token-authorization">Add to session’s headers Token Authorization</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-download-some-data">Lets download some data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subsetting-data">Subsetting data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-a-constraint-expression-to-url">Adding a Constraint Expression to URL</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-data-by-indexing-the-array">Download data by indexing the array</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-one-dimensional-lat-and-lon-values">Download one-dimensional lat and lon values</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#define-area-subset-of-interest">Define area / subset of interest</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visual-inspection-of-coordinate-arrays">Visual Inspection of coordinate arrays</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#download-only-the-subset">Download only the subset</a></li>
 </ul>
   </nav></div>
 

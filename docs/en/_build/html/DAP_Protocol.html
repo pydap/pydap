@@ -374,15 +374,7 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabular-data">Tabular data</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#erddap-in-situ-data">ERDDAP in situ data</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-data">Filtering data</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authentication">Authentication</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cas">CAS</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#urs-nasa-earthdata">URS NASA EARTHDATA</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#earth-system-grid-federation-esgf">Earth System Grid Federation (ESGF)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced features</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-cache">Using a cache</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-a-proxy">Configuring a proxy</a></li>
 </ul>
 </li>
@@ -643,8 +635,8 @@ check the names of the store variables like we would do with a Python dictionary
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 3.62 ms, sys: 1.53 ms, total: 5.16 ms
-Wall time: 249 ms
+CPU times: user 4.83 ms, sys: 2.39 ms, total: 7.22 ms
+Wall time: 279 ms
 </pre></div>
 </div>
 </div>
@@ -654,7 +646,7 @@ Wall time: 249 ms
 <p>Below, we access the same dataset on the same server and request the DAP2 response.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">)</span> <span class="c1"># dap2 is the default</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span> <span class="n">output_grid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># dap2 is the default</span>
 <span class="n">dataset</span>
 </pre></div>
 </div>
@@ -757,7 +749,7 @@ Wall time: 249 ms
 <p>It is possible to specify NOT to download the coordinate axes of a <code class="docutils literal notranslate"><span class="pre">GridType</span></code> variable when opening a URL as follows:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">,</span> <span class="n">output_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">)</span>
 <span class="n">dataset</span>
 </pre></div>
 </div>
@@ -791,8 +783,8 @@ Wall time: 249 ms
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 3.97 ms, sys: 4.9 ms, total: 8.87 ms
-Wall time: 219 ms
+CPU times: user 5.9 ms, sys: 4.17 ms, total: 10.1 ms
+Wall time: 275 ms
 </pre></div>
 </div>
 </div>
@@ -823,8 +815,8 @@ Wall time: 219 ms
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 1.92 ms, sys: 735 μs, total: 2.65 ms
-Wall time: 158 ms
+CPU times: user 3.51 ms, sys: 1.21 ms, total: 4.72 ms
+Wall time: 151 ms
 </pre></div>
 </div>
 </div>
@@ -1288,64 +1280,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <img alt="_images/9ab773202be91ba9e234cfbfcc6adc210ddabe6364601be24152a8e05e61fe0b.png" src="_images/9ab773202be91ba9e234cfbfcc6adc210ddabe6364601be24152a8e05e61fe0b.png" />
 </div>
 </div>
-</section>
-</section>
-<section id="authentication">
-<h2>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">#</a></h2>
-<p><strong>Basic and Digest</strong></p>
-<p>To use <code class="docutils literal notranslate"><span class="pre">Basic</span></code> and <code class="docutils literal notranslate"><span class="pre">Digest</span></code> authentication, simply add your username and password to the dataset URL. Keep in mind that if the server only supports Basic authentication your credentials will be sent as plaintext, and could be sniffed on the network.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://username:password@server.example.com/path/to/dataset&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<section id="cas">
-<h3>CAS<a class="headerlink" href="#cas" title="Link to this heading">#</a></h3>
-<p>The <a class="reference external" href="http://en.wikipedia.org/wiki/Central_Authentication_Service">Central Authentication Service</a> (<code class="docutils literal notranslate"><span class="pre">CAS</span></code>) is a single sign-on protocol for the web, usually involving a web browser and cookies. Nevertheless it’s possible to use pydap with an OPeNDAP server behind a CAS. The function <code class="docutils literal notranslate"><span class="pre">install_cas_client</span></code> below
-replaces pydap’s default HTTP function with a new version able to submit authentication data to an HTML form and store credentials in cookies. (In this particular case, the server uses Javascript to redirect the browser to a new location, so the client has to parse the location from the Javascript code; other CAS would require a tweaked function.)</p>
-<p>To use it, just attach a web browsing <code class="docutils literal notranslate"><span class="pre">session</span></code> with authentication cookies:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.cas.get_cookies</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_session</span>
-<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">authentication_url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This method could work but each CAS is slightly different and might require a specifically designed <code class="docutils literal notranslate"><span class="pre">setup_session</span></code> instance. Two CAS are however explicitly supported by <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>:</p>
-</section>
-<section id="urs-nasa-earthdata">
-<h3>URS NASA EARTHDATA<a class="headerlink" href="#urs-nasa-earthdata" title="Link to this heading">#</a></h3>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This method requires an EDL account. If you do not have one, go <a class="reference external" href="https://urs.earthdata.nasa.gov/home">HERE</a> to create one</p>
-</div>
-<p>Authentication can done through a <code class="docutils literal notranslate"><span class="pre">username</span></code> and a <code class="docutils literal notranslate"><span class="pre">password</span></code>. However, it is <code class="docutils literal notranslate"><span class="pre">highly</span> <span class="pre">recommended</span></code> to use instead <code class="docutils literal notranslate"><span class="pre">tokens</span></code>. This <a class="reference internal" href="#.notebooks/ECCO"><span class="xref myst">ECCO</span></a> provides an example of how to use tokens to authenticate.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;YourTokenHere&quot;</span>
-<span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
-<span class="n">my_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
-<span class="n">my_session</span><span class="o">.</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">auth_hdr</span><span class="p">}</span>
-</pre></div>
-</div>
-<p>With that you can now pass the <code class="docutils literal notranslate"><span class="pre">my_session</span></code> as an argument to <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s <code class="docutils literal notranslate"><span class="pre">open_url</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="earth-system-grid-federation-esgf">
-<h3>Earth System Grid Federation (ESGF)<a class="headerlink" href="#earth-system-grid-federation-esgf" title="Link to this heading">#</a></h3>
-<p>Authentication is done through an <code class="docutils literal notranslate"><span class="pre">openid</span></code> and a <code class="docutils literal notranslate"><span class="pre">password</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.cas.esgf</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_session</span>
-<span class="n">dataset_url</span> <span class="o">=</span> <span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span>
-<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">openid</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">check_url</span><span class="o">=</span><span class="n">dataset_url</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">dataset_url</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>If your <code class="docutils literal notranslate"><span class="pre">openid</span></code> contains contains the string <code class="docutils literal notranslate"><span class="pre">ceda.ac.uk</span></code>
-authentication requires an additional <code class="docutils literal notranslate"><span class="pre">username</span></code> argument:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.cas.esgf</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_session</span>
-<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">openid</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">check_url</span><span class="o">=</span><span class="n">dataset_url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">dataset_url</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-</pre></div>
-</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>All Advanced features described below may be outdated.</p>
@@ -1368,28 +1302,6 @@ Hyrax:</p>
 </div>
 <p>Unfortunately, there’s currently no standard mechanism to discover which functions the server support. The <code class="docutils literal notranslate"><span class="pre">function</span></code> attribute will accept
 any function name the user specifies, and will try to pass the call to the remote server.</p>
-</section>
-<section id="using-a-cache">
-<h3>Using a cache<a class="headerlink" href="#using-a-cache" title="Link to this heading">#</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This may be outdated.</p>
-</div>
-<p>You can specify a cache directory in the <code class="docutils literal notranslate"><span class="pre">pydap.lib.CACHE</span></code> global variable. If this value is different than <code class="docutils literal notranslate"><span class="pre">None</span></code>, the client will try
-(if the server headers don’t prohibit) to cache the result, so repeated
-requests will be read from disk instead of the network:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pydap.lib</span>
-<span class="n">pydap</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">CACHE</span> <span class="o">=</span> <span class="s2">&quot;/tmp/pydap-cache/&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="timeout">
-<h3>Timeout<a class="headerlink" href="#timeout" title="Link to this heading">#</a></h3>
-<p>To specify a timeout for the client, just set the desired number of seconds using the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> option to <code class="docutils literal notranslate"><span class="pre">open_url(...)</span></code> or <code class="docutils literal notranslate"><span class="pre">open_dods(...)</span></code>. For example, the following commands would timeout after 30 seconds without receiving a response from the server:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_dods</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-</pre></div>
-</div>
 </section>
 <section id="configuring-a-proxy">
 <h3>Configuring a proxy<a class="headerlink" href="#configuring-a-proxy" title="Link to this heading">#</a></h3>
@@ -1509,15 +1421,7 @@ like in the <a class="reference internal" href="#cas"><span class="xref myst">CA
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabular-data">Tabular data</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#erddap-in-situ-data">ERDDAP in situ data</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-data">Filtering data</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authentication">Authentication</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cas">CAS</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#urs-nasa-earthdata">URS NASA EARTHDATA</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#earth-system-grid-federation-esgf">Earth System Grid Federation (ESGF)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced features</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-cache">Using a cache</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-a-proxy">Configuring a proxy</a></li>
 </ul>
 </li>

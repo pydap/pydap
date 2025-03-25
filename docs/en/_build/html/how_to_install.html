@@ -370,11 +370,12 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-installation">2. Complete installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required">Minimal Required</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-to-run-notebooks-in-this-documentation">Optional to run notebooks in this documentation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-dependencies">extra-dependencies</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-conda-environments">Reproducible (conda) environments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-conda-environments">Reproducible (conda) environments</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-to-run-notebooks-in-this-documentation">Optional to run notebooks in this documentation</a></li>
+</ul>
+</li>
 </ul>
             </nav>
         </div>
@@ -412,6 +413,7 @@ document.write(`
 </pre></div>
 </div>
 <p>This installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> will include the dependencies to allow users to a) subset remote data on OPeNDAP servers, and b) use pydap’s server to make data available.</p>
+<p>We recommend to use package installation managers like <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>. This approach requires having an installation of <a class="reference external" href="https://docs.anaconda.com/miniconda/">Miniconda</a> or <a class="reference external" href="https://docs.anaconda.com/anaconda/install/">Anaconda</a>.</p>
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
@@ -427,44 +429,36 @@ document.write(`
 <li><p><code class="docutils literal notranslate"><span class="pre">beautifulsoup4</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lxml</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Webob</span></code></p></li>
+<li></li>
 </ul>
-</section>
-<section id="optional-to-run-notebooks-in-this-documentation">
-<h3>Optional to run notebooks in this documentation<a class="headerlink" href="#optional-to-run-notebooks-in-this-documentation" title="Link to this heading">#</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">jupyter-lab</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">cartopy</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code></p></li>
-</ul>
-</section>
-<section id="extra-dependencies">
-<h3>extra-dependencies<a class="headerlink" href="#extra-dependencies" title="Link to this heading">#</a></h3>
-<p>With <a class="reference external" href="https://pypi.org/">PyPI</a> you can install extra-dependencies. For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap<span class="s2">&quot;[server,netcdf]&quot;</span>
-</pre></div>
-</div>
-<p>This will install <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>-python library as well as all other dependencies to use/run <code class="docutils literal notranslate"><span class="pre">pydap</span></code> as a <strong>lightweight server</strong>. With this, <code class="docutils literal notranslate"><span class="pre">pydap</span></code> implements a lightweight <a class="reference external" href="http://wsgi.org/">WSGI</a> framework that it can easily be run behind <a class="reference external" href="https://www.apache.org/">Apache</a>.</p>
-<p>While these are useful, we recommend to use package installation managers like <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>, as described below. This approach requires having an installation of <a class="reference external" href="https://docs.anaconda.com/miniconda/">Miniconda</a> or <a class="reference external" href="https://docs.anaconda.com/anaconda/install/">Anaconda</a>.</p>
 </section>
 </section>
 <section id="reproducible-conda-environments">
 <h2>Reproducible (conda) environments<a class="headerlink" href="#reproducible-conda-environments" title="Link to this heading">#</a></h2>
 <p>You can easily use conda to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> or <code class="docutils literal notranslate"><span class="pre">pydap-server</span></code>, along with any optional packages for sharing a reproducible workflow. For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap-server<span class="w"> </span>jupyterlab<span class="w"> </span>ipython<span class="w"> </span>netCDF4<span class="w"> </span>matplotlib
-conda<span class="w"> </span>activate<span class="w"> </span>pydap
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap-server
+conda<span class="w"> </span>activate<span class="w"> </span>pydap_env
 </pre></div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you already have <code class="docutils literal notranslate"><span class="pre">mamba</span></code> installed, you can replace all <code class="docutils literal notranslate"><span class="pre">conda</span></code> in the commands with <code class="docutils literal notranslate"><span class="pre">mamba</span></code>.</p>
 </div>
+<section id="optional-to-run-notebooks-in-this-documentation">
+<h3>Optional to run notebooks in this documentation<a class="headerlink" href="#optional-to-run-notebooks-in-this-documentation" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">matplotlib</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cartopy</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code></p></li>
+</ul>
 <p>To install the latest <code class="docutils literal notranslate"><span class="pre">pydap</span></code> version (client-only), directly from the github repository, run:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
 </pre></div>
 </div>
 <p>This version is not stable as it is being actively developed and improved upon by contributors and maintainers of the <code class="docutils literal notranslate"><span class="pre">pydap</span></code> package.</p>
 <p>If you are interested in installing <code class="docutils literal notranslate"><span class="pre">pydap</span></code> in <code class="docutils literal notranslate"><span class="pre">developer</span> <span class="pre">mode</span></code>, to potentially contribute to the package, got o <a class="reference internal" href="contribute/contr_cod.html"><span class="std std-doc">Contributing to the code</span></a>.</p>
+</section>
 </section>
 </section>
 
@@ -536,11 +530,12 @@ conda<span class="w"> </span>activate<span class="w"> </span>pydap
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-installation">2. Complete installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required">Minimal Required</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-to-run-notebooks-in-this-documentation">Optional to run notebooks in this documentation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-dependencies">extra-dependencies</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-conda-environments">Reproducible (conda) environments</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-conda-environments">Reproducible (conda) environments</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-to-run-notebooks-in-this-documentation">Optional to run notebooks in this documentation</a></li>
+</ul>
+</li>
 </ul>
   </nav></div>
 
