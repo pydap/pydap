@@ -29,11 +29,7 @@ _version.py
 # Sphinx documentation
 docs/_build/*
 docs/_build/.*
-
-docs/build_en/*
-docs/build_en/.*
-docs/build_es/*
-docs/build_es/.*
+docs/.ipynb_checkpoints
 docs/en/_build/*
 docs/en/_build/.*
 
