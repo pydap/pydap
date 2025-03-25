@@ -27,11 +27,11 @@ pip-log.txt
 _version.py
 
 # Sphinx documentation
-docs/_build/
-docs/build_en
-docs/build_es
-docs/en/_build
-docs/es/_build
+docs/_build/*
+docs/build_en/*
+docs/build_es/*
+docs/en/_build/*
+docs/es/_build/*
 
 # Unit test / coverage reports
 .coverage
