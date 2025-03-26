@@ -11,7 +11,6 @@ parts:
     sections:
     - file: 5_minute_tutorial
   - file: NEWS
-  - file: faqs
 - caption: Examples
   chapters:
   - file: notebooks/Authentication
@@ -21,6 +20,11 @@ parts:
   - file: notebooks/PACE
   - file: notebooks/SWOT
   - file: notebooks/CMIP6
+- caption: FAQs
+  chapters:
+  - file: faqs
+    sections:
+    - file: Q1
 - caption: Documentation
   chapters:
   - file: PydapAsClient
