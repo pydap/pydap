@@ -20,6 +20,14 @@ parts:
   - file: notebooks/PACE
   - file: notebooks/SWOT
   - file: notebooks/CMIP6
+- caption: Frequently Asked Questions
+  chapters:
+  - file: faqs
+    sections:
+    - file: Q1
+    - file: Q2
+    - file: Q3
+    - file: Q4
 - caption: Documentation
   chapters:
   - file: PydapAsClient

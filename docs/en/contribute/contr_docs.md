@@ -38,24 +38,31 @@ pip install --upgrade git+https://github.com/pydap/pydap.git
 
 3. Create a new branch, and set its upstream and use git (see [steps 3 and 4 from contributing to the code](contr_cod.md))
 
-4. Clean any previous built html pages with
-```shell
-jupyter-book clean docs --all
-```
+4. The documentation is now split into two source files, one in English (you can find it in: `docs/en`), and one in Spanish (los puedes encontrar aqui `docs/es`). Depending on which version of the documentation you are contributing, you can modify the source files.
 
-5. Build the docs by running
+5. Once you have made changes to the source files of the documentation (either in `docs/en` or `docs/es`), use the `build.sh` to clean and build `html` documentation files (you may need to make `build.sh`1= executable with `chmod +x `)
 ```shell
-jupyter-book build docs
+cd docs
+chmod +x build.sh
+./build.sh
 ```
 Depending on how many changes you have done to the documentation, this last step may take a while. It also depends on the type of files added to the documentation (`ipynb` are slower to build).
 
-6. Once the build process is finished, you can inspect the locally built html files by running:
+6. Once the build process is finished, you can inspect the locally built html files. The `build.sh` creates a redirect at the base of the built html files. Thus, to open the English documentation execute
 ```shell
-open docs/_build/html/index.html
+open _build/html/index.html
+```
+The redirect means that the English language version of the documentation is the default. To open the Spanish version, execute
+```shell
+open _build/html/es/intro.html
+```
+
+```{warning}
+Make sure to check that **ALL** notebooks were successfully built.
 ```
 
 ```{note}
-Make sure to check that **ALL** notebooks were successfully built. This step is important because some of the notebooks require authentications. For testing the documentation it is OK to include passwords/tokens, but when you are getting ready to submit your PR for review, do not include these in the final version of your PR.
+The documentation will have a toggle to manually switch between the English and Spanish versions.
 ```
 
 7. Push all changes and create a PR. `PyDAP` follows the recommendations of keeping the `source` files on `main`, and the `build` files on the `gh-pages` branch.
