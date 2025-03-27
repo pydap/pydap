@@ -14,7 +14,7 @@ The documentation was built using [jupyter-book](https://jupyterbook.org/en/stab
 ## How to contribute to the documentation?
 To add/edit the documentation, we recommend you follow the previous guides on version control, forking, and branching. That said, you can follow the steps:
 
-1. Navitate to the cloned repository
+1. Navigate to the cloned repository on your local machine.
 
 2. Create/activate the conda environment.
 ```shell
@@ -30,7 +30,7 @@ The `docs/environment.yml` file provides a ready-to-use environment (it installs
 ```shell
 pip install -e .
 ```
-or to install directly from the main branch:
+or to install `pydap` directly from the main branch:
 
 ```shell
 pip install --upgrade git+https://github.com/pydap/pydap.git
@@ -45,6 +45,10 @@ pip install --upgrade git+https://github.com/pydap/pydap.git
 cd docs
 chmod +x build.sh
 ./build.sh
+```
+
+```{warning}
+Many of the tutorial examples in the documentation require EDL Authentication via a local `.netrc` file. Make sure you have one with valid credentials. See [Authentication](../notebooks/Authentication) 
 ```
 Depending on how many changes you have done to the documentation, this last step may take a while. It also depends on the type of files added to the documentation (`ipynb` are slower to build).
 
