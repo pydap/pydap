@@ -4,7 +4,15 @@
 
 <html lang="en" data-content_root="./" >
 
-  <head>
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-EN2VD1J32L");
+</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -394,7 +402,7 @@ document.write(`
 <p>There are two stages at which <code class="docutils literal notranslate"><span class="pre">pydap</span></code> downloads content: <code class="docutils literal notranslate"><span class="pre">a)</span></code> during the dataset creation, and <code class="docutils literal notranslate"><span class="pre">b)</span></code> fetching numerical / array data.</p>
 <section id="a-metadata-dataset-creation">
 <h2><font size="5"><span style='color:#0066cc'> <strong>a) Metadata / dataset creation</strong><font size="3"><a class="headerlink" href="#a-metadata-dataset-creation" title="Link to this heading">#</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pyds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap2&#39;</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pyds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap2&#39;</span><span class="p">)</span> <span class="c1"># protocol=&quot;dap4&quot; </span>
 </pre></div>
 </div>
 <p>The performace depends on various factors:</p>

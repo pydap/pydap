@@ -4,7 +4,15 @@
 
 <html lang="en" data-content_root="./" >
 
-  <head>
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-EN2VD1J32L");
+</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -391,18 +399,71 @@ document.write(`
                   
   <section id="is-this-a-dap2-or-dap4-url">
 <h1>Is this a DAP2 or DAP4 URL?<a class="headerlink" href="#is-this-a-dap2-or-dap4-url" title="Link to this heading">#</a></h1>
-<p>Only two <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> servers broadly support <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>: <a class="reference external" href="https://www.opendap.org/software/hyrax-data-server/">Hyrax Data Server</a> (developed by <a class="reference external" href="https://www.opendap.org/">OPeNDAP Inc</a>, the original architects of <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>), and <a class="reference external" href="https://www.unidata.ucar.edu/software/tds/">Thredds Data Server</a> (developed by <a class="reference external" href="https://www.unidata.ucar.edu/">NSF Unidata</a>). <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> was originally developed jointly by <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> and <code class="docutils literal notranslate"><span class="pre">Unidata</span></code> back in 2016 (see <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html">the DAP4 specification</a>). Any <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code> and <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> servers that implements <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> also implements the <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>, and checking whether a URL is DAP4 or DAP2 is different with each of this servee=rs.</p>
+<p>Only two <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> servers broadly support <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>: <a class="reference external" href="https://www.opendap.org/software/hyrax-data-server/">Hyrax Data Server</a> (developed by <a class="reference external" href="https://www.opendap.org/">OPeNDAP Inc</a>, the original architects of <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>), and <a class="reference external" href="https://www.unidata.ucar.edu/software/tds/">Thredds Data Server</a> (developed by <a class="reference external" href="https://www.unidata.ucar.edu/">NSF Unidata</a>). <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> was originally developed jointly by <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> and <code class="docutils literal notranslate"><span class="pre">Unidata</span></code> back in 2016 (see <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html">the DAP4 specification</a>). Any <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code> and <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> servers that implements <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> also implements the <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>, and checking whether a URL is DAP4 or DAP2 is different with each of this servers.</p>
 <section id="hyrax-data-server">
 <h2><font size="5"><span style='color:#0066cc'> <strong>Hyrax Data Server</strong><font size="3"><a class="headerlink" href="#hyrax-data-server" title="Link to this heading">#</a></h2>
-<p>With <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code>, the easiest way to check if the url supports DAP4 or not, is to take the URL, append a <code class="docutils literal notranslate"><span class="pre">.dmr</span></code> (or <code class="docutils literal notranslate"><span class="pre">.dmr.html</span></code>), and past it onto a browser. For example, this test <a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr">coads_climatology URL</a> on the test (Hyrax) dataserver produces DAP4 Data Response.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code>, the easiest way to check if the url supports DAP4 or not, is to take the URL, append a <code class="docutils literal notranslate"><span class="pre">.dmr</span></code> (or <code class="docutils literal notranslate"><span class="pre">.dmr.html</span></code>), and past it onto a browser. For example, consider the following Hyrax opendap URL</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">URL</span> <span class="o">=</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">test</span><span class="o">.</span><span class="n">opendap</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">opendap</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nc</span><span class="o">/</span><span class="n">coads_climatology</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p><strong>DAP2 Hyrax URL</strong></p></th>
+<th class="head text-right"><p><strong>DAP4 Hyrax URL</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dds">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dds</a></p></td>
+<td class="text-right"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.html">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.html</a></p></td>
+<td class="text-right"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr.html">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr.html</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.das">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.das</a></p></td>
+<td class="text-right"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr.xml">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr.xml</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If you replace the <code class="docutils literal notranslate"><span class="pre">dmr</span></code> with only <code class="docutils literal notranslate"><span class="pre">.html</span></code> on the same <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code> url, it produces the DAP2 request form.</p>
+<p>A Hyrax server that implements DAP4 should implement DAP2. In most Hyrax servers (version &gt; 1.15) DAP4 is the default protocol implementation, and when a user requests a DAP2 response, the server first processes and then translates a DAP4 into a DAP2 response. This enables backwards compatibility with older clients that can only parse DAP2 responses, while supporting newer datasets. In the process of doing so, it is possible that the remote dataset cannot be translated into a DAP2 response in its entirety, and the Hyrax can return a 400 Error instead (<a href="Q4.html#a-word-of-caution">see word of caution</a>)</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>To see the latest official release of <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code>, go to the <a class="reference external" href="https://www.opendap.org/">official OPeNDAP website</a> and check <code class="docutils literal notranslate"><span class="pre">Latest</span> <span class="pre">Release</span></code> under <code class="docutils literal notranslate"><span class="pre">Software</span></code>.</p>
 </div>
 </section>
 <section id="thredds-data-server">
 <h2><font size="5"><span style='color:#0066cc'> <strong>Thredds Data Server</strong><font size="3"><a class="headerlink" href="#thredds-data-server" title="Link to this heading">#</a></h2>
-<p>With the <code class="docutils literal notranslate"><span class="pre">TDS</span></code>, a <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> URL will have a <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> on its URL. If you replace the <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> with <code class="docutils literal notranslate"><span class="pre">dap4</span></code>, and past it onto a browser it should produce a produce a webpage that allows to download a DAP4 response. For example, this <a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dodsC/testdods/coads_climatology.nc.html">DAP2 coads_climatology URL</a>, as opposed to this <a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dap4/testdods/coads_climatology.nc.html">DAP4 coads_climatology URL</a></p>
+<p>With the <code class="docutils literal notranslate"><span class="pre">TDS</span></code>, a <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> URL will have a <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> on its URL. If you replace the <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> with <code class="docutils literal notranslate"><span class="pre">dap4</span></code>, and past it onto a browser it should produce a produce a webpage that allows to download a DAP4 response. For example, consider the</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">URL</span> <span class="o">=</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">thredds</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">unidata</span><span class="o">.</span><span class="n">ucar</span><span class="o">.</span><span class="n">edu</span><span class="o">/</span><span class="n">thredds</span><span class="o">/</span><span class="n">dodsC</span><span class="o">/</span><span class="n">testdods</span><span class="o">/</span><span class="n">coads_climatology</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p><strong>DAP2 Thredds URL</strong></p></th>
+<th class="head text-right"><p><strong>DAP4 Thredds URL</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dodsC/testdods/coads_climatology.nc.html">https://thredds-test.unidata.ucar.edu/thredds/dodsC/testdods/coads_climatology.nc.html</a></p></td>
+<td class="text-right"><p><a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dap4/testdods/coads_climatology.nc.html">https://thredds-test.unidata.ucar.edu/thredds/dap4/testdods/coads_climatology.nc.html</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dodsC/testdods/coads_climatology.nc.dds">https://thredds-test.unidata.ucar.edu/thredds/dodsC/testdods/coads_climatology.nc.dds</a></p></td>
+<td class="text-right"><p><a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dap4/testdods/coads_climatology.nc.dmr.xml">https://thredds-test.unidata.ucar.edu/thredds/dap4/testdods/coads_climatology.nc.dmr.xml</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>A <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> server that implements DAP2 may not implement DAP4. It is strongly recommended to check if a server is configure to offer the DAP4 endpoint.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To see the latest official release of <code class="docutils literal notranslate"><span class="pre">Thredds</span></code>, go to the <a class="reference external" href="https://www.unidata.ucar.edu/software/tds/">official Thredds page</a>.</p>
+</div>
 </section>
 </section>
 

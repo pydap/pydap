@@ -4,7 +4,15 @@
 
 <html lang="en" data-content_root="../" >
 
-  <head>
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-EN2VD1J32L");
+</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -402,7 +410,7 @@ document.write(`
 <h2>How to contribute to the documentation?<a class="headerlink" href="#how-to-contribute-to-the-documentation" title="Link to this heading">#</a></h2>
 <p>To add/edit the documentation, we recommend you follow the previous guides on version control, forking, and branching. That said, you can follow the steps:</p>
 <ol class="arabic simple">
-<li><p>Navitate to the cloned repository</p></li>
+<li><p>Navigate to the cloned repository on your local machine.</p></li>
 <li><p>Create/activate the conda environment.</p></li>
 </ol>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>docs/environment.yml
@@ -417,7 +425,7 @@ conda<span class="w"> </span>activate<span class="w"> </span>pydap_docs
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
-<p>or to install directly from the main branch:</p>
+<p>or to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> directly from the main branch:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
 </pre></div>
 </div>
@@ -430,6 +438,10 @@ conda<span class="w"> </span>activate<span class="w"> </span>pydap_docs
 chmod<span class="w"> </span>+x<span class="w"> </span>build.sh
 ./build.sh
 </pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Many of the tutorial examples in the documentation require EDL Authentication via a local <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> file. Make sure you have one with valid credentials. See <a class="reference internal" href="../notebooks/Authentication.html"><span class="doc std std-doc">Authentication</span></a></p>
 </div>
 <p>Depending on how many changes you have done to the documentation, this last step may take a while. It also depends on the type of files added to the documentation (<code class="docutils literal notranslate"><span class="pre">ipynb</span></code> are slower to build).</p>
 <ol class="arabic simple" start="6">

@@ -4,7 +4,15 @@
 
 <html lang="en" data-content_root="./" >
 
-  <head>
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-EN2VD1J32L");
+</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -379,18 +387,18 @@ document.write(`
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requests-library">Requests library</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-default-non-cached-session">Use default non-cached Session</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-try-again">Lets try again</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-hapenning">What is hapenning?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-default-non-cached-session">Use default non-cached Session</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-try-again">Lets try again</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-hapenning">What is hapenning?</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-cached-session">Use Cached-Session</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#clear-any-prevous-cached-session">clear any prevous cached session</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#now-let-s-try-again">Now let’s try again!</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#finally-let-s-clear-the-cache">Finally, let’s clear the cache</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#now-let-s-try-again">Now let’s try again!</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finally-let-s-clear-the-cache">Finally, let’s clear the cache</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
 </ul>
             </nav>
         </div>
@@ -497,15 +505,14 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 20.3 ms, sys: 1.49 ms, total: 21.8 ms
-Wall time: 198 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 16.8 ms, sys: 1.64 ms, total: 18.5 ms
+Wall time: 211 ms
 </pre></div>
 </div>
 </div>
 </div>
-</section>
 <section id="lets-try-again">
-<h2>Lets try again<a class="headerlink" href="#lets-try-again" title="Link to this heading">#</a></h2>
+<h3>Lets try again<a class="headerlink" href="#lets-try-again" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
@@ -514,20 +521,21 @@ Wall time: 198 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 5.52 ms, sys: 829 μs, total: 6.35 ms
-Wall time: 152 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 4.72 ms, sys: 710 μs, total: 5.43 ms
+Wall time: 161 ms
 </pre></div>
 </div>
 </div>
 </div>
 </section>
 <section id="what-is-hapenning">
-<h2>What is hapenning?<a class="headerlink" href="#what-is-hapenning" title="Link to this heading">#</a></h2>
+<h3>What is hapenning?<a class="headerlink" href="#what-is-hapenning" title="Link to this heading">#</a></h3>
 <p>In both cases, only the <code class="docutils literal notranslate"><span class="pre">dmr</span></code> associated with the remote dataset was fetched, and used to create the pydap dataset.</p>
 <p>The apparent difference in timing can sometimes be attributes to what is called “cold reading” vs “warm reading”. But in both scenarios,
 each time the <code class="docutils literal notranslate"><span class="pre">pyds</span></code> is created, the remote <code class="docutils literal notranslate"><span class="pre">dmr</span></code> dataset is fetched and processed by pydap to create the <code class="docutils literal notranslate"><span class="pre">lazy</span></code> dataset that point
 to the original opendap source.</p>
 <p>To avoid repeatedly downloading the same resource over and over, potentially overwhelming remote data servers, pydap can now cache responses.</p>
+</section>
 </section>
 <section id="use-cached-session">
 <h2>Use Cached-Session<a class="headerlink" href="#use-cached-session" title="Link to this heading">#</a></h2>
@@ -556,17 +564,16 @@ to the original opendap source.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 11.8 ms, sys: 3.85 ms, total: 15.6 ms
-Wall time: 188 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 8 ms, sys: 3.98 ms, total: 12 ms
+Wall time: 203 ms
 </pre></div>
 </div>
 </div>
 </div>
 <p>The timing required to download a remote <code class="docutils literal notranslate"><span class="pre">dmr</span></code> from the same server remains close to that of the <code class="docutils literal notranslate"><span class="pre">warm</span></code> case.</p>
 </section>
-</section>
 <section id="now-let-s-try-again">
-<h2>Now let’s try again!<a class="headerlink" href="#now-let-s-try-again" title="Link to this heading">#</a></h2>
+<h3>Now let’s try again!<a class="headerlink" href="#now-let-s-try-again" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
@@ -575,8 +582,8 @@ Wall time: 188 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 6.8 ms, sys: 2.08 ms, total: 8.88 ms
-Wall time: 8.42 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.32 ms, sys: 422 μs, total: 2.74 ms
+Wall time: 2.64 ms
 </pre></div>
 </div>
 </div>
@@ -608,7 +615,7 @@ Wall time: 8.42 ms
 </div>
 </section>
 <section id="finally-let-s-clear-the-cache">
-<h2>Finally, let’s clear the cache<a class="headerlink" href="#finally-let-s-clear-the-cache" title="Link to this heading">#</a></h2>
+<h3>Finally, let’s clear the cache<a class="headerlink" href="#finally-let-s-clear-the-cache" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cached_session</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -628,13 +635,18 @@ Wall time: 8.42 ms
 </div>
 </div>
 </div>
+</section>
+</section>
 <section id="timeout">
-<h3>Timeout<a class="headerlink" href="#timeout" title="Link to this heading">#</a></h3>
+<h2>Timeout<a class="headerlink" href="#timeout" title="Link to this heading">#</a></h2>
 <p>To specify a timeout for the client, just set the desired number of seconds using the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> option to <code class="docutils literal notranslate"><span class="pre">open_url(...)</span></code>. For example, the following would timeout after 30 seconds without receiving a response from the server:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 </pre></div>
 </div>
-</section>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The default timeout is 120 seconds, or 2 minutes.</p>
+</div>
 </section>
 <div class="toctree-wrapper compound">
 </div>
@@ -705,18 +717,18 @@ Wall time: 8.42 ms
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requests-library">Requests library</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-default-non-cached-session">Use default non-cached Session</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-try-again">Lets try again</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-hapenning">What is hapenning?</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-default-non-cached-session">Use default non-cached Session</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#lets-try-again">Lets try again</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-hapenning">What is hapenning?</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-cached-session">Use Cached-Session</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#clear-any-prevous-cached-session">clear any prevous cached session</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#now-let-s-try-again">Now let’s try again!</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#finally-let-s-clear-the-cache">Finally, let’s clear the cache</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#now-let-s-try-again">Now let’s try again!</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finally-let-s-clear-the-cache">Finally, let’s clear the cache</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
 </ul>
   </nav></div>
 

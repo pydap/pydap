@@ -4,7 +4,15 @@
 
 <html lang="en" data-content_root="./" >
 
-  <head>
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-EN2VD1J32L");
+</script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -378,7 +386,7 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-dap4-is-broader-in-scope"><font size="5"><span style="color:#0066cc"> <strong>The DAP4 is broader in scope</strong><font size="3"></font></span></font></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dap4-offers-improved-http-transport"><font size="5"><span style="color:#0066cc"> <strong>DAP4 offers improved HTTP transport</strong><font size="3"></font></span></font></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-word-of-caution">A word of caution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-word-of-caution"><font size="5"><span style="color:#ff6666"> <strong>A word of caution</strong><font size="3"></font></span></font></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dap4-is-the-default"><font size="5"><span style="color:#0066cc"> <strong>DAP4 is the default</strong><font size="3"></font></span></font></a></li>
@@ -416,7 +424,7 @@ document.write(`
 <h2><font size="5"><span style='color:#0066cc'> <strong>DAP4 offers improved HTTP transport</strong><font size="3"><a class="headerlink" href="#dap4-offers-improved-http-transport" title="Link to this heading">#</a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> protocol was first envisioned in <a class="reference external" href="https://zenodo.org/records/10610992">Cornillon, et al, 1993</a> and described in <a class="reference external" href="https://zenodo.org/records/10654616">Gallagher J. and Flierl G., 1996</a>, thus predating the <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span></code> protocol. This means that in <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> the binary data (<code class="docutils literal notranslate"><span class="pre">.dods</span></code>) is not chunked. Moreover, <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> has no implementation for <code class="docutils literal notranslate"><span class="pre">checksums</span></code>, a standarized transfer practice nowadays. <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>, in contrast, <code class="docutils literal notranslate"><span class="pre">dap</span></code> responses are chunked, embracing HTTP/1.1. Moreover, both <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code> and <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> implement <code class="docutils literal notranslate"><span class="pre">checksums</span></code>, with <code class="docutils literal notranslate"><span class="pre">checksums</span></code> being always implemented by <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code> and only when requested (in the URL) by <code class="docutils literal notranslate"><span class="pre">Thredds</span></code>.</p>
 <section id="a-word-of-caution">
-<h3>A word of caution<a class="headerlink" href="#a-word-of-caution" title="Link to this heading">#</a></h3>
+<h3><font size="5"><span style='color:#ff6666'> <strong>A word of caution</strong><font size="3"><a class="headerlink" href="#a-word-of-caution" title="Link to this heading">#</a></h3>
 <p>When a Dataset possess variables or attributes of a type described in <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> but not in <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">int64</span></code> value), the DAP4 implementing server will return an error (see this dataset, and append a <code class="docutils literal notranslate"><span class="pre">.dds</span></code> to the Data URL):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Error</span> <span class="p">{</span> 
     <span class="n">code</span> <span class="o">=</span> <span class="mi">400</span><span class="p">;</span>
@@ -504,7 +512,7 @@ document.write(`
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-dap4-is-broader-in-scope"><font size="5"><span style="color:#0066cc"> <strong>The DAP4 is broader in scope</strong><font size="3"></font></span></font></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dap4-offers-improved-http-transport"><font size="5"><span style="color:#0066cc"> <strong>DAP4 offers improved HTTP transport</strong><font size="3"></font></span></font></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-word-of-caution">A word of caution</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#a-word-of-caution"><font size="5"><span style="color:#ff6666"> <strong>A word of caution</strong><font size="3"></font></span></font></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dap4-is-the-default"><font size="5"><span style="color:#0066cc"> <strong>DAP4 is the default</strong><font size="3"></font></span></font></a></li>
