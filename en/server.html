@@ -1,0 +1,669 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Running a server &#8212; PyDAP tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'server';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Handlers" href="handlers.html" />
+    <link rel="prev" title="Responses" href="responses.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
+    <script>document.write(`<img src="_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="how_to_install.html">How to install</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="5_minute_tutorial.html">5 minute tutorial</a></li>
+
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="NEWS.html">What’s New</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Basic Authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Creating a .netrc file</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CMIP6.html">CMIP6</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="Q1.html">Pydap is slow. How can I improve the download time?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Q2.html">How can I diagnose when I am having trouble downloading data?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Q3.html">Is this a DAP2 or DAP4 URL?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Q4.html">Is there any benefit between requesting data via DAP4 over DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="PydapAsClient.html">PyDAP as a client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="DAP_Protocol.html">OPeNDAP DAP Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConstraintExpressions.html">Constraint Expressions: Server-side Subsetting</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guide for Developer</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="guide_to_developer.html">Guide for new contributors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="contribute/git.html">Guide to version control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_cod.html">Contributing to the code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_issues.html">Report Issues on GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_docs.html">Contributing to the documentation</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/server.rst" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.rst</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Running a server</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-standalone">Running standalone</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wsgi-application">WSGI Application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Flask</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apache">Apache</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">uWSGI</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docker">Docker</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="running-a-server">
+<h1>Running a server<a class="headerlink" href="#running-a-server" title="Link to this heading">#</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker <a class="github reference external" href="https://github.com/pydap/pydap/issues">pydap/pydap#issues</a>. If you have an example in which you configured pydap as a server, consider adding to this documentation. We always want to hear how PyDAP is being used.</p>
+</div>
+<p>pydap comes with a lightweight and scalable OPeNDAP server, implemented as a <a class="reference external" href="http://wsgi.org/">WSGI</a> application. Being a WSGI <a class="reference external" href="http://wsgi.org/wsgi/Applications">application</a>, pydap can run on a variety of <a class="reference external" href="http://wsgi.org/wsgi/Servers">servers</a>, and frameworks including Apache, <a class="reference external" href="https://www.nginx.com/">Nginx</a>, IIS, <a class="reference external" href="https://uwsgi-docs.readthedocs.io/en/latest/">uWSGI</a>, <a class="reference external" href="http://flask.pocoo.org/">Flask</a> or as a standalone Python process. It can also be seamless combined with different <a class="reference external" href="http://wsgi.org/wsgi/Middleware_and_Utilities">middleware</a> for authentication/authorization, GZip compression, and much more.</p>
+<p>There is no one right way to run pydap server; your application requirements and software stack will inform your deployment decisions. In this chapter we provide a few examples to try and get you on the right track.</p>
+<p>In order to distribute your data first you need to install a proper <a class="reference external" href="handlers.html">handler</a>, that will convert the data format to the pydap data model.</p>
+<section id="running-standalone">
+<h2>Running standalone<a class="headerlink" href="#running-standalone" title="Link to this heading">#</a></h2>
+<p>If you just want to quickly test the pydap server, you can run it as a standalone Python application using the server that comes with <a class="reference external" href="http://pythonpaste.org/">Python Paste</a> and <a class="reference external" href="http://gunicorn.org/">gunicorn</a>. To run the server, first make sure that you have installed pydap with the server extras dependencies:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[server]&quot;</span>
+</pre></div>
+</div>
+<p>and then just run the <code class="docutils literal notranslate"><span class="pre">pydap</span></code> script that pip installs into your bin directory:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--port<span class="w"> </span><span class="m">8080</span>
+</pre></div>
+</div>
+<p>To change the default directory listing, the help page and the HTML form, you can point a switch to your template directory</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--templates<span class="w"> </span>/path/to/my/templates.
+</pre></div>
+</div>
+<p>The HTML form template is fairly complex, since it contain some application logic and some Javascript code, so be careful to not break anything.</p>
+</section>
+<section id="wsgi-application">
+<span id="wsgi-application-section"></span><h2>WSGI Application<a class="headerlink" href="#wsgi-application" title="Link to this heading">#</a></h2>
+<p>pydap follows the <a class="reference external" href="https://www.fullstackpython.com/wsgi-servers.html">WSGI specification</a>, and most web servers gateways simply require a WSGI callable and a small amount of boiler plate code. pydap provides the <code class="docutils literal notranslate"><span class="pre">DapServer</span></code> class which is a WSGI callable located in the <code class="docutils literal notranslate"><span class="pre">pydap.wsgi.app</span></code> module. A simple WSGI application script file would be something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.wsgi.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">DapServer</span>
+<span class="n">application</span> <span class="o">=</span> <span class="n">DapServer</span><span class="p">(</span><span class="s1">&#39;/path/to/my/data/files&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h2>Flask<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p>The <a class="reference external" href="http://flask.pocoo.org/">Flask</a> framework simply requires a couple more function calls to spin up an application server. A simple server would looks something like this (your mileage may vary):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">flask</span><span class="w"> </span><span class="kn">import</span> <span class="n">Flask</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.wsgi.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">DapServer</span>
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">DapServer</span><span class="p">(</span><span class="s1">&#39;/path/to/my/data/files&#39;</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">app</span><span class="o">.</span><span class="n">wsgi_app</span> <span class="o">=</span> <span class="n">application</span>
+<span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="apache">
+<h2>Apache<a class="headerlink" href="#apache" title="Link to this heading">#</a></h2>
+<p>For a robust deployment you can run pydap with Apache, using <a class="reference external" href="http://modwsgi.org/">mod_wsgi</a>. After <a class="reference external" href="http://code.google.com/p/modwsgi/wiki/InstallationInstructions">installing mod_wsgi</a>, create a sandbox in a directory <em>outside</em> your DocumentRoot, say <code class="docutils literal notranslate"><span class="pre">/var/www/pydap/</span></code>, using <a class="reference external" href="https://docs.python.org/3/library/venv.html">a virtual environment</a>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>/var/www/pydap
+python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>/var/www/pydap/env
+</pre></div>
+</div>
+<p>If you want the sandbox to use your system installed packages (like Numpy, e.g.) you can use the <code class="docutils literal notranslate"><span class="pre">--system-site-packages</span></code> flag:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>--system-site-packages<span class="w"> </span>/var/www/pydap/env
+</pre></div>
+</div>
+<p>Now let’s activate the sandbox and install pydap – this way the module and its dependencies can be isolated from the system libraries:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>/var/www/pydap/env/bin/activate.sh
+<span class="o">(</span>env<span class="o">)</span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pydap
+</pre></div>
+</div>
+<p>Create a <a class="reference external" href="http://modwsgi.readthedocs.io/en/develop/user-guides/quick-configuration-guide.html#mounting-the-wsgi-application">WSGI script file</a> somewhere convenient (e.g. /var/www/pydap/server/apache/pydap.wsgi) that reads something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">site</span>
+<span class="c1"># force mod_wsgi to use the Python modules from the sandbox</span>
+<span class="n">site</span><span class="o">.</span><span class="n">addsitedir</span><span class="p">(</span><span class="s1">&#39;/var/www/pydap/env/lib/pythonX.Y/site-packages&#39;</span><span class="p">)</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.wsgi.app</span><span class="w"> </span><span class="kn">import</span> <span class="n">DapServer</span>
+<span class="n">application</span> <span class="o">=</span> <span class="n">DapServer</span><span class="p">(</span><span class="s1">&#39;/path/to/my/data/files&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now create an entry in your Apache configuration pointing to the <code class="docutils literal notranslate"><span class="pre">pydap.wsgi</span></code> file you just edited. To mount the server on the URL <code class="docutils literal notranslate"><span class="pre">/pydap</span></code>, for example, you should configure it like this:</p>
+<div class="highlight-apache notranslate"><div class="highlight"><pre><span></span><span class="nb">WSGIScriptAlias</span><span class="w"> </span><span class="sx">/pydap</span><span class="w"> </span><span class="sx">/var/www/pydap/server/apache/pydap.wsgi</span>
+
+<span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">/var/www/pydap/server/apache</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nb">Order</span><span class="w"> </span>allow,deny
+<span class="w">    </span><span class="nb">Allow</span><span class="w"> </span>from<span class="w"> </span><span class="k">all</span>
+<span class="nt">&lt;/Directory&gt;</span>
+</pre></div>
+</div>
+<p>This is the file I use for the <a class="reference external" href="http://test.pydap.org/">test.pydap.org</a> virtualhost:</p>
+<div class="highlight-apache notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;VirtualHost</span><span class="w"> </span><span class="s">*:80</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nb">ServerAdmin</span><span class="w"> </span>rob@pydap.org
+<span class="w">    </span><span class="nb">ServerName</span><span class="w"> </span>test.pydap.org
+
+<span class="w">    </span><span class="nb">DocumentRoot</span><span class="w"> </span><span class="sx">/var/www/sites/test.pydap.org/server/data</span>
+
+<span class="w">    </span><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">/var/www/sites/test.pydap.org/server/data</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nb">Order</span><span class="w"> </span>allow,deny
+<span class="w">        </span><span class="nb">Allow</span><span class="w"> </span>from<span class="w"> </span><span class="k">all</span>
+<span class="w">    </span><span class="nt">&lt;/Directory&gt;</span>
+
+<span class="w">    </span><span class="nb">WSGIScriptAlias</span><span class="w"> </span>/<span class="w"> </span><span class="sx">/var/www/sites/test.pydap.org/server/apache/pydap.wsgi</span>
+
+<span class="w">    </span><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">/var/www/sites/test.pydap.org/server/apache</span><span class="nt">&gt;</span>
+<span class="w">        </span><span class="nb">Order</span><span class="w"> </span>allow,deny
+<span class="w">        </span><span class="nb">Allow</span><span class="w"> </span>from<span class="w"> </span><span class="k">all</span>
+<span class="w">    </span><span class="nt">&lt;/Directory&gt;</span>
+
+<span class="w">    </span><span class="nb">ErrorLog</span><span class="w"> </span><span class="sx">/var/log/apache2/test.pydap.org.error.log</span>
+
+<span class="w">    </span><span class="c"># Possible values include: debug, info, notice, warn, error, crit,</span>
+<span class="w">    </span><span class="c"># alert, emerg.</span>
+<span class="w">    </span><span class="nb">LogLevel</span><span class="w"> </span><span class="k">warn</span>
+
+<span class="w">    </span><span class="nb">CustomLog</span><span class="w"> </span><span class="sx">/var/log/apache2/test.pydap.org.access.log</span><span class="w"> </span>combined
+<span class="w">    </span><span class="nb">ServerSignature</span><span class="w"> </span><span class="k">On</span>
+<span class="nt">&lt;/VirtualHost&gt;</span>
+</pre></div>
+</div>
+<p>You can find more information on the <a class="reference external" href="http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide">mod_wsgi configuration guide</a>. Just remember that pydap is a WSGI application like any other else, so any information on WSGI applications applies to it as well.</p>
+</section>
+<section id="id3">
+<h2>uWSGI<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p><a class="reference external" href="http://projects.unbit.it/uwsgi/">uWSGI</a> is a “fast, self-healing and developer/sysadmin-friendly application container server coded in pure C” that can run pydap. This is the recommended way to run pydap if you don’t have to integrate it with other web applications. Simply install uWSGI, follow the instructions in the last section in order to create a virtualenv and pydap installation:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mkdir<span class="w"> </span>/var/www/pydap
+$<span class="w"> </span>python<span class="w"> </span>virtualenv.py<span class="w"> </span>/var/www/pydap/env
+$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>/var/www/pydap/env/bin/activate.sh
+<span class="o">(</span>env<span class="o">)</span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pydap<span class="w"> </span>uWSGI
+<span class="o">(</span>env<span class="o">)</span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/var/www/pydap
+</pre></div>
+</div>
+<p>Create a WSGI application file myapp.wsgi <a class="reference internal" href="#wsgi-application-section"><span class="std std-ref">as above</span></a></p>
+<p>Now create a file in <code class="docutils literal notranslate"><span class="pre">/etc/init/pydap.conf</span></code> with the content:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>description<span class="w"> </span><span class="s2">&quot;uWSGI server for pydap&quot;</span>
+
+start<span class="w"> </span>on<span class="w"> </span>runlevel<span class="w"> </span><span class="o">[</span><span class="m">2345</span><span class="o">]</span>
+stop<span class="w"> </span>on<span class="w"> </span>runlevel<span class="w"> </span><span class="o">[</span>!2345<span class="o">]</span>
+
+respawn
+
+<span class="nb">exec</span><span class="w"> </span>/var/www/pydap/env/bin/uwsgi<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--http-socket<span class="w"> </span><span class="m">0</span>.0.0.0:80<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-H<span class="w"> </span>/var/www/pydap/env<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--master<span class="w"> </span>--processes<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--wsgi-file<span class="w"> </span>/var/www/pydap/myapp.wsgi
+</pre></div>
+</div>
+<p>In order to make it run automatically during boot on Linux you can type:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>sudo<span class="w"> </span>initctl<span class="w"> </span>reload-configuration
+</pre></div>
+</div>
+</section>
+<section id="docker">
+<h2>Docker<a class="headerlink" href="#docker" title="Link to this heading">#</a></h2>
+<p>Users have <a class="reference external" href="https://github.com/pydap/pydap/issues/46">reported success</a> deploying pydap with a docker image built with nginx + uWSGI + Flask (based on <a class="reference external" href="https://hub.docker.com/r/tiangolo/uwsgi-nginx-flask/">https://hub.docker.com/r/tiangolo/uwsgi-nginx-flask/</a>. A full configuration is somewhat beyond the scope of this documentation (since it will depend on your requirements and your software stack), but it is certainly possible.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="responses.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Responses</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="handlers.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Handlers</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-standalone">Running standalone</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#wsgi-application">WSGI Application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Flask</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#apache">Apache</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">uWSGI</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docker">Docker</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By OPeNDAP Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
