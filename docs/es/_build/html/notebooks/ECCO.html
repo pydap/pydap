@@ -1,0 +1,1254 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA &#8212; PyDAP tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/ECCO';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PACE" href="PACE.html" />
+    <link rel="prev" title="Como crear el archivo .netrc" href="netrc.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
+    <script>document.write(`<img src="../_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Como Installar</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar Aqui</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
+
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">Lo Nuevo</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="Authentication.html">Autenticacion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="netrc.html">Como crear el archivo .netrc</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/ECCO.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acceso-a-earthdata">Acceso a EARTHDATA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autenticacion-via-netrc">Autenticacion via <code class="docutils literal notranslate"><span class="pre">.netrc</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alternativa-el-use-the-tokens">Alternativa: El use the tokens</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accesso-a-los-metadatos-solamente-por-medio-de-pydap">Accesso a los metadatos solamente, por medio de pydap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utilizando-xarray">Utilizando <code class="docutils literal notranslate"><span class="pre">xarray</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multiples-archivos-en-parallelo">Multiples archivos en parallelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finalmente-visualizamos-theta">Finalmente, visualizamos <code class="docutils literal notranslate"><span class="pre">THETA</span></code></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="acceso-a-eccov4-por-medio-de-earthdata-in-the-cloud-de-la-nasa">
+<h1>Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA<a class="headerlink" href="#acceso-a-eccov4-por-medio-de-earthdata-in-the-cloud-de-la-nasa" title="Link to this heading">#</a></h1>
+<p>Este tutorial demuestra acceso al producto <a class="reference external" href="https://ecco-group.org/">ECCOv4</a> de un modelo numerico global. Para mayor informacion del producto de ECCO, puede ir <a class="reference external" href="https://podaac.jpl.nasa.gov/cloud-datasets?view=list&amp;amp;ids=Projects&amp;amp;values=ECCO">aqui</a>.</p>
+<p><strong>Requisitos</strong></p>
+<ol class="arabic simple">
+<li><p>Tener una cuenta de Earth Data Login por medio de la NASA.</p></li>
+<li><p>Tener un Token valido.</p></li>
+</ol>
+<p>Tambien se puede utilizar el metodo de Nombre de Usuario / Contrasena descrito en el tutorial de <a class="reference internal" href="Authentication.html"><span class="doc std std-doc">Autenticacion</span></a></p>
+<p><strong>Objectivos</strong></p>
+<p>Utilizar <a class="reference external" href="https://pydap.github.io/pydap/">pydap</a> para demostrar</p>
+<ul class="simple">
+<li><p>Acceso to archivos cientificos de la  NASA por medio del uso de <code class="docutils literal notranslate"><span class="pre">tokens</span></code> y <a class="reference external" href="https://www.earthdata.nasa.gov/">EarthData</a> como metodo de autenticacion.</p></li>
+</ul>
+<p>Algunas variables de interes son:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://podaac.jpl.nasa.gov/dataset/ECCO_L4_GEOMETRY_LLC0090GRID_V4R4">Native grid</a></p></li>
+<li><p><a class="reference external" href="https://podaac.jpl.nasa.gov/dataset/ECCO_L4_TEMP_SALINITY_LLC0090GRID_MONTHLY_V4R4">Temperature and Salinity</a></p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">Autor</span></code>: Miguel Jimenez-Urias, ‘24</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.net</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="acceso-a-earthdata">
+<h2>Acceso a EARTHDATA<a class="headerlink" href="#acceso-a-earthdata" title="Link to this heading">#</a></h2>
+<p>El listado de las variables de este producto pueden encontrarse <a class="reference external" href="https://podaac.jpl.nasa.gov/cloud-datasets?view=list&amp;amp;ids=Projects&amp;amp;values=ECCO">aqui</a>. En este caso, accederemos a las variables en su malla original, el LL90.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Grid_url</span> <span class="o">=</span> <span class="s1">&#39;dap4://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO</span><span class="si">%20G</span><span class="s1">eometry%20Parameters</span><span class="si">%20f</span><span class="s1">or%20the</span><span class="si">%20La</span><span class="s1">t-Lon-Cap</span><span class="si">%2090%</span><span class="s1">20(llc90)%20Native%20Model</span><span class="si">%20G</span><span class="s1">rid%20(Version</span><span class="si">%204%</span><span class="s1">20Release%204)/granules/GRID_GEOMETRY_ECCO_V4r4_native_llc0090&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="autenticacion-via-netrc">
+<h2>Autenticacion via <code class="docutils literal notranslate"><span class="pre">.netrc</span></code><a class="headerlink" href="#autenticacion-via-netrc" title="Link to this heading">#</a></h2>
+<p>Las credenciales son recuperadas automaticamente por <code class="docutils literal notranslate"><span class="pre">pydap</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="alternativa-el-use-the-tokens">
+<h2>Alternativa: El use the tokens<a class="headerlink" href="#alternativa-el-use-the-tokens" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">session_extra</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;token&quot;</span><span class="p">:</span> <span class="s2">&quot;YourToken&quot;</span><span class="p">}</span>
+
+<span class="c1"># initialize a requests.session object with the token headers. All handled by pydap.</span>
+<span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">session_kwargs</span><span class="o">=</span><span class="n">session_extra</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="accesso-a-los-metadatos-solamente-por-medio-de-pydap">
+<h2>Accesso a los metadatos solamente, por medio de pydap<a class="headerlink" href="#accesso-a-los-metadatos-solamente-por-medio-de-pydap" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pydap</span></code> aprovecha el protocolo de OPeNDAP, el cual permite la separacion de los metadatos de los valores numericos. Esto permite una inspeccion remota de los datasets.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_grid</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">Grid_url</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;dap4&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds_grid</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.GRID_GEOMETRY_ECCO_V4r4_native_llc0090.nc
+├──dxC
+├──PHrefF
+├──XG
+├──dyG
+├──rA
+├──hFacS
+├──Zp1
+├──Zl
+├──rAw
+├──dxG
+├──maskW
+├──YC
+├──XC
+├──maskS
+├──YG
+├──hFacC
+├──drC
+├──drF
+├──XC_bnds
+├──Zu
+├──Z_bnds
+├──YC_bnds
+├──PHrefC
+├──rAs
+├──Depth
+├──dyC
+├──SN
+├──rAz
+├──maskC
+├──CS
+├──hFacW
+├──Z
+├──i
+├──i_g
+├──j
+├──j_g
+├──k
+├──k_l
+├──k_p1
+├──k_u
+├──nb
+├──nv
+└──tile
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PyDAP accesa solo a los metadatos de archivo en el servidor de OPeNDAP, y ningun arreglo numerico ha sido descargardo hasta este punto!</p>
+</div>
+<p><strong>Para descargar los arreglos numericos hay que indexar la variable</strong></p>
+<p>Esto es, de la siguiente manera:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># this fetches remote data into a pydap object container</span>
+<span class="n">pydap_Array</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="o">&lt;</span><span class="n">VarName</span><span class="o">&gt;</span><span class="p">][:]</span>
+</pre></div>
+</div>
+<p>donde <code class="docutils literal notranslate"><span class="pre">&lt;VarName&gt;</span></code> es el nombre de una de las variables. El producto sera una representation “en memoria” de tipo <code class="docutils literal notranslate"><span class="pre">pydap.model.BaseType</span></code>, el cual permite el acceso a los arreglos de <code class="docutils literal notranslate"><span class="pre">numpy</span></code>.</p>
+<p>Para extraer los valores de la variable remota, hay que ejecutar el siguiente comando</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The `.data` command allows direct access to the Numpy array (e.g. for manipulation)</span>
+<span class="n">pydap_Array</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># lets download some data</span>
+<span class="n">Depth</span> <span class="o">=</span> <span class="n">ds_grid</span><span class="p">[</span><span class="s1">&#39;Depth&#39;</span><span class="p">][:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">Depth</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;pydap.model.BaseType&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Depth</span><span class="o">.</span><span class="n">attributes</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_FillValue&#39;: 9.969209968e+36,
+ &#39;long_name&#39;: &#39;model seafloor depth below ocean surface at rest&#39;,
+ &#39;units&#39;: &#39;m&#39;,
+ &#39;coordinate&#39;: &#39;XC YC&#39;,
+ &#39;coverage_content_type&#39;: &#39;modelResult&#39;,
+ &#39;standard_name&#39;: &#39;sea_floor_depth_below_geoid&#39;,
+ &#39;comment&#39;: &quot;Model sea surface height (SSH) of 0m corresponds to an ocean surface at rest relative to the geoid. Depth corresponds to seafloor depth below geoid. Note: the MITgcm used by ECCO V4r4 implements &#39;partial cells&#39; so the actual model seafloor depth may differ from the seafloor depth provided by the input bathymetry file.&quot;,
+ &#39;coordinates&#39;: &#39;YC XC&#39;,
+ &#39;origname&#39;: &#39;Depth&#39;,
+ &#39;fullnamepath&#39;: &#39;/Depth&#39;,
+ &#39;dims&#39;: [&#39;tile&#39;, &#39;j&#39;, &#39;i&#39;],
+ &#39;Maps&#39;: (),
+ &#39;checksum&#39;: array([950678499], dtype=uint32)}
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Depth</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">Depth</span><span class="o">.</span><span class="n">dimensions</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((13, 90, 90), [&#39;/tile&#39;, &#39;/j&#39;, &#39;/i&#39;])
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Visualizando el fondo oceanico <code class="docutils literal notranslate"><span class="pre">Depth</span></code> en la malla original del modelo</strong></p>
+<p>En este caso, el producto <code class="docutils literal notranslate"><span class="pre">ECCO</span></code> esta definido en una malla con topologia de un <code class="docutils literal notranslate"><span class="pre">Cubo</span> <span class="pre">Esferico</span></code>. De esta manera, la malla horizontal contiene una dimension extra llamada: <code class="docutils literal notranslate"><span class="pre">tile</span></code> o <code class="docutils literal notranslate"><span class="pre">face</span></code>. A continuacion visualizamos la variable en su topologia original</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Variable</span> <span class="o">=</span> <span class="p">[</span><span class="n">Depth</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">data</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">13</span><span class="p">)]</span>
+<span class="n">clevels</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6000</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">cMap</span> <span class="o">=</span> <span class="s1">&#39;Greys_r&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hspace&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;wspace&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">})</span>
+<span class="n">AXES</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> 
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">],</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AXES</span><span class="p">)):</span>
+    <span class="n">AXES</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Variable</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">clevels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cMap</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_yticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/849a9ed14c6d8839c23705e6c44ea3e1fdab748bdc0456ebcc990fac02e6e7c7.png" src="../_images/849a9ed14c6d8839c23705e6c44ea3e1fdab748bdc0456ebcc990fac02e6e7c7.png" />
+</div>
+</div>
+<p><strong>Fig. 1.</strong> La variable <code class="docutils literal notranslate"><span class="pre">Depth</span></code> visualizada en una malla horitonzal. <code class="docutils literal notranslate"><span class="pre">Tile</span></code>s con valores <code class="docutils literal notranslate"><span class="pre">0-5</span></code> tienen un ordenamiento de valores (indiciales) <code class="docutils literal notranslate"><span class="pre">C-ordering</span></code>, mientras que cualquier arreglo numerico <code class="docutils literal notranslate"><span class="pre">tile</span></code>s <code class="docutils literal notranslate"><span class="pre">7-13</span></code> siguen el <code class="docutils literal notranslate"><span class="pre">F-ordering</span></code>. Cualquier arreglo numerico en el <code class="docutils literal notranslate"><span class="pre">arctic</span> <span class="pre">cap</span></code>, tiene un comportamiento de una coordenada polar.</p>
+<p><strong>Visualizacion con topologia corregida</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hspace&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;wspace&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">})</span>
+<span class="n">AXES_NR</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="p">]</span>
+<span class="n">AXES_CAP</span> <span class="o">=</span> <span class="p">[</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">AXES_R</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AXES_NR</span><span class="p">)):</span>
+    <span class="n">AXES_NR</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Variable</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">clevels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cMap</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AXES_CAP</span><span class="p">)):</span>
+    <span class="n">AXES_CAP</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Variable</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">clevels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cMap</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AXES_R</span><span class="p">)):</span>
+    <span class="n">AXES_R</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Variable</span><span class="p">[</span><span class="mi">7</span><span class="o">+</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">clevels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cMap</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_yticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/19f85cdceb8c590181f7084e3cdcab349f14bc6271c5f41aa74c4547434b4d06.png" src="../_images/19f85cdceb8c590181f7084e3cdcab349f14bc6271c5f41aa74c4547434b4d06.png" />
+</div>
+</div>
+<p><strong>Fig. 2.</strong> Visualizacion de la variable <code class="docutils literal notranslate"><span class="pre">Depth</span></code> en una malla horizontal que approxima una malla horizontal uniforme con ejes <code class="docutils literal notranslate"><span class="pre">lat-lon</span></code>. Sin embargo, cualquier arreglo numerico en el <code class="docutils literal notranslate"><span class="pre">arctic</span> <span class="pre">cap</span></code>, continua en una malla que approxima una malla en coordenadas polares</p>
+</section>
+<section id="utilizando-xarray">
+<h2>Utilizando <code class="docutils literal notranslate"><span class="pre">xarray</span></code><a class="headerlink" href="#utilizando-xarray" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">pydap</span></code> se puede llamar dentro de <code class="docutils literal notranslate"><span class="pre">xarray</span></code> para acceder a los archivos expuestos mediante el servidor de OPeNDAP. En particular, <code class="docutils literal notranslate"><span class="pre">xarray</span></code> permite aggregar multiples archivos remotos de opendap. A continuacion demostramos un pequeno ejemplo.</p>
+<p><strong>Un URL individual –&gt; un archivo remoto</strong></p>
+<p>Below we access remote Temperature and Salinity ECCO data with <code class="docutils literal notranslate"><span class="pre">xarray</span></code> via (internally) <code class="docutils literal notranslate"><span class="pre">pydap</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">baseURL</span> <span class="o">=</span> <span class="s1">&#39;dap4://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/&#39;</span>
+<span class="n">Temp_Salt</span> <span class="o">=</span> <span class="s2">&quot;ECCO%20Ocean%20Temperature</span><span class="si">%20a</span><span class="s2">nd%20Salinity%20-%20Monthly%20Mean%20llc90</span><span class="si">%20G</span><span class="s2">rid%20(Version</span><span class="si">%204%</span><span class="s2">20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_&quot;</span>
+<span class="n">year</span> <span class="o">=</span> <span class="s1">&#39;2017-&#39;</span>
+<span class="n">month</span> <span class="o">=</span> <span class="s1">&#39;01&#39;</span>
+<span class="n">end_</span> <span class="o">=</span> <span class="s1">&#39;_ECCO_V4r4_native_llc0090&#39;</span>
+<span class="n">Temp_2017</span> <span class="o">=</span> <span class="n">baseURL</span> <span class="o">+</span> <span class="n">Temp_Salt</span> <span class="o">+</span><span class="n">year</span>  <span class="o">+</span> <span class="n">month</span> <span class="o">+</span> <span class="n">end_</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">Temp_2017</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+<span class="n">dataset</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
+ *
+ */
+
+:root {
+  --xr-font-color0: var(--jp-content-font-color0, rgba(0, 0, 0, 1));
+  --xr-font-color2: var(--jp-content-font-color2, rgba(0, 0, 0, 0.54));
+  --xr-font-color3: var(--jp-content-font-color3, rgba(0, 0, 0, 0.38));
+  --xr-border-color: var(--jp-border-color2, #e0e0e0);
+  --xr-disabled-color: var(--jp-layout-color3, #bdbdbd);
+  --xr-background-color: var(--jp-layout-color0, white);
+  --xr-background-color-row-even: var(--jp-layout-color1, white);
+  --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
+}
+
+html[theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.vscode-dark {
+  --xr-font-color0: rgba(255, 255, 255, 1);
+  --xr-font-color2: rgba(255, 255, 255, 0.54);
+  --xr-font-color3: rgba(255, 255, 255, 0.38);
+  --xr-border-color: #1f1f1f;
+  --xr-disabled-color: #515151;
+  --xr-background-color: #111111;
+  --xr-background-color-row-even: #111111;
+  --xr-background-color-row-odd: #313131;
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: solid 1px var(--xr-border-color);
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-array-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type {
+  color: var(--xr-font-color2);
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item input {
+  display: inline-block;
+  opacity: 0;
+  height: 0;
+}
+
+.xr-section-item input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item input:focus + label {
+  border: 2px solid var(--xr-font-color0);
+}
+
+.xr-section-item input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.5em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: "►";
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: "▼";
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  display: none;
+  grid-column: 1 / -1;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: "(";
+}
+
+.xr-dim-list:after {
+  content: ")";
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ",";
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  margin-bottom: 0;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  background-color: var(--xr-background-color) !important;
+  padding-bottom: 5px !important;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 47MB
+Dimensions:    (/tile: 13, /j_g: 90, /i_g: 90, /k_p1: 51, /k_l: 50, /j: 90,
+                /i: 90, /time: 1, /k: 50, /nb: 4, /k_u: 50, /nv: 2)
+Coordinates: (12/13)
+    XG         (/tile, /j_g, /i_g) float32 421kB ...
+    Zp1        (/k_p1) float32 204B ...
+    Zl         (/k_l) float32 200B ...
+    YC         (/tile, /j, /i) float32 421kB ...
+    XC         (/tile, /j, /i) float32 421kB ...
+    YG         (/tile, /j_g, /i_g) float32 421kB ...
+    ...         ...
+    Zu         (/k_u) float32 200B ...
+    Z_bnds     (/k, /nv) float32 400B ...
+    YC_bnds    (/tile, /j, /i, /nb) float32 2MB ...
+    time_bnds  (/time, /nv) datetime64[ns] 16B ...
+    Z          (/k) float32 200B ...
+    time       (/time) datetime64[ns] 8B ...
+Dimensions without coordinates: /tile, /j_g, /i_g, /k_p1, /k_l, /j, /i, /time,
+                                /k, /nb, /k_u, /nv
+Data variables: (12/13)
+    SALT       (/time, /k, /tile, /j, /i) float32 21MB ...
+    THETA      (/time, /k, /tile, /j, /i) float32 21MB ...
+    i          (/i) int32 360B ...
+    i_g        (/i_g) int32 360B ...
+    j          (/j) int32 360B ...
+    j_g        (/j_g) int32 360B ...
+    ...         ...
+    k_l        (/k_l) int32 200B ...
+    k_p1       (/k_p1) int32 204B ...
+    k_u        (/k_u) int32 200B ...
+    nb         (/nb) float32 16B ...
+    nv         (/nv) float32 8B ...
+    tile       (/tile) int32 52B ...
+Attributes: (12/62)
+    acknowledgement:                 This research was carried out by the Jet...
+    author:                          Ian Fenty and Ou Wang
+    cdm_data_type:                   Grid
+    comment:                         Fields provided on the curvilinear lat-l...
+    Conventions:                     CF-1.8, ACDD-1.3
+    coordinates_comment:             Note: the global &#x27;coordinates&#x27; attribute...
+    ...                              ...
+    time_coverage_duration:          P1M
+    time_coverage_end:               2017-02-01T00:00:00
+    time_coverage_resolution:        P1M
+    time_coverage_start:             2017-01-01T00:00:00
+    title:                           ECCO Ocean Temperature and Salinity - Mo...
+    uuid:                            f5b7028c-4181-11eb-b7e6-0cc47a3f47b1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-0baf86e8-a629-43c8-8f45-30e6ec47afd1' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-0baf86e8-a629-43c8-8f45-30e6ec47afd1' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>/tile</span>: 13</li><li><span>/j_g</span>: 90</li><li><span>/i_g</span>: 90</li><li><span>/k_p1</span>: 51</li><li><span>/k_l</span>: 50</li><li><span>/j</span>: 90</li><li><span>/i</span>: 90</li><li><span>/time</span>: 1</li><li><span>/k</span>: 50</li><li><span>/nb</span>: 4</li><li><span>/k_u</span>: 50</li><li><span>/nv</span>: 2</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-7c6a4246-f63e-48f9-a6d6-13d3325cc0df' class='xr-section-summary-in' type='checkbox'  checked><label for='section-7c6a4246-f63e-48f9-a6d6-13d3325cc0df' class='xr-section-summary' >Coordinates: <span>(13)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>XG</span></div><div class='xr-var-dims'>(/tile, /j_g, /i_g)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-40aafd45-ea8e-4143-9319-1e2fbb5a4f45' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-40aafd45-ea8e-4143-9319-1e2fbb5a4f45' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4e380fb6-fdda-4e0b-9c4d-8f7b5bc5547e' class='xr-var-data-in' type='checkbox'><label for='data-4e380fb6-fdda-4e0b-9c4d-8f7b5bc5547e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>longitude of &#x27;southwest&#x27; corner of tracer grid cell</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>coordinate :</span></dt><dd>YG XG</dd><dt><span>comment :</span></dt><dd>Nonuniform grid spacing. Note: &#x27;southwest&#x27; does not correspond to geographic orientation but is used for convenience to describe the computational grid. See MITgcm dcoumentation for details.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>origname :</span></dt><dd>XG</dd><dt><span>fullnamepath :</span></dt><dd>/XG</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j_g&#x27;, &#x27;i_g&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[105300 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Zp1</span></div><div class='xr-var-dims'>(/k_p1)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-479306ef-0c09-4ab9-aa14-cf52d4e8d705' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-479306ef-0c09-4ab9-aa14-cf52d4e8d705' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8f792210-39ad-4ca9-be64-e10f2111a493' class='xr-var-data-in' type='checkbox'><label for='data-8f792210-39ad-4ca9-be64-e10f2111a493' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>depth of tracer grid cell interface</dd><dt><span>units :</span></dt><dd>m</dd><dt><span>positive :</span></dt><dd>up</dd><dt><span>comment :</span></dt><dd>Contains one element more than the number of vertical layers. First element is 0m, the depth of the upper interface of the surface grid cell. Last element is the depth of the lower interface of the deepest grid cell.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>depth</dd><dt><span>origname :</span></dt><dd>Zp1</dd><dt><span>fullnamepath :</span></dt><dd>/Zp1</dd><dt><span>dims :</span></dt><dd>[&#x27;k_p1&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[51 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Zl</span></div><div class='xr-var-dims'>(/k_l)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-77622189-9d4d-4f58-8d18-3e6e71e78dd1' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-77622189-9d4d-4f58-8d18-3e6e71e78dd1' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9205fe63-4aca-411b-b233-b50dbaefbb1c' class='xr-var-data-in' type='checkbox'><label for='data-9205fe63-4aca-411b-b233-b50dbaefbb1c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>m</dd><dt><span>positive :</span></dt><dd>up</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>depth</dd><dt><span>long_name :</span></dt><dd>depth of the top face of tracer grid cells</dd><dt><span>comment :</span></dt><dd>First element is 0m, the depth of the top face of the first tracer grid cell (ocean surface). Last element is the depth of the top face of the deepest grid cell. The use of &#x27;l&#x27; in the variable name follows the MITgcm convention for ocean variables in which the lower (l) face of a tracer grid cell on the logical grid corresponds to the top face of the grid cell on the physical grid. In other words, the logical vertical grid of MITgcm ocean variables is inverted relative to the physical vertical grid.</dd><dt><span>origname :</span></dt><dd>Zl</dd><dt><span>fullnamepath :</span></dt><dd>/Zl</dd><dt><span>dims :</span></dt><dd>[&#x27;k_l&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>YC</span></div><div class='xr-var-dims'>(/tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-33364197-087e-498d-9831-429176f5dcb4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-33364197-087e-498d-9831-429176f5dcb4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2aea6942-c38c-4766-bf11-0afae5ad9ba9' class='xr-var-data-in' type='checkbox'><label for='data-2aea6942-c38c-4766-bf11-0afae5ad9ba9' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>latitude of tracer grid cell center</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>coordinate :</span></dt><dd>YC XC</dd><dt><span>bounds :</span></dt><dd>YC_bnds</dd><dt><span>comment :</span></dt><dd>nonuniform grid spacing</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>origname :</span></dt><dd>YC</dd><dt><span>fullnamepath :</span></dt><dd>/YC</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[105300 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>XC</span></div><div class='xr-var-dims'>(/tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-ef321f02-d187-4ee1-81d7-b292a43ffa43' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-ef321f02-d187-4ee1-81d7-b292a43ffa43' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-356030c6-0027-41d5-87fd-de8303a93057' class='xr-var-data-in' type='checkbox'><label for='data-356030c6-0027-41d5-87fd-de8303a93057' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>longitude of tracer grid cell center</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>coordinate :</span></dt><dd>YC XC</dd><dt><span>bounds :</span></dt><dd>XC_bnds</dd><dt><span>comment :</span></dt><dd>nonuniform grid spacing</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>origname :</span></dt><dd>XC</dd><dt><span>fullnamepath :</span></dt><dd>/XC</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[105300 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>YG</span></div><div class='xr-var-dims'>(/tile, /j_g, /i_g)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-358855cd-4480-44f5-8fad-02116a3e313a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-358855cd-4480-44f5-8fad-02116a3e313a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-293a5a62-b483-42b8-a3fb-e1abc66d5127' class='xr-var-data-in' type='checkbox'><label for='data-293a5a62-b483-42b8-a3fb-e1abc66d5127' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>latitude of &#x27;southwest&#x27; corner of tracer grid cell</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>coordinate :</span></dt><dd>YG XG</dd><dt><span>comment :</span></dt><dd>Nonuniform grid spacing. Note: &#x27;southwest&#x27; does not correspond to geographic orientation but is used for convenience to describe the computational grid. See MITgcm dcoumentation for details.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>origname :</span></dt><dd>YG</dd><dt><span>fullnamepath :</span></dt><dd>/YG</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j_g&#x27;, &#x27;i_g&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[105300 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>XC_bnds</span></div><div class='xr-var-dims'>(/tile, /j, /i, /nb)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-966ed09b-f72b-406f-83a0-0de340ee98ab' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-966ed09b-f72b-406f-83a0-0de340ee98ab' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a334669e-24ce-434e-92d7-95c3c3d520b4' class='xr-var-data-in' type='checkbox'><label for='data-a334669e-24ce-434e-92d7-95c3c3d520b4' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comment :</span></dt><dd>Bounds array follows CF conventions. XC_bnds[i,j,0] = &#x27;southwest&#x27; corner (j-1, i-1), XC_bnds[i,j,1] = &#x27;southeast&#x27; corner (j-1, i+1), XC_bnds[i,j,2] = &#x27;northeast&#x27; corner (j+1, i+1), XC_bnds[i,j,3]  = &#x27;northwest&#x27; corner (j+1, i-1). Note: &#x27;southwest&#x27;, &#x27;southeast&#x27;, northwest&#x27;, and &#x27;northeast&#x27; do not correspond to geographic orientation but are used for convenience to describe the computational grid. See MITgcm dcoumentation for details.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>longitudes of tracer grid cell corners</dd><dt><span>origname :</span></dt><dd>XC_bnds</dd><dt><span>fullnamepath :</span></dt><dd>/XC_bnds</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;, &#x27;nb&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[421200 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Zu</span></div><div class='xr-var-dims'>(/k_u)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-3f8cffd1-234a-444c-9122-ca38df66e858' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-3f8cffd1-234a-444c-9122-ca38df66e858' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-26f7c358-8e90-4f80-a8c8-70854aceb5b1' class='xr-var-data-in' type='checkbox'><label for='data-26f7c358-8e90-4f80-a8c8-70854aceb5b1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>m</dd><dt><span>positive :</span></dt><dd>up</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>depth</dd><dt><span>long_name :</span></dt><dd>depth of the bottom face of tracer grid cells</dd><dt><span>comment :</span></dt><dd>First element is -10m, the depth of the bottom face of the first tracer grid cell. Last element is the depth of the bottom face of the deepest grid cell. The use of &#x27;u&#x27; in the variable name follows the MITgcm convention for ocean variables in which the upper (u) face of a tracer grid cell on the logical grid corresponds to the bottom face of the grid cell on the physical grid. In other words, the logical vertical grid of MITgcm ocean variables is inverted relative to the physical vertical grid.</dd><dt><span>origname :</span></dt><dd>Zu</dd><dt><span>fullnamepath :</span></dt><dd>/Zu</dd><dt><span>dims :</span></dt><dd>[&#x27;k_u&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Z_bnds</span></div><div class='xr-var-dims'>(/k, /nv)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-3ac4dfdc-c73e-47fb-81bb-f27022692218' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-3ac4dfdc-c73e-47fb-81bb-f27022692218' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-08d3b3af-2548-4194-b920-014ba5989145' class='xr-var-data-in' type='checkbox'><label for='data-08d3b3af-2548-4194-b920-014ba5989145' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comment :</span></dt><dd>One pair of depths for each vertical level.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>depths of tracer grid cell upper and lower interfaces</dd><dt><span>origname :</span></dt><dd>Z_bnds</dd><dt><span>fullnamepath :</span></dt><dd>/Z_bnds</dd><dt><span>dims :</span></dt><dd>[&#x27;k&#x27;, &#x27;nv&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[100 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>YC_bnds</span></div><div class='xr-var-dims'>(/tile, /j, /i, /nb)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-1b8f16ac-d933-49ea-a4e3-2d04d504bc1a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1b8f16ac-d933-49ea-a4e3-2d04d504bc1a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-79aa8969-591b-4b84-8c4a-05fde9288c1b' class='xr-var-data-in' type='checkbox'><label for='data-79aa8969-591b-4b84-8c4a-05fde9288c1b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comment :</span></dt><dd>Bounds array follows CF conventions. YC_bnds[i,j,0] = &#x27;southwest&#x27; corner (j-1, i-1), YC_bnds[i,j,1] = &#x27;southeast&#x27; corner (j-1, i+1), YC_bnds[i,j,2] = &#x27;northeast&#x27; corner (j+1, i+1), YC_bnds[i,j,3]  = &#x27;northwest&#x27; corner (j+1, i-1). Note: &#x27;southwest&#x27;, &#x27;southeast&#x27;, northwest&#x27;, and &#x27;northeast&#x27; do not correspond to geographic orientation but are used for convenience to describe the computational grid. See MITgcm dcoumentation for details.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>latitudes of tracer grid cell corners</dd><dt><span>origname :</span></dt><dd>YC_bnds</dd><dt><span>fullnamepath :</span></dt><dd>/YC_bnds</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;, &#x27;nb&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[421200 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>time_bnds</span></div><div class='xr-var-dims'>(/time, /nv)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-f195812a-3c45-44a5-acee-3b6c904269ae' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f195812a-3c45-44a5-acee-3b6c904269ae' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1712593b-5153-4c21-94f0-6d09acdf44a1' class='xr-var-data-in' type='checkbox'><label for='data-1712593b-5153-4c21-94f0-6d09acdf44a1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comment :</span></dt><dd>Start and end times of averaging period.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>time bounds of averaging period</dd><dt><span>origname :</span></dt><dd>time_bnds</dd><dt><span>fullnamepath :</span></dt><dd>/time_bnds</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;nv&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[2 values with dtype=datetime64[ns]]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Z</span></div><div class='xr-var-dims'>(/k)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-bd759f2c-65ea-4d68-b99a-b87d806d9bca' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-bd759f2c-65ea-4d68-b99a-b87d806d9bca' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-c5b90414-b571-40b6-8ea0-ad3aa7f7ecf8' class='xr-var-data-in' type='checkbox'><label for='data-c5b90414-b571-40b6-8ea0-ad3aa7f7ecf8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>depth of tracer grid cell center</dd><dt><span>units :</span></dt><dd>m</dd><dt><span>positive :</span></dt><dd>up</dd><dt><span>bounds :</span></dt><dd>Z_bnds</dd><dt><span>comment :</span></dt><dd>Non-uniform vertical spacing.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>depth</dd><dt><span>origname :</span></dt><dd>Z</dd><dt><span>fullnamepath :</span></dt><dd>/Z</dd><dt><span>dims :</span></dt><dd>[&#x27;k&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>time</span></div><div class='xr-var-dims'>(/time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-34e13c49-54cc-4bd4-a098-aaab1a056ecb' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-34e13c49-54cc-4bd4-a098-aaab1a056ecb' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-f2071a33-a626-4888-a533-ab9ca7162777' class='xr-var-data-in' type='checkbox'><label for='data-f2071a33-a626-4888-a533-ab9ca7162777' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>center time of averaging period</dd><dt><span>axis :</span></dt><dd>T</dd><dt><span>bounds :</span></dt><dd>time_bnds</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>origname :</span></dt><dd>time</dd><dt><span>fullnamepath :</span></dt><dd>/time</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[1 values with dtype=datetime64[ns]]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-1c23edec-9fe4-45a5-bc3c-353e2727d15a' class='xr-section-summary-in' type='checkbox'  checked><label for='section-1c23edec-9fe4-45a5-bc3c-353e2727d15a' class='xr-section-summary' >Data variables: <span>(13)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>SALT</span></div><div class='xr-var-dims'>(/time, /k, /tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-daa38dd2-5c93-45fa-be36-03df459093a4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-daa38dd2-5c93-45fa-be36-03df459093a4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-82399bc9-b7f3-4edc-869a-b8d3598351f6' class='xr-var-data-in' type='checkbox'><label for='data-82399bc9-b7f3-4edc-869a-b8d3598351f6' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Salinity</dd><dt><span>units :</span></dt><dd>1e-3</dd><dt><span>coverage_content_type :</span></dt><dd>modelResult</dd><dt><span>standard_name :</span></dt><dd>sea_water_salinity</dd><dt><span>comment :</span></dt><dd>Defined using CF convention &#x27;Sea water salinity is the salt content of sea water, often on the Practical Salinity Scale of 1978. However, the unqualified term &#x27;salinity&#x27; is generic and does not necessarily imply any particular method of calculation. The units of salinity are dimensionless and the units attribute should normally be given as 1e-3 or 0.001 i.e. parts per thousand.&#x27; see https://cfconventions.org/Data/cf-standard-names/73/build/cf-standard-name-table.html</dd><dt><span>valid_min :</span></dt><dd>17.106637954711914</dd><dt><span>valid_max :</span></dt><dd>41.26802444458008</dd><dt><span>origname :</span></dt><dd>SALT</dd><dt><span>fullnamepath :</span></dt><dd>/SALT</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;k&#x27;, &#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[5265000 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>THETA</span></div><div class='xr-var-dims'>(/time, /k, /tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-0c7c4c59-42c3-4537-8e0d-7219ff070785' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-0c7c4c59-42c3-4537-8e0d-7219ff070785' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ab12ebe1-ef8f-4afd-84d2-e05161405be7' class='xr-var-data-in' type='checkbox'><label for='data-ab12ebe1-ef8f-4afd-84d2-e05161405be7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Potential temperature </dd><dt><span>units :</span></dt><dd>degree_C</dd><dt><span>coverage_content_type :</span></dt><dd>modelResult</dd><dt><span>standard_name :</span></dt><dd>sea_water_potential_temperature</dd><dt><span>comment :</span></dt><dd>Sea water potential temperature is the temperature a parcel of sea water would have if moved adiabatically to sea level pressure. Note: the equation of state is a modified UNESCO formula by Jackett and McDougall (1995), which uses the model variable potential temperature as input assuming a horizontally and temporally constant pressure of $p_0=-g ho_{0} z$.</dd><dt><span>valid_min :</span></dt><dd>-2.2909388542175293</dd><dt><span>valid_max :</span></dt><dd>36.032955169677734</dd><dt><span>origname :</span></dt><dd>THETA</dd><dt><span>fullnamepath :</span></dt><dd>/THETA</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;k&#x27;, &#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[5265000 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>i</span></div><div class='xr-var-dims'>(/i)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-abccf051-de92-4ded-88c0-10b04cf669e7' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-abccf051-de92-4ded-88c0-10b04cf669e7' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-c64ea780-15f0-4faf-befb-f129b667fd96' class='xr-var-data-in' type='checkbox'><label for='data-c64ea780-15f0-4faf-befb-f129b667fd96' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>X</dd><dt><span>long_name :</span></dt><dd>grid index in x for variables at tracer and &#x27;v&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>XC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;v&#x27; variables (e.g., VVEL) have the same x coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>i</dd><dt><span>fullnamepath :</span></dt><dd>/i</dd><dt><span>dims :</span></dt><dd>[&#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>i_g</span></div><div class='xr-var-dims'>(/i_g)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-648255e2-0215-4e7e-951c-c4ecdaf0659b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-648255e2-0215-4e7e-951c-c4ecdaf0659b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7e5a52bf-c5b4-4f21-b960-42e2949b14b3' class='xr-var-data-in' type='checkbox'><label for='data-7e5a52bf-c5b4-4f21-b960-42e2949b14b3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>X</dd><dt><span>long_name :</span></dt><dd>grid index in x for variables at &#x27;u&#x27; and &#x27;g&#x27; locations</dd><dt><span>c_grid_axis_shift :</span></dt><dd>-0.5</dd><dt><span>swap_dim :</span></dt><dd>XG</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, &#x27;u&#x27; (e.g., UVEL) and &#x27;g&#x27; variables (e.g., XG) have the same x coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>i_g</dd><dt><span>fullnamepath :</span></dt><dd>/i_g</dd><dt><span>dims :</span></dt><dd>[&#x27;i_g&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>j</span></div><div class='xr-var-dims'>(/j)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-f8c9058d-c3d7-403b-af39-19f1639c3a30' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f8c9058d-c3d7-403b-af39-19f1639c3a30' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-c1df91af-f1fb-4699-af2a-d84ad2e5dd6a' class='xr-var-data-in' type='checkbox'><label for='data-c1df91af-f1fb-4699-af2a-d84ad2e5dd6a' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Y</dd><dt><span>long_name :</span></dt><dd>grid index in y for variables at tracer and &#x27;u&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>YC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;u&#x27; variables (e.g., UVEL) have the same y coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>j</dd><dt><span>fullnamepath :</span></dt><dd>/j</dd><dt><span>dims :</span></dt><dd>[&#x27;j&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>j_g</span></div><div class='xr-var-dims'>(/j_g)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-6fbff511-824c-41d6-a2c3-3927c34c6169' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-6fbff511-824c-41d6-a2c3-3927c34c6169' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9ea2432e-bff1-4e18-bc36-23bb40ca4fd8' class='xr-var-data-in' type='checkbox'><label for='data-9ea2432e-bff1-4e18-bc36-23bb40ca4fd8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Y</dd><dt><span>long_name :</span></dt><dd>grid index in y for variables at &#x27;v&#x27; and &#x27;g&#x27; locations</dd><dt><span>c_grid_axis_shift :</span></dt><dd>-0.5</dd><dt><span>swap_dim :</span></dt><dd>YG</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, &#x27;v&#x27; (e.g., VVEL) and &#x27;g&#x27; variables (e.g., XG) have the same y coordinate.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>j_g</dd><dt><span>fullnamepath :</span></dt><dd>/j_g</dd><dt><span>dims :</span></dt><dd>[&#x27;j_g&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k</span></div><div class='xr-var-dims'>(/k)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-f15588bd-3bd8-40ed-b5e9-f2fe889873d4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f15588bd-3bd8-40ed-b5e9-f2fe889873d4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-76cda096-42b1-4188-bc6b-0f23781799ee' class='xr-var-data-in' type='checkbox'><label for='data-76cda096-42b1-4188-bc6b-0f23781799ee' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>long_name :</span></dt><dd>grid index in z for tracer variables</dd><dt><span>swap_dim :</span></dt><dd>Z</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>k</dd><dt><span>fullnamepath :</span></dt><dd>/k</dd><dt><span>dims :</span></dt><dd>[&#x27;k&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k_l</span></div><div class='xr-var-dims'>(/k_l)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-9be3e600-f36d-4162-84c5-0eeea0e60a4d' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9be3e600-f36d-4162-84c5-0eeea0e60a4d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3ca13f40-6f64-4fcc-baea-25ee64af1cc4' class='xr-var-data-in' type='checkbox'><label for='data-3ca13f40-6f64-4fcc-baea-25ee64af1cc4' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>c_grid_axis_shift :</span></dt><dd>-0.5</dd><dt><span>swap_dim :</span></dt><dd>Zl</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>grid index in z corresponding to the top face of tracer grid cells (&#x27;w&#x27; locations)</dd><dt><span>comment :</span></dt><dd>First index corresponds to the top surface of the uppermost tracer grid cell. The use of &#x27;l&#x27; in the variable name follows the MITgcm convention for ocean variables in which the lower (l) face of a tracer grid cell on the logical grid corresponds to the top face of the grid cell on the physical grid.</dd><dt><span>origname :</span></dt><dd>k_l</dd><dt><span>fullnamepath :</span></dt><dd>/k_l</dd><dt><span>dims :</span></dt><dd>[&#x27;k_l&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k_p1</span></div><div class='xr-var-dims'>(/k_p1)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-7571b387-8155-4cde-84d9-cddbbe95f8df' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-7571b387-8155-4cde-84d9-cddbbe95f8df' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e84af04c-603d-4a49-bff8-a61d8952da8e' class='xr-var-data-in' type='checkbox'><label for='data-e84af04c-603d-4a49-bff8-a61d8952da8e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>long_name :</span></dt><dd>grid index in z for variables at &#x27;w&#x27; locations</dd><dt><span>c_grid_axis_shift :</span></dt><dd>[-0.5, 0.5]</dd><dt><span>swap_dim :</span></dt><dd>Zp1</dd><dt><span>comment :</span></dt><dd>Includes top of uppermost model tracer cell (k_p1=0) and bottom of lowermost tracer cell (k_p1=51).</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>k_p1</dd><dt><span>fullnamepath :</span></dt><dd>/k_p1</dd><dt><span>dims :</span></dt><dd>[&#x27;k_p1&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[51 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k_u</span></div><div class='xr-var-dims'>(/k_u)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-a2c3c501-a368-412e-9d1b-233a514c9888' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-a2c3c501-a368-412e-9d1b-233a514c9888' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ae3c9a5d-3118-423c-9456-09b2d28e2fec' class='xr-var-data-in' type='checkbox'><label for='data-ae3c9a5d-3118-423c-9456-09b2d28e2fec' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>c_grid_axis_shift :</span></dt><dd>0.5</dd><dt><span>swap_dim :</span></dt><dd>Zu</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>grid index in z corresponding to the bottom face of tracer grid cells (&#x27;w&#x27; locations)</dd><dt><span>comment :</span></dt><dd>First index corresponds to the bottom surface of the uppermost tracer grid cell. The use of &#x27;u&#x27; in the variable name follows the MITgcm convention for ocean variables in which the upper (u) face of a tracer grid cell on the logical grid corresponds to the bottom face of the grid cell on the physical grid.</dd><dt><span>origname :</span></dt><dd>k_u</dd><dt><span>fullnamepath :</span></dt><dd>/k_u</dd><dt><span>dims :</span></dt><dd>[&#x27;k_u&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>nb</span></div><div class='xr-var-dims'>(/nb)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-5b06b874-db35-499e-9a69-64de3507788d' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-5b06b874-db35-499e-9a69-64de3507788d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-50a33ddd-1542-4966-9120-69129ec6256b' class='xr-var-data-in' type='checkbox'><label for='data-50a33ddd-1542-4966-9120-69129ec6256b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>dims :</span></dt><dd>[&#x27;nb&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[4 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>nv</span></div><div class='xr-var-dims'>(/nv)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-c334359f-38b8-406f-bc8e-104931e302f6' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-c334359f-38b8-406f-bc8e-104931e302f6' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-f9079e78-f95e-4cbc-ac47-6eae181a455f' class='xr-var-data-in' type='checkbox'><label for='data-f9079e78-f95e-4cbc-ac47-6eae181a455f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>dims :</span></dt><dd>[&#x27;nv&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[2 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>tile</span></div><div class='xr-var-dims'>(/tile)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-97f3b628-7491-4847-bbd1-6e1102537aff' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-97f3b628-7491-4847-bbd1-6e1102537aff' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2a12d8c0-dd3f-4516-b09f-7ecf06b35e90' class='xr-var-data-in' type='checkbox'><label for='data-2a12d8c0-dd3f-4516-b09f-7ecf06b35e90' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>lat-lon-cap tile index</dd><dt><span>comment :</span></dt><dd>The ECCO V4 horizontal model grid is divided into 13 tiles of 90x90 cells for convenience.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>tile</dd><dt><span>fullnamepath :</span></dt><dd>/tile</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[13 values with dtype=int32]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-73af23d8-9000-466b-a38a-150972782d58' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-73af23d8-9000-466b-a38a-150972782d58' class='xr-section-summary'  title='Expand/collapse section'>Indexes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'></ul></div></li><li class='xr-section-item'><input id='section-8b3307df-0bb7-4c93-947c-bf9a85716a5b' class='xr-section-summary-in' type='checkbox'  ><label for='section-8b3307df-0bb7-4c93-947c-bf9a85716a5b' class='xr-section-summary' >Attributes: <span>(62)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>acknowledgement :</span></dt><dd>This research was carried out by the Jet Propulsion Laboratory, managed by the California Institute of Technology under a contract with the National Aeronautics and Space Administration.</dd><dt><span>author :</span></dt><dd>Ian Fenty and Ou Wang</dd><dt><span>cdm_data_type :</span></dt><dd>Grid</dd><dt><span>comment :</span></dt><dd>Fields provided on the curvilinear lat-lon-cap 90 (llc90) native grid used in the ECCO model.</dd><dt><span>Conventions :</span></dt><dd>CF-1.8, ACDD-1.3</dd><dt><span>coordinates_comment :</span></dt><dd>Note: the global &#x27;coordinates&#x27; attribute describes auxillary coordinates.</dd><dt><span>creator_email :</span></dt><dd>ecco-group@mit.edu</dd><dt><span>creator_institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>creator_name :</span></dt><dd>ECCO Consortium</dd><dt><span>creator_type :</span></dt><dd>group</dd><dt><span>creator_url :</span></dt><dd>https://ecco-group.org</dd><dt><span>date_created :</span></dt><dd>2020-12-18T14:39:59</dd><dt><span>date_issued :</span></dt><dd>2020-12-18T14:39:59</dd><dt><span>date_metadata_modified :</span></dt><dd>2021-03-15T21:56:21</dd><dt><span>date_modified :</span></dt><dd>2021-03-15T21:56:21</dd><dt><span>geospatial_bounds_crs :</span></dt><dd>EPSG:4326</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>geospatial_vertical_max :</span></dt><dd>0.0</dd><dt><span>geospatial_vertical_min :</span></dt><dd>-6134.5</dd><dt><span>geospatial_vertical_positive :</span></dt><dd>up</dd><dt><span>geospatial_vertical_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_vertical_units :</span></dt><dd>meter</dd><dt><span>history :</span></dt><dd>Inaugural release of an ECCO Central Estimate solution to PO.DAAC</dd><dt><span>id :</span></dt><dd>10.5067/ECL5M-OTS44</dd><dt><span>institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>instrument_vocabulary :</span></dt><dd>GCMD instrument keywords</dd><dt><span>keywords :</span></dt><dd>EARTH SCIENCE &gt; OCEANS &gt; SALINITY/DENSITY &gt; SALINITY, EARTH SCIENCE SERVICES &gt; MODELS &gt; EARTH SCIENCE REANALYSES/ASSIMILATION MODELS, EARTH SCIENCE &gt; OCEANS &gt; OCEAN TEMPERATURE &gt; POTENTIAL TEMPERATURE</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>license :</span></dt><dd>Public Domain</dd><dt><span>metadata_link :</span></dt><dd>https://cmr.earthdata.nasa.gov/search/collections.umm_json?ShortName=ECCO_L4_TEMP_SALINITY_LLC0090GRID_MONTHLY_V4R4</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.jpl</dd><dt><span>platform :</span></dt><dd>ERS-1/2, TOPEX/Poseidon, Geosat Follow-On (GFO), ENVISAT, Jason-1, Jason-2, CryoSat-2, SARAL/AltiKa, Jason-3, AVHRR, Aquarius, SSM/I, SSMIS, GRACE, DTU17MDT, Argo, WOCE, GO-SHIP, MEOP, Ice Tethered Profilers (ITP)</dd><dt><span>platform_vocabulary :</span></dt><dd>GCMD platform keywords</dd><dt><span>processing_level :</span></dt><dd>L4</dd><dt><span>product_name :</span></dt><dd>OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.nc</dd><dt><span>product_time_coverage_end :</span></dt><dd>2018-01-01T00:00:00</dd><dt><span>product_time_coverage_start :</span></dt><dd>1992-01-01T12:00:00</dd><dt><span>product_version :</span></dt><dd>Version 4, Release 4</dd><dt><span>program :</span></dt><dd>NASA Physical Oceanography, Cryosphere, Modeling, Analysis, and Prediction (MAP)</dd><dt><span>project :</span></dt><dd>Estimating the Circulation and Climate of the Ocean (ECCO)</dd><dt><span>publisher_email :</span></dt><dd>podaac@podaac.jpl.nasa.gov</dd><dt><span>publisher_institution :</span></dt><dd>PO.DAAC</dd><dt><span>publisher_name :</span></dt><dd>Physical Oceanography Distributed Active Archive Center (PO.DAAC)</dd><dt><span>publisher_type :</span></dt><dd>institution</dd><dt><span>publisher_url :</span></dt><dd>https://podaac.jpl.nasa.gov</dd><dt><span>references :</span></dt><dd>ECCO Consortium, Fukumori, I., Wang, O., Fenty, I., Forget, G., Heimbach, P., &amp; Ponte, R. M. 2020. Synopsis of the ECCO Central Production Global Ocean and Sea-Ice State Estimate (Version 4 Release 4). doi:10.5281/zenodo.3765928</dd><dt><span>source :</span></dt><dd>The ECCO V4r4 state estimate was produced by fitting a free-running solution of the MITgcm (checkpoint 66g) to satellite and in situ observational data in a least squares sense using the adjoint method</dd><dt><span>standard_name_vocabulary :</span></dt><dd>NetCDF Climate and Forecast (CF) Metadata Convention</dd><dt><span>summary :</span></dt><dd>This dataset provides monthly-averaged ocean potential temperature and salinity on the lat-lon-cap 90 (llc90) native model grid from the ECCO Version 4 Release 4 (V4r4) ocean and sea-ice state estimate. Estimating the Circulation and Climate of the Ocean (ECCO) state estimates are dynamically and kinematically-consistent reconstructions of the three-dimensional, time-evolving ocean, sea-ice, and surface atmospheric states. ECCO V4r4 is a free-running solution of a global, nominally 1-degree configuration of the MIT general circulation model (MITgcm) that has been fit to observations in a least-squares sense. Observational data constraints used in V4r4 include sea surface height (SSH) from satellite altimeters [ERS-1/2, TOPEX/Poseidon, GFO, ENVISAT, Jason-1,2,3, CryoSat-2, and SARAL/AltiKa]; sea surface temperature (SST) from satellite radiometers [AVHRR], sea surface salinity (SSS) from the Aquarius satellite radiometer/scatterometer, ocean bottom pressure (OBP) from the GRACE satellite gravimeter; sea-ice concentration from satellite radiometers [SSM/I and SSMIS], and in-situ ocean temperature and salinity measured with conductivity-temperature-depth (CTD) sensors and expendable bathythermographs (XBTs) from several programs [e.g., WOCE, GO-SHIP, Argo, and others] and platforms [e.g., research vessels, gliders, moorings, ice-tethered profilers, and instrumented pinnipeds]. V4r4 covers the period 1992-01-01T12:00:00 to 2018-01-01T00:00:00.</dd><dt><span>time_coverage_duration :</span></dt><dd>P1M</dd><dt><span>time_coverage_end :</span></dt><dd>2017-02-01T00:00:00</dd><dt><span>time_coverage_resolution :</span></dt><dd>P1M</dd><dt><span>time_coverage_start :</span></dt><dd>2017-01-01T00:00:00</dd><dt><span>title :</span></dt><dd>ECCO Ocean Temperature and Salinity - Monthly Mean llc90 Grid (Version 4 Release 4)</dd><dt><span>uuid :</span></dt><dd>f5b7028c-4181-11eb-b7e6-0cc47a3f47b1</dd></dl></div></li></ul></div></div></div></div>
+</div>
+</section>
+<section id="multiples-archivos-en-parallelo">
+<h2>Multiples archivos en parallelo<a class="headerlink" href="#multiples-archivos-en-parallelo" title="Link to this heading">#</a></h2>
+<p>Para poder aggregar los archivos, uno tiene que crear una lista completa de los URLs de cada uno de los archivos</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Temp_2017</span> <span class="o">=</span> <span class="p">[</span><span class="n">baseURL</span> <span class="o">+</span> <span class="n">Temp_Salt</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">02</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">end_</span> <span class="o">+</span> <span class="n">CE</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)]</span>
+
+<span class="n">theta_salt_ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span>
+    <span class="n">Temp_2017</span><span class="p">,</span> 
+    <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span>
+    <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> 
+    <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+    <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;nested&#39;</span><span class="p">,</span> 
+    <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="finalmente-visualizamos-theta">
+<h2>Finalmente, visualizamos <code class="docutils literal notranslate"><span class="pre">THETA</span></code><a class="headerlink" href="#finalmente-visualizamos-theta" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Variable</span> <span class="o">=</span> <span class="p">[</span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;THETA&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">13</span><span class="p">)]</span>
+<span class="n">clevels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="n">cMap</span><span class="o">=</span><span class="s1">&#39;RdBu_r&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="n">gridspec_kw</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;hspace&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">,</span> <span class="s1">&#39;wspace&#39;</span><span class="p">:</span><span class="mf">0.01</span><span class="p">})</span>
+<span class="n">AXES_NR</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+<span class="p">]</span>
+<span class="n">AXES_CAP</span> <span class="o">=</span> <span class="p">[</span><span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="n">AXES_R</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">axes</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AXES_NR</span><span class="p">)):</span>
+    <span class="n">AXES_NR</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Variable</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">clevels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cMap</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AXES_CAP</span><span class="p">)):</span>
+    <span class="n">AXES_CAP</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Variable</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()[:,</span> <span class="p">::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">clevels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cMap</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">AXES_R</span><span class="p">)):</span>
+    <span class="n">AXES_R</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">Variable</span><span class="p">[</span><span class="mi">7</span><span class="o">+</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">clevels</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cMap</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">axes</span><span class="p">):</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_yticklabels</span><span class="p">(),</span> <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a0b2a1760b67af5bec260ddde1e53201a3ce8f38fce240277701e0a6fbe22d71.png" src="../_images/a0b2a1760b67af5bec260ddde1e53201a3ce8f38fce240277701e0a6fbe22d71.png" />
+</div>
+</div>
+<p><strong>Fig. 3.</strong> Visualizacion de la variable <code class="docutils literal notranslate"><span class="pre">Surface</span> <span class="pre">temperature</span></code>, similar al metodo utilizado en la Figura 2.</p>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="netrc.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Como crear el archivo .netrc</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="PACE.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">PACE</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#acceso-a-earthdata">Acceso a EARTHDATA</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autenticacion-via-netrc">Autenticacion via <code class="docutils literal notranslate"><span class="pre">.netrc</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#alternativa-el-use-the-tokens">Alternativa: El use the tokens</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accesso-a-los-metadatos-solamente-por-medio-de-pydap">Accesso a los metadatos solamente, por medio de pydap</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#utilizando-xarray">Utilizando <code class="docutils literal notranslate"><span class="pre">xarray</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#multiples-archivos-en-parallelo">Multiples archivos en parallelo</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finalmente-visualizamos-theta">Finalmente, visualizamos <code class="docutils literal notranslate"><span class="pre">THETA</span></code></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By OPeNDAP Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
