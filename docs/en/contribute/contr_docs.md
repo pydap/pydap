@@ -48,7 +48,7 @@ chmod +x build.sh
 ```
 
 ```{warning}
-Many of the tutorial examples in the documentation require EDL Authentication via a local `.netrc` file. Make sure you have one with valid credentials. See [Authentication](../notebooks/Authentication) 
+Many of the tutorial examples in the documentation require EDL Authentication via a local `.netrc` file. Make sure you have one with valid credentials. See [Authentication](../notebooks/Authentication)
 ```
 Depending on how many changes you have done to the documentation, this last step may take a while. It also depends on the type of files added to the documentation (`ipynb` are slower to build).
 
