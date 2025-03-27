@@ -23,6 +23,9 @@ lib64
 # Installer logs
 pip-log.txt
 
+# ignore shell script at base level
+*.sh
+
 # setuptools-scm
 _version.py
 

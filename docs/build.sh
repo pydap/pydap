@@ -31,7 +31,7 @@ echo '<!DOCTYPE html>
 </html>' > index.html
 
 # Copy index.html to the build directory
-cp index.html _build/html/index.html
+mv index.html _build/html/index.html
 
 
 echo "Both versions of the documentations were built successfully!"
