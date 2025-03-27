@@ -31,7 +31,8 @@ Beginner OPeNDAP users, may rapidly find themselves spending the time to better 
 1. Builds Contraint Expression for the user. This is done by slicing an array (See [Figure 1](WhyPydap)).
 2. Escapes URL parameters to safely transmit data use over the internet.
 3. Can fetch binary data from DAP2 (`.dods`) and DAP4 (`.dap`) data servers, turning it to a numerical numpy array.
-4. Cover the DAP2 and (*Most*) of the DAP4 data model.
+4. Covers the DAP2 and (*Most*) of the DAP4 data model.
+5. Is being developed and maintained by members of the OPeNDAP team, with open communication with Unidata.
 
 
 ```{note}
