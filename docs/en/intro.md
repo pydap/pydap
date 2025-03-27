@@ -1,4 +1,4 @@
-[Leer en Español](/es/intro.html) | [Read in English](/en/intro.html)
+<a href="../es/intro.html">Leer en Español</a> | <a href="../en/intro.html">Read in English</a>
 
 # <font size="7"><span style='color:#0066cc'> **Welcome to pydap**<font size="3">
 

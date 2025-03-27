@@ -33,4 +33,24 @@ echo '<!DOCTYPE html>
 # Copy index.html to the build directory
 cp index.html _build/html/index.html
 
-echo "Both versions built successfully!"
+
+echo "Both versions of the documentations were built successfully!"
+echo '
+
+For English version:
+1. Navigate to `docs` folder
+2. Run the following on the terminal:
+
+open _build/html/index.html
+
+'
+
+
+echo '
+Para la version en Espanol:
+1. Naviga al folder llamado `docs`
+2. Ejecuta en la terminal lo siguiente:
+
+open _build/html/es/intro.html
+
+'
