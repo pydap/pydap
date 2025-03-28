@@ -22,12 +22,12 @@ parts:
   - file: notebooks/CMIP6
 - caption: Frequently Asked Questions
   chapters:
-  - file: faqs
+  - file: faqs/faqs
     sections:
-    - file: Q1
-    - file: Q2
-    - file: Q3
-    - file: Q4
+    - file: faqs/download_speed
+    - file: faqs/diagnose_download_issues
+    - file: faqs/dap2_or_dap4_url
+    - file: faqs/dap2_vs_dap4
 - caption: Documentation
   chapters:
   - file: PydapAsClient
