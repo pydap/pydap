@@ -202,11 +202,11 @@ gtag("config", "G-EN2VD1J32L");
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../Q1.html">Pydap is slow. How can I improve the download time?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Q2.html">How can I diagnose when I am having trouble downloading data?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Q3.html">Is this a DAP2 or DAP4 URL?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../Q4.html">Is there any benefit between requesting data via DAP4 over DAP2?</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/download_speed.html">Pydap is slow. How can I improve the download time?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/diagnose_download_issues.html">How can I diagnose downloading issues?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">Is this a DAP2 or DAP4 URL?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_vs_dap4.html">Is there any benefit between requesting data via DAP4 over DAP2?</a></li>
 </ul>
 </details></li>
 </ul>
@@ -454,10 +454,28 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;requests.sessions.Session object at 0x10926c410&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;requests.sessions.Session object at 0x1040ac950&gt;
 </pre></div>
 </div>
 </div>
+</div>
+<p>or if you want to cache the session to avoid repeated downloads:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># default requests_cache.session() object. </span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_session</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;CachedSession(cache=&lt;SQLiteCache(name=http_cache)&gt;, settings=CacheSettings(expire_after=86400))&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>both <a class="reference external" href="https://requests.readthedocs.io/en/latest/">requests</a> and <a class="reference external" href="https://requests-cache.readthedocs.io/en/stable/">requests_cache</a> can recover and handle authentication via <code class="docutils literal notranslate"><span class="pre">.netrc</span></code></p>
 </div>
 <section id="now-we-open-the-remote-dataset">
 <h3>Now, we open the remote dataset<a class="headerlink" href="#now-we-open-the-remote-dataset" title="Link to this heading">#</a></h3>
