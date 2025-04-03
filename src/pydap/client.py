@@ -44,15 +44,19 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 """
 
-from io import BytesIO, open
+import os
 
-from requests.utils import urlparse, urlunparse
-from os.path import commonprefix
-
-from urllib.parse import urlparse, parse_qs, unquote, urlencode
 # import logging
 import re
-import os
+from concurrent.futures import ThreadPoolExecutor
+from io import BytesIO, open
+from os.path import commonprefix
+from urllib.parse import parse_qs, unquote, urlencode
+
+import requests
+from requests.utils import urlparse, urlunparse
+from requests_cache import CachedSession
+
 import pydap.handlers.dap
 import pydap.lib
 import pydap.model
@@ -62,9 +66,7 @@ import pydap.parsers.dds
 import pydap.parsers.dmr
 from pydap.handlers.dap import UNPACKDAP4DATA, DAPHandler
 from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
-from concurrent.futures import ThreadPoolExecutor
-from requests_cache import CachedSession
-import requests
+
 from .net import create_session
 
 
@@ -187,7 +189,7 @@ def open_dap4murl(
         URLs = [urls[i].replace("dap4", "http") for i in range(len(urls))]
     if not ncores:
         ncores = min(len(urls), os.cpu_count() * 4)
-    query="?"
+    query = "?"
     if query in urls[0]:
         dmr_urls = [url.replace(query, ".dmr" + query) for url in urls]
     else:
@@ -195,7 +197,9 @@ def open_dap4murl(
     # this caches the dmr
     with session as Session:  # Authenticate once
         with ThreadPoolExecutor(max_workers=ncores) as executor:
-            results = list(executor.map(lambda url: open_url(url, session=Session), dmr_urls))
+            results = list(
+                executor.map(lambda url: open_url(url, session=Session), dmr_urls)
+            )
 
     # Download once dimensions and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
@@ -204,16 +208,30 @@ def open_dap4murl(
     dims = set([item for sublist in nested for item in sublist])
     if not dims:
         print("Error: No dimensions found")
-    new_urls = [base_url+".dap?dap4.ce="+dim+"%5B0:1:"+str(len(results[0][dim])-1)+"%5D" for dim in list(dims)]
+    new_urls = [
+        base_url
+        + ".dap?dap4.ce="
+        + dim
+        + "%5B0:1:"
+        + str(len(results[0][dim]) - 1)
+        + "%5D"
+        for dim in list(dims)
+    ]
     # ces should not be escaped? xarray does not escaped them
-    dim_ces = set([dim+"[0:1:"+str(len(results[0][dim])-1)+"]" for dim in list(dims)])
+    dim_ces = set(
+        [dim + "[0:1:" + str(len(results[0][dim]) - 1) + "]" for dim in list(dims)]
+    )
     print("datacube has dimensions", dim_ces)
     # create custom cache keys
     if isinstance(session, CachedSession):
-        patch_session_for_shared_dap_cache(session, shared_vars=dim_ces, known_url_list=URLs)
+        patch_session_for_shared_dap_cache(
+            session, shared_vars=dim_ces, known_url_list=URLs
+        )
         with session as Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
-                results = list(executor.map(lambda url: fetch_url(url, session=Session), new_urls))
+                results = list(
+                    executor.map(lambda url: fetch_url(url, session=Session), new_urls)
+                )
     return session
 
 
@@ -433,7 +451,7 @@ def patch_session_for_shared_dap_cache(session, shared_vars, known_url_list=None
         parsed = urlparse(request.url)
         path = unquote(parsed.path)
         query = parse_qs(parsed.query)
-        dap4_ce = query.get('dap4.ce', [None])[0]
+        dap4_ce = query.get("dap4.ce", [None])[0]
         if dap4_ce:
             dap4_ce = unquote(dap4_ce)
 
@@ -443,21 +461,24 @@ def patch_session_for_shared_dap_cache(session, shared_vars, known_url_list=None
                 match = re.search(r"(/providers/[^/]+/collections/[^/]+)", path)
                 if match:
                     dataset_path = match.group(1)
-                    base_url = f"{parsed.scheme}://{parsed.netloc}{dataset_path}/shared.dap"
+                    base_url = (
+                        f"{parsed.scheme}://{parsed.netloc}{dataset_path}/shared.dap"
+                    )
                     normalized_url = f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
                     return normalized_url
 
             # Handle general POSIX-style URLs
-            if general_base and path.startswith(urlparse(general_base).path):
+            base_path = urlparse(general_base).path
+            if general_base and path.startswith(base_path):
                 # Use the computed shared base + virtual shared filename
-                base_url = f"{parsed.scheme}://{parsed.netloc}{urlparse(general_base).path}/shared.nc"
+                # url_path=urlparse(general_base).path
+                base_url = f"{parsed.scheme}://{parsed.netloc}{base_path}/shared.nc"
                 normalized_url = f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
                 return normalized_url
 
         return original_create_key(request, **kwargs)
 
     session.cache.create_key = custom_create_key
-
 
 
 def earth_patch_session_for_shared_dap_cache(session, shared_vars):
@@ -470,7 +491,8 @@ def earth_patch_session_for_shared_dap_cache(session, shared_vars):
 
     Args:
         session: requests-cache CachedSession
-        shared_vars: Set of dap4.ce values (decoded) that should be shared across granules
+        shared_vars: Set of dap4.ce values (decoded) that should be shared across
+        granules
         verbose: Whether to log cache key generation
     """
     original_create_key = session.cache.create_key
@@ -479,13 +501,13 @@ def earth_patch_session_for_shared_dap_cache(session, shared_vars):
         parsed = urlparse(request.url)
         path = unquote(parsed.path)
         query = parse_qs(parsed.query)
-        dap4_ce = query.get('dap4.ce', [None])[0]
+        dap4_ce = query.get("dap4.ce", [None])[0]
 
         # Normalize dap4.ce (decode and check)
         if dap4_ce:
             dap4_ce = unquote(dap4_ce)
 
-        if dap4_ce in shared_vars and path.endswith('.dap'):
+        if dap4_ce in shared_vars and path.endswith(".dap"):
             # Extract /providers/<DAAC>/collections/<COLLECTION_ID>
             match = re.search(r"(/providers/[^/]+/collections/[^/]+)", path)
             if match:
@@ -497,7 +519,6 @@ def earth_patch_session_for_shared_dap_cache(session, shared_vars):
         return original_create_key(request, **kwargs)
 
     session.cache.create_key = custom_create_key
-
 
 
 if __name__ == "__main__":
