@@ -47,7 +47,12 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 from io import BytesIO, open
 
 from requests.utils import urlparse, urlunparse
+from os.path import commonprefix
 
+from urllib.parse import urlparse, parse_qs, unquote, urlencode
+# import logging
+import re
+import os
 import pydap.handlers.dap
 import pydap.lib
 import pydap.model
@@ -57,7 +62,9 @@ import pydap.parsers.dds
 import pydap.parsers.dmr
 from pydap.handlers.dap import UNPACKDAP4DATA, DAPHandler
 from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
-
+from concurrent.futures import ThreadPoolExecutor
+from requests_cache import CachedSession
+import requests
 from .net import create_session
 
 
@@ -144,6 +151,70 @@ def open_url(
     dataset.functions = Functions(url, application, session, timeout=timeout)
 
     return dataset
+
+
+def open_dap4murl(
+    urls,
+    session=None,
+    protocol=None,
+    ncores=None,
+):
+    """Opens multiple OPeNDAP DAP4 URL
+
+    Parameters
+    ----------
+    urls : list
+        The URLs of the datasets that define a datacube.
+        session : requests.Session or requests-cache.CachedSession
+            A requests session object.
+        ncores : int
+            The number of cores to use for the requests. Default is 4 times the
+            number of CPUs.
+    Returns:
+        requests-cache.CachedSession
+    """
+
+    if not session:
+        session = create_session()
+    if not isinstance(urls, list):
+        print("raise error: urls must be a list of len > 1")
+    scheme = urlparse(urls[0]).scheme
+    if not scheme == "dap4":
+        print("warning: only dap4 urls are supported")
+        dmr_urls = [urls[i].replace(scheme, "dap4") for i in range(len(urls))]
+    else:
+        dmr_urls = urls
+        URLs = [urls[i].replace("dap4", "http") for i in range(len(urls))]
+    if not ncores:
+        ncores = min(len(urls), os.cpu_count() * 4)
+    query="?"
+    if query in urls[0]:
+        dmr_urls = [url.replace(query, ".dmr" + query) for url in urls]
+    else:
+        dmr_urls = [url + ".dmr" for url in urls]
+    # this caches the dmr
+    with session as Session:  # Authenticate once
+        with ThreadPoolExecutor(max_workers=ncores) as executor:
+            results = list(executor.map(lambda url: open_url(url, session=Session), dmr_urls))
+
+    # Download once dimensions and construct cache key their dap responses
+    base_url = URLs[0].split("?")[0]
+    # identify dimensions that repeat across the urls
+    nested = [list(results[i].dimensions) for i in range(len(results))]
+    dims = set([item for sublist in nested for item in sublist])
+    if not dims:
+        print("Error: No dimensions found")
+    new_urls = [base_url+".dap?dap4.ce="+dim+"%5B0:1:"+str(len(results[0][dim])-1)+"%5D" for dim in list(dims)]
+    # ces should not be escaped? xarray does not escaped them
+    dim_ces = set([dim+"[0:1:"+str(len(results[0][dim])-1)+"]" for dim in list(dims)])
+    print("datacube has dimensions", dim_ces)
+    # create custom cache keys
+    if isinstance(session, CachedSession):
+        patch_session_for_shared_dap_cache(session, shared_vars=dim_ces, known_url_list=URLs)
+        with session as Session:  # Authenticate once
+            with ThreadPoolExecutor(max_workers=ncores) as executor:
+                results = list(executor.map(lambda url: fetch_url(url, session=Session), new_urls))
+    return session
 
 
 def open_file(file_path, das_path=None):
@@ -327,6 +398,106 @@ class ServerFunctionResult(object):
 
     def __getattr__(self, name):
         return self[name]
+
+
+def fetch_url(url, session):
+    """Fetch a URL and return its status code."""
+    try:
+        response = session.get(url, stream=True)
+        return url, response.status_code
+    except requests.RequestException as e:
+        return url, f"Error: {e}"
+
+
+def compute_base_url_prefix(url_list):
+    """
+    Compute the longest common base path across a list of URLs.
+    Returns the common prefix as a normalized base URL.
+    """
+    parsed_paths = [urlparse(url).path for url in url_list]
+    common_path = os.path.dirname(commonprefix(parsed_paths))
+    parsed_example = urlparse(url_list[0])
+    return f"{parsed_example.scheme}://{parsed_example.netloc}{common_path}"
+
+
+def patch_session_for_shared_dap_cache(session, shared_vars, known_url_list=None):
+    """
+    Patch CachedSession to normalize cache keys for:
+    - Earthdata URLs: group by DAAC + collection_id
+    - General POSIX-style URLs: group by shared base path (computed from known_url_list)
+    """
+    original_create_key = session.cache.create_key
+    general_base = compute_base_url_prefix(known_url_list) if known_url_list else None
+
+    def custom_create_key(request, **kwargs):
+        parsed = urlparse(request.url)
+        path = unquote(parsed.path)
+        query = parse_qs(parsed.query)
+        dap4_ce = query.get('dap4.ce', [None])[0]
+        if dap4_ce:
+            dap4_ce = unquote(dap4_ce)
+
+        if dap4_ce in shared_vars:
+            # Handle Earthdata-style URLs
+            if parsed.netloc == "opendap.earthdata.nasa.gov":
+                match = re.search(r"(/providers/[^/]+/collections/[^/]+)", path)
+                if match:
+                    dataset_path = match.group(1)
+                    base_url = f"{parsed.scheme}://{parsed.netloc}{dataset_path}/shared.dap"
+                    normalized_url = f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
+                    return normalized_url
+
+            # Handle general POSIX-style URLs
+            if general_base and path.startswith(urlparse(general_base).path):
+                # Use the computed shared base + virtual shared filename
+                base_url = f"{parsed.scheme}://{parsed.netloc}{urlparse(general_base).path}/shared.nc"
+                normalized_url = f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
+                return normalized_url
+
+        return original_create_key(request, **kwargs)
+
+    session.cache.create_key = custom_create_key
+
+
+
+def earth_patch_session_for_shared_dap_cache(session, shared_vars):
+    """
+    Patch a CachedSession so that all requests to the same dataset
+    (same DAAC and collection_id) with identical dap4.ce values share a cache key.
+
+    Example matching URLs:
+    https://.../providers/DAAC/collections/COLL_ID/granules/GRAN_ID.dap?dap4.ce=...
+
+    Args:
+        session: requests-cache CachedSession
+        shared_vars: Set of dap4.ce values (decoded) that should be shared across granules
+        verbose: Whether to log cache key generation
+    """
+    original_create_key = session.cache.create_key
+
+    def custom_create_key(request, **kwargs):
+        parsed = urlparse(request.url)
+        path = unquote(parsed.path)
+        query = parse_qs(parsed.query)
+        dap4_ce = query.get('dap4.ce', [None])[0]
+
+        # Normalize dap4.ce (decode and check)
+        if dap4_ce:
+            dap4_ce = unquote(dap4_ce)
+
+        if dap4_ce in shared_vars and path.endswith('.dap'):
+            # Extract /providers/<DAAC>/collections/<COLLECTION_ID>
+            match = re.search(r"(/providers/[^/]+/collections/[^/]+)", path)
+            if match:
+                dataset_path = match.group(1)
+                base_url = f"{parsed.scheme}://{parsed.netloc}{dataset_path}/shared.dap"
+                normalized_url = f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
+                return normalized_url
+
+        return original_create_key(request, **kwargs)
+
+    session.cache.create_key = custom_create_key
+
 
 
 if __name__ == "__main__":
