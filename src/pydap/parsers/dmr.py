@@ -247,14 +247,6 @@ def dmr_to_dataset(dmr):
     variables = get_variables(dom_et)
     named_dimensions = get_named_dimensions(dom_et)
 
-    # get Global dimensions at root level
-    global_dimensions = []
-    for name, size in named_dimensions.items():
-        if len(name.split(split_by)) == 1:
-            global_dimensions.append([name, size])
-
-    dataset.dimensions = {k: v for k, v in global_dimensions}
-
     # Add size entry for dimension variables
     for name, size in named_dimensions.items():
         if name in variables:
@@ -371,6 +363,23 @@ class DMRParser(object):
                     name, value = get_atomic_attr(subnode)
                     Attrs[name] = value
         dataset.attributes = Attrs
+
+        # define global dimensions (including named dimensions)
+        if self.Groups:
+            split_by = "/"
+        else:
+            split_by = None
+
+        named_dimensions = get_named_dimensions(self.node)
+
+        # get Global dimensions at root level
+        global_dimensions = []
+        for name, size in named_dimensions.items():
+            if len(name.split(split_by)) == 1:
+                global_dimensions.append([name, size])
+
+        dataset.dimensions = {k: v for k, v in global_dimensions}
+
         # create Groups via dict
         Groups = get_groups(self.node)
         for key in Groups:
