@@ -63,9 +63,9 @@ import pydap.model
 import pydap.net
 import pydap.parsers.das
 import pydap.parsers.dds
-import pydap.parsers.dmr
 from pydap.handlers.dap import UNPACKDAP4DATA, DAPHandler
 from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
+from pydap.parsers.dmr import DMRParser, dmr_to_dataset
 
 from .net import create_session
 
@@ -247,6 +247,29 @@ def open_file(file_path, das_path=None):
         return open_dmr_file(file_path=file_path)
 
 
+def open_dmr(path, session=None):
+    """Retrieves a remote dmr from a server and returns an empty dataset.
+    If the path is to a local file, then it is opened directly.
+    """
+    if path is None:
+        return None
+    if path.startswith("http") and "dmr" in path:
+        # Open a remote dmr
+        if session is None:
+            session = create_session()
+        r = session.get(path)
+        dmr = r.text
+        dataset = DMRParser(dmr).init_dataset()
+        # dataset._session = session
+        return dataset
+    else:
+        try:
+            return open_dmr_file(path)
+        except FileNotFoundError:
+            print(f"File {path} not found.")
+            return None
+
+
 def open_dmr_file(file_path):
     """
     Opens a DMR. This differs from a dap response, since it is a single chunk,
@@ -255,7 +278,7 @@ def open_dmr_file(file_path):
     with open(file_path, "rb") as f:
         dmr = f.read()
     dmr = dmr.decode("ascii")
-    dataset = pydap.parsers.dmr.dmr_to_dataset(dmr)
+    dataset = dmr_to_dataset(dmr)
     return dataset
 
 
