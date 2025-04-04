@@ -5,11 +5,13 @@ import os
 import numpy as np
 import pytest
 import requests
+from requests_cache import CachedSession
 
-from pydap.client import open_dods_url, open_file, open_url
-from pydap.handlers.lib import BaseHandler
-from pydap.model import BaseType, DatasetType, GridType
-from pydap.tests.datasets import SimpleGrid, SimpleSequence, SimpleStructure
+from ..client import datacube_urls, open_dmr, open_dods_url, open_file, open_url
+from ..handlers.lib import BaseHandler
+from ..model import BaseType, DatasetType, GridType
+from ..net import create_session
+from .datasets import SimpleGrid, SimpleSequence, SimpleStructure
 
 DODS = os.path.join(os.path.dirname(__file__), "data/test.01.dods")
 DAS = os.path.join(os.path.dirname(__file__), "data/test.01.das")
@@ -362,3 +364,75 @@ def test_cache(use_cache):
             url, protocol="dap2", use_cache=use_cache, cache_kwargs=cache_kwargs
         )
         assert isinstance(ds, DatasetType)
+
+
+@pytest.mark.parametrize(
+    "urls",
+    ["not a list", ["A", "B", "C", 1], ["http://localhost:8001/"]],
+)
+def test_typerror_datacube_urls(urls):
+    """Test that TypeError is raised when datacube_urls takes an argument that
+    is not a list, or a list of a single element.
+    """
+    with pytest.raises(TypeError):
+        datacube_urls(urls)
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        ["dap4://localhost:8001/", "dap4://localhost:8002/", "http://localhost:8003/"],
+        ["dap2://localhost:8001/", "dap4://localhost:8001/"],
+    ],
+)
+def test_valueerror_datacube_urls(urls):
+    """Test that ValueError is raised when datacube_urls takes a list of
+    urls that are not all the same type.
+    """
+    with pytest.raises(ValueError):
+        datacube_urls(urls)
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        ["http://localhost:8001/", "http://localhost:8002/", "http://localhost:8003/"],
+        ["dap2://localhost:8001/", "dap2://localhost:8002/", "dap2://localhost:8003/"],
+    ],
+)
+def test_warning_datacube_urls(urls):
+    """Test that a warning is raised when datacube_urls takes a list of urls
+    that are all the same type. Nothing is returned
+    """
+    with pytest.warns(Warning):
+        returns = datacube_urls(urls)
+    # Check that return is `None`
+    assert returns is None
+
+
+ce = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        [
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce,
+        ],
+    ],
+)
+def test_cached_datacube_urls(urls):
+    """Test that datacube_urls effectively caches the dmr of the urls, along
+    with the dap4 urls of the dimensions
+    """
+    pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
+    dims = list(pyds.dimensions)
+
+    cached_session = create_session(use_cache=True)
+    cached_session.cache.clear()  # clears any existing cache
+    cached_session = datacube_urls(urls, cached_session)
+    assert isinstance(cached_session, CachedSession)
+    # check that the cached session has all the dmr urls and
+    # caches the dap response of the dimensions only once
+    assert len(cached_session.cache.urls()) == len(urls) + len(dims)

@@ -48,6 +48,7 @@ import os
 
 # import logging
 import re
+import warnings
 from concurrent.futures import ThreadPoolExecutor
 from io import BytesIO, open
 from os.path import commonprefix
@@ -56,7 +57,7 @@ from urllib.parse import parse_qs, unquote, urlencode
 import requests
 from requests.utils import urlparse, urlunparse
 from requests_cache import CachedSession
-import warnings as warn
+
 import pydap.handlers.dap
 import pydap.lib
 import pydap.model
@@ -155,12 +156,8 @@ def open_url(
     return dataset
 
 
-def datacube_urls(
-    urls,
-    session=None,
-):
+def datacube_urls(urls, session=None):
     """Opens multiple OPeNDAP DAP4 URL
-
     Parameters
     ----------
     urls : list
@@ -174,23 +171,34 @@ def datacube_urls(
 
     if not session:
         session = create_session()
-    if not isinstance(urls, list) or len(urls)==1:
+    if not isinstance(urls, list) or len(urls) == 1:
         raise TypeError("urls must be a list of `len` > 2. Try again!")
-    scheme = urlparse(urls[0]).scheme
-    if not scheme == "dap4":
-        raise warn.warning(
+
+    # check elements in urls are strings
+    if not all(isinstance(url, str) for url in urls):
+        raise TypeError("`urls` must be a list of string urls")
+
+    schemes = [urlparse(urls[n]).scheme for n in range(len(urls))]
+    # check if all urls have the same scheme
+    scheme = set(schemes)
+    if len(scheme) > 1:
+        raise ValueError(
+            "URLs must have the same scheme. Try again with the same protocol."
+        )
+    if not scheme.pop() == "dap4":
+        warnings.warn(
             "URLs must be a dap4 URL and begin with `dap4://`. To "
             " learn about da4p2 urls, please visit the following link: \n "
             " https://pydap.github.io/pydap/en/faqs/dap2_or_dap4_url.html"
         )
         return None
     # All URLs begin with dap4 - to make sure DAP4 compliant
-    URLs = ["https" + urls[i][4:] for i in range(len(urls))]
+    URLs = ["http" + urls[i][4:] for i in range(len(urls))]
     ncores = min(len(urls), os.cpu_count() * 4)
-    if "?" in urls[0]:
-        dmr_urls = [url.replace("?", ".dmr?") for url in URLs]
-    else:
-        dmr_urls = [url + ".dmr" for url in URLs]
+    dmr_urls = [
+        url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
+    ]
+
     # this caches the dmr
     with session as Session:  # Authenticate once
         with ThreadPoolExecutor(max_workers=ncores) as executor:
@@ -201,12 +209,14 @@ def datacube_urls(
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     # identify dimensions that repeat across the urls
-    nested = [[val for val in results[i].dimensions.keys()] for i in range(len(results))]
+    nested = [
+        [val for val in results[i].dimensions.keys()] for i in range(len(results))
+    ]
     dims = set([item for sublist in nested for item in sublist])
     if not dims:
         print("Error: No share dimensions found. Make sure the urls are correct.")
         return None
-    
+
     # make sure count of dimensions is the same as the number of urls
 
     new_urls = [
@@ -220,7 +230,10 @@ def datacube_urls(
     ]
     # xarray does not escaped CE
     dim_ces = set(
-        [dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]" for dim in list(dims)]
+        [
+            dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]"
+            for dim in list(dims)
+        ]
     )
     print("datacube has dimensions", dim_ces)
     # create custom cache keys

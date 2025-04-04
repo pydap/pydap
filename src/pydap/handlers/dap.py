@@ -17,7 +17,6 @@ import pprint
 import re
 import sys
 import warnings
-import warnings as _warnings
 from concurrent.futures import ThreadPoolExecutor
 from io import BufferedReader, BytesIO
 from itertools import chain
@@ -132,7 +131,7 @@ class DAPHandler(BaseHandler):
         if self.query[:4] == "dap4":
             return "dap4"
         else:
-            _warnings.warn(
+            warnings.warn(
                 "PyDAP was unable to determine the DAP protocol defaulting "
                 "to DAP2. DAP2 is consider legacy and may result in slower "
                 "responses. \nConsider replacing `http` in your `url` with "
