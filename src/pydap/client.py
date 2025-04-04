@@ -56,7 +56,7 @@ from urllib.parse import parse_qs, unquote, urlencode
 import requests
 from requests.utils import urlparse, urlunparse
 from requests_cache import CachedSession
-
+import warnings as warn
 import pydap.handlers.dap
 import pydap.lib
 import pydap.model
@@ -155,71 +155,72 @@ def open_url(
     return dataset
 
 
-def open_dap4murl(
+def datacube_urls(
     urls,
     session=None,
-    protocol=None,
-    ncores=None,
 ):
     """Opens multiple OPeNDAP DAP4 URL
 
     Parameters
     ----------
     urls : list
-        The URLs of the datasets that define a datacube.
+        The URLs of the datasets that define a datacube. Each URL must begin
+        with the same base URL, and begin with `dap4://`.
         session : requests.Session or requests-cache.CachedSession
             A requests session object.
-        ncores : int
-            The number of cores to use for the requests. Default is 4 times the
-            number of CPUs.
     Returns:
         requests-cache.CachedSession
     """
 
     if not session:
         session = create_session()
-    if not isinstance(urls, list):
-        print("raise error: urls must be a list of len > 1")
+    if not isinstance(urls, list) or len(urls)==1:
+        raise TypeError("urls must be a list of `len` > 2. Try again!")
     scheme = urlparse(urls[0]).scheme
     if not scheme == "dap4":
-        print("warning: only dap4 urls are supported")
-        dmr_urls = [urls[i].replace(scheme, "dap4") for i in range(len(urls))]
+        raise warn.warning(
+            "URLs must be a dap4 URL and begin with `dap4://`. To "
+            " learn about da4p2 urls, please visit the following link: \n "
+            " https://pydap.github.io/pydap/en/faqs/dap2_or_dap4_url.html"
+        )
+        return None
+    # All URLs begin with dap4 - to make sure DAP4 compliant
+    URLs = ["https" + urls[i][4:] for i in range(len(urls))]
+    ncores = min(len(urls), os.cpu_count() * 4)
+    if "?" in urls[0]:
+        dmr_urls = [url.replace("?", ".dmr?") for url in URLs]
     else:
-        dmr_urls = urls
-        URLs = [urls[i].replace("dap4", "http") for i in range(len(urls))]
-    if not ncores:
-        ncores = min(len(urls), os.cpu_count() * 4)
-    query = "?"
-    if query in urls[0]:
-        dmr_urls = [url.replace(query, ".dmr" + query) for url in urls]
-    else:
-        dmr_urls = [url + ".dmr" for url in urls]
+        dmr_urls = [url + ".dmr" for url in URLs]
     # this caches the dmr
     with session as Session:  # Authenticate once
         with ThreadPoolExecutor(max_workers=ncores) as executor:
             results = list(
-                executor.map(lambda url: open_url(url, session=Session), dmr_urls)
+                executor.map(lambda url: open_dmr(url, session=Session), dmr_urls)
             )
 
-    # Download once dimensions and construct cache key their dap responses
+    # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     # identify dimensions that repeat across the urls
-    nested = [list(results[i].dimensions) for i in range(len(results))]
+    nested = [[val for val in results[i].dimensions.keys()] for i in range(len(results))]
     dims = set([item for sublist in nested for item in sublist])
     if not dims:
-        print("Error: No dimensions found")
+        print("Error: No share dimensions found. Make sure the urls are correct.")
+        return None
+    
+    # make sure count of dimensions is the same as the number of urls
+
     new_urls = [
         base_url
         + ".dap?dap4.ce="
         + dim
         + "%5B0:1:"
-        + str(len(results[0][dim]) - 1)
+        + str(results[0].dimensions[dim] - 1)
         + "%5D"
         for dim in list(dims)
     ]
-    # ces should not be escaped? xarray does not escaped them
+    # xarray does not escaped CE
     dim_ces = set(
-        [dim + "[0:1:" + str(len(results[0][dim]) - 1) + "]" for dim in list(dims)]
+        [dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]" for dim in list(dims)]
     )
     print("datacube has dimensions", dim_ces)
     # create custom cache keys
@@ -255,9 +256,10 @@ def open_dmr(path, session=None):
         return None
     if path.startswith("http") and "dmr" in path:
         # Open a remote dmr
+        # here
         if session is None:
             session = create_session()
-        r = session.get(path)
+        r = session.get(path, stream=True)
         dmr = r.text
         dataset = DMRParser(dmr).init_dataset()
         # dataset._session = session
