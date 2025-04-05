@@ -500,6 +500,8 @@ cloud_common = "/providers/POCLOUD/collections/granules"
 cloud_urls = "https://opendap.earthdata.nasa.gov"
 posix_urls = "http://localhost:8001"
 posix_common = "/common/path"
+
+
 @pytest.mark.parametrize(
     "urls, common_path",
     [
@@ -531,8 +533,9 @@ def test_compute_base_url_prefix(urls, common_path):
 
 @pytest.mark.parametrize(
     "url, expected",
-    [[None, None],
-     ["FileNotFound", None],
+    [
+        [None, None],
+        ["FileNotFound", None],
         [
             "http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr",
             DatasetType,
@@ -540,13 +543,13 @@ def test_compute_base_url_prefix(urls, common_path):
         [
             SimpleGroupdmr,
             DatasetType,
-        ],  
-    ]
+        ],
+    ],
 )
 def test_open_dmr(url, expected):
     """Test `open_dmr` for various urls"""
     pyds = open_dmr(url)
     if expected:
-        assert isinstance(pyds,expected)
+        assert isinstance(pyds, expected)
     else:
-        assert pyds == expected 
+        assert pyds == expected
