@@ -214,8 +214,10 @@ def datacube_urls(urls, session=None):
     ]
     dims = set([item for sublist in nested for item in sublist])
     if not dims:
-        print("Error: No share dimensions found. Make sure the urls are correct.")
-        return None
+        warnings.warn(
+            "No dimensions found in the dataset. Please check the URLs."
+        )
+        return session
 
     # make sure count of dimensions is the same as the number of urls
 

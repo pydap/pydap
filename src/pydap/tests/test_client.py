@@ -411,8 +411,6 @@ def test_warning_datacube_urls(urls):
 
 
 ce1 = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
-
-
 @pytest.mark.parametrize(
     "urls",
     [
@@ -427,7 +425,7 @@ def test_cached_datacube_urls(urls):
     with the dap4 urls of the dimensions
     """
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
-    dims = list(pyds.dimensions)
+    dims = list(pyds.dimensions) # dimensions of full dataset
 
     cached_session = create_session(use_cache=True)
     cached_session.cache.clear()  # clears any existing cache
@@ -444,3 +442,19 @@ def test_cached_datacube_urls(urls):
     N = len(dims)  # should be 3 for this dataset.
     for n in range(N):
         assert cached_session.cache.urls()[n].split("%")[0] == dim_dap_urls[n]
+
+
+def tests_no_dims_cache(remote_url):
+    base_url = remote_url + "nc/123bears.nc"
+    ce1 = "?dap4.ce=/bears[0:1:1][0:1:2]"
+    ce2 = "?dap4.ce=/order[0:1:1][0:1:2]"
+    ce3 = "?dap4.ce=/shot[0:1:1][0:1:2]"
+    CE = [ce1, ce2, ce3]
+    dap_urls = [
+        base_url.replace("http", "dap4") + ce for ce in CE
+    ]  # dap urls with constraints expressions
+    with pytest.warns(Warning):
+        # no dimensions in the urls
+        # so the dap urls are not cached
+        session = datacube_urls(dap_urls)
+        assert isinstance(session, requests.Session)
