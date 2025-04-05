@@ -22,6 +22,7 @@ from .datasets import SimpleGrid, SimpleSequence, SimpleStructure
 
 DODS = os.path.join(os.path.dirname(__file__), "data/test.01.dods")
 DAS = os.path.join(os.path.dirname(__file__), "data/test.01.das")
+SimpleGroupdmr = os.path.join(os.path.dirname(__file__), "data/dmrs/SimpleGroup.dmr")
 
 
 @pytest.fixture
@@ -499,8 +500,6 @@ cloud_common = "/providers/POCLOUD/collections/granules"
 cloud_urls = "https://opendap.earthdata.nasa.gov"
 posix_urls = "http://localhost:8001"
 posix_common = "/common/path"
-
-
 @pytest.mark.parametrize(
     "urls, common_path",
     [
@@ -528,3 +527,26 @@ def test_compute_base_url_prefix(urls, common_path):
     """
     base_url = compute_base_url_prefix(urls)
     assert base_url == common_path
+
+
+@pytest.mark.parametrize(
+    "url, expected",
+    [[None, None],
+     ["FileNotFound", None],
+        [
+            "http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr",
+            DatasetType,
+        ],
+        [
+            SimpleGroupdmr,
+            DatasetType,
+        ],  
+    ]
+)
+def test_open_dmr(url, expected):
+    """Test `open_dmr` for various urls"""
+    pyds = open_dmr(url)
+    if expected:
+        assert isinstance(pyds,expected)
+    else:
+        assert pyds == expected 
