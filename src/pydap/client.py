@@ -214,9 +214,7 @@ def datacube_urls(urls, session=None):
     ]
     dims = set([item for sublist in nested for item in sublist])
     if not dims:
-        warnings.warn(
-            "No dimensions found in the dataset. Please check the URLs."
-        )
+        warnings.warn("No dimensions found in the dataset.")
         return session
 
     # make sure count of dimensions is the same as the number of urls

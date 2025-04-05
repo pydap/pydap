@@ -411,6 +411,8 @@ def test_warning_datacube_urls(urls):
 
 
 ce1 = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
+
+
 @pytest.mark.parametrize(
     "urls",
     [
@@ -425,7 +427,7 @@ def test_cached_datacube_urls(urls):
     with the dap4 urls of the dimensions
     """
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
-    dims = list(pyds.dimensions) # dimensions of full dataset
+    dims = list(pyds.dimensions)  # dimensions of full dataset
 
     cached_session = create_session(use_cache=True)
     cached_session.cache.clear()  # clears any existing cache
