@@ -211,7 +211,7 @@ def datacube_urls(urls, session=None):
     dims = set([item for sublist in nested for item in sublist])
     if not dims:
         warnings.warn("No dimensions found in the dataset.")
-        return session
+        return None
 
     # make sure count of dimensions is the same as the number of urls
 
@@ -240,7 +240,7 @@ def datacube_urls(urls, session=None):
         with session as Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
                 results = list(executor.map(lambda url: Session.get(url), new_urls))
-    return session
+    return None
 
 
 def open_file(file_path, das_path=None):

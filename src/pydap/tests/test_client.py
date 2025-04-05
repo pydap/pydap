@@ -439,8 +439,7 @@ def test_cached_datacube_urls(urls):
 
     cached_session = create_session(use_cache=True)
     cached_session.cache.clear()  # clears any existing cache
-    cached_session = datacube_urls(urls, cached_session)
-    assert isinstance(cached_session, CachedSession)
+    datacube_urls(urls, cached_session)
     # check that the cached session has all the dmr urls and
     # caches the dap response of the dimensions only once
     assert len(cached_session.cache.urls()) == len(urls) + len(dims)
@@ -466,8 +465,7 @@ def tests_no_dims_cache(remote_url):
     with pytest.warns(Warning):
         # no dimensions in the urls
         # so the dap urls are not cached
-        session = datacube_urls(dap_urls)
-        assert isinstance(session, requests.Session)
+        datacube_urls(dap_urls)
 
 
 @pytest.mark.parametrize(
