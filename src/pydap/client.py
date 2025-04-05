@@ -459,7 +459,7 @@ class ServerFunctionResult(object):
 def fetch_url(url, session):
     """Fetch a URL and return its status code."""
     try:
-        response = session.get(url, stream=True)
+        response = session.get(url)
         return url, response.status_code
     except requests.RequestException as e:
         return url, f"Error: {e}"
@@ -477,7 +477,7 @@ def compute_base_url_prefix(url_list):
     if not all(url.startswith("http") for url in url_list):
         raise ValueError("url_list must contain valid HTTP URLs.")
     parsed_paths = [urlparse(url).path.split("?")[0] for url in url_list]
-    parsed_paths = [("/").join(path.split("/")[:-1]) for path in parsed_paths]
+    # parsed_paths = [("/").join(path.split("/")) for path in parsed_paths]
     common_path = os.path.dirname(commonprefix(parsed_paths))
     if not all(
         [

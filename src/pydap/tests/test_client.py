@@ -493,3 +493,30 @@ def test_ValueErrors_compute_base_url_prefix(urls):
     """
     with pytest.raises(ValueError):
         compute_base_url_prefix(urls)
+
+
+cloud_common = "/providers/POCLOUD/collections/granules"
+cloud_urls = "https://opendap.earthdata.nasa.gov"
+posix_urls= "http://localhost:8001"
+posix_common = "/common/path"
+@pytest.mark.parametrize(
+    "urls, common_path",
+    [
+        ([
+            posix_urls+posix_common+"/data.nc",
+            posix_urls+posix_common+"/data.nc",
+            posix_urls+posix_common+"/data.nc",
+        ], posix_urls+posix_common),
+        ([
+            cloud_urls+cloud_common+"/fileA.nc",
+            cloud_urls+cloud_common+"/fileC.nc",
+            cloud_urls+cloud_common+"/fileB.nc",
+        ], cloud_urls+cloud_common)
+    ],
+)
+def test_compute_base_url_prefix(urls, common_path):
+    """Tests that compute_base_url_prefix returns the correct common path
+    for a list of urls. The urls must be valid and have a common path.
+    """
+    base_url = compute_base_url_prefix(urls)
+    assert base_url == common_path
