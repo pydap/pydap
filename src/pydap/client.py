@@ -57,15 +57,14 @@ from urllib.parse import parse_qs, unquote, urlencode
 from requests.utils import urlparse, urlunparse
 from requests_cache import CachedSession
 
+from .handlers.dap import UNPACKDAP4DATA, DAPHandler, StreamReader, unpack_dap2_data
+from .lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
+from .lib import encode
 from .model import DapType
-from .net import GET
-from .parsers.das import parse_das, add_attributes
+from .net import GET, create_session
+from .parsers.das import add_attributes, parse_das
 from .parsers.dds import dds_to_dataset
-from .handlers.dap import UNPACKDAP4DATA, DAPHandler, unpack_dap2_data, StreamReader
-from .lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT, encode
 from .parsers.dmr import DMRParser, dmr_to_dataset
-
-from .net import create_session
 
 
 def open_url(
