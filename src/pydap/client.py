@@ -57,15 +57,13 @@ from urllib.parse import parse_qs, unquote, urlencode
 from requests.utils import urlparse, urlunparse
 from requests_cache import CachedSession
 
-import pydap.handlers.dap
-import pydap.lib
-import pydap.model
-import pydap.net
-import pydap.parsers.das
-import pydap.parsers.dds
-from pydap.handlers.dap import UNPACKDAP4DATA, DAPHandler
-from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
-from pydap.parsers.dmr import DMRParser, dmr_to_dataset
+from .model import DapType
+from .net import GET
+from .parsers.das import parse_das, add_attributes
+from .parsers.dds import dds_to_dataset
+from .handlers.dap import UNPACKDAP4DATA, DAPHandler, unpack_dap2_data, StreamReader
+from .lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT, encode
+from .parsers.dmr import DMRParser, dmr_to_dataset
 
 from .net import create_session
 
@@ -324,17 +322,17 @@ def open_dods_file(file_path, das_path=None):
             if line.strip() == "Data:":
                 break
             dds += line
-    dataset = pydap.parsers.dds.dds_to_dataset(dds)
+    dataset = dds_to_dataset(dds)
     pos = len(dds) + len("Data:\n")
 
     with open(file_path, "rb") as f:
         f.seek(pos)
-        dataset.data = pydap.handlers.dap.unpack_dap2_data(f, dataset)
+        dataset.data = unpack_dap2_data(f, dataset)
 
     if das_path is not None:
         with open(das_path) as f:
-            das = pydap.parsers.das.parse_das(f.read())
-            pydap.parsers.das.add_attributes(dataset, das)
+            das = parse_das(f.read())
+            add_attributes(dataset, das)
 
     return dataset
 
@@ -349,23 +347,23 @@ def open_dods_url(
 ):
     """Open a `.dods` response directly, returning a dataset."""
 
-    r = pydap.net.GET(url, application, session, timeout=timeout)
+    r = GET(url, application, session, timeout=timeout)
 
     dds, data = r.body.split(b"\nData:\n", 1)
     dds = dds.decode(r.content_encoding or "ascii")
-    dataset = pydap.parsers.dds.dds_to_dataset(dds)
-    stream = pydap.handlers.dap.StreamReader(BytesIO(data))
-    dataset.data = pydap.handlers.dap.unpack_dap2_data(stream, dataset)
+    dataset = dds_to_dataset(dds)
+    stream = StreamReader(BytesIO(data))
+    dataset.data = unpack_dap2_data(stream, dataset)
 
     if metadata:
         scheme, netloc, path, params, query, fragment = urlparse(url)
         dasurl = urlunparse(
             (scheme, netloc, path[:-4] + "das", params, query, fragment)
         )
-        r = pydap.net.GET(dasurl, application, session, timeout=timeout, verify=verify)
+        r = GET(dasurl, application, session, timeout=timeout, verify=verify)
 
-        das = pydap.parsers.das.parse_das(r.text)
-        pydap.parsers.das.add_attributes(dataset, das)
+        das = parse_das(r.text)
+        add_attributes(dataset, das)
 
     return dataset
 
@@ -412,10 +410,10 @@ class ServerFunction(object):
     def __call__(self, *args):
         params = []
         for arg in args:
-            if isinstance(arg, (pydap.model.DapType, ServerFunctionResult)):
+            if isinstance(arg, (DapType, ServerFunctionResult)):
                 params.append(arg.id)
             else:
-                params.append(pydap.lib.encode(arg))
+                params.append(encode(arg))
         id_ = self.name + "(" + ",".join(params) + ")"
         return ServerFunctionResult(
             self.baseurl, id_, self.application, self.session, timeout=self.timeout
