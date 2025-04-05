@@ -497,21 +497,29 @@ def test_ValueErrors_compute_base_url_prefix(urls):
 
 cloud_common = "/providers/POCLOUD/collections/granules"
 cloud_urls = "https://opendap.earthdata.nasa.gov"
-posix_urls= "http://localhost:8001"
+posix_urls = "http://localhost:8001"
 posix_common = "/common/path"
+
+
 @pytest.mark.parametrize(
     "urls, common_path",
     [
-        ([
-            posix_urls+posix_common+"/data.nc",
-            posix_urls+posix_common+"/data.nc",
-            posix_urls+posix_common+"/data.nc",
-        ], posix_urls+posix_common),
-        ([
-            cloud_urls+cloud_common+"/fileA.nc",
-            cloud_urls+cloud_common+"/fileC.nc",
-            cloud_urls+cloud_common+"/fileB.nc",
-        ], cloud_urls+cloud_common)
+        (
+            [
+                posix_urls + posix_common + "/data.nc",
+                posix_urls + posix_common + "/data.nc",
+                posix_urls + posix_common + "/data.nc",
+            ],
+            posix_urls + posix_common,
+        ),
+        (
+            [
+                cloud_urls + cloud_common + "/fileA.nc",
+                cloud_urls + cloud_common + "/fileC.nc",
+                cloud_urls + cloud_common + "/fileB.nc",
+            ],
+            cloud_urls + cloud_common,
+        ),
     ],
 )
 def test_compute_base_url_prefix(urls, common_path):
