@@ -481,8 +481,8 @@ def tests_no_dims_cache(remote_url):
         ["http://localhost:8001/"],
         [
             "http://localhost:8001/common/path/data.nc",
-            "http://localhost:8002/common/path/data.nc",
-            "http://localhost:8003/NO/COMMON/PATH/HERE/data.nc",
+            "http://localhost:8001/common/path/data.nc",
+            "http://localhost:8001/NO/COMMON/PATH/HERE/data.nc",
         ],
     ],
 )
