@@ -7,7 +7,14 @@ import pytest
 import requests
 from requests_cache import CachedSession
 
-from ..client import datacube_urls, open_dmr, open_dods_url, open_file, open_url
+from ..client import (
+    compute_base_url_prefix,
+    datacube_urls,
+    open_dmr,
+    open_dods_url,
+    open_file,
+    open_url,
+)
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType, GridType
 from ..net import create_session
@@ -460,3 +467,29 @@ def tests_no_dims_cache(remote_url):
         # so the dap urls are not cached
         session = datacube_urls(dap_urls)
         assert isinstance(session, requests.Session)
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        ["http://localhost:8001/", 1, "http://localhost:8003/"],
+        [
+            "dap2://localhost:8001/",
+            "dap2://localhost:8002/",
+            "dap2://localhost:8003/",
+        ],
+        ["http://localhost:8001/"],
+        [
+            "http://localhost:8001/common/path/data.nc",
+            "http://localhost:8002/common/path/data.nc",
+            "http://localhost:8003/NO/COMMON/PATH/HERE/data.nc",
+        ],
+    ],
+)
+def test_ValueErrors_compute_base_url_prefix(urls):
+    """Tests that ValueError is raised wuen urls
+    is not a `uniform` list of https urls belonging to the same
+    data cube. That is, URLS MUST be valid, and have a common path
+    """
+    with pytest.raises(ValueError):
+        compute_base_url_prefix(urls)

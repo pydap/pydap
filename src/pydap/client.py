@@ -470,8 +470,23 @@ def compute_base_url_prefix(url_list):
     Compute the longest common base path across a list of URLs.
     Returns the common prefix as a normalized base URL.
     """
-    parsed_paths = [urlparse(url).path for url in url_list]
+    if not isinstance(url_list, list) or len(url_list) < 2:
+        raise ValueError("url_list must be a list of at least two URLs.")
+    if not all(isinstance(url, str) for url in url_list):
+        raise ValueError("url_list must contain only strings.")
+    if not all(url.startswith("http") for url in url_list):
+        raise ValueError("url_list must contain valid HTTP URLs.")
+    parsed_paths = [urlparse(url).path.split("?")[0] for url in url_list]
+    parsed_paths = [("/").join(path.split("/")[:-1]) for path in parsed_paths]
     common_path = os.path.dirname(commonprefix(parsed_paths))
+    if not all(
+        [
+            len(common_path.split("/")) + 1 == len(path.split("/"))
+            for path in parsed_paths
+        ]
+    ):
+        raise ValueError("No common path found in the provided URLs.")
+    # Normalize the common path
     parsed_example = urlparse(url_list[0])
     return f"{parsed_example.scheme}://{parsed_example.netloc}{common_path}"
 
