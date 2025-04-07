@@ -5,7 +5,6 @@ import os
 import numpy as np
 import pytest
 import requests
-from requests_cache import CachedSession
 
 from ..client import (
     compute_base_url_prefix,
