@@ -45,8 +45,6 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 """
 
 import os
-
-# import logging
 import re
 import warnings
 from concurrent.futures import ThreadPoolExecutor
