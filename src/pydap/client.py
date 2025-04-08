@@ -166,7 +166,7 @@ def datacube_urls(urls, session=None):
     if not session:
         session = create_session()
     if not isinstance(urls, list) or len(urls) == 1:
-        raise TypeError("urls must be a list of `len` > 2. Try again!")
+        raise TypeError("urls must be a list of `len` >= 2. Try again!")
 
     # check elements in urls are strings
     if not all(isinstance(url, str) for url in urls):
