@@ -13,6 +13,7 @@ from ..client import (
     open_dods_url,
     open_file,
     open_url,
+    patch_session_for_shared_dap_cache,
 )
 from ..handlers.lib import BaseHandler
 from ..model import BaseType, DatasetType, GridType
@@ -550,3 +551,51 @@ def test_open_dmr(url, expected):
         assert isinstance(pyds, expected)
     else:
         assert pyds == expected
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        [
+            "http://test.opendap.org/opendap/data/nc/123bears.nc",
+            "http://test.opendap.org/opendap/data/nc/124bears.nc",
+            "http://test.opendap.org/opendap/data/nc/125bears.nc",
+        ],
+    ],
+)
+def test_patch_session_for_shared_dap_cache(urls):
+    """Test that the session is patched correctly for shared dap cache."""
+    # Create a session using requests-cache
+    cached_session = create_session(use_cache=True)
+    # Clear any existing cache
+    cached_session.cache.clear()
+    # Create custom cache key for each of the dimensions
+    dimensions = ["i[0:1:1]", "j[0:1:2]", "l[0:1:2]"]
+
+    patch_session_for_shared_dap_cache(
+        cached_session, shared_vars=dimensions, known_url_list=urls
+    )
+    assert len(cached_session.cache.urls()) == 0
+
+    # construct urls to create cache keys
+    test_urls = [urls[0] + ".dap?dap4.ce=" + dim for dim in dimensions]
+    # create cache keys for the urls - discard the list
+    _ = [cached_session.get(url) for url in test_urls]
+
+    # make sure that the urls are cached for each dimension
+    assert len(cached_session.cache.urls()) == len(dimensions)
+
+    for dim in dimensions:
+        test_url2 = urls[1] + ".dap?dap4.ce=" + dim
+        test_url3 = urls[2] + ".dap?dap4.ce=" + dim
+
+        # test that the urls are being cached
+        r2 = cached_session.get(test_url2)
+        r3 = cached_session.get(test_url3)
+
+        # assert that data was cached - otherwise 404 (Non-existent URLS!)
+        assert r2.from_cache
+        assert r3.from_cache
+
+    # assert that there is no new cached key
+    assert len(cached_session.cache.urls()) == len(dimensions)
