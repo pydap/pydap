@@ -151,7 +151,8 @@ def open_url(
 
 
 def datacube_urls(urls, session=None):
-    """Opens multiple OPeNDAP DAP4 URL
+    """caches metadata for multiple OPeNDAP DAP4 URL, dap responses for
+    each dimension (once) on the datacube.
     Parameters
     ----------
     urls : list
@@ -159,8 +160,7 @@ def datacube_urls(urls, session=None):
         with the same base URL, and begin with `dap4://`.
         session : requests.Session or requests-cache.CachedSession
             A requests session object.
-    Returns:
-        requests-cache.CachedSession
+
     """
 
     if not session:
@@ -211,7 +211,7 @@ def datacube_urls(urls, session=None):
         warnings.warn("No dimensions found in the dataset.")
         return None
 
-    # make sure count of dimensions is the same as the number of urls
+    # TODO: make sure count of dimensions is the same as the number of urls
 
     new_urls = [
         base_url
@@ -235,7 +235,7 @@ def datacube_urls(urls, session=None):
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs
         )
-        with session as Session:  # Authenticate once
+        with session as Session:  # Authenticate once / download dap for each dim
             with ThreadPoolExecutor(max_workers=ncores) as executor:
                 results = list(executor.map(lambda url: Session.get(url), new_urls))
     return None
@@ -261,13 +261,11 @@ def open_dmr(path, session=None):
         return None
     if path.startswith("http") and "dmr" in path:
         # Open a remote dmr
-        # here
         if session is None:
             session = create_session()
         r = session.get(path, stream=True)
         dmr = r.text
         dataset = DMRParser(dmr).init_dataset()
-        # dataset._session = session
         return dataset
     else:
         try:
@@ -504,46 +502,6 @@ def patch_session_for_shared_dap_cache(session, shared_vars, known_url_list=None
                 # Use the computed shared base + virtual shared filename
                 # url_path=urlparse(general_base).path
                 base_url = f"{parsed.scheme}://{parsed.netloc}{base_path}/shared.nc"
-                normalized_url = f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
-                return normalized_url
-
-        return original_create_key(request, **kwargs)
-
-    session.cache.create_key = custom_create_key
-
-
-def earth_patch_session_for_shared_dap_cache(session, shared_vars):
-    """
-    Patch a CachedSession so that all requests to the same dataset
-    (same DAAC and collection_id) with identical dap4.ce values share a cache key.
-
-    Example matching URLs:
-    https://.../providers/DAAC/collections/COLL_ID/granules/GRAN_ID.dap?dap4.ce=...
-
-    Args:
-        session: requests-cache CachedSession
-        shared_vars: Set of dap4.ce values (decoded) that should be shared across
-        granules
-        verbose: Whether to log cache key generation
-    """
-    original_create_key = session.cache.create_key
-
-    def custom_create_key(request, **kwargs):
-        parsed = urlparse(request.url)
-        path = unquote(parsed.path)
-        query = parse_qs(parsed.query)
-        dap4_ce = query.get("dap4.ce", [None])[0]
-
-        # Normalize dap4.ce (decode and check)
-        if dap4_ce:
-            dap4_ce = unquote(dap4_ce)
-
-        if dap4_ce in shared_vars and path.endswith(".dap"):
-            # Extract /providers/<DAAC>/collections/<COLLECTION_ID>
-            match = re.search(r"(/providers/[^/]+/collections/[^/]+)", path)
-            if match:
-                dataset_path = match.group(1)
-                base_url = f"{parsed.scheme}://{parsed.netloc}{dataset_path}/shared.dap"
                 normalized_url = f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
                 return normalized_url
 
