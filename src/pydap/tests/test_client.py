@@ -6,13 +6,23 @@ import numpy as np
 import pytest
 import requests
 
-from pydap.client import open_dods_url, open_file, open_url
-from pydap.handlers.lib import BaseHandler
-from pydap.model import BaseType, DatasetType, GridType
-from pydap.tests.datasets import SimpleGrid, SimpleSequence, SimpleStructure
+from ..client import (
+    compute_base_url_prefix,
+    datacube_urls,
+    open_dmr,
+    open_dods_url,
+    open_file,
+    open_url,
+    patch_session_for_shared_dap_cache,
+)
+from ..handlers.lib import BaseHandler
+from ..model import BaseType, DatasetType, GridType
+from ..net import create_session
+from .datasets import SimpleGrid, SimpleSequence, SimpleStructure
 
 DODS = os.path.join(os.path.dirname(__file__), "data/test.01.dods")
 DAS = os.path.join(os.path.dirname(__file__), "data/test.01.das")
+SimpleGroupdmr = os.path.join(os.path.dirname(__file__), "data/dmrs/SimpleGroup.dmr")
 
 
 @pytest.fixture
@@ -362,3 +372,230 @@ def test_cache(use_cache):
             url, protocol="dap2", use_cache=use_cache, cache_kwargs=cache_kwargs
         )
         assert isinstance(ds, DatasetType)
+
+
+@pytest.mark.parametrize(
+    "urls",
+    ["not a list", ["A", "B", "C", 1], ["http://localhost:8001/"]],
+)
+def test_typerror_datacube_urls(urls):
+    """Test that TypeError is raised when datacube_urls takes an argument that
+    is not a list, or a list of a single element.
+    """
+    with pytest.raises(TypeError):
+        datacube_urls(urls)
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        ["dap4://localhost:8001/", "dap4://localhost:8002/", "http://localhost:8003/"],
+        ["dap2://localhost:8001/", "dap4://localhost:8001/"],
+    ],
+)
+def test_valueerror_datacube_urls(urls):
+    """Test that ValueError is raised when datacube_urls takes a list of
+    urls that are not all the same type.
+    """
+    with pytest.raises(ValueError):
+        datacube_urls(urls)
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        ["http://localhost:8001/", "http://localhost:8002/", "http://localhost:8003/"],
+        ["dap2://localhost:8001/", "dap2://localhost:8002/", "dap2://localhost:8003/"],
+    ],
+)
+def test_warning_datacube_urls(urls):
+    """Test that a warning is raised when datacube_urls takes a list of urls
+    that are all the same type. Nothing is returned
+    """
+    with pytest.warns(Warning):
+        returns = datacube_urls(urls)
+    # Check that return is `None`
+    assert returns is None
+
+
+ce1 = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        [
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce1,
+        ],
+    ],
+)
+def test_cached_datacube_urls(urls):
+    """Test that datacube_urls effectively caches the dmr of the urls, along
+    with the dap4 urls of the dimensions
+    """
+    pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
+    dims = list(pyds.dimensions)  # dimensions of full dataset
+
+    cached_session = create_session(use_cache=True)
+    cached_session.cache.clear()  # clears any existing cache
+    datacube_urls(urls, cached_session)
+    # check that the cached session has all the dmr urls and
+    # caches the dap response of the dimensions only once
+    assert len(cached_session.cache.urls()) == len(urls) + len(dims)
+    # THE FOLLOWING IS AN IMPORTANT CHECK. THE EXTRA CACHED URLS
+    # ARE THE DAP RESPONSES OF EACH DIMENSION. AND THESE ARE THE LAST
+    # TO CACHE. MEANING THE FIRST ELEMENTS OF THE LIST OF CACHED URLS.
+    dap_urls = [url.replace("dap4", "http") for url in urls]
+    dim_dap_urls = [dap_urls[0] + ".dap?dap4.ce=" + dim for dim in dims]
+    N = len(dims)  # should be 3 for this dataset.
+    for n in range(N):
+        assert cached_session.cache.urls()[n].split("%")[0] == dim_dap_urls[n]
+
+
+def tests_no_dims_cache(remote_url):
+    base_url = remote_url + "nc/123bears.nc"
+    ce1 = "?dap4.ce=/bears[0:1:1][0:1:2]"
+    ce2 = "?dap4.ce=/order[0:1:1][0:1:2]"
+    ce3 = "?dap4.ce=/shot[0:1:1][0:1:2]"
+    CE = [ce1, ce2, ce3]
+    dap_urls = [
+        base_url.replace("http", "dap4") + ce for ce in CE
+    ]  # dap urls with constraints expressions
+    with pytest.warns(Warning):
+        # no dimensions in the urls
+        # so the dap urls are not cached
+        datacube_urls(dap_urls)
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        ["http://localhost:8001/", 1, "http://localhost:8003/"],
+        [
+            "dap2://localhost:8001/",
+            "dap2://localhost:8002/",
+            "dap2://localhost:8003/",
+        ],
+        ["http://localhost:8001/"],
+        [
+            "http://localhost:8001/common/path/data.nc",
+            "http://localhost:8001/common/path/data.nc",
+            "http://localhost:8001/NO/COMMON/PATH/HERE/data.nc",
+        ],
+    ],
+)
+def test_ValueErrors_compute_base_url_prefix(urls):
+    """Tests that ValueError is raised wuen urls
+    is not a `uniform` list of https urls belonging to the same
+    data cube. That is, URLS MUST be valid, and have a common path
+    """
+    with pytest.raises(ValueError):
+        compute_base_url_prefix(urls)
+
+
+cloud_common = "/providers/POCLOUD/collections/granules"
+cloud_urls = "https://opendap.earthdata.nasa.gov"
+posix_urls = "http://localhost:8001"
+posix_common = "/common/path"
+
+
+@pytest.mark.parametrize(
+    "urls, common_path",
+    [
+        (
+            [
+                posix_urls + posix_common + "/data.nc",
+                posix_urls + posix_common + "/data.nc",
+                posix_urls + posix_common + "/data.nc",
+            ],
+            posix_urls + posix_common,
+        ),
+        (
+            [
+                cloud_urls + cloud_common + "/fileA.nc",
+                cloud_urls + cloud_common + "/fileC.nc",
+                cloud_urls + cloud_common + "/fileB.nc",
+            ],
+            cloud_urls + cloud_common,
+        ),
+    ],
+)
+def test_compute_base_url_prefix(urls, common_path):
+    """Tests that compute_base_url_prefix returns the correct common path
+    for a list of urls. The urls must be valid and have a common path.
+    """
+    base_url = compute_base_url_prefix(urls)
+    assert base_url == common_path
+
+
+@pytest.mark.parametrize(
+    "url, expected",
+    [
+        [None, None],
+        ["FileNotFound", None],
+        [
+            "http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr",
+            DatasetType,
+        ],
+        [
+            SimpleGroupdmr,
+            DatasetType,
+        ],
+    ],
+)
+def test_open_dmr(url, expected):
+    """Test `open_dmr` for various urls"""
+    pyds = open_dmr(url)
+    if expected:
+        assert isinstance(pyds, expected)
+    else:
+        assert pyds == expected
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        [
+            "http://test.opendap.org/opendap/data/nc/123bears.nc",
+            "http://test.opendap.org/opendap/data/nc/124bears.nc",
+            "http://test.opendap.org/opendap/data/nc/125bears.nc",
+        ],
+    ],
+)
+def test_patch_session_for_shared_dap_cache(urls):
+    """Test that the session is patched correctly for shared dap cache."""
+    # Create a session using requests-cache
+    cached_session = create_session(use_cache=True)
+    # Clear any existing cache
+    cached_session.cache.clear()
+    # Create custom cache key for each of the dimensions
+    dimensions = ["i[0:1:1]", "j[0:1:2]", "l[0:1:2]"]
+
+    patch_session_for_shared_dap_cache(
+        cached_session, shared_vars=dimensions, known_url_list=urls
+    )
+    assert len(cached_session.cache.urls()) == 0
+
+    # construct urls to create cache keys
+    test_urls = [urls[0] + ".dap?dap4.ce=" + dim for dim in dimensions]
+    # create cache keys for the urls - discard the list
+    _ = [cached_session.get(url) for url in test_urls]
+
+    # make sure that the urls are cached for each dimension
+    assert len(cached_session.cache.urls()) == len(dimensions)
+
+    for dim in dimensions:
+        test_url2 = urls[1] + ".dap?dap4.ce=" + dim
+        test_url3 = urls[2] + ".dap?dap4.ce=" + dim
+
+        # test that the urls are being cached
+        r2 = cached_session.get(test_url2)
+        r3 = cached_session.get(test_url3)
+
+        # assert that data was cached - otherwise 404 (Non-existent URLS!)
+        assert r2.from_cache
+        assert r3.from_cache
+
+    # assert that there is no new cached key
+    assert len(cached_session.cache.urls()) == len(dimensions)
