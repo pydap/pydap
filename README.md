@@ -39,7 +39,11 @@ Now you simply activate the pydap environment:
 ```bash
     $ conda activate pydap
 ```
-(NOTE: if you have `mamba` install, you can replace `conda` in the commands with `mamba`). You can now use pydap as a client and open any remotely served dataset, and `pydap` will download the accessed data on-the-fly as needed. For example consider [this](http://test.opendap.org:8080/opendap/catalog/ghrsst/20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc.dmr.html) dataset currently hosted on OPeNDAP's Hyrax data server
+
+> [!NOTE]
+> If you have `mamba` installed, you can replace `conda` in the commands with `mamba`.
+
+You can now use pydap as a client and open any remotely served dataset, and `pydap` will download the accessed data on-the-fly as needed. For example consider [this](http://test.opendap.org:8080/opendap/catalog/ghrsst/20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc.dmr.html) dataset currently hosted on OPeNDAP's Hyrax data server
 
 ```python
     from pydap.client import open_url
