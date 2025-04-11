@@ -3,9 +3,9 @@ Responses
 .. warning::
     The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker https://github.com/pydap/pydap/issues.
 
-Like `handlers <handlers.html>`_, responses are special Python modules that convert between the pydap data model and an external representation. For instance, to access a given dataset an Opendap client request two diferent representations of the dataset: a *Dataset Attribute Structure* (DAS) response, describing the attributes of the dataset, and a *Dataset Descriptor Structure* (DDS), describing its structure (shape, type, hierarchy). These responses are returned by appending the extension ``.das`` and ``.dds`` to the dataset URL, respectively.
+Like `handlers <handlers.html>`_, responses are special Python modules that convert between the pydap data model and an external representation. For instance, to access a given dataset an OPeNDAP client request two different representations of the dataset: a *Dataset Attribute Structure* (DAS) response, describing the attributes of the dataset, and a *Dataset Descriptor Structure* (DDS), describing its structure (shape, type, hierarchy). These responses are returned by appending the extension ``.das`` and ``.dds`` to the dataset URL, respectively.
 
-Other common responses include the ASCII (``.asc`` or ``.ascii``) response, which returns an ASCII representation of the data; and an HTML form for data request using the browser, at the ``.html`` extension. And perhaps the most important response is the ``.dods`` response, which actually carries the data in binary format, and is used when clients request data from the server. All these responses are standard and come with pydap.
+Other common responses include the ASCII (``.asc`` or ``.ascii``) response, which returns an ASCII representation of the data; and an HTML form for data request using the browser, at the ``.html`` extension. And perhaps the most important response is the ``.dods`` response, which actually carries the data in binary format, and is used when clients request data from the server. All these responses are standard and come with `pydap`.
 
 There are other extension responses available for pydap; these are not defined in the DAP specification, but improve the user experience by allowing data to be accessed in different formats.
 
@@ -15,13 +15,13 @@ Installing additional responses
 Web Map Service
 ~~~~~~~~~~~~~~~
 
-This response enables pydap to act like a `Web Map Service <http://en.wikipedia.org/wiki/Web_Map_Service>`_ 1.1.1 server, returning images (maps) of the available data. These maps can be visualized in any WMS client like Openlayers or Google Earth.
+This response enables pydap to act like a `Web Map Service <http://en.wikipedia.org/wiki/Web_Map_Service>`_ 1.1.1 server, returning images (maps) of the available data. These maps can be visualized in any WMS client like `OpenLayers` or `Google Earth`.
 
 You can install the WMS response using `pip <http://pypi.python.org/pypi/pip>`_:
 
 .. code-block:: bash
 
-    pip install "pydap[responses.wms]"
+    $ pip install "pydap[responses.wms]"
 
 This will take care of the necessary dependencies, which include `Matplotlib <https://matplotlib.org/>`_ and pydap itself. Once the response is installed you can introspect the available layers at the URL::
 
@@ -50,13 +50,13 @@ This response converts a pydap dataset to a `KML <http://code.google.com/apis/km
 
 .. code-block:: bash
 
-    pip install "pydap[responses.kml]"
+    $ pip install "pydap[responses.kml]"
 
 And open a URL by appending the ``.kml`` extension to the dataset, say::
 
     http://server.example.com/dataset.kml
 
-For now, the KML response will only return datasets that have a valid WMS representation. These datasets can be overlayed as layers on top of Google Earth, and are presented with a nice colorbar.
+For now, the KML response will only return datasets that have a valid WMS representation. These datasets can be overlaid as layers on top of Google Earth, and are presented with a nice colorbar.
 
 NetCDF
 ~~~~~~
@@ -65,7 +65,7 @@ This response allows data to be downloaded as a NetCDF file; it works better wit
 
 .. code-block:: bash
 
-    pip install "pydap[responses.netcdf]"
+    $ pip install "pydap[responses.netcdf]"
 
 And try to append the extension ``.nc`` to a request. The data will be converted on-the-fly to a NetCDF file.
 
@@ -76,7 +76,7 @@ The Matlab response returns data in a Matlab v5 file. It is returned when the fi
 
 .. code-block:: bash
 
-    pip install "pydap[responses.matlab]"
+    $ pip install "pydap[responses.matlab]"
 
 Excel spreadsheet
 ~~~~~~~~~~~~~~~~~
@@ -85,4 +85,4 @@ This response returns sequential data as an Excel spreadsheet when ``.xls`` is a
 
 .. code-block:: bash
 
-    pip install "pydap[responses.xls]"
+    $ pip install "pydap[responses.xls]"
