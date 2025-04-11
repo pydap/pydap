@@ -66,7 +66,7 @@ dataset, and pydap will download the accessed data on-the-fly as needed. For exa
 ```python
     (1, 17999, 36000)
 ```
-> ![NOTE] 
+> ![NOTE]
 > In the example above, no data was downloaded, it was all lazily evaluated using OPeNDAP's DMR (DAP4) metadata representation. For more information, please check the documentation on [using pydap as a client](https://pydap.github.io/pydap/client.html).
 
 pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/) application. To use it, you first need to install the server and optionally a data handler:
