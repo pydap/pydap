@@ -15,41 +15,35 @@ pydap
 
 What is pydap?
 ----------
-[pydap](https://pydap.github.io/pydap/) is an open-source implementation of the OPeNDAP protocol, written from scratch in pure python. You can use pydap to access scientific data available on the many OPeNDAP servers publically available through the internet. Because pydap supports remote and lazy evaluation, you can access the data without having to download it; instead, you work with special array and iterable objects that download data on-the-fly as necessary, saving bandwidth and time. The module also comes with a robust-but-lightweight OPeNDAP server, implemented as a WSGI application.
+[pydap](https://pydap.github.io/pydap/) is an open-source implementation of the OPeNDAP protocol, written from scratch in pure Python. You can use `pydap` to access scientific data available on the many OPeNDAP servers publicly-available through the internet. Because pydap supports remote and lazy evaluation, you can access the data without having to download it; Instead, you work with special array and iterable objects that download data on-the-fly as necessary, saving bandwidth and time. The module also comes with a robust-but-lightweight OPeNDAP server, implemented as a WSGI application.
 
 Why pydap?
 ----------
-Originally developed in the 2000s, pydap is one of the oldest open-source python projects available and it gets rutinely developed and maintained by the OPeNDAP community at large. In addition, pydap is a long-recognized backend engine (and dependency) for [xarray](https://github.com/pydata/xarray) and chances are you have used pydap in past without knowing.
-
+Originally developed in the 2000s, `pydap` is one of the oldest open-source Python projects available and is routinely developed and maintained by the OPeNDAP community at large. In addition, `pydap` is a long-recognized backend engine (and dependency) for [xarray](https://github.com/pydata/xarray) and chances are you have used `pydap` in the past without knowing it.
 
 Quickstart
 ----------
-pydap is a lighweight python package that you can use in either
-of the two modalities: a client and as a server.
-You can install the latest version using
-[pip](http://pypi.python.org/pypi/pip). After [installing
-pip](http://www.pip-installer.org/en/latest/installing.html) you can
-install pydap with this command:
+`pydap` is a lightweight python package that you can use in either of the two modalities: a client and as a server. You can install the latest version using [pip](http://pypi.python.org/pypi/pip). After [installing pip](http://www.pip-installer.org/en/latest/installing.html) you can install `pydap` with this command:
 
 ```bash
     $ pip install pydap
 ```
-This will install pydap together with all the required
-dependencies.
+This will install pydap together with all the required dependencies.
 
-pydap is also available through [Anaconda](https://www.anaconda.com/).
-Below we install pydap and its required dependencies, along with common
-additional packages in a fresh conda environment named pydap:
+`pydap` is also available through [Anaconda](https://www.anaconda.com/). Below we install `pydap` and its required dependencies, along with common additional packages in a fresh conda environment named `"pydap"`:
 
 ```bash
-$ conda create -n pydap -c conda-forge python=3.10 pydap numpy">=2.0" jupyterlab ipython netCDF4 scipy matplotlib
+    $ conda create -n pydap -c conda-forge python=3.10 pydap numpy">=2.0" jupyterlab ipython netCDF4 scipy matplotlib
 ```
 Now you simply activate the pydap environment:
 ```bash
-conda activate pydap
+    $ conda activate pydap
 ```
-(NOTE: if you have `mamba` install, you can replace `conda` in the commands with `mamba`). You can now use pydap as a client and open any remotely served
-dataset, and pydap will download the accessed data on-the-fly as needed. For example consider [this](http://test.opendap.org:8080/opendap/catalog/ghrsst/20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc.dmr.html) dataset currently hosted on OPeNDAP's Hyrax data server
+
+> [!NOTE]
+> If you have `mamba` installed, you can replace `conda` in the commands with `mamba`.
+
+You can now use pydap as a client and open any remotely served dataset, and `pydap` will download the accessed data on-the-fly as needed. For example consider [this](http://test.opendap.org:8080/opendap/catalog/ghrsst/20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.nc.dmr.html) dataset currently hosted on OPeNDAP's Hyrax data server
 
 ```python
     from pydap.client import open_url
@@ -74,12 +68,11 @@ dataset, and pydap will download the accessed data on-the-fly as needed. For exa
 ```python
     (1, 17999, 36000)
 ```
-**NOTE** In the example above, no data was downloaded, it was all lazily evaluated using OPeNDAP's DMR (DAP4) metadata representation. For more information, please check the documentation on [using pydap
-as a client](https://pydap.github.io/pydap/client.html).
 
-pydap also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/)
-application. To use it, you first need to install the server and
-optionally a data handler:
+> [!NOTE]
+> In the example above, no data was downloaded, it was all lazily evaluated using OPeNDAP's DMR (DAP4) metadata representation. For more information, please check the documentation on [using pydap as a client](https://pydap.github.io/pydap/client.html).
+
+`pydap` also comes with a simple server, implemented as a [WSGI]( http://wsgi.org/) application. To use it, you first need to install the server and optionally a data handler:
 
 ## Running pydap as a Server
 
@@ -87,23 +80,17 @@ optionally a data handler:
     $ pip install "pydap[server,netcdf]"
 ```
 
-This will install the necessary dependencies for running pydap as a server, along with extra dependencies for handling [netCDF4](https://www.unidata.ucar.edu/software/netcdf/) dataset. Now create a directory
-for your server data.
+This will install the necessary dependencies for running pydap as a server, along with extra dependencies for handling [netCDF4](https://www.unidata.ucar.edu/software/netcdf/) dataset. Now create a directory for your server data.
 
 To run the server just issue the command:
 
 ```bash
-
     $ pydap --data ./myserver/data/ --port 8001 --workers 4 --threads 4
 ```
 
-This will start a standalone server running on the default http://localhost:8001/,
-serving netCDF files from ``./myserver/data/`` Since the server uses the
-[WSGI](http://wsgi.org/) standard, pydap uses by default 1 worker and 1
-thread, but these can be defined by the user like in the case above (4 workers
-and 4 threads). Pydap can also easily be run behind Apache. The [server
-documentation](https://pydap.github.io/pydap/server.html) has
-more information on how to better deploy pydap.
+This will start a standalone server running on the default http://localhost:8001/, serving netCDF files from ``./myserver/data/`` Since the server uses the [WSGI](http://wsgi.org/) standard, pydap uses by default one (1) worker and one (1)  thread, but these can be defined by the user like in the case above (four (4) workers and four (4) threads). `pydap` can also easily be run behind Apache.
+
+The [server documentation](https://pydap.github.io/pydap/server.html) has more information on how to better deploy `pydap`.
 
 ## Documentation
 
@@ -111,5 +98,4 @@ For more information, see [the pydap documentation](https://pydap.github.io/pyda
 
 ## Help and Community
 
-If you need any help with pydap, open an issue in this repository. You can also send an email to
-the [mailing list](http://groups.google.com/group/pydap/). Finally, ff you have a broader OPeNDAP access question, you can reach the OPeNDAP team on the [OPeNDAP Discourse](https://opendap.discourse.group/)!
+If you need any help with `pydap`, open an issue in this repository. You can also email the [mailing list](http://groups.google.com/group/pydap/). Finally, if you have a broader OPeNDAP access question, you can reach the OPeNDAP team on the [OPeNDAP Discourse](https://opendap.discourse.group/)!
