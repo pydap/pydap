@@ -50,9 +50,9 @@ arbitrary attributes::
     >>> foo.units
     'm/s'
 
-    >>> foo.dimensions
-    ()
-    >>> foo.dimensions = ('time',)
+    >>> foo.dims
+    []
+    >>> foo.dims = ['time',]
 
 Second, `BaseType` can hold data objects other than Numpy arrays. There are
 more complex data objects, like `pydap.handlers.dap.BaseProxy`, which acts as a
@@ -96,7 +96,7 @@ variable::
 
     >>> rain = GridType('rain')
     >>> rain['rain'] = BaseType(
-    ...     'rain', np.arange(6).reshape(2, 3), dimensions=('y', 'x'))
+    ...     'rain', np.arange(6).reshape(2, 3), dims=['y', 'x'])
     >>> rain['x'] = BaseType('x', np.arange(3), units='degrees_east')
     >>> rain['y'] = BaseType('y', np.arange(2), units='degrees_north')
     >>> rain.array  #doctest: +ELLIPSIS
@@ -256,11 +256,11 @@ class BaseType(DapType):
     """A thin wrapper over Numpy arrays."""
 
     def __init__(
-        self, name="nameless", data=None, dimensions=None, attributes=None, **kwargs
+        self, name="nameless", data=None, dims=None, attributes=None, **kwargs
     ):
         super(BaseType, self).__init__(name, attributes, **kwargs)
         self.data = data
-        self.dimensions = dimensions or ()
+        self.dims = dims or []
         # these are set when not data is present (eg, when parsing a DDS)
         self._dtype = None
         self._shape = ()
@@ -318,9 +318,7 @@ class BaseType(DapType):
         dimensions, same name, and a view of the data.
 
         """
-        out = type(self)(
-            self.name, self.data, self.dimensions[:], self.attributes.copy()
-        )
+        out = type(self)(self.name, self.data, self.dims[:], self.attributes.copy())
         out.id = self.id
         return out
 
