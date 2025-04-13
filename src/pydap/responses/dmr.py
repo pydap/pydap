@@ -120,7 +120,7 @@ def _basetype(var, level=0):
         name=var.name,
     )
     # get dimensions
-    for dim in var.dimensions:
+    for dim in var.dims:
         yield '{indent}<Dim name="{name}"/>\n'.format(
             indent=(level + 1) * INDENT, name=dim
         )

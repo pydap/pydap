@@ -75,7 +75,7 @@ class DDSParser(SimpleParser):
         self.consume(r";")
 
         data = DummyData(parser_dtype, shape)
-        var = BaseType(name, data, dimensions=dimensions)
+        var = BaseType(name, data, dims=dimensions)
 
         return var
 

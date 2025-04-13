@@ -154,30 +154,31 @@ def mean(dataset, var, axis=0):
         )
 
     axis = int(axis)
-    dims = tuple(dim for i, dim in enumerate(var.dimensions) if i != axis)
 
     # process basetype
     if isinstance(var, BaseType):
+        dims = tuple(dim for i, dim in enumerate(var.dims) if i != axis)
         return BaseType(
             name=var.name,
             data=np.mean(var.data[:], axis=axis),
-            dimensions=dims,
+            dims=dims,
             attributes=var.attributes,
         )
 
     # process grid
+    dims = tuple(dim for i, dim in enumerate(var.dimensions) if i != axis)
     out = GridType(name=var.name, attributes=var.attributes)
     out[var.array.name] = BaseType(
         name=var.array.name,
         data=np.mean(var.array.data[:], axis=axis),
-        dimensions=dims,
+        dims=dims,
         attributes=var.array.attributes,
     )
     for dim in dims:
         out[dim] = BaseType(
             name=dim,
             data=var[dim].data[:],
-            dimensions=(dim,),
+            dims=(dim,),
             attributes=var[dim].attributes,
         )
     return out
