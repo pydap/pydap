@@ -145,7 +145,7 @@ def test_handler_array(simple_Group_data, simple_handler2):
     np.testing.assert_array_equal(temp.data, simple_Group_data)
     assert r_dims == {"time": 1, "nv": 2}
     assert g_dims == {"X": 4, "Y": 4}
-    assert temp.dimensions == ("/time", "/Group/Y", "/Group/X")
+    assert temp.dims == ["/time", "/Group/Y", "/Group/X"]
 
 
 def test_handler_nested_Group_array(simple_Group_data, simple_handler3):
@@ -159,7 +159,7 @@ def test_handler_nested_Group_array(simple_Group_data, simple_handler3):
     assert r_dims == {"time": 1}
     assert g_dims == {}
     assert sg_dims == {"X": 4, "Y": 4}
-    assert temp.dimensions == ("/time", "/Group/SubGroup/Y", "/Group/SubGroup/X")
+    assert temp.dims == ["/time", "/Group/SubGroup/Y", "/Group/SubGroup/X"]
 
 
 def test_handler_repeatdims_Group_array(simple_handler4):
@@ -167,14 +167,14 @@ def test_handler_repeatdims_Group_array(simple_handler4):
     dataset = simple_handler4.dataset
     r_dims = dataset.dimensions
     g_dims = dataset["Group1"].dimensions
-    var_g1 = dataset["Group1/group_1_var"].dimensions
+    var_g1 = dataset["Group1/group_1_var"].dims
     sg_dims = dataset["Group1/subgroup1"].dimensions
-    var_sg1 = dataset["Group1/subgroup1/subgroup1_var"].dimensions
+    var_sg1 = dataset["Group1/subgroup1/subgroup1_var"].dims
     assert r_dims == {"lat": 1, "lon": 2}
     assert g_dims == {}
     assert sg_dims == {"lat": 2}
-    assert var_g1 == ("/lat", "/lon")
-    assert var_sg1 == ("/Group1/subgroup1/lat", "/lon")
+    assert var_g1 == ["/lat", "/lon"]
+    assert var_sg1 == ["/Group1/subgroup1/lat", "/lon"]
 
 
 @pytest.fixture(scope="module")

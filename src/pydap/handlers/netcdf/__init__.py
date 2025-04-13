@@ -58,7 +58,7 @@ class NetCDFHandler(BaseHandler):
                 dims = source.dimensions
 
                 # Add dimensions when creating the DatasetType
-                Dims = OrderedDict()
+                Dims = {}
                 fqn_dims = OrderedDict()  # keep track of fully qualifying names of dims
                 for dim in dims:
                     fqn_dims.update({"/" + dim: dim})
@@ -72,18 +72,18 @@ class NetCDFHandler(BaseHandler):
 
                 name = os.path.split(filepath)[1]
                 self.dataset = DatasetType(
-                    name, dimensions=Dims, attributes=dict(NC_GLOBAL=attrs(source))
+                    name, dimensions=Dims, attributes=dict(attrs(source))
                 )
 
                 # add grids
                 grids = [var for var in vars if var not in dims]
                 for grid in grids:
                     # make dimension a fully qualifying name
-                    dimensions = tuple(["/" + dim for dim in vars[grid].dimensions])
+                    dimensions = ["/" + dim for dim in vars[grid].dimensions]
                     self.dataset[grid] = BaseType(
                         grid,
                         LazyVariable(source[grid], grid, grid, self.filepath),
-                        dimensions=dimensions,
+                        dims=dimensions,
                         **attrs(vars[grid]),
                     )
 
@@ -99,6 +99,7 @@ class NetCDFHandler(BaseHandler):
                     data = vars[dim][:]
                     attributes = attrs(vars[dim])
                     self.dataset[dim] = BaseType(dim, data, None, attributes)
+                    self.dataset[dim].dims = ["/" + dim]
         except Exception as exc:
             raise
             message = "Unable to open file %s: %s" % (filepath, exc)
@@ -130,7 +131,7 @@ def group_fqn(_dataset, _source, _filepath, _fqn_dims=OrderedDict()):
             _path = _path + "/"
         # create group and attrs + dims (non-fqn)
         dims = _source[group].dimensions
-        Dims = OrderedDict()
+        Dims = {}
         for dim in dims:
             if dim not in _fqn_dims.items():
                 _fqn_dims.update({_path + dim: dim})
@@ -166,7 +167,8 @@ def group_fqn(_dataset, _source, _filepath, _fqn_dims=OrderedDict()):
             _dataset.createVariable(
                 _path + var,
                 data=LazyVariable(data, var, _path + var, _filepath),
-                dimensions=tuple(vdims),
+                dims=vdims,
+                path=("/").join(_path.split("/")[:-1]),
                 **vattrs,
             )
         # check if there are nested group
