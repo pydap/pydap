@@ -133,9 +133,7 @@ SimpleStructure.createVariable(name="/types.U", data=np.array("test unicode", st
 # test grid
 rain = DatasetType("test")
 rain["rain"] = GridType("rain")
-rain["rain"]["rain"] = BaseType(
-    "rain", np.arange(6).reshape(2, 3), dimensions=("y", "x")
-)
+rain["rain"]["rain"] = BaseType("rain", np.arange(6).reshape(2, 3), dims=("y", "x"))
 rain["rain"]["x"] = BaseType("x", np.arange(3), units="degrees_east")
 rain["rain"]["y"] = BaseType("y", np.arange(2), units="degrees_north")
 
@@ -208,7 +206,7 @@ SimpleSequence["cast"].data = np.array(
 SimpleGrid = DatasetType("SimpleGrid", description="A simple grid for testing.")
 SimpleGrid["SimpleGrid"] = GridType("SimpleGrid")
 SimpleGrid["SimpleGrid"]["SimpleGrid"] = BaseType(
-    "SimpleGrid", np.arange(6).reshape(2, 3), dimensions=("y", "x")
+    "SimpleGrid", np.arange(6).reshape(2, 3), dims=("y", "x")
 )
 SimpleGrid["x"] = SimpleGrid["SimpleGrid"]["x"] = BaseType(
     "x", np.arange(3), axis="X", units="degrees_east"
@@ -231,7 +229,7 @@ SimpleGroup.createVariable(
     name="/SimpleGroup/Temperature",
     data=np.arange(10, 26, 1, dtype="f4").reshape(1, 4, 4),
     units="degrees_celsius",
-    dimensions=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
+    dims=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.inf,
     ValidRange=[-10, 100],
 )
@@ -239,27 +237,27 @@ SimpleGroup.createVariable(
     name="/SimpleGroup/Salinity",
     data=30 * np.ones(16, dtype="f4").reshape(1, 4, 4),
     units="psu",
-    dimensions=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
+    dims=("/time", "/SimpleGroup/Y", "/SimpleGroup/X"),
     _FillValue=np.nan,
     ValidRange=[0.0, 50.0],
 )
 SimpleGroup.createVariable(
-    name="/SimpleGroup/Y", data=np.arange(4, dtype="i2"), dimensions=("/SimpleGroup/Y",)
+    name="/SimpleGroup/Y", data=np.arange(4, dtype="i2"), dims=("/SimpleGroup/Y",)
 )
 SimpleGroup.createVariable(
-    name="/SimpleGroup/X", data=np.arange(4, dtype="i2"), dimensions=("/SimpleGroup/X",)
+    name="/SimpleGroup/X", data=np.arange(4, dtype="i2"), dims=("/SimpleGroup/X",)
 )
 SimpleGroup.createVariable(
     name="/time",
     data=np.array(0.5, dtype="f4"),
-    dimensions=("/time",),
+    dims=("/time",),
     attributes={
         "standard_name": "time",
         "bounds": "time_bnds",
     },
 )
 SimpleGroup.createVariable(
-    name="/time_bnds", data=np.arange(2, dtype="f4"), dimensions=("/time", "/nv")
+    name="/time_bnds", data=np.arange(2, dtype="f4"), dims=("/time", "/nv")
 )
 
 
@@ -267,7 +265,7 @@ SimpleGroup.createVariable(
 FaultyGrid = DatasetType("FaultyGrid", description="A faulty grid for testing.")
 FaultyGrid["FaultyGrid"] = GridType("FaultyGrid")
 FaultyGrid["FaultyGrid"]["FaultyGrid"] = BaseType(
-    "FaultyGrid", np.arange(6).reshape(2, 3), dimensions=("y", "x")
+    "FaultyGrid", np.arange(6).reshape(2, 3), dims=("y", "x")
 )
 FaultyGrid["x"] = FaultyGrid["FaultyGrid"]["x"] = BaseType(
     "x", np.arange(3), axis="X", code=1

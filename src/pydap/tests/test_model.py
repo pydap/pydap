@@ -86,14 +86,22 @@ def test_BaseType_no_data():
     """Test empty data and dimensions attributes."""
     var = BaseType("var")
     assert var.data is None
-    assert var.dimensions == ()
+    assert var.dims == []
 
 
 def test_BaseType_data_and_dimensions():
     """Test data and dimensions assignment."""
-    var = BaseType("var", [42], ("x",))
+    var = BaseType(
+        "var",
+        [42],
+        [
+            "x",
+        ],
+    )
     assert var.data == [42]
-    assert var.dimensions == ("x",)
+    assert var.dims == [
+        "x",
+    ]
 
 
 def test_BaseType_repr():
@@ -138,7 +146,7 @@ def test_BaseType_copy():
     # test attributes
     assert original.id == clone.id
     assert original.name == clone.name
-    assert original.dimensions == clone.dimensions
+    assert original.dims == clone.dims
     assert original.attributes == clone.attributes
 
 

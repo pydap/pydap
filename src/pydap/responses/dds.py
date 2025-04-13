@@ -92,8 +92,8 @@ def _gridtype(var, level=0, sequence=0):
 def _basetype(var, level=0, sequence=0):
     shape = var.shape[sequence:]
 
-    if var.dimensions:
-        shape = "".join(map("[{0[0]} = {0[1]}]".format, zip(var.dimensions, shape)))
+    if var.dims:
+        shape = "".join(map("[{0[0]} = {0[1]}]".format, zip(var.dims, shape)))
     elif len(shape) == 1:
         shape = "[{0} = {1}]".format(var.name, shape[0])
     else:
