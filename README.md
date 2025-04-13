@@ -33,7 +33,7 @@ This will install pydap together with all the required dependencies.
 `pydap` is also available through [Anaconda](https://www.anaconda.com/). Below we install `pydap` and its required dependencies, along with common additional packages in a fresh conda environment named `"pydap"`:
 
 ```bash
-    $ conda create -n pydap -c conda-forge python=3.10 pydap numpy">=2.0" jupyterlab ipython netCDF4 scipy matplotlib
+    $ conda create -n pydap -c conda-forge python=3.11 pydap numpy jupyterlab ipython netCDF4 scipy matplotlib
 ```
 Now you simply activate the pydap environment:
 ```bash
