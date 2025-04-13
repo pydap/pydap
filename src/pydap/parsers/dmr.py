@@ -303,8 +303,7 @@ def dmr_to_dataset(dmr):
         var_kwargs = {
             "name": pydap.lib._quote(name),
             "data": data,
-            "dimensions": Dims,
-            "dims": nqfDims,
+            "dims": Dims,
             "attributes": variable["attributes"],
         }
         if "maps" in variable.keys():
