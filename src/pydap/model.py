@@ -783,7 +783,8 @@ class DatasetType(StructureType):
                 )
             )
             return None
-
+        if "path" in attrs:
+            del attrs["path"]
         return self.createDapType(GroupType, name, path=path, **attrs)
 
     def createVariable(self, name, **attrs):

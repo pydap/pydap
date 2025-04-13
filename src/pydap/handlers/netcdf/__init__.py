@@ -147,7 +147,8 @@ def group_fqn(_dataset, _source, _filepath, _fqn_dims=OrderedDict()):
         _attrs = dict(
             (attr, _source[group].getncattr(attr)) for attr in _source[group].ncattrs()
         )
-
+        if "path" in _attrs:
+            del _attrs["path"]
         _dataset.createGroup(_source[group].path, dimensions=Dims, **_attrs)
         # now vars
         Vars = _source[group].variables
@@ -164,6 +165,8 @@ def group_fqn(_dataset, _source, _filepath, _fqn_dims=OrderedDict()):
                 (attr, _source[group][var].getncattr(attr))
                 for attr in _source[group][var].ncattrs()
             )
+            if "path" in vattrs:
+                del vattrs["path"]
             _dataset.createVariable(
                 _path + var,
                 data=LazyVariable(data, var, _path + var, _filepath),
