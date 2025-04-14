@@ -208,9 +208,6 @@ def consolidate_metadata(urls, session):
         [val for val in results[i].dimensions.keys()] for i in range(len(results))
     ]
     dims = set([item for sublist in nested for item in sublist])
-    if not dims:
-        warnings.warn("No dimensions found in the dataset.")
-        return None
 
     # TODO: make sure count of dimensions is the same as the number of urls
 
@@ -230,9 +227,9 @@ def consolidate_metadata(urls, session):
             for dim in list(dims)
         ]
     )
-    print("datacube has dimensions", dim_ces)
-    # create custom cache keys
-    if isinstance(session, CachedSession):
+    if dims:
+        print("datacube has dimensions", dim_ces)
+        # create custom cache keys
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs
         )
