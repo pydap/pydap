@@ -393,6 +393,15 @@ def test_typerror_consolidate_metadata(urls, cached_session):
         consolidate_metadata(urls, cached_session)
 
 
+def test_warning_consolidate_metadata():
+    """Test that there is a warning  when `consolidate_metadata` does not take a
+    cached_session as a parameter.
+    """
+    urls = ["dap4://localhost:8001/", "dap4://localhost:8002/"]
+    with pytest.warns(Warning):
+        consolidate_metadata(urls, requests.Session())
+
+
 @pytest.mark.parametrize(
     "urls",
     [
