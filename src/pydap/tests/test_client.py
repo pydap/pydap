@@ -8,7 +8,7 @@ import requests
 
 from ..client import (
     compute_base_url_prefix,
-    datacube_urls,
+    consolidate_metadata,
     open_dmr,
     open_dods_url,
     open_file,
@@ -374,16 +374,32 @@ def test_cache(use_cache):
         assert isinstance(ds, DatasetType)
 
 
+@pytest.fixture
+def cached_session():
+    """Fixture to create a cached session."""
+    return create_session(use_cache=True)
+
+
 @pytest.mark.parametrize(
     "urls",
     ["not a list", ["A", "B", "C", 1], ["http://localhost:8001/"]],
 )
-def test_typerror_datacube_urls(urls):
-    """Test that TypeError is raised when datacube_urls takes an argument that
+def test_typerror_consolidate_metadata(urls, cached_session):
+    """Test that TypeError is raised when `consolidate_metadata` takes an argument that
     is not a list, or a list of a single element.
     """
+    cached_session.cache.clear()  # clears any existing cache
     with pytest.raises(TypeError):
-        datacube_urls(urls)
+        consolidate_metadata(urls, cached_session)
+
+
+def test_warning_consolidate_metadata():
+    """Test that there is a warning  when `consolidate_metadata` does not take a
+    cached_session as a parameter.
+    """
+    urls = ["dap4://localhost:8001/", "dap4://localhost:8002/"]
+    with pytest.warns(Warning):
+        consolidate_metadata(urls, requests.Session())
 
 
 @pytest.mark.parametrize(
@@ -393,12 +409,13 @@ def test_typerror_datacube_urls(urls):
         ["dap2://localhost:8001/", "dap4://localhost:8001/"],
     ],
 )
-def test_valueerror_datacube_urls(urls):
-    """Test that ValueError is raised when datacube_urls takes a list of
+def test_valueerror_consolidate_metadata(urls, cached_session):
+    """Test that ValueError is raised when `consolidate_metadata` takes a list of
     urls that are not all the same type.
     """
+    cached_session.cache.clear()
     with pytest.raises(ValueError):
-        datacube_urls(urls)
+        consolidate_metadata(urls, cached_session)
 
 
 @pytest.mark.parametrize(
@@ -408,14 +425,13 @@ def test_valueerror_datacube_urls(urls):
         ["dap2://localhost:8001/", "dap2://localhost:8002/", "dap2://localhost:8003/"],
     ],
 )
-def test_warning_datacube_urls(urls):
-    """Test that a warning is raised when datacube_urls takes a list of urls
-    that are all the same type. Nothing is returned
+def test_warning_nondap4urls_consolidate_metadata(urls, cached_session):
+    """Test that a warning is raised when `consolidate_metadata` takes a list of urls
+    that are do not have `dap4` as their scheme.
     """
+    cached_session.cache.clear()
     with pytest.warns(Warning):
-        returns = datacube_urls(urls)
-    # Check that return is `None`
-    assert returns is None
+        consolidate_metadata(urls, cached_session)
 
 
 ce1 = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
@@ -430,16 +446,15 @@ ce1 = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
         ],
     ],
 )
-def test_cached_datacube_urls(urls):
-    """Test that datacube_urls effectively caches the dmr of the urls, along
+def test_cached_consolidate_metadata(urls, cached_session):
+    """Test that `consolidate_metadata` effectively caches the dmr of the urls, along
     with the dap4 urls of the dimensions
     """
+    cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)  # dimensions of full dataset
 
-    cached_session = create_session(use_cache=True)
-    cached_session.cache.clear()  # clears any existing cache
-    datacube_urls(urls, cached_session)
+    consolidate_metadata(urls, cached_session)
     # check that the cached session has all the dmr urls and
     # caches the dap response of the dimensions only once
     assert len(cached_session.cache.urls()) == len(urls) + len(dims)
@@ -453,7 +468,10 @@ def test_cached_datacube_urls(urls):
         assert cached_session.cache.urls()[n].split("%")[0] == dim_dap_urls[n]
 
 
-def tests_no_dims_cache(remote_url):
+def tests_no_dims_cache(remote_url, cached_session):
+    """Test that `consolidate_metadata` warns when there is not a single dimension
+    in the entire data cube.
+    """
     base_url = remote_url + "nc/123bears.nc"
     ce1 = "?dap4.ce=/bears[0:1:1][0:1:2]"
     ce2 = "?dap4.ce=/order[0:1:1][0:1:2]"
@@ -462,10 +480,11 @@ def tests_no_dims_cache(remote_url):
     dap_urls = [
         base_url.replace("http", "dap4") + ce for ce in CE
     ]  # dap urls with constraints expressions
+    cached_session.cache.clear()
     with pytest.warns(Warning):
         # no dimensions in the urls
         # so the dap urls are not cached
-        datacube_urls(dap_urls)
+        consolidate_metadata(dap_urls, cached_session)
 
 
 @pytest.mark.parametrize(
@@ -563,10 +582,8 @@ def test_open_dmr(url, expected):
         ],
     ],
 )
-def test_patch_session_for_shared_dap_cache(urls):
+def test_patch_session_for_shared_dap_cache(urls, cached_session):
     """Test that the session is patched correctly for shared dap cache."""
-    # Create a session using requests-cache
-    cached_session = create_session(use_cache=True)
     # Clear any existing cache
     cached_session.cache.clear()
     # Create custom cache key for each of the dimensions

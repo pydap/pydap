@@ -150,21 +150,22 @@ def open_url(
     return dataset
 
 
-def datacube_urls(urls, session=None):
-    """caches metadata for multiple OPeNDAP DAP4 URL, dap responses for
-    each dimension (once) on the datacube.
+def consolidate_metadata(urls, session):
+    """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs,
+    provided as a list, by caching the DMR response of each URL, along
+    with caching the DAP response of all dimensions in the datacube.
     Parameters
     ----------
     urls : list
         The URLs of the datasets that define a datacube. Each URL must begin
         with the same base URL, and begin with `dap4://`.
-        session : requests.Session or requests-cache.CachedSession
+        session : requests-cache.CachedSession
             A requests session object.
-
     """
 
-    if not session:
-        session = create_session()
+    if not isinstance(session, CachedSession):
+        warnings.warn("session must be a requests_cache.CachedSession")
+        return None
     if not isinstance(urls, list) or len(urls) == 1:
         raise TypeError("urls must be a list of `len` >= 2. Try again!")
 
