@@ -468,26 +468,6 @@ def test_cached_consolidate_metadata(urls, cached_session):
         assert cached_session.cache.urls()[n].split("%")[0] == dim_dap_urls[n]
 
 
-# def tests_no_dims_cache(remote_url):
-#     """Test that `consolidate_metadata` warns when there is not a single dimension
-#     in the entire data cube.
-#     """
-#     base_url = remote_url + "nc/123bears.nc"
-#     ce1 = "?dap4.ce=/bears"
-#     ce2 = "?dap4.ce=/order"
-#     ce3 = "?dap4.ce=/shot"
-#     CE = [ce1, ce2, ce3]
-#     dap_urls = [
-#         base_url.replace("http", "dap4") + ce for ce in CE
-#     ]  # dap urls with constraints expressions
-#     cached_session = create_session(use_cache=True)
-#     cached_session.cache.clear()
-#     with pytest.warns(UserWarning):
-#         # no dimensions in the urls
-#         # so the dap urls are not cached
-#         consolidate_metadata(dap_urls, cached_session)
-
-
 @pytest.mark.parametrize(
     "urls",
     [
