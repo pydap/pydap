@@ -481,7 +481,7 @@ def tests_no_dims_cache(remote_url, cached_session):
         base_url.replace("http", "dap4") + ce for ce in CE
     ]  # dap urls with constraints expressions
     cached_session.cache.clear()
-    with pytest.warns(Warning):
+    with pytest.warns(UserWarning):
         # no dimensions in the urls
         # so the dap urls are not cached
         consolidate_metadata(dap_urls, cached_session)
