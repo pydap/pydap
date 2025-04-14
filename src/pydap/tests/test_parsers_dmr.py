@@ -78,9 +78,7 @@ class TestDMRParser(unittest.TestCase):
         dataset = load_dmr_file(
             "data/dmrs/20220102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.dmr"
         )
-        self.assertEqual(
-            dataset["sea_ice_fraction"].dimensions, ["/time", "/lat", "/lon"]
-        )
+        self.assertEqual(dataset["sea_ice_fraction"].dims, ["/time", "/lat", "/lon"])
         self.assertEqual(dataset.attributes["Conventions"], "CF-1.7")
 
     def test_mod05(self):
@@ -88,7 +86,7 @@ class TestDMRParser(unittest.TestCase):
             "data/dmrs/MOD05_L2.A2019336.2315.061.2019337071952.hdf.dmr"
         )
         self.assertEqual(
-            dataset["Water_Vapor_Infrared"].dimensions,
+            dataset["Water_Vapor_Infrared"].dims,
             [
                 "/Cell_Along_Swath_5km",
                 "/Cell_Across_Swath_5km",
@@ -121,17 +119,6 @@ class TestDMRParser(unittest.TestCase):
         self.assertIn("nv", names)
         # assert nv is NOT a variable/array
         self.assertNotIn("nv", variables)
-
-    def test_non_fqn_dims(self):
-        """Test that highlights the different behavior between variable attribtues
-        `dims` (semi-fully qualifgying names) and `dimensions` (fully-qualifying name)
-        """
-        dataset = load_dmr_file("data/dmrs/SimpleGroup.dmr")
-        self.assertEqual(dataset["/SimpleGroup/Temperature"].dims, ["/time", "Y", "X"])
-        self.assertEqual(
-            dataset["/SimpleGroup/Temperature"].dimensions,
-            ["/time", "/SimpleGroup/Y", "/SimpleGroup/X"],
-        )
 
     def tests_FlatGroups(self):
         dataset = load_dmr_file("data/dmrs/SimpleGroupFlat.dmr")
