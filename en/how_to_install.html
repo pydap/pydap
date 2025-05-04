@@ -411,11 +411,11 @@ document.write(`
 <section id="client-only">
 <h2>1. Client-only<a class="headerlink" href="#client-only" title="Link to this heading">#</a></h2>
 <p>To install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> to use only as a client API, you can do:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pydap
 </pre></div>
 </div>
-<p>or</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>pydap
+<p>or:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>pydap
 </pre></div>
 </div>
 <div class="admonition note">
@@ -426,12 +426,15 @@ document.write(`
 </section>
 <section id="complete-installation">
 <h2>2. Complete installation<a class="headerlink" href="#complete-installation" title="Link to this heading">#</a></h2>
-<p>To recover the full installation of pydap, which includes the packages for using pydap as a client and as a server, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>pydap-server
+<p>To recover the full installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code>, which includes the packages for using pydap as a client and as a server, run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>pydap-server
 </pre></div>
 </div>
-<p>This installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> will include the dependencies to allow users to a) subset remote data on OPeNDAP servers, and b) use pydap’s server to make data available.</p>
+<p>This installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> will include the dependencies to allow users to: a) subset remote data on OPeNDAP servers; and b) use <code class="docutils literal notranslate"><span class="pre">pydap</span></code>’s server to make data available.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>We recommend to use package installation managers like <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>. This approach requires having an installation of <a class="reference external" href="https://docs.anaconda.com/miniconda/">Miniconda</a> or <a class="reference external" href="https://docs.anaconda.com/anaconda/install/">Anaconda</a>.</p>
+</div>
 </section>
 <section id="dependencies">
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
@@ -454,8 +457,8 @@ document.write(`
 <section id="reproducible-conda-environments">
 <h2>Reproducible (conda) environments<a class="headerlink" href="#reproducible-conda-environments" title="Link to this heading">#</a></h2>
 <p>You can easily use conda to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> or <code class="docutils literal notranslate"><span class="pre">pydap-server</span></code>, along with any optional packages for sharing a reproducible workflow. For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap-server
-conda<span class="w"> </span>activate<span class="w"> </span>pydap_env
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap-server
+<span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>activate<span class="w"> </span>pydap_env
 </pre></div>
 </div>
 <div class="admonition note">
@@ -470,12 +473,12 @@ conda<span class="w"> </span>activate<span class="w"> </span>pydap_env
 <li><p><code class="docutils literal notranslate"><span class="pre">cartopy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code></p></li>
 </ul>
-<p>To install the latest <code class="docutils literal notranslate"><span class="pre">pydap</span></code> version (client-only), directly from the github repository, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
+<p>To install the latest <code class="docutils literal notranslate"><span class="pre">pydap</span></code> version (client-only), directly from the GitHub repository, run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
 </pre></div>
 </div>
 <p>This version is not stable as it is being actively developed and improved upon by contributors and maintainers of the <code class="docutils literal notranslate"><span class="pre">pydap</span></code> package.</p>
-<p>If you are interested in installing <code class="docutils literal notranslate"><span class="pre">pydap</span></code> in <code class="docutils literal notranslate"><span class="pre">developer</span> <span class="pre">mode</span></code>, to potentially contribute to the package, got o <a class="reference internal" href="contribute/contr_cod.html"><span class="std std-doc">Contributing to the code</span></a>.</p>
+<p>If you are interested in installing <code class="docutils literal notranslate"><span class="pre">pydap</span></code> in <code class="docutils literal notranslate"><span class="pre">developer</span> <span class="pre">mode</span></code> to potentially contribute to the package, go to <a class="reference internal" href="contribute/contr_cod.html"><span class="std std-doc">Contributing to the code</span></a>.</p>
 </section>
 </section>
 </section>

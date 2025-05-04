@@ -405,23 +405,23 @@ document.write(`
 <h1>Running a server<a class="headerlink" href="#running-a-server" title="Link to this heading">#</a></h1>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker <a class="github reference external" href="https://github.com/pydap/pydap/issues">pydap/pydap#issues</a>. If you have an example in which you configured pydap as a server, consider adding to this documentation. We always want to hear how PyDAP is being used.</p>
+<p>The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the GitHub issue tracker <a class="github reference external" href="https://github.com/pydap/pydap/issues">pydap/pydap#issues</a>. If you have an example in which you configured <cite>pydap</cite> as a server, consider adding to this documentation. We always want to hear how PyDAP is being used.</p>
 </div>
-<p>pydap comes with a lightweight and scalable OPeNDAP server, implemented as a <a class="reference external" href="http://wsgi.org/">WSGI</a> application. Being a WSGI <a class="reference external" href="http://wsgi.org/wsgi/Applications">application</a>, pydap can run on a variety of <a class="reference external" href="http://wsgi.org/wsgi/Servers">servers</a>, and frameworks including Apache, <a class="reference external" href="https://www.nginx.com/">Nginx</a>, IIS, <a class="reference external" href="https://uwsgi-docs.readthedocs.io/en/latest/">uWSGI</a>, <a class="reference external" href="http://flask.pocoo.org/">Flask</a> or as a standalone Python process. It can also be seamless combined with different <a class="reference external" href="http://wsgi.org/wsgi/Middleware_and_Utilities">middleware</a> for authentication/authorization, GZip compression, and much more.</p>
+<p><cite>pydap</cite> comes with a lightweight and scalable OPeNDAP server, implemented as a <a class="reference external" href="http://wsgi.org/">WSGI</a> application. Being a WSGI <a class="reference external" href="http://wsgi.org/wsgi/Applications">application</a>, pydap can run on a variety of <a class="reference external" href="http://wsgi.org/wsgi/Servers">servers</a>, and frameworks including Apache, <a class="reference external" href="https://www.nginx.com/">Nginx</a>, IIS, <a class="reference external" href="https://uwsgi-docs.readthedocs.io/en/latest/">uWSGI</a>, <a class="reference external" href="http://flask.pocoo.org/">Flask</a> or as a standalone Python process. It can also be seamless combined with different <a class="reference external" href="http://wsgi.org/wsgi/Middleware_and_Utilities">middleware</a> for authentication/authorization, GZip compression, and much more.</p>
 <p>There is no one right way to run pydap server; your application requirements and software stack will inform your deployment decisions. In this chapter we provide a few examples to try and get you on the right track.</p>
-<p>In order to distribute your data first you need to install a proper <a class="reference external" href="handlers.html">handler</a>, that will convert the data format to the pydap data model.</p>
+<p>In order to distribute your data first you need to install a proper <a class="reference external" href="handlers.html">handler</a>, that will convert the data format to the <cite>pydap</cite> data model.</p>
 <section id="running-standalone">
 <h2>Running standalone<a class="headerlink" href="#running-standalone" title="Link to this heading">#</a></h2>
 <p>If you just want to quickly test the pydap server, you can run it as a standalone Python application using the server that comes with <a class="reference external" href="http://pythonpaste.org/">Python Paste</a> and <a class="reference external" href="http://gunicorn.org/">gunicorn</a>. To run the server, first make sure that you have installed pydap with the server extras dependencies:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[server]&quot;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;pydap[server]&quot;</span>
 </pre></div>
 </div>
 <p>and then just run the <code class="docutils literal notranslate"><span class="pre">pydap</span></code> script that pip installs into your bin directory:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--port<span class="w"> </span><span class="m">8080</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--port<span class="w"> </span><span class="m">8080</span>
 </pre></div>
 </div>
 <p>To change the default directory listing, the help page and the HTML form, you can point a switch to your template directory</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--templates<span class="w"> </span>/path/to/my/templates.
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pydap<span class="w"> </span>--data<span class="w"> </span>/path/to/my/data/files<span class="w"> </span>--templates<span class="w"> </span>/path/to/my/templates.
 </pre></div>
 </div>
 <p>The HTML form template is fairly complex, since it contain some application logic and some Javascript code, so be careful to not break anything.</p>
@@ -450,15 +450,15 @@ document.write(`
 <section id="apache">
 <h2>Apache<a class="headerlink" href="#apache" title="Link to this heading">#</a></h2>
 <p>For a robust deployment you can run pydap with Apache, using <a class="reference external" href="http://modwsgi.org/">mod_wsgi</a>. After <a class="reference external" href="http://code.google.com/p/modwsgi/wiki/InstallationInstructions">installing mod_wsgi</a>, create a sandbox in a directory <em>outside</em> your DocumentRoot, say <code class="docutils literal notranslate"><span class="pre">/var/www/pydap/</span></code>, using <a class="reference external" href="https://docs.python.org/3/library/venv.html">a virtual environment</a>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>/var/www/pydap
-python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>/var/www/pydap/env
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>mkdir<span class="w"> </span>/var/www/pydap
+$<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>/var/www/pydap/env
 </pre></div>
 </div>
-<p>If you want the sandbox to use your system installed packages (like Numpy, e.g.) you can use the <code class="docutils literal notranslate"><span class="pre">--system-site-packages</span></code> flag:</p>
+<p>If you want the sandbox to use your system installed packages (like <cite>numpy</cite>, e.g.) you can use the <code class="docutils literal notranslate"><span class="pre">--system-site-packages</span></code> flag:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>--system-site-packages<span class="w"> </span>/var/www/pydap/env
 </pre></div>
 </div>
-<p>Now let’s activate the sandbox and install pydap – this way the module and its dependencies can be isolated from the system libraries:</p>
+<p>Now let’s activate the sandbox and install <cite>pydap</cite> – this way the module and its dependencies can be isolated from the system libraries:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span>/var/www/pydap/env/bin/activate.sh
 <span class="o">(</span>env<span class="o">)</span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pydap
 </pre></div>

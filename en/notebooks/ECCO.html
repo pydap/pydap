@@ -391,9 +391,6 @@ document.write(`
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydap-xarray-to-aggregate-multiple-urls">pydap + xarray to aggregate multiple URLs</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-ces-to-pre-select-only-variables-of-interest">Using CEs to pre-select only variables of interest</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-files-in-parallel">Multiple files in parallel</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#any-subsequent-try-should-take-milliseconds">Any subsequent try should take milliseconds!</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#finally-we-plot-theta">Finally, we plot <code class="docutils literal notranslate"><span class="pre">THETA</span></code></a></li>
 </ul>
 </li>
@@ -435,6 +432,21 @@ document.write(`
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydap.net</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_session</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydap</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;xarray version: &quot;</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pydap version: &quot;</span><span class="p">,</span> <span class="n">pydap</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>xarray version:  2025.4.0
+pydap version:  3.5.5
 </pre></div>
 </div>
 </div>
@@ -581,7 +593,6 @@ document.write(`
  &#39;coordinates&#39;: &#39;YC XC&#39;,
  &#39;origname&#39;: &#39;Depth&#39;,
  &#39;fullnamepath&#39;: &#39;/Depth&#39;,
- &#39;dims&#39;: [&#39;tile&#39;, &#39;j&#39;, &#39;i&#39;],
  &#39;Maps&#39;: (),
  &#39;checksum&#39;: array([950678499], dtype=uint32)}
 </pre></div>
@@ -590,7 +601,7 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Depth</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">Depth</span><span class="o">.</span><span class="n">dimensions</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Depth</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">Depth</span><span class="o">.</span><span class="n">dims</span>
 </pre></div>
 </div>
 </div>
@@ -691,434 +702,15 @@ document.write(`
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">Temp_2017</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
-<span class="n">dataset</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Temp_2017</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 115 ms, sys: 19.5 ms, total: 134 ms
-Wall time: 20.5 s
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;dap4://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090&#39;
 </pre></div>
 </div>
-<div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
-<defs>
-<symbol id="icon-database" viewBox="0 0 32 32">
-<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
-<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
-<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
-</symbol>
-<symbol id="icon-file-text2" viewBox="0 0 32 32">
-<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
-<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
-</symbol>
-</defs>
-</svg>
-<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
- *
- */
-
-:root {
-  --xr-font-color0: var(--jp-content-font-color0, rgba(0, 0, 0, 1));
-  --xr-font-color2: var(--jp-content-font-color2, rgba(0, 0, 0, 0.54));
-  --xr-font-color3: var(--jp-content-font-color3, rgba(0, 0, 0, 0.38));
-  --xr-border-color: var(--jp-border-color2, #e0e0e0);
-  --xr-disabled-color: var(--jp-layout-color3, #bdbdbd);
-  --xr-background-color: var(--jp-layout-color0, white);
-  --xr-background-color-row-even: var(--jp-layout-color1, white);
-  --xr-background-color-row-odd: var(--jp-layout-color2, #eeeeee);
-}
-
-html[theme="dark"],
-html[data-theme="dark"],
-body[data-theme="dark"],
-body.vscode-dark {
-  --xr-font-color0: rgba(255, 255, 255, 1);
-  --xr-font-color2: rgba(255, 255, 255, 0.54);
-  --xr-font-color3: rgba(255, 255, 255, 0.38);
-  --xr-border-color: #1f1f1f;
-  --xr-disabled-color: #515151;
-  --xr-background-color: #111111;
-  --xr-background-color-row-even: #111111;
-  --xr-background-color-row-odd: #313131;
-}
-
-.xr-wrap {
-  display: block !important;
-  min-width: 300px;
-  max-width: 700px;
-}
-
-.xr-text-repr-fallback {
-  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
-  display: none;
-}
-
-.xr-header {
-  padding-top: 6px;
-  padding-bottom: 6px;
-  margin-bottom: 4px;
-  border-bottom: solid 1px var(--xr-border-color);
-}
-
-.xr-header > div,
-.xr-header > ul {
-  display: inline;
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
-.xr-obj-type,
-.xr-array-name {
-  margin-left: 2px;
-  margin-right: 10px;
-}
-
-.xr-obj-type {
-  color: var(--xr-font-color2);
-}
-
-.xr-sections {
-  padding-left: 0 !important;
-  display: grid;
-  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
-}
-
-.xr-section-item {
-  display: contents;
-}
-
-.xr-section-item input {
-  display: inline-block;
-  opacity: 0;
-  height: 0;
-}
-
-.xr-section-item input + label {
-  color: var(--xr-disabled-color);
-}
-
-.xr-section-item input:enabled + label {
-  cursor: pointer;
-  color: var(--xr-font-color2);
-}
-
-.xr-section-item input:focus + label {
-  border: 2px solid var(--xr-font-color0);
-}
-
-.xr-section-item input:enabled + label:hover {
-  color: var(--xr-font-color0);
-}
-
-.xr-section-summary {
-  grid-column: 1;
-  color: var(--xr-font-color2);
-  font-weight: 500;
-}
-
-.xr-section-summary > span {
-  display: inline-block;
-  padding-left: 0.5em;
-}
-
-.xr-section-summary-in:disabled + label {
-  color: var(--xr-font-color2);
-}
-
-.xr-section-summary-in + label:before {
-  display: inline-block;
-  content: "►";
-  font-size: 11px;
-  width: 15px;
-  text-align: center;
-}
-
-.xr-section-summary-in:disabled + label:before {
-  color: var(--xr-disabled-color);
-}
-
-.xr-section-summary-in:checked + label:before {
-  content: "▼";
-}
-
-.xr-section-summary-in:checked + label > span {
-  display: none;
-}
-
-.xr-section-summary,
-.xr-section-inline-details {
-  padding-top: 4px;
-  padding-bottom: 4px;
-}
-
-.xr-section-inline-details {
-  grid-column: 2 / -1;
-}
-
-.xr-section-details {
-  display: none;
-  grid-column: 1 / -1;
-  margin-bottom: 5px;
-}
-
-.xr-section-summary-in:checked ~ .xr-section-details {
-  display: contents;
-}
-
-.xr-array-wrap {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: 20px auto;
-}
-
-.xr-array-wrap > label {
-  grid-column: 1;
-  vertical-align: top;
-}
-
-.xr-preview {
-  color: var(--xr-font-color3);
-}
-
-.xr-array-preview,
-.xr-array-data {
-  padding: 0 5px !important;
-  grid-column: 2;
-}
-
-.xr-array-data,
-.xr-array-in:checked ~ .xr-array-preview {
-  display: none;
-}
-
-.xr-array-in:checked ~ .xr-array-data,
-.xr-array-preview {
-  display: inline-block;
-}
-
-.xr-dim-list {
-  display: inline-block !important;
-  list-style: none;
-  padding: 0 !important;
-  margin: 0;
-}
-
-.xr-dim-list li {
-  display: inline-block;
-  padding: 0;
-  margin: 0;
-}
-
-.xr-dim-list:before {
-  content: "(";
-}
-
-.xr-dim-list:after {
-  content: ")";
-}
-
-.xr-dim-list li:not(:last-child):after {
-  content: ",";
-  padding-right: 5px;
-}
-
-.xr-has-index {
-  font-weight: bold;
-}
-
-.xr-var-list,
-.xr-var-item {
-  display: contents;
-}
-
-.xr-var-item > div,
-.xr-var-item label,
-.xr-var-item > .xr-var-name span {
-  background-color: var(--xr-background-color-row-even);
-  margin-bottom: 0;
-}
-
-.xr-var-item > .xr-var-name:hover span {
-  padding-right: 5px;
-}
-
-.xr-var-list > li:nth-child(odd) > div,
-.xr-var-list > li:nth-child(odd) > label,
-.xr-var-list > li:nth-child(odd) > .xr-var-name span {
-  background-color: var(--xr-background-color-row-odd);
-}
-
-.xr-var-name {
-  grid-column: 1;
-}
-
-.xr-var-dims {
-  grid-column: 2;
-}
-
-.xr-var-dtype {
-  grid-column: 3;
-  text-align: right;
-  color: var(--xr-font-color2);
-}
-
-.xr-var-preview {
-  grid-column: 4;
-}
-
-.xr-index-preview {
-  grid-column: 2 / 5;
-  color: var(--xr-font-color2);
-}
-
-.xr-var-name,
-.xr-var-dims,
-.xr-var-dtype,
-.xr-preview,
-.xr-attrs dt {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-right: 10px;
-}
-
-.xr-var-name:hover,
-.xr-var-dims:hover,
-.xr-var-dtype:hover,
-.xr-attrs dt:hover {
-  overflow: visible;
-  width: auto;
-  z-index: 1;
-}
-
-.xr-var-attrs,
-.xr-var-data,
-.xr-index-data {
-  display: none;
-  background-color: var(--xr-background-color) !important;
-  padding-bottom: 5px !important;
-}
-
-.xr-var-attrs-in:checked ~ .xr-var-attrs,
-.xr-var-data-in:checked ~ .xr-var-data,
-.xr-index-data-in:checked ~ .xr-index-data {
-  display: block;
-}
-
-.xr-var-data > table {
-  float: right;
-}
-
-.xr-var-name span,
-.xr-var-data,
-.xr-index-name div,
-.xr-index-data,
-.xr-attrs {
-  padding-left: 25px !important;
-}
-
-.xr-attrs,
-.xr-var-attrs,
-.xr-var-data,
-.xr-index-data {
-  grid-column: 1 / -1;
-}
-
-dl.xr-attrs {
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: 125px auto;
-}
-
-.xr-attrs dt,
-.xr-attrs dd {
-  padding: 0;
-  margin: 0;
-  float: left;
-  padding-right: 10px;
-  width: auto;
-}
-
-.xr-attrs dt {
-  font-weight: normal;
-  grid-column: 1;
-}
-
-.xr-attrs dt:hover span {
-  display: inline-block;
-  background: var(--xr-background-color);
-  padding-right: 10px;
-}
-
-.xr-attrs dd {
-  grid-column: 2;
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.xr-icon-database,
-.xr-icon-file-text2,
-.xr-no-icon {
-  display: inline-block;
-  vertical-align: middle;
-  width: 1em;
-  height: 1.5em !important;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-}
-</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 47MB
-Dimensions:    (/tile: 13, /j_g: 90, /i_g: 90, /k_p1: 51, /k_l: 50, /j: 90,
-                /i: 90, /time: 1, /k: 50, /nb: 4, /k_u: 50, /nv: 2)
-Coordinates: (12/13)
-    XG         (/tile, /j_g, /i_g) float32 421kB ...
-    Zp1        (/k_p1) float32 204B ...
-    Zl         (/k_l) float32 200B ...
-    YC         (/tile, /j, /i) float32 421kB ...
-    XC         (/tile, /j, /i) float32 421kB ...
-    YG         (/tile, /j_g, /i_g) float32 421kB ...
-    ...         ...
-    Zu         (/k_u) float32 200B ...
-    Z_bnds     (/k, /nv) float32 400B ...
-    YC_bnds    (/tile, /j, /i, /nb) float32 2MB ...
-    time_bnds  (/time, /nv) datetime64[ns] 16B ...
-    Z          (/k) float32 200B ...
-    time       (/time) datetime64[ns] 8B ...
-Dimensions without coordinates: /tile, /j_g, /i_g, /k_p1, /k_l, /j, /i, /time,
-                                /k, /nb, /k_u, /nv
-Data variables: (12/13)
-    SALT       (/time, /k, /tile, /j, /i) float32 21MB ...
-    THETA      (/time, /k, /tile, /j, /i) float32 21MB ...
-    i          (/i) int32 360B ...
-    i_g        (/i_g) int32 360B ...
-    j          (/j) int32 360B ...
-    j_g        (/j_g) int32 360B ...
-    ...         ...
-    k_l        (/k_l) int32 200B ...
-    k_p1       (/k_p1) int32 204B ...
-    k_u        (/k_u) int32 200B ...
-    nb         (/nb) float32 16B ...
-    nv         (/nv) float32 8B ...
-    tile       (/tile) int32 52B ...
-Attributes: (12/62)
-    acknowledgement:                 This research was carried out by the Jet...
-    author:                          Ian Fenty and Ou Wang
-    cdm_data_type:                   Grid
-    comment:                         Fields provided on the curvilinear lat-l...
-    Conventions:                     CF-1.8, ACDD-1.3
-    coordinates_comment:             Note: the global &#x27;coordinates&#x27; attribute...
-    ...                              ...
-    time_coverage_duration:          P1M
-    time_coverage_end:               2017-02-01T00:00:00
-    time_coverage_resolution:        P1M
-    time_coverage_start:             2017-01-01T00:00:00
-    title:                           ECCO Ocean Temperature and Salinity - Mo...
-    uuid:                            f5b7028c-4181-11eb-b7e6-0cc47a3f47b1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-ab2fd2ed-7274-44e6-bdb2-6e868f07df2c' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-ab2fd2ed-7274-44e6-bdb2-6e868f07df2c' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>/tile</span>: 13</li><li><span>/j_g</span>: 90</li><li><span>/i_g</span>: 90</li><li><span>/k_p1</span>: 51</li><li><span>/k_l</span>: 50</li><li><span>/j</span>: 90</li><li><span>/i</span>: 90</li><li><span>/time</span>: 1</li><li><span>/k</span>: 50</li><li><span>/nb</span>: 4</li><li><span>/k_u</span>: 50</li><li><span>/nv</span>: 2</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-ef1e09ae-ee0f-405a-af2e-f2bae0a14a2e' class='xr-section-summary-in' type='checkbox'  checked><label for='section-ef1e09ae-ee0f-405a-af2e-f2bae0a14a2e' class='xr-section-summary' >Coordinates: <span>(13)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>XG</span></div><div class='xr-var-dims'>(/tile, /j_g, /i_g)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-c8b53b26-959d-48d9-a1db-35afb397943f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-c8b53b26-959d-48d9-a1db-35afb397943f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6060b84d-86fa-4a41-a38b-3e00e12cb1d8' class='xr-var-data-in' type='checkbox'><label for='data-6060b84d-86fa-4a41-a38b-3e00e12cb1d8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>longitude of &#x27;southwest&#x27; corner of tracer grid cell</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>coordinate :</span></dt><dd>YG XG</dd><dt><span>comment :</span></dt><dd>Nonuniform grid spacing. Note: &#x27;southwest&#x27; does not correspond to geographic orientation but is used for convenience to describe the computational grid. See MITgcm dcoumentation for details.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>origname :</span></dt><dd>XG</dd><dt><span>fullnamepath :</span></dt><dd>/XG</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j_g&#x27;, &#x27;i_g&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[105300 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Zp1</span></div><div class='xr-var-dims'>(/k_p1)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-712e4d5f-a92e-4c8c-a1a4-d0eeb2244021' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-712e4d5f-a92e-4c8c-a1a4-d0eeb2244021' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a184ff4b-4b53-4dd4-ac40-38d676efa995' class='xr-var-data-in' type='checkbox'><label for='data-a184ff4b-4b53-4dd4-ac40-38d676efa995' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>depth of tracer grid cell interface</dd><dt><span>units :</span></dt><dd>m</dd><dt><span>positive :</span></dt><dd>up</dd><dt><span>comment :</span></dt><dd>Contains one element more than the number of vertical layers. First element is 0m, the depth of the upper interface of the surface grid cell. Last element is the depth of the lower interface of the deepest grid cell.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>depth</dd><dt><span>origname :</span></dt><dd>Zp1</dd><dt><span>fullnamepath :</span></dt><dd>/Zp1</dd><dt><span>dims :</span></dt><dd>[&#x27;k_p1&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[51 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Zl</span></div><div class='xr-var-dims'>(/k_l)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-f8e9ff77-5ad6-4c05-899b-cc390d972a15' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f8e9ff77-5ad6-4c05-899b-cc390d972a15' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e84e0171-00b4-4eef-b10c-a37e9ffaf96c' class='xr-var-data-in' type='checkbox'><label for='data-e84e0171-00b4-4eef-b10c-a37e9ffaf96c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>m</dd><dt><span>positive :</span></dt><dd>up</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>depth</dd><dt><span>long_name :</span></dt><dd>depth of the top face of tracer grid cells</dd><dt><span>comment :</span></dt><dd>First element is 0m, the depth of the top face of the first tracer grid cell (ocean surface). Last element is the depth of the top face of the deepest grid cell. The use of &#x27;l&#x27; in the variable name follows the MITgcm convention for ocean variables in which the lower (l) face of a tracer grid cell on the logical grid corresponds to the top face of the grid cell on the physical grid. In other words, the logical vertical grid of MITgcm ocean variables is inverted relative to the physical vertical grid.</dd><dt><span>origname :</span></dt><dd>Zl</dd><dt><span>fullnamepath :</span></dt><dd>/Zl</dd><dt><span>dims :</span></dt><dd>[&#x27;k_l&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>YC</span></div><div class='xr-var-dims'>(/tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-df667726-a55b-4b0a-83d1-39f033f3d143' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-df667726-a55b-4b0a-83d1-39f033f3d143' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-fe497355-72af-425a-ad1a-714d18ecf92b' class='xr-var-data-in' type='checkbox'><label for='data-fe497355-72af-425a-ad1a-714d18ecf92b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>latitude of tracer grid cell center</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>coordinate :</span></dt><dd>YC XC</dd><dt><span>bounds :</span></dt><dd>YC_bnds</dd><dt><span>comment :</span></dt><dd>nonuniform grid spacing</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>origname :</span></dt><dd>YC</dd><dt><span>fullnamepath :</span></dt><dd>/YC</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[105300 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>XC</span></div><div class='xr-var-dims'>(/tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-581cb864-c021-4f8e-8eaa-a0fee9b50d61' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-581cb864-c021-4f8e-8eaa-a0fee9b50d61' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-552a62f0-37e0-46f3-bde4-0dcda11940a6' class='xr-var-data-in' type='checkbox'><label for='data-552a62f0-37e0-46f3-bde4-0dcda11940a6' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>longitude of tracer grid cell center</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>coordinate :</span></dt><dd>YC XC</dd><dt><span>bounds :</span></dt><dd>XC_bnds</dd><dt><span>comment :</span></dt><dd>nonuniform grid spacing</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>origname :</span></dt><dd>XC</dd><dt><span>fullnamepath :</span></dt><dd>/XC</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[105300 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>YG</span></div><div class='xr-var-dims'>(/tile, /j_g, /i_g)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-d8e8d1df-5e51-4eae-af69-fe9d51e765f5' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-d8e8d1df-5e51-4eae-af69-fe9d51e765f5' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-620e353f-bf07-4c35-aed7-9a3669db7d38' class='xr-var-data-in' type='checkbox'><label for='data-620e353f-bf07-4c35-aed7-9a3669db7d38' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>latitude of &#x27;southwest&#x27; corner of tracer grid cell</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>coordinate :</span></dt><dd>YG XG</dd><dt><span>comment :</span></dt><dd>Nonuniform grid spacing. Note: &#x27;southwest&#x27; does not correspond to geographic orientation but is used for convenience to describe the computational grid. See MITgcm dcoumentation for details.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>origname :</span></dt><dd>YG</dd><dt><span>fullnamepath :</span></dt><dd>/YG</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j_g&#x27;, &#x27;i_g&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[105300 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>XC_bnds</span></div><div class='xr-var-dims'>(/tile, /j, /i, /nb)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-d9d2beb8-11fb-47bf-9678-6fb9c2059cdd' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-d9d2beb8-11fb-47bf-9678-6fb9c2059cdd' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-999a0e36-24a3-4a8f-98b7-eca1b0c799d4' class='xr-var-data-in' type='checkbox'><label for='data-999a0e36-24a3-4a8f-98b7-eca1b0c799d4' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comment :</span></dt><dd>Bounds array follows CF conventions. XC_bnds[i,j,0] = &#x27;southwest&#x27; corner (j-1, i-1), XC_bnds[i,j,1] = &#x27;southeast&#x27; corner (j-1, i+1), XC_bnds[i,j,2] = &#x27;northeast&#x27; corner (j+1, i+1), XC_bnds[i,j,3]  = &#x27;northwest&#x27; corner (j+1, i-1). Note: &#x27;southwest&#x27;, &#x27;southeast&#x27;, northwest&#x27;, and &#x27;northeast&#x27; do not correspond to geographic orientation but are used for convenience to describe the computational grid. See MITgcm dcoumentation for details.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>longitudes of tracer grid cell corners</dd><dt><span>origname :</span></dt><dd>XC_bnds</dd><dt><span>fullnamepath :</span></dt><dd>/XC_bnds</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;, &#x27;nb&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[421200 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Zu</span></div><div class='xr-var-dims'>(/k_u)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-52a8f89d-af82-4d32-a9f4-37f2e3deae5a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-52a8f89d-af82-4d32-a9f4-37f2e3deae5a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-f1054422-8954-409d-93d4-b23d3cb1a388' class='xr-var-data-in' type='checkbox'><label for='data-f1054422-8954-409d-93d4-b23d3cb1a388' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>m</dd><dt><span>positive :</span></dt><dd>up</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>depth</dd><dt><span>long_name :</span></dt><dd>depth of the bottom face of tracer grid cells</dd><dt><span>comment :</span></dt><dd>First element is -10m, the depth of the bottom face of the first tracer grid cell. Last element is the depth of the bottom face of the deepest grid cell. The use of &#x27;u&#x27; in the variable name follows the MITgcm convention for ocean variables in which the upper (u) face of a tracer grid cell on the logical grid corresponds to the bottom face of the grid cell on the physical grid. In other words, the logical vertical grid of MITgcm ocean variables is inverted relative to the physical vertical grid.</dd><dt><span>origname :</span></dt><dd>Zu</dd><dt><span>fullnamepath :</span></dt><dd>/Zu</dd><dt><span>dims :</span></dt><dd>[&#x27;k_u&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Z_bnds</span></div><div class='xr-var-dims'>(/k, /nv)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-b1f079da-7996-459e-851a-1fe062a151b7' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-b1f079da-7996-459e-851a-1fe062a151b7' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3998a086-697a-4b39-81ae-62fc87002acf' class='xr-var-data-in' type='checkbox'><label for='data-3998a086-697a-4b39-81ae-62fc87002acf' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comment :</span></dt><dd>One pair of depths for each vertical level.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>depths of tracer grid cell upper and lower interfaces</dd><dt><span>origname :</span></dt><dd>Z_bnds</dd><dt><span>fullnamepath :</span></dt><dd>/Z_bnds</dd><dt><span>dims :</span></dt><dd>[&#x27;k&#x27;, &#x27;nv&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[100 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>YC_bnds</span></div><div class='xr-var-dims'>(/tile, /j, /i, /nb)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-9df588be-4ebd-4b55-8381-1e57bff39a9f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9df588be-4ebd-4b55-8381-1e57bff39a9f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3be65c13-d1b8-449c-8787-2fa84c3f4387' class='xr-var-data-in' type='checkbox'><label for='data-3be65c13-d1b8-449c-8787-2fa84c3f4387' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comment :</span></dt><dd>Bounds array follows CF conventions. YC_bnds[i,j,0] = &#x27;southwest&#x27; corner (j-1, i-1), YC_bnds[i,j,1] = &#x27;southeast&#x27; corner (j-1, i+1), YC_bnds[i,j,2] = &#x27;northeast&#x27; corner (j+1, i+1), YC_bnds[i,j,3]  = &#x27;northwest&#x27; corner (j+1, i-1). Note: &#x27;southwest&#x27;, &#x27;southeast&#x27;, northwest&#x27;, and &#x27;northeast&#x27; do not correspond to geographic orientation but are used for convenience to describe the computational grid. See MITgcm dcoumentation for details.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>latitudes of tracer grid cell corners</dd><dt><span>origname :</span></dt><dd>YC_bnds</dd><dt><span>fullnamepath :</span></dt><dd>/YC_bnds</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;, &#x27;nb&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[421200 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>time_bnds</span></div><div class='xr-var-dims'>(/time, /nv)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-dc7b0b92-de19-460d-8d3f-c48620fea516' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-dc7b0b92-de19-460d-8d3f-c48620fea516' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-975f6283-4dd3-4fdf-a970-e8e8d47d9184' class='xr-var-data-in' type='checkbox'><label for='data-975f6283-4dd3-4fdf-a970-e8e8d47d9184' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>comment :</span></dt><dd>Start and end times of averaging period.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>time bounds of averaging period</dd><dt><span>origname :</span></dt><dd>time_bnds</dd><dt><span>fullnamepath :</span></dt><dd>/time_bnds</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;nv&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[2 values with dtype=datetime64[ns]]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Z</span></div><div class='xr-var-dims'>(/k)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-b4efbad8-7a9e-4487-a35c-bcf42f860412' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-b4efbad8-7a9e-4487-a35c-bcf42f860412' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-dab0c120-7357-4667-aefb-4b328ed529f1' class='xr-var-data-in' type='checkbox'><label for='data-dab0c120-7357-4667-aefb-4b328ed529f1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>depth of tracer grid cell center</dd><dt><span>units :</span></dt><dd>m</dd><dt><span>positive :</span></dt><dd>up</dd><dt><span>bounds :</span></dt><dd>Z_bnds</dd><dt><span>comment :</span></dt><dd>Non-uniform vertical spacing.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>depth</dd><dt><span>origname :</span></dt><dd>Z</dd><dt><span>fullnamepath :</span></dt><dd>/Z</dd><dt><span>dims :</span></dt><dd>[&#x27;k&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>time</span></div><div class='xr-var-dims'>(/time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-c647858d-04fa-4538-a908-62af292814d0' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-c647858d-04fa-4538-a908-62af292814d0' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3f9bf743-986a-4c2a-ba2e-f41f3ec4ed7b' class='xr-var-data-in' type='checkbox'><label for='data-3f9bf743-986a-4c2a-ba2e-f41f3ec4ed7b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>center time of averaging period</dd><dt><span>axis :</span></dt><dd>T</dd><dt><span>bounds :</span></dt><dd>time_bnds</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>origname :</span></dt><dd>time</dd><dt><span>fullnamepath :</span></dt><dd>/time</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[1 values with dtype=datetime64[ns]]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-4c7a93b3-f7a4-4c47-ba64-c0a934d79c0b' class='xr-section-summary-in' type='checkbox'  checked><label for='section-4c7a93b3-f7a4-4c47-ba64-c0a934d79c0b' class='xr-section-summary' >Data variables: <span>(13)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>SALT</span></div><div class='xr-var-dims'>(/time, /k, /tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-65c94f13-69b1-45d3-8ce1-a900a4165a99' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-65c94f13-69b1-45d3-8ce1-a900a4165a99' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-f5fb9c9e-b4f5-4c31-ae24-8e99cab0e283' class='xr-var-data-in' type='checkbox'><label for='data-f5fb9c9e-b4f5-4c31-ae24-8e99cab0e283' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Salinity</dd><dt><span>units :</span></dt><dd>1e-3</dd><dt><span>coverage_content_type :</span></dt><dd>modelResult</dd><dt><span>standard_name :</span></dt><dd>sea_water_salinity</dd><dt><span>comment :</span></dt><dd>Defined using CF convention &#x27;Sea water salinity is the salt content of sea water, often on the Practical Salinity Scale of 1978. However, the unqualified term &#x27;salinity&#x27; is generic and does not necessarily imply any particular method of calculation. The units of salinity are dimensionless and the units attribute should normally be given as 1e-3 or 0.001 i.e. parts per thousand.&#x27; see https://cfconventions.org/Data/cf-standard-names/73/build/cf-standard-name-table.html</dd><dt><span>valid_min :</span></dt><dd>17.106637954711914</dd><dt><span>valid_max :</span></dt><dd>41.26802444458008</dd><dt><span>origname :</span></dt><dd>SALT</dd><dt><span>fullnamepath :</span></dt><dd>/SALT</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;k&#x27;, &#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[5265000 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>THETA</span></div><div class='xr-var-dims'>(/time, /k, /tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-d8800098-850c-473b-8bfc-949d32f93166' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-d8800098-850c-473b-8bfc-949d32f93166' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-cb65af1d-8705-4b78-8708-05d8b3e0b02c' class='xr-var-data-in' type='checkbox'><label for='data-cb65af1d-8705-4b78-8708-05d8b3e0b02c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Potential temperature </dd><dt><span>units :</span></dt><dd>degree_C</dd><dt><span>coverage_content_type :</span></dt><dd>modelResult</dd><dt><span>standard_name :</span></dt><dd>sea_water_potential_temperature</dd><dt><span>comment :</span></dt><dd>Sea water potential temperature is the temperature a parcel of sea water would have if moved adiabatically to sea level pressure. Note: the equation of state is a modified UNESCO formula by Jackett and McDougall (1995), which uses the model variable potential temperature as input assuming a horizontally and temporally constant pressure of $p_0=-g ho_{0} z$.</dd><dt><span>valid_min :</span></dt><dd>-2.2909388542175293</dd><dt><span>valid_max :</span></dt><dd>36.032955169677734</dd><dt><span>origname :</span></dt><dd>THETA</dd><dt><span>fullnamepath :</span></dt><dd>/THETA</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;k&#x27;, &#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[5265000 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>i</span></div><div class='xr-var-dims'>(/i)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-1e622619-4d05-43d4-9250-ef880077253c' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1e622619-4d05-43d4-9250-ef880077253c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d2a79798-85a8-4cdd-aa95-e633c40df23b' class='xr-var-data-in' type='checkbox'><label for='data-d2a79798-85a8-4cdd-aa95-e633c40df23b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>X</dd><dt><span>long_name :</span></dt><dd>grid index in x for variables at tracer and &#x27;v&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>XC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;v&#x27; variables (e.g., VVEL) have the same x coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>i</dd><dt><span>fullnamepath :</span></dt><dd>/i</dd><dt><span>dims :</span></dt><dd>[&#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>i_g</span></div><div class='xr-var-dims'>(/i_g)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-9b0d0542-8f4b-479c-8f66-528e118a82a3' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9b0d0542-8f4b-479c-8f66-528e118a82a3' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-87649f00-8fbe-4426-9d76-1636ce60e6f0' class='xr-var-data-in' type='checkbox'><label for='data-87649f00-8fbe-4426-9d76-1636ce60e6f0' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>X</dd><dt><span>long_name :</span></dt><dd>grid index in x for variables at &#x27;u&#x27; and &#x27;g&#x27; locations</dd><dt><span>c_grid_axis_shift :</span></dt><dd>-0.5</dd><dt><span>swap_dim :</span></dt><dd>XG</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, &#x27;u&#x27; (e.g., UVEL) and &#x27;g&#x27; variables (e.g., XG) have the same x coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>i_g</dd><dt><span>fullnamepath :</span></dt><dd>/i_g</dd><dt><span>dims :</span></dt><dd>[&#x27;i_g&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>j</span></div><div class='xr-var-dims'>(/j)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-e9a3c10d-91dd-49cf-af3a-2cae4bed74a2' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-e9a3c10d-91dd-49cf-af3a-2cae4bed74a2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5e487f62-fb6e-4dc0-87b7-dab4e0c507e8' class='xr-var-data-in' type='checkbox'><label for='data-5e487f62-fb6e-4dc0-87b7-dab4e0c507e8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Y</dd><dt><span>long_name :</span></dt><dd>grid index in y for variables at tracer and &#x27;u&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>YC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;u&#x27; variables (e.g., UVEL) have the same y coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>j</dd><dt><span>fullnamepath :</span></dt><dd>/j</dd><dt><span>dims :</span></dt><dd>[&#x27;j&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>j_g</span></div><div class='xr-var-dims'>(/j_g)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-2875fda3-fed2-4986-aa95-de6ab9931c56' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2875fda3-fed2-4986-aa95-de6ab9931c56' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-adaa53aa-f39a-4d0d-8938-6990ef70cb41' class='xr-var-data-in' type='checkbox'><label for='data-adaa53aa-f39a-4d0d-8938-6990ef70cb41' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Y</dd><dt><span>long_name :</span></dt><dd>grid index in y for variables at &#x27;v&#x27; and &#x27;g&#x27; locations</dd><dt><span>c_grid_axis_shift :</span></dt><dd>-0.5</dd><dt><span>swap_dim :</span></dt><dd>YG</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, &#x27;v&#x27; (e.g., VVEL) and &#x27;g&#x27; variables (e.g., XG) have the same y coordinate.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>j_g</dd><dt><span>fullnamepath :</span></dt><dd>/j_g</dd><dt><span>dims :</span></dt><dd>[&#x27;j_g&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k</span></div><div class='xr-var-dims'>(/k)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-2963de2a-9e12-4263-9332-95f0a10cb895' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2963de2a-9e12-4263-9332-95f0a10cb895' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0e7ebf9c-1b32-4532-8457-0623dc6c3fab' class='xr-var-data-in' type='checkbox'><label for='data-0e7ebf9c-1b32-4532-8457-0623dc6c3fab' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>long_name :</span></dt><dd>grid index in z for tracer variables</dd><dt><span>swap_dim :</span></dt><dd>Z</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>k</dd><dt><span>fullnamepath :</span></dt><dd>/k</dd><dt><span>dims :</span></dt><dd>[&#x27;k&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k_l</span></div><div class='xr-var-dims'>(/k_l)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-018a3b50-f9b3-49cc-87a8-7cf8e2d84937' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-018a3b50-f9b3-49cc-87a8-7cf8e2d84937' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-bbfebe03-8c20-4c9c-bee1-994aec108179' class='xr-var-data-in' type='checkbox'><label for='data-bbfebe03-8c20-4c9c-bee1-994aec108179' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>c_grid_axis_shift :</span></dt><dd>-0.5</dd><dt><span>swap_dim :</span></dt><dd>Zl</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>grid index in z corresponding to the top face of tracer grid cells (&#x27;w&#x27; locations)</dd><dt><span>comment :</span></dt><dd>First index corresponds to the top surface of the uppermost tracer grid cell. The use of &#x27;l&#x27; in the variable name follows the MITgcm convention for ocean variables in which the lower (l) face of a tracer grid cell on the logical grid corresponds to the top face of the grid cell on the physical grid.</dd><dt><span>origname :</span></dt><dd>k_l</dd><dt><span>fullnamepath :</span></dt><dd>/k_l</dd><dt><span>dims :</span></dt><dd>[&#x27;k_l&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k_p1</span></div><div class='xr-var-dims'>(/k_p1)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-b1f5ec43-a2d2-4a96-b8ec-fc7da64f1649' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-b1f5ec43-a2d2-4a96-b8ec-fc7da64f1649' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-85c77638-1a50-4306-859e-a7e322923f13' class='xr-var-data-in' type='checkbox'><label for='data-85c77638-1a50-4306-859e-a7e322923f13' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>long_name :</span></dt><dd>grid index in z for variables at &#x27;w&#x27; locations</dd><dt><span>c_grid_axis_shift :</span></dt><dd>[-0.5, 0.5]</dd><dt><span>swap_dim :</span></dt><dd>Zp1</dd><dt><span>comment :</span></dt><dd>Includes top of uppermost model tracer cell (k_p1=0) and bottom of lowermost tracer cell (k_p1=51).</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>k_p1</dd><dt><span>fullnamepath :</span></dt><dd>/k_p1</dd><dt><span>dims :</span></dt><dd>[&#x27;k_p1&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[51 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k_u</span></div><div class='xr-var-dims'>(/k_u)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-17678d8b-110b-4763-9787-002529eff12b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-17678d8b-110b-4763-9787-002529eff12b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-227a644e-a984-4572-905b-37cd075bbdae' class='xr-var-data-in' type='checkbox'><label for='data-227a644e-a984-4572-905b-37cd075bbdae' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>c_grid_axis_shift :</span></dt><dd>0.5</dd><dt><span>swap_dim :</span></dt><dd>Zu</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>long_name :</span></dt><dd>grid index in z corresponding to the bottom face of tracer grid cells (&#x27;w&#x27; locations)</dd><dt><span>comment :</span></dt><dd>First index corresponds to the bottom surface of the uppermost tracer grid cell. The use of &#x27;u&#x27; in the variable name follows the MITgcm convention for ocean variables in which the upper (u) face of a tracer grid cell on the logical grid corresponds to the bottom face of the grid cell on the physical grid.</dd><dt><span>origname :</span></dt><dd>k_u</dd><dt><span>fullnamepath :</span></dt><dd>/k_u</dd><dt><span>dims :</span></dt><dd>[&#x27;k_u&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>nb</span></div><div class='xr-var-dims'>(/nb)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-938ec952-e8d1-4085-822d-abeb6e13a384' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-938ec952-e8d1-4085-822d-abeb6e13a384' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-043b013f-d9b7-4a01-9e18-9f04cf6d7b45' class='xr-var-data-in' type='checkbox'><label for='data-043b013f-d9b7-4a01-9e18-9f04cf6d7b45' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>dims :</span></dt><dd>[&#x27;nb&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[4 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>nv</span></div><div class='xr-var-dims'>(/nv)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-f6af052a-700d-42e7-86c0-98c59751a746' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f6af052a-700d-42e7-86c0-98c59751a746' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4cdbe0ec-6949-429d-b265-54713f7cb9e5' class='xr-var-data-in' type='checkbox'><label for='data-4cdbe0ec-6949-429d-b265-54713f7cb9e5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>dims :</span></dt><dd>[&#x27;nv&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[2 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>tile</span></div><div class='xr-var-dims'>(/tile)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-2de2f92c-47e1-4707-a4bc-be30a7eaef50' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2de2f92c-47e1-4707-a4bc-be30a7eaef50' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9b4a39bd-b6d1-4424-8b6e-43368b8f3734' class='xr-var-data-in' type='checkbox'><label for='data-9b4a39bd-b6d1-4424-8b6e-43368b8f3734' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>lat-lon-cap tile index</dd><dt><span>comment :</span></dt><dd>The ECCO V4 horizontal model grid is divided into 13 tiles of 90x90 cells for convenience.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>tile</dd><dt><span>fullnamepath :</span></dt><dd>/tile</dd><dt><span>dims :</span></dt><dd>[&#x27;tile&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[13 values with dtype=int32]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-c52d0a23-0bd4-4f04-af93-b593316588de' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-c52d0a23-0bd4-4f04-af93-b593316588de' class='xr-section-summary'  title='Expand/collapse section'>Indexes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'></ul></div></li><li class='xr-section-item'><input id='section-03a649f6-eb4c-418f-8185-632556d154ec' class='xr-section-summary-in' type='checkbox'  ><label for='section-03a649f6-eb4c-418f-8185-632556d154ec' class='xr-section-summary' >Attributes: <span>(62)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>acknowledgement :</span></dt><dd>This research was carried out by the Jet Propulsion Laboratory, managed by the California Institute of Technology under a contract with the National Aeronautics and Space Administration.</dd><dt><span>author :</span></dt><dd>Ian Fenty and Ou Wang</dd><dt><span>cdm_data_type :</span></dt><dd>Grid</dd><dt><span>comment :</span></dt><dd>Fields provided on the curvilinear lat-lon-cap 90 (llc90) native grid used in the ECCO model.</dd><dt><span>Conventions :</span></dt><dd>CF-1.8, ACDD-1.3</dd><dt><span>coordinates_comment :</span></dt><dd>Note: the global &#x27;coordinates&#x27; attribute describes auxillary coordinates.</dd><dt><span>creator_email :</span></dt><dd>ecco-group@mit.edu</dd><dt><span>creator_institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>creator_name :</span></dt><dd>ECCO Consortium</dd><dt><span>creator_type :</span></dt><dd>group</dd><dt><span>creator_url :</span></dt><dd>https://ecco-group.org</dd><dt><span>date_created :</span></dt><dd>2020-12-18T14:39:59</dd><dt><span>date_issued :</span></dt><dd>2020-12-18T14:39:59</dd><dt><span>date_metadata_modified :</span></dt><dd>2021-03-15T21:56:21</dd><dt><span>date_modified :</span></dt><dd>2021-03-15T21:56:21</dd><dt><span>geospatial_bounds_crs :</span></dt><dd>EPSG:4326</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>geospatial_vertical_max :</span></dt><dd>0.0</dd><dt><span>geospatial_vertical_min :</span></dt><dd>-6134.5</dd><dt><span>geospatial_vertical_positive :</span></dt><dd>up</dd><dt><span>geospatial_vertical_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_vertical_units :</span></dt><dd>meter</dd><dt><span>history :</span></dt><dd>Inaugural release of an ECCO Central Estimate solution to PO.DAAC</dd><dt><span>id :</span></dt><dd>10.5067/ECL5M-OTS44</dd><dt><span>institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>instrument_vocabulary :</span></dt><dd>GCMD instrument keywords</dd><dt><span>keywords :</span></dt><dd>EARTH SCIENCE &gt; OCEANS &gt; SALINITY/DENSITY &gt; SALINITY, EARTH SCIENCE SERVICES &gt; MODELS &gt; EARTH SCIENCE REANALYSES/ASSIMILATION MODELS, EARTH SCIENCE &gt; OCEANS &gt; OCEAN TEMPERATURE &gt; POTENTIAL TEMPERATURE</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>license :</span></dt><dd>Public Domain</dd><dt><span>metadata_link :</span></dt><dd>https://cmr.earthdata.nasa.gov/search/collections.umm_json?ShortName=ECCO_L4_TEMP_SALINITY_LLC0090GRID_MONTHLY_V4R4</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.jpl</dd><dt><span>platform :</span></dt><dd>ERS-1/2, TOPEX/Poseidon, Geosat Follow-On (GFO), ENVISAT, Jason-1, Jason-2, CryoSat-2, SARAL/AltiKa, Jason-3, AVHRR, Aquarius, SSM/I, SSMIS, GRACE, DTU17MDT, Argo, WOCE, GO-SHIP, MEOP, Ice Tethered Profilers (ITP)</dd><dt><span>platform_vocabulary :</span></dt><dd>GCMD platform keywords</dd><dt><span>processing_level :</span></dt><dd>L4</dd><dt><span>product_name :</span></dt><dd>OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.nc</dd><dt><span>product_time_coverage_end :</span></dt><dd>2018-01-01T00:00:00</dd><dt><span>product_time_coverage_start :</span></dt><dd>1992-01-01T12:00:00</dd><dt><span>product_version :</span></dt><dd>Version 4, Release 4</dd><dt><span>program :</span></dt><dd>NASA Physical Oceanography, Cryosphere, Modeling, Analysis, and Prediction (MAP)</dd><dt><span>project :</span></dt><dd>Estimating the Circulation and Climate of the Ocean (ECCO)</dd><dt><span>publisher_email :</span></dt><dd>podaac@podaac.jpl.nasa.gov</dd><dt><span>publisher_institution :</span></dt><dd>PO.DAAC</dd><dt><span>publisher_name :</span></dt><dd>Physical Oceanography Distributed Active Archive Center (PO.DAAC)</dd><dt><span>publisher_type :</span></dt><dd>institution</dd><dt><span>publisher_url :</span></dt><dd>https://podaac.jpl.nasa.gov</dd><dt><span>references :</span></dt><dd>ECCO Consortium, Fukumori, I., Wang, O., Fenty, I., Forget, G., Heimbach, P., &amp; Ponte, R. M. 2020. Synopsis of the ECCO Central Production Global Ocean and Sea-Ice State Estimate (Version 4 Release 4). doi:10.5281/zenodo.3765928</dd><dt><span>source :</span></dt><dd>The ECCO V4r4 state estimate was produced by fitting a free-running solution of the MITgcm (checkpoint 66g) to satellite and in situ observational data in a least squares sense using the adjoint method</dd><dt><span>standard_name_vocabulary :</span></dt><dd>NetCDF Climate and Forecast (CF) Metadata Convention</dd><dt><span>summary :</span></dt><dd>This dataset provides monthly-averaged ocean potential temperature and salinity on the lat-lon-cap 90 (llc90) native model grid from the ECCO Version 4 Release 4 (V4r4) ocean and sea-ice state estimate. Estimating the Circulation and Climate of the Ocean (ECCO) state estimates are dynamically and kinematically-consistent reconstructions of the three-dimensional, time-evolving ocean, sea-ice, and surface atmospheric states. ECCO V4r4 is a free-running solution of a global, nominally 1-degree configuration of the MIT general circulation model (MITgcm) that has been fit to observations in a least-squares sense. Observational data constraints used in V4r4 include sea surface height (SSH) from satellite altimeters [ERS-1/2, TOPEX/Poseidon, GFO, ENVISAT, Jason-1,2,3, CryoSat-2, and SARAL/AltiKa]; sea surface temperature (SST) from satellite radiometers [AVHRR], sea surface salinity (SSS) from the Aquarius satellite radiometer/scatterometer, ocean bottom pressure (OBP) from the GRACE satellite gravimeter; sea-ice concentration from satellite radiometers [SSM/I and SSMIS], and in-situ ocean temperature and salinity measured with conductivity-temperature-depth (CTD) sensors and expendable bathythermographs (XBTs) from several programs [e.g., WOCE, GO-SHIP, Argo, and others] and platforms [e.g., research vessels, gliders, moorings, ice-tethered profilers, and instrumented pinnipeds]. V4r4 covers the period 1992-01-01T12:00:00 to 2018-01-01T00:00:00.</dd><dt><span>time_coverage_duration :</span></dt><dd>P1M</dd><dt><span>time_coverage_end :</span></dt><dd>2017-02-01T00:00:00</dd><dt><span>time_coverage_resolution :</span></dt><dd>P1M</dd><dt><span>time_coverage_start :</span></dt><dd>2017-01-01T00:00:00</dd><dt><span>title :</span></dt><dd>ECCO Ocean Temperature and Salinity - Monthly Mean llc90 Grid (Version 4 Release 4)</dd><dt><span>uuid :</span></dt><dd>f5b7028c-4181-11eb-b7e6-0cc47a3f47b1</dd></dl></div></li></ul></div></div></div></div>
+</div>
 </div>
 </section>
 <section id="using-ces-to-pre-select-only-variables-of-interest">
@@ -1129,8 +721,71 @@ you want to access in the URL. THis can significantly speed up analysis and expl
 <p>You can also construct the full URL with constraint expressions interactively, by selecting manually the variables on the datasets’s <a class="reference external" href="https://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.dmr">Data Request Form</a> and selecting <strong>Copy (Raw) Data URL</strong>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">CE</span> <span class="o">=</span> <span class="s2">&quot;?dap4.ce=/THETA;/i;/time;/j;/k&quot;</span>
-<span class="n">Temp_2017</span> <span class="o">=</span> <span class="n">baseURL</span> <span class="o">+</span> <span class="n">Temp_Salt</span> <span class="o">+</span><span class="n">year</span>  <span class="o">+</span> <span class="n">month</span> <span class="o">+</span> <span class="n">end_</span> <span class="o">+</span> <span class="n">CE</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pyds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">Temp_2017</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+<span class="n">pyds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.nc
+├──XG
+├──Zp1
+├──Zl
+├──YC
+├──XC
+├──SALT
+├──YG
+├──XC_bnds
+├──Zu
+├──THETA
+├──Z_bnds
+├──YC_bnds
+├──time_bnds
+├──Z
+├──i
+├──i_g
+├──j
+├──j_g
+├──k
+├──k_l
+├──k_p1
+├──k_u
+├──nb
+├──nv
+├──tile
+└──time
+</pre></div>
+</div>
+</div>
+</div>
+<p>Pydap’s object can now helps up construct the Constraint Expression that will allow us to create a much simpler datacube</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dims</span> <span class="o">=</span> <span class="n">pyds</span><span class="p">[</span><span class="s1">&#39;THETA&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span>
+<span class="n">Vars</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;/THETA&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">dims</span>
+
+<span class="c1"># Below construct Contraint Expression</span>
+<span class="n">CE</span> <span class="o">=</span> <span class="s2">&quot;?dap4.ce=&quot;</span><span class="o">+</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Vars</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Constraint Expression: &quot;</span><span class="p">,</span> <span class="n">CE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Constraint Expression:  ?dap4.ce=/THETA;/time;/k;/tile;/j;/i
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we add the CE to the data url as follows below:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Temp_2017</span> <span class="o">=</span> <span class="n">baseURL</span> <span class="o">+</span> <span class="n">Temp_Salt</span> <span class="o">+</span><span class="n">year</span>  <span class="o">+</span> <span class="n">month</span> <span class="o">+</span> <span class="n">end_</span> <span class="o">+</span> <span class="n">CE</span>
+<span class="n">Temp_2017</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&#39;dap4://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090?dap4.ce=/THETA;/time;/k;/tile;/j;/i&#39;
 </pre></div>
 </div>
 </div>
@@ -1138,14 +793,14 @@ you want to access in the URL. THis can significantly speed up analysis and expl
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">Temp_2017</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">Temp_2017</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
 <span class="n">dataset</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 17.4 ms, sys: 1.82 ms, total: 19.3 ms
-Wall time: 2.76 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 151 ms, sys: 38.3 ms, total: 189 ms
+Wall time: 30.5 s
 </pre></div>
 </div>
 <div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
@@ -1519,15 +1174,15 @@ dl.xr-attrs {
   fill: currentColor;
 }
 </style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 21MB
-Dimensions:  (/time: 1, /k: 50, /tile: 13, /j: 90, /i: 90)
+Dimensions:  (time: 1, k: 50, tile: 13, j: 90, i: 90)
 Coordinates:
-    time     (/time) int32 4B ...
-Dimensions without coordinates: /time, /k, /tile, /j, /i
+  * i        (i) int32 360B 0 1 2 3 4 5 6 7 8 9 ... 81 82 83 84 85 86 87 88 89
+  * j        (j) int32 360B 0 1 2 3 4 5 6 7 8 9 ... 81 82 83 84 85 86 87 88 89
+  * k        (k) int32 200B 0 1 2 3 4 5 6 7 8 9 ... 41 42 43 44 45 46 47 48 49
+  * tile     (tile) int32 52B 0 1 2 3 4 5 6 7 8 9 10 11 12
+  * time     (time) datetime64[ns] 8B 2017-01-16T12:00:00
 Data variables:
-    THETA    (/time, /k, /tile, /j, /i) float32 21MB ...
-    i        (/i) int32 360B ...
-    j        (/j) int32 360B ...
-    k        (/k) int32 200B ...
+    THETA    (time, k, tile, j, i) float32 21MB ...
 Attributes: (12/62)
     acknowledgement:                 This research was carried out by the Jet...
     author:                          Ian Fenty and Ou Wang
@@ -1541,7 +1196,32 @@ Attributes: (12/62)
     time_coverage_resolution:        P1M
     time_coverage_start:             2017-01-01T00:00:00
     title:                           ECCO Ocean Temperature and Salinity - Mo...
-    uuid:                            f5b7028c-4181-11eb-b7e6-0cc47a3f47b1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-7f9d3a64-dcd0-420d-a9de-02cc2fad67df' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-7f9d3a64-dcd0-420d-a9de-02cc2fad67df' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>/time</span>: 1</li><li><span>/k</span>: 50</li><li><span>/tile</span>: 13</li><li><span>/j</span>: 90</li><li><span>/i</span>: 90</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-a6394a4b-6041-4944-b6d1-8061ba327ebb' class='xr-section-summary-in' type='checkbox'  checked><label for='section-a6394a4b-6041-4944-b6d1-8061ba327ebb' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>time</span></div><div class='xr-var-dims'>(/time)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-c2e514b3-2efb-4166-8198-192c1620891c' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-c2e514b3-2efb-4166-8198-192c1620891c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-cef608e1-4fb7-4ba2-abe9-f859b3fa0c31' class='xr-var-data-in' type='checkbox'><label for='data-cef608e1-4fb7-4ba2-abe9-f859b3fa0c31' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>center time of averaging period</dd><dt><span>axis :</span></dt><dd>T</dd><dt><span>bounds :</span></dt><dd>time_bnds</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>units :</span></dt><dd>hours since 1992-01-01T12:00:00</dd><dt><span>calendar :</span></dt><dd>proleptic_gregorian</dd><dt><span>origname :</span></dt><dd>time</dd><dt><span>fullnamepath :</span></dt><dd>/time</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[1 values with dtype=int32]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-b4cbc4a0-a8d5-4304-aaa6-1447cee5bb32' class='xr-section-summary-in' type='checkbox'  checked><label for='section-b4cbc4a0-a8d5-4304-aaa6-1447cee5bb32' class='xr-section-summary' >Data variables: <span>(4)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>THETA</span></div><div class='xr-var-dims'>(/time, /k, /tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-1bebb8e3-aeea-407b-b178-1421218f76e5' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1bebb8e3-aeea-407b-b178-1421218f76e5' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7e7a139d-1102-48d2-b57d-12251c2389cb' class='xr-var-data-in' type='checkbox'><label for='data-7e7a139d-1102-48d2-b57d-12251c2389cb' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Potential temperature </dd><dt><span>units :</span></dt><dd>degree_C</dd><dt><span>coverage_content_type :</span></dt><dd>modelResult</dd><dt><span>standard_name :</span></dt><dd>sea_water_potential_temperature</dd><dt><span>comment :</span></dt><dd>Sea water potential temperature is the temperature a parcel of sea water would have if moved adiabatically to sea level pressure. Note: the equation of state is a modified UNESCO formula by Jackett and McDougall (1995), which uses the model variable potential temperature as input assuming a horizontally and temporally constant pressure of $p_0=-g ho_{0} z$.</dd><dt><span>valid_min :</span></dt><dd>-2.2909388542175293</dd><dt><span>valid_max :</span></dt><dd>36.032955169677734</dd><dt><span>origname :</span></dt><dd>THETA</dd><dt><span>fullnamepath :</span></dt><dd>/THETA</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;k&#x27;, &#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[5265000 values with dtype=float32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>i</span></div><div class='xr-var-dims'>(/i)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-4685fb42-8445-4597-9b2b-671d6a2f7dc6' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-4685fb42-8445-4597-9b2b-671d6a2f7dc6' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6cf94a74-c981-40bf-93e7-f3e7812854b8' class='xr-var-data-in' type='checkbox'><label for='data-6cf94a74-c981-40bf-93e7-f3e7812854b8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>X</dd><dt><span>long_name :</span></dt><dd>grid index in x for variables at tracer and &#x27;v&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>XC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;v&#x27; variables (e.g., VVEL) have the same x coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>i</dd><dt><span>fullnamepath :</span></dt><dd>/i</dd><dt><span>dims :</span></dt><dd>[&#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>j</span></div><div class='xr-var-dims'>(/j)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-3355c573-e203-40c2-9223-4d213fde3a2a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-3355c573-e203-40c2-9223-4d213fde3a2a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-21b79c34-95c6-414b-8d54-2faedb437875' class='xr-var-data-in' type='checkbox'><label for='data-21b79c34-95c6-414b-8d54-2faedb437875' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Y</dd><dt><span>long_name :</span></dt><dd>grid index in y for variables at tracer and &#x27;u&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>YC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;u&#x27; variables (e.g., UVEL) have the same y coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>j</dd><dt><span>fullnamepath :</span></dt><dd>/j</dd><dt><span>dims :</span></dt><dd>[&#x27;j&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[90 values with dtype=int32]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k</span></div><div class='xr-var-dims'>(/k)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-e556886b-1f21-48ba-af7c-1b313da7cc07' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-e556886b-1f21-48ba-af7c-1b313da7cc07' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-865e63eb-a76a-4737-b769-fbf3d88e6358' class='xr-var-data-in' type='checkbox'><label for='data-865e63eb-a76a-4737-b769-fbf3d88e6358' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>long_name :</span></dt><dd>grid index in z for tracer variables</dd><dt><span>swap_dim :</span></dt><dd>Z</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>k</dd><dt><span>fullnamepath :</span></dt><dd>/k</dd><dt><span>dims :</span></dt><dd>[&#x27;k&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[50 values with dtype=int32]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-8ee9911f-88ba-4891-9c58-79e6ee4e3fba' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-8ee9911f-88ba-4891-9c58-79e6ee4e3fba' class='xr-section-summary'  title='Expand/collapse section'>Indexes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'></ul></div></li><li class='xr-section-item'><input id='section-037f34c1-5a0a-44ad-9888-9ae8719d5523' class='xr-section-summary-in' type='checkbox'  ><label for='section-037f34c1-5a0a-44ad-9888-9ae8719d5523' class='xr-section-summary' >Attributes: <span>(62)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>acknowledgement :</span></dt><dd>This research was carried out by the Jet Propulsion Laboratory, managed by the California Institute of Technology under a contract with the National Aeronautics and Space Administration.</dd><dt><span>author :</span></dt><dd>Ian Fenty and Ou Wang</dd><dt><span>cdm_data_type :</span></dt><dd>Grid</dd><dt><span>comment :</span></dt><dd>Fields provided on the curvilinear lat-lon-cap 90 (llc90) native grid used in the ECCO model.</dd><dt><span>Conventions :</span></dt><dd>CF-1.8, ACDD-1.3</dd><dt><span>coordinates_comment :</span></dt><dd>Note: the global &#x27;coordinates&#x27; attribute describes auxillary coordinates.</dd><dt><span>creator_email :</span></dt><dd>ecco-group@mit.edu</dd><dt><span>creator_institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>creator_name :</span></dt><dd>ECCO Consortium</dd><dt><span>creator_type :</span></dt><dd>group</dd><dt><span>creator_url :</span></dt><dd>https://ecco-group.org</dd><dt><span>date_created :</span></dt><dd>2020-12-18T14:39:59</dd><dt><span>date_issued :</span></dt><dd>2020-12-18T14:39:59</dd><dt><span>date_metadata_modified :</span></dt><dd>2021-03-15T21:56:21</dd><dt><span>date_modified :</span></dt><dd>2021-03-15T21:56:21</dd><dt><span>geospatial_bounds_crs :</span></dt><dd>EPSG:4326</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>geospatial_vertical_max :</span></dt><dd>0.0</dd><dt><span>geospatial_vertical_min :</span></dt><dd>-6134.5</dd><dt><span>geospatial_vertical_positive :</span></dt><dd>up</dd><dt><span>geospatial_vertical_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_vertical_units :</span></dt><dd>meter</dd><dt><span>history :</span></dt><dd>Inaugural release of an ECCO Central Estimate solution to PO.DAAC</dd><dt><span>id :</span></dt><dd>10.5067/ECL5M-OTS44</dd><dt><span>institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>instrument_vocabulary :</span></dt><dd>GCMD instrument keywords</dd><dt><span>keywords :</span></dt><dd>EARTH SCIENCE &gt; OCEANS &gt; SALINITY/DENSITY &gt; SALINITY, EARTH SCIENCE SERVICES &gt; MODELS &gt; EARTH SCIENCE REANALYSES/ASSIMILATION MODELS, EARTH SCIENCE &gt; OCEANS &gt; OCEAN TEMPERATURE &gt; POTENTIAL TEMPERATURE</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>license :</span></dt><dd>Public Domain</dd><dt><span>metadata_link :</span></dt><dd>https://cmr.earthdata.nasa.gov/search/collections.umm_json?ShortName=ECCO_L4_TEMP_SALINITY_LLC0090GRID_MONTHLY_V4R4</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.jpl</dd><dt><span>platform :</span></dt><dd>ERS-1/2, TOPEX/Poseidon, Geosat Follow-On (GFO), ENVISAT, Jason-1, Jason-2, CryoSat-2, SARAL/AltiKa, Jason-3, AVHRR, Aquarius, SSM/I, SSMIS, GRACE, DTU17MDT, Argo, WOCE, GO-SHIP, MEOP, Ice Tethered Profilers (ITP)</dd><dt><span>platform_vocabulary :</span></dt><dd>GCMD platform keywords</dd><dt><span>processing_level :</span></dt><dd>L4</dd><dt><span>product_name :</span></dt><dd>OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.nc</dd><dt><span>product_time_coverage_end :</span></dt><dd>2018-01-01T00:00:00</dd><dt><span>product_time_coverage_start :</span></dt><dd>1992-01-01T12:00:00</dd><dt><span>product_version :</span></dt><dd>Version 4, Release 4</dd><dt><span>program :</span></dt><dd>NASA Physical Oceanography, Cryosphere, Modeling, Analysis, and Prediction (MAP)</dd><dt><span>project :</span></dt><dd>Estimating the Circulation and Climate of the Ocean (ECCO)</dd><dt><span>publisher_email :</span></dt><dd>podaac@podaac.jpl.nasa.gov</dd><dt><span>publisher_institution :</span></dt><dd>PO.DAAC</dd><dt><span>publisher_name :</span></dt><dd>Physical Oceanography Distributed Active Archive Center (PO.DAAC)</dd><dt><span>publisher_type :</span></dt><dd>institution</dd><dt><span>publisher_url :</span></dt><dd>https://podaac.jpl.nasa.gov</dd><dt><span>references :</span></dt><dd>ECCO Consortium, Fukumori, I., Wang, O., Fenty, I., Forget, G., Heimbach, P., &amp; Ponte, R. M. 2020. Synopsis of the ECCO Central Production Global Ocean and Sea-Ice State Estimate (Version 4 Release 4). doi:10.5281/zenodo.3765928</dd><dt><span>source :</span></dt><dd>The ECCO V4r4 state estimate was produced by fitting a free-running solution of the MITgcm (checkpoint 66g) to satellite and in situ observational data in a least squares sense using the adjoint method</dd><dt><span>standard_name_vocabulary :</span></dt><dd>NetCDF Climate and Forecast (CF) Metadata Convention</dd><dt><span>summary :</span></dt><dd>This dataset provides monthly-averaged ocean potential temperature and salinity on the lat-lon-cap 90 (llc90) native model grid from the ECCO Version 4 Release 4 (V4r4) ocean and sea-ice state estimate. Estimating the Circulation and Climate of the Ocean (ECCO) state estimates are dynamically and kinematically-consistent reconstructions of the three-dimensional, time-evolving ocean, sea-ice, and surface atmospheric states. ECCO V4r4 is a free-running solution of a global, nominally 1-degree configuration of the MIT general circulation model (MITgcm) that has been fit to observations in a least-squares sense. Observational data constraints used in V4r4 include sea surface height (SSH) from satellite altimeters [ERS-1/2, TOPEX/Poseidon, GFO, ENVISAT, Jason-1,2,3, CryoSat-2, and SARAL/AltiKa]; sea surface temperature (SST) from satellite radiometers [AVHRR], sea surface salinity (SSS) from the Aquarius satellite radiometer/scatterometer, ocean bottom pressure (OBP) from the GRACE satellite gravimeter; sea-ice concentration from satellite radiometers [SSM/I and SSMIS], and in-situ ocean temperature and salinity measured with conductivity-temperature-depth (CTD) sensors and expendable bathythermographs (XBTs) from several programs [e.g., WOCE, GO-SHIP, Argo, and others] and platforms [e.g., research vessels, gliders, moorings, ice-tethered profilers, and instrumented pinnipeds]. V4r4 covers the period 1992-01-01T12:00:00 to 2018-01-01T00:00:00.</dd><dt><span>time_coverage_duration :</span></dt><dd>P1M</dd><dt><span>time_coverage_end :</span></dt><dd>2017-02-01T00:00:00</dd><dt><span>time_coverage_resolution :</span></dt><dd>P1M</dd><dt><span>time_coverage_start :</span></dt><dd>2017-01-01T00:00:00</dd><dt><span>title :</span></dt><dd>ECCO Ocean Temperature and Salinity - Monthly Mean llc90 Grid (Version 4 Release 4)</dd><dt><span>uuid :</span></dt><dd>f5b7028c-4181-11eb-b7e6-0cc47a3f47b1</dd></dl></div></li></ul></div></div></div></div>
+    uuid:                            f5b7028c-4181-11eb-b7e6-0cc47a3f47b1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-ef2abe37-0158-4843-818e-3253bb72d133' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-ef2abe37-0158-4843-818e-3253bb72d133' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 1</li><li><span class='xr-has-index'>k</span>: 50</li><li><span class='xr-has-index'>tile</span>: 13</li><li><span class='xr-has-index'>j</span>: 90</li><li><span class='xr-has-index'>i</span>: 90</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-0b7f6ad2-4577-4d81-9869-148d52959364' class='xr-section-summary-in' type='checkbox'  checked><label for='section-0b7f6ad2-4577-4d81-9869-148d52959364' class='xr-section-summary' >Coordinates: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>i</span></div><div class='xr-var-dims'>(i)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 6 ... 84 85 86 87 88 89</div><input id='attrs-ca161b47-9680-400c-aa19-7ee74fab07ea' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-ca161b47-9680-400c-aa19-7ee74fab07ea' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a0be38c6-c823-4105-a54b-4aa38ddd2f60' class='xr-var-data-in' type='checkbox'><label for='data-a0be38c6-c823-4105-a54b-4aa38ddd2f60' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>X</dd><dt><span>long_name :</span></dt><dd>grid index in x for variables at tracer and &#x27;v&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>XC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;v&#x27; variables (e.g., VVEL) have the same x coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>i</dd><dt><span>fullnamepath :</span></dt><dd>/i</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+       54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+       72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      dtype=int32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>j</span></div><div class='xr-var-dims'>(j)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 6 ... 84 85 86 87 88 89</div><input id='attrs-3ad4d4f3-2c9c-49df-8b3d-835fed17e767' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-3ad4d4f3-2c9c-49df-8b3d-835fed17e767' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0236fe7d-6052-422a-8000-6e9731e843b1' class='xr-var-data-in' type='checkbox'><label for='data-0236fe7d-6052-422a-8000-6e9731e843b1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Y</dd><dt><span>long_name :</span></dt><dd>grid index in y for variables at tracer and &#x27;u&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>YC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;u&#x27; variables (e.g., UVEL) have the same y coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>j</dd><dt><span>fullnamepath :</span></dt><dd>/j</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+       54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+       72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      dtype=int32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>k</span></div><div class='xr-var-dims'>(k)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 6 ... 44 45 46 47 48 49</div><input id='attrs-886a895c-62c1-48a1-9b71-0ba6f48942be' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-886a895c-62c1-48a1-9b71-0ba6f48942be' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-42c7cc5c-70b5-44eb-b1bd-dd80158cc8e7' class='xr-var-data-in' type='checkbox'><label for='data-42c7cc5c-70b5-44eb-b1bd-dd80158cc8e7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>long_name :</span></dt><dd>grid index in z for tracer variables</dd><dt><span>swap_dim :</span></dt><dd>Z</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>k</dd><dt><span>fullnamepath :</span></dt><dd>/k</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49], dtype=int32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>tile</span></div><div class='xr-var-dims'>(tile)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 6 7 8 9 10 11 12</div><input id='attrs-02b8a41c-5336-4ab3-bf21-761c76d46857' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-02b8a41c-5336-4ab3-bf21-761c76d46857' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7b9b2079-f841-4c4b-b43b-9f0d28997e6e' class='xr-var-data-in' type='checkbox'><label for='data-7b9b2079-f841-4c4b-b43b-9f0d28997e6e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>lat-lon-cap tile index</dd><dt><span>comment :</span></dt><dd>The ECCO V4 horizontal model grid is divided into 13 tiles of 90x90 cells for convenience.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>tile</dd><dt><span>fullnamepath :</span></dt><dd>/tile</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12], dtype=int32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2017-01-16T12:00:00</div><input id='attrs-2cdb1c89-355f-47b5-9f9c-71e4bc2a37b2' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-2cdb1c89-355f-47b5-9f9c-71e4bc2a37b2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-46616bd5-49bb-41a4-aff8-b73e48574643' class='xr-var-data-in' type='checkbox'><label for='data-46616bd5-49bb-41a4-aff8-b73e48574643' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>center time of averaging period</dd><dt><span>axis :</span></dt><dd>T</dd><dt><span>bounds :</span></dt><dd>time_bnds</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>origname :</span></dt><dd>time</dd><dt><span>fullnamepath :</span></dt><dd>/time</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2017-01-16T12:00:00.000000000&#x27;], dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-d5a15c9f-fb9b-4a70-9a27-404c08275ceb' class='xr-section-summary-in' type='checkbox'  checked><label for='section-d5a15c9f-fb9b-4a70-9a27-404c08275ceb' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>THETA</span></div><div class='xr-var-dims'>(time, k, tile, j, i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-fd65018d-995b-42ae-92a1-a4647e9b8751' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-fd65018d-995b-42ae-92a1-a4647e9b8751' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-365dd8c7-5cbc-4b47-ab24-785a6b0f1c28' class='xr-var-data-in' type='checkbox'><label for='data-365dd8c7-5cbc-4b47-ab24-785a6b0f1c28' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Potential temperature </dd><dt><span>units :</span></dt><dd>degree_C</dd><dt><span>coverage_content_type :</span></dt><dd>modelResult</dd><dt><span>standard_name :</span></dt><dd>sea_water_potential_temperature</dd><dt><span>comment :</span></dt><dd>Sea water potential temperature is the temperature a parcel of sea water would have if moved adiabatically to sea level pressure. Note: the equation of state is a modified UNESCO formula by Jackett and McDougall (1995), which uses the model variable potential temperature as input assuming a horizontally and temporally constant pressure of $p_0=-g ho_{0} z$.</dd><dt><span>valid_min :</span></dt><dd>-2.2909388542175293</dd><dt><span>valid_max :</span></dt><dd>36.032955169677734</dd><dt><span>origname :</span></dt><dd>THETA</dd><dt><span>fullnamepath :</span></dt><dd>/THETA</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>[5265000 values with dtype=float32]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-d160e1b1-14a2-4bd8-be6a-32085d9106e8' class='xr-section-summary-in' type='checkbox'  ><label for='section-d160e1b1-14a2-4bd8-be6a-32085d9106e8' class='xr-section-summary' >Indexes: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>i</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-6b0d8037-8b32-4d92-bcc4-7b4800707d59' class='xr-index-data-in' type='checkbox'/><label for='index-6b0d8037-8b32-4d92-bcc4-7b4800707d59' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+       54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+       72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      dtype=&#x27;int32&#x27;, name=&#x27;i&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>j</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-c6418d08-3e8b-4dac-af98-e24a353a1b0b' class='xr-index-data-in' type='checkbox'/><label for='index-c6418d08-3e8b-4dac-af98-e24a353a1b0b' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+       54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+       72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      dtype=&#x27;int32&#x27;, name=&#x27;j&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>k</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-f4d37311-1330-4dde-8cd5-5c0372c9ed0f' class='xr-index-data-in' type='checkbox'/><label for='index-f4d37311-1330-4dde-8cd5-5c0372c9ed0f' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49],
+      dtype=&#x27;int32&#x27;, name=&#x27;k&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>tile</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-a84f9d33-347e-4cce-88f3-a4404ccb4998' class='xr-index-data-in' type='checkbox'/><label for='index-a84f9d33-347e-4cce-88f3-a4404ccb4998' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=&#x27;int32&#x27;, name=&#x27;tile&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>time</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-1e60730f-8239-448b-a630-705d16c33a0f' class='xr-index-data-in' type='checkbox'/><label for='index-1e60730f-8239-448b-a630-705d16c33a0f' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(DatetimeIndex([&#x27;2017-01-16 12:00:00&#x27;], dtype=&#x27;datetime64[ns]&#x27;, name=&#x27;time&#x27;, freq=None))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-18bf69f7-e54e-4df5-9013-450396605c8c' class='xr-section-summary-in' type='checkbox'  ><label for='section-18bf69f7-e54e-4df5-9013-450396605c8c' class='xr-section-summary' >Attributes: <span>(62)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>acknowledgement :</span></dt><dd>This research was carried out by the Jet Propulsion Laboratory, managed by the California Institute of Technology under a contract with the National Aeronautics and Space Administration.</dd><dt><span>author :</span></dt><dd>Ian Fenty and Ou Wang</dd><dt><span>cdm_data_type :</span></dt><dd>Grid</dd><dt><span>comment :</span></dt><dd>Fields provided on the curvilinear lat-lon-cap 90 (llc90) native grid used in the ECCO model.</dd><dt><span>Conventions :</span></dt><dd>CF-1.8, ACDD-1.3</dd><dt><span>coordinates_comment :</span></dt><dd>Note: the global &#x27;coordinates&#x27; attribute describes auxillary coordinates.</dd><dt><span>creator_email :</span></dt><dd>ecco-group@mit.edu</dd><dt><span>creator_institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>creator_name :</span></dt><dd>ECCO Consortium</dd><dt><span>creator_type :</span></dt><dd>group</dd><dt><span>creator_url :</span></dt><dd>https://ecco-group.org</dd><dt><span>date_created :</span></dt><dd>2020-12-18T14:39:59</dd><dt><span>date_issued :</span></dt><dd>2020-12-18T14:39:59</dd><dt><span>date_metadata_modified :</span></dt><dd>2021-03-15T21:56:21</dd><dt><span>date_modified :</span></dt><dd>2021-03-15T21:56:21</dd><dt><span>geospatial_bounds_crs :</span></dt><dd>EPSG:4326</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>geospatial_vertical_max :</span></dt><dd>0.0</dd><dt><span>geospatial_vertical_min :</span></dt><dd>-6134.5</dd><dt><span>geospatial_vertical_positive :</span></dt><dd>up</dd><dt><span>geospatial_vertical_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_vertical_units :</span></dt><dd>meter</dd><dt><span>history :</span></dt><dd>Inaugural release of an ECCO Central Estimate solution to PO.DAAC</dd><dt><span>id :</span></dt><dd>10.5067/ECL5M-OTS44</dd><dt><span>institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>instrument_vocabulary :</span></dt><dd>GCMD instrument keywords</dd><dt><span>keywords :</span></dt><dd>EARTH SCIENCE &gt; OCEANS &gt; SALINITY/DENSITY &gt; SALINITY, EARTH SCIENCE SERVICES &gt; MODELS &gt; EARTH SCIENCE REANALYSES/ASSIMILATION MODELS, EARTH SCIENCE &gt; OCEANS &gt; OCEAN TEMPERATURE &gt; POTENTIAL TEMPERATURE</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>license :</span></dt><dd>Public Domain</dd><dt><span>metadata_link :</span></dt><dd>https://cmr.earthdata.nasa.gov/search/collections.umm_json?ShortName=ECCO_L4_TEMP_SALINITY_LLC0090GRID_MONTHLY_V4R4</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.jpl</dd><dt><span>platform :</span></dt><dd>ERS-1/2, TOPEX/Poseidon, Geosat Follow-On (GFO), ENVISAT, Jason-1, Jason-2, CryoSat-2, SARAL/AltiKa, Jason-3, AVHRR, Aquarius, SSM/I, SSMIS, GRACE, DTU17MDT, Argo, WOCE, GO-SHIP, MEOP, Ice Tethered Profilers (ITP)</dd><dt><span>platform_vocabulary :</span></dt><dd>GCMD platform keywords</dd><dt><span>processing_level :</span></dt><dd>L4</dd><dt><span>product_name :</span></dt><dd>OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.nc</dd><dt><span>product_time_coverage_end :</span></dt><dd>2018-01-01T00:00:00</dd><dt><span>product_time_coverage_start :</span></dt><dd>1992-01-01T12:00:00</dd><dt><span>product_version :</span></dt><dd>Version 4, Release 4</dd><dt><span>program :</span></dt><dd>NASA Physical Oceanography, Cryosphere, Modeling, Analysis, and Prediction (MAP)</dd><dt><span>project :</span></dt><dd>Estimating the Circulation and Climate of the Ocean (ECCO)</dd><dt><span>publisher_email :</span></dt><dd>podaac@podaac.jpl.nasa.gov</dd><dt><span>publisher_institution :</span></dt><dd>PO.DAAC</dd><dt><span>publisher_name :</span></dt><dd>Physical Oceanography Distributed Active Archive Center (PO.DAAC)</dd><dt><span>publisher_type :</span></dt><dd>institution</dd><dt><span>publisher_url :</span></dt><dd>https://podaac.jpl.nasa.gov</dd><dt><span>references :</span></dt><dd>ECCO Consortium, Fukumori, I., Wang, O., Fenty, I., Forget, G., Heimbach, P., &amp; Ponte, R. M. 2020. Synopsis of the ECCO Central Production Global Ocean and Sea-Ice State Estimate (Version 4 Release 4). doi:10.5281/zenodo.3765928</dd><dt><span>source :</span></dt><dd>The ECCO V4r4 state estimate was produced by fitting a free-running solution of the MITgcm (checkpoint 66g) to satellite and in situ observational data in a least squares sense using the adjoint method</dd><dt><span>standard_name_vocabulary :</span></dt><dd>NetCDF Climate and Forecast (CF) Metadata Convention</dd><dt><span>summary :</span></dt><dd>This dataset provides monthly-averaged ocean potential temperature and salinity on the lat-lon-cap 90 (llc90) native model grid from the ECCO Version 4 Release 4 (V4r4) ocean and sea-ice state estimate. Estimating the Circulation and Climate of the Ocean (ECCO) state estimates are dynamically and kinematically-consistent reconstructions of the three-dimensional, time-evolving ocean, sea-ice, and surface atmospheric states. ECCO V4r4 is a free-running solution of a global, nominally 1-degree configuration of the MIT general circulation model (MITgcm) that has been fit to observations in a least-squares sense. Observational data constraints used in V4r4 include sea surface height (SSH) from satellite altimeters [ERS-1/2, TOPEX/Poseidon, GFO, ENVISAT, Jason-1,2,3, CryoSat-2, and SARAL/AltiKa]; sea surface temperature (SST) from satellite radiometers [AVHRR], sea surface salinity (SSS) from the Aquarius satellite radiometer/scatterometer, ocean bottom pressure (OBP) from the GRACE satellite gravimeter; sea-ice concentration from satellite radiometers [SSM/I and SSMIS], and in-situ ocean temperature and salinity measured with conductivity-temperature-depth (CTD) sensors and expendable bathythermographs (XBTs) from several programs [e.g., WOCE, GO-SHIP, Argo, and others] and platforms [e.g., research vessels, gliders, moorings, ice-tethered profilers, and instrumented pinnipeds]. V4r4 covers the period 1992-01-01T12:00:00 to 2018-01-01T00:00:00.</dd><dt><span>time_coverage_duration :</span></dt><dd>P1M</dd><dt><span>time_coverage_end :</span></dt><dd>2017-02-01T00:00:00</dd><dt><span>time_coverage_resolution :</span></dt><dd>P1M</dd><dt><span>time_coverage_start :</span></dt><dd>2017-01-01T00:00:00</dd><dt><span>title :</span></dt><dd>ECCO Ocean Temperature and Salinity - Monthly Mean llc90 Grid (Version 4 Release 4)</dd><dt><span>uuid :</span></dt><dd>f5b7028c-4181-11eb-b7e6-0cc47a3f47b1</dd></dl></div></li></ul></div></div></div></div>
 </div>
 <section id="multiple-files-in-parallel">
 <h3>Multiple files in parallel<a class="headerlink" href="#multiple-files-in-parallel" title="Link to this heading">#</a></h3>
@@ -1552,67 +1232,109 @@ Attributes: (12/62)
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Temp_2017</span> <span class="o">=</span> <span class="p">[</span><span class="n">baseURL</span> <span class="o">+</span> <span class="n">Temp_Salt</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">02</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">end_</span> <span class="o">+</span> <span class="n">CE</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Temp_2017</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;dap4://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090?dap4.ce=/THETA;/time;/k;/tile;/j;/i&#39;,
+ &#39;dap4://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-02_ECCO_V4r4_native_llc0090?dap4.ce=/THETA;/time;/k;/tile;/j;/i&#39;,
+ &#39;dap4://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-03_ECCO_V4r4_native_llc0090?dap4.ce=/THETA;/time;/k;/tile;/j;/i&#39;,
+ &#39;dap4://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-04_ECCO_V4r4_native_llc0090?dap4.ce=/THETA;/time;/k;/tile;/j;/i&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cache_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># caching the session</span>
 <span class="n">cache_session</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span> <span class="c1"># clear all cache to demonstrate the behavior. You do not have to do this!</span>
 </pre></div>
 </div>
 </div>
 </div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can use the <code class="docutils literal notranslate"><span class="pre">consolidated_metadata</span> <span class="pre">method</span></code> to rapidly download all metadata associated with a datacube, and cache it.
+This is a feature of pydap &gt;= 3.5.5.</p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">consolidate_metadata</span>
+</pre></div>
+</div>
+</div>
+</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">Temp_2017</span> <span class="o">=</span> <span class="p">[</span><span class="n">baseURL</span> <span class="o">+</span> <span class="n">Temp_Salt</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">02</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">end_</span> <span class="o">+</span> <span class="n">CE</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)]</span>
-
+<span class="n">consolidate_metadata</span><span class="p">(</span><span class="n">Temp_2017</span><span class="p">,</span> <span class="n">cache_session</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>datacube has dimensions {&#39;i[0:1:89]&#39;, &#39;j[0:1:89]&#39;, &#39;k[0:1:49]&#39;, &#39;time[0:1:0]&#39;, &#39;tile[0:1:12]&#39;}
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 619 ms, sys: 354 ms, total: 973 ms
+Wall time: 11.4 s
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cache_session</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">urls</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;https://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.dap?dap4.ce=i%5B0%3A1%3A89%5D&#39;,
+ &#39;https://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.dap?dap4.ce=j%5B0%3A1%3A89%5D&#39;,
+ &#39;https://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.dap?dap4.ce=k%5B0%3A1%3A49%5D&#39;,
+ &#39;https://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.dap?dap4.ce=tile%5B0%3A1%3A12%5D&#39;,
+ &#39;https://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.dap?dap4.ce=time%5B0%3A1%3A0%5D&#39;,
+ &#39;https://opendap.earthdata.nasa.gov/providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-10_ECCO_V4r4_native_llc0090.dmr?dap4.ce=%2FTHETA%3B%2Ftime%3B%2Fk%3B%2Ftile%3B%2Fj%3B%2Fi&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
 <span class="n">theta_salt_ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span>
     <span class="n">Temp_2017</span><span class="p">,</span> 
     <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span>
     <span class="n">session</span><span class="o">=</span><span class="n">cache_session</span><span class="p">,</span> 
-    <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-    <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;nested&#39;</span><span class="p">,</span> 
-    <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;/time&#39;</span><span class="p">,</span>
-    <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;nested&#39;</span><span class="p">,</span>
+    <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+    <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 310 ms, sys: 132 ms, total: 442 ms
-Wall time: 6.37 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 242 ms, sys: 120 ms, total: 363 ms
+Wall time: 300 ms
 </pre></div>
 </div>
 </div>
 </div>
-</section>
-</section>
-<section id="any-subsequent-try-should-take-milliseconds">
-<h2>Any subsequent try should take milliseconds!<a class="headerlink" href="#any-subsequent-try-should-take-milliseconds" title="Link to this heading">#</a></h2>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>By default, a cache_session will store the metadata associated with this URLs (or any dap response downloaded) for 1 day, persisting your notebook. You can modify this by passing extra arguments to the <code class="docutils literal notranslate"><span class="pre">create_session</span></code> function.</p>
-</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">Temp_2017</span> <span class="o">=</span> <span class="p">[</span><span class="n">baseURL</span> <span class="o">+</span> <span class="n">Temp_Salt</span> <span class="o">+</span> <span class="n">year</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="si">:</span><span class="s1">02</span><span class="si">}</span><span class="s1">&#39;</span> <span class="o">+</span> <span class="n">end_</span> <span class="o">+</span> <span class="n">CE</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)]</span>
-
-<span class="n">theta_salt_ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span>
-    <span class="n">Temp_2017</span><span class="p">,</span> 
-    <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span>
-    <span class="n">session</span><span class="o">=</span><span class="n">cache_session</span><span class="p">,</span> 
-    <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-    <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;nested&#39;</span><span class="p">,</span> 
-    <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;/time&#39;</span><span class="p">,</span>
-    <span class="n">decode_times</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">theta_salt_ds</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">theta_salt_ds</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 37.8 ms, sys: 3.28 ms, total: 41.1 ms
-Wall time: 38.6 ms
-</pre></div>
-</div>
 <div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
 <defs>
 <symbol id="icon-database" viewBox="0 0 32 32">
@@ -1984,15 +1706,15 @@ dl.xr-attrs {
   fill: currentColor;
 }
 </style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 253MB
-Dimensions:  (/time: 12, /k: 50, /tile: 13, /j: 90, /i: 90)
+Dimensions:  (time: 12, k: 50, tile: 13, j: 90, i: 90)
 Coordinates:
-    time     (/time) int32 48B dask.array&lt;chunksize=(1,), meta=np.ndarray&gt;
-Dimensions without coordinates: /time, /k, /tile, /j, /i
+  * i        (i) int32 360B 0 1 2 3 4 5 6 7 8 9 ... 81 82 83 84 85 86 87 88 89
+  * j        (j) int32 360B 0 1 2 3 4 5 6 7 8 9 ... 81 82 83 84 85 86 87 88 89
+  * k        (k) int32 200B 0 1 2 3 4 5 6 7 8 9 ... 41 42 43 44 45 46 47 48 49
+  * tile     (tile) int32 52B 0 1 2 3 4 5 6 7 8 9 10 11 12
+  * time     (time) int32 48B 219528 219528 219528 ... 219528 219528 219528
 Data variables:
-    THETA    (/time, /k, /tile, /j, /i) float32 253MB dask.array&lt;chunksize=(1, 50, 13, 90, 90), meta=np.ndarray&gt;
-    i        (/time, /i) int32 4kB dask.array&lt;chunksize=(1, 90), meta=np.ndarray&gt;
-    j        (/time, /j) int32 4kB dask.array&lt;chunksize=(1, 90), meta=np.ndarray&gt;
-    k        (/time, /k) int32 2kB dask.array&lt;chunksize=(1, 50), meta=np.ndarray&gt;
+    THETA    (time, k, tile, j, i) float32 253MB dask.array&lt;chunksize=(1, 50, 13, 90, 90), meta=np.ndarray&gt;
 Attributes: (12/62)
     acknowledgement:                 This research was carried out by the Jet...
     author:                          Ian Fenty and Ou Wang
@@ -2002,77 +1724,24 @@ Attributes: (12/62)
     coordinates_comment:             Note: the global &#x27;coordinates&#x27; attribute...
     ...                              ...
     time_coverage_duration:          P1M
-    time_coverage_end:               2017-05-01T00:00:00
+    time_coverage_end:               2017-11-01T00:00:00
     time_coverage_resolution:        P1M
-    time_coverage_start:             2017-04-01T00:00:00
+    time_coverage_start:             2017-10-01T00:00:00
     title:                           ECCO Ocean Temperature and Salinity - Mo...
-    uuid:                            fa96f474-4181-11eb-bcb1-0cc47a3f47b1</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-c101d8ee-a796-4d34-8d7e-f122d69e6f11' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-c101d8ee-a796-4d34-8d7e-f122d69e6f11' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>/time</span>: 12</li><li><span>/k</span>: 50</li><li><span>/tile</span>: 13</li><li><span>/j</span>: 90</li><li><span>/i</span>: 90</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-abebc0ca-6069-4112-83bc-b5eedd5e90b9' class='xr-section-summary-in' type='checkbox'  checked><label for='section-abebc0ca-6069-4112-83bc-b5eedd5e90b9' class='xr-section-summary' >Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>time</span></div><div class='xr-var-dims'>(/time)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1,), meta=np.ndarray&gt;</div><input id='attrs-0df2213a-8853-4eec-80cb-e3355a04dd06' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-0df2213a-8853-4eec-80cb-e3355a04dd06' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d9b409a6-07b8-4922-82c5-085384b89b1e' class='xr-var-data-in' type='checkbox'><label for='data-d9b409a6-07b8-4922-82c5-085384b89b1e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>center time of averaging period</dd><dt><span>axis :</span></dt><dd>T</dd><dt><span>bounds :</span></dt><dd>time_bnds</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>units :</span></dt><dd>hours since 1992-01-01T12:00:00</dd><dt><span>calendar :</span></dt><dd>proleptic_gregorian</dd><dt><span>origname :</span></dt><dd>time</dd><dt><span>fullnamepath :</span></dt><dd>/time</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><table>
-    <tr>
-        <td>
-            <table style="border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <td> </td>
-                        <th> Array </th>
-                        <th> Chunk </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                    <tr>
-                        <th> Bytes </th>
-                        <td> 48 B </td>
-                        <td> 4 B </td>
-                    </tr>
-                    
-                    <tr>
-                        <th> Shape </th>
-                        <td> (12,) </td>
-                        <td> (1,) </td>
-                    </tr>
-                    <tr>
-                        <th> Dask graph </th>
-                        <td colspan="2"> 12 chunks in 25 graph layers </td>
-                    </tr>
-                    <tr>
-                        <th> Data type </th>
-                        <td colspan="2"> int32 numpy.ndarray </td>
-                    </tr>
-                </tbody>
-            </table>
-        </td>
-        <td>
-        <svg width="170" height="87" style="stroke:rgb(0,0,0);stroke-width:1" >
-
-  <!-- Horizontal lines -->
-  <line x1="0" y1="0" x2="120" y2="0" style="stroke-width:2" />
-  <line x1="0" y1="37" x2="120" y2="37" style="stroke-width:2" />
-
-  <!-- Vertical lines -->
-  <line x1="0" y1="0" x2="0" y2="37" style="stroke-width:2" />
-  <line x1="10" y1="0" x2="10" y2="37" />
-  <line x1="20" y1="0" x2="20" y2="37" />
-  <line x1="30" y1="0" x2="30" y2="37" />
-  <line x1="40" y1="0" x2="40" y2="37" />
-  <line x1="50" y1="0" x2="50" y2="37" />
-  <line x1="60" y1="0" x2="60" y2="37" />
-  <line x1="70" y1="0" x2="70" y2="37" />
-  <line x1="80" y1="0" x2="80" y2="37" />
-  <line x1="90" y1="0" x2="90" y2="37" />
-  <line x1="100" y1="0" x2="100" y2="37" />
-  <line x1="110" y1="0" x2="110" y2="37" />
-  <line x1="120" y1="0" x2="120" y2="37" style="stroke-width:2" />
-
-  <!-- Colored Rectangle -->
-  <polygon points="0.0,0.0 120.0,0.0 120.0,37.56358655585696 0.0,37.56358655585696" style="fill:#ECB172A0;stroke-width:0"/>
-
-  <!-- Text -->
-  <text x="60.000000" y="57.563587" font-size="1.0rem" font-weight="100" text-anchor="middle" >12</text>
-  <text x="140.000000" y="18.781793" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(0,140.000000,18.781793)">1</text>
-</svg>
-        </td>
-    </tr>
-</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-422677df-de6a-4abb-95f0-f835750d160c' class='xr-section-summary-in' type='checkbox'  checked><label for='section-422677df-de6a-4abb-95f0-f835750d160c' class='xr-section-summary' >Data variables: <span>(4)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>THETA</span></div><div class='xr-var-dims'>(/time, /k, /tile, /j, /i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1, 50, 13, 90, 90), meta=np.ndarray&gt;</div><input id='attrs-75ece2f9-8aa4-4825-8f19-4e90751a54d0' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-75ece2f9-8aa4-4825-8f19-4e90751a54d0' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-fec85001-3669-4581-9a18-a6c3e5e69169' class='xr-var-data-in' type='checkbox'><label for='data-fec85001-3669-4581-9a18-a6c3e5e69169' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Potential temperature </dd><dt><span>units :</span></dt><dd>degree_C</dd><dt><span>coverage_content_type :</span></dt><dd>modelResult</dd><dt><span>standard_name :</span></dt><dd>sea_water_potential_temperature</dd><dt><span>comment :</span></dt><dd>Sea water potential temperature is the temperature a parcel of sea water would have if moved adiabatically to sea level pressure. Note: the equation of state is a modified UNESCO formula by Jackett and McDougall (1995), which uses the model variable potential temperature as input assuming a horizontally and temporally constant pressure of $p_0=-g ho_{0} z$.</dd><dt><span>valid_min :</span></dt><dd>-2.2909388542175293</dd><dt><span>valid_max :</span></dt><dd>36.032955169677734</dd><dt><span>origname :</span></dt><dd>THETA</dd><dt><span>fullnamepath :</span></dt><dd>/THETA</dd><dt><span>dims :</span></dt><dd>[&#x27;time&#x27;, &#x27;k&#x27;, &#x27;tile&#x27;, &#x27;j&#x27;, &#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><table>
+    uuid:                            fba8c270-4181-11eb-a317-0cc47a3f47df</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-292813fe-6a68-4d45-937e-60aeea5bb025' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-292813fe-6a68-4d45-937e-60aeea5bb025' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 12</li><li><span class='xr-has-index'>k</span>: 50</li><li><span class='xr-has-index'>tile</span>: 13</li><li><span class='xr-has-index'>j</span>: 90</li><li><span class='xr-has-index'>i</span>: 90</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-3f138de4-3aee-447c-bb3c-f6744edc1f1d' class='xr-section-summary-in' type='checkbox'  checked><label for='section-3f138de4-3aee-447c-bb3c-f6744edc1f1d' class='xr-section-summary' >Coordinates: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>i</span></div><div class='xr-var-dims'>(i)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 6 ... 84 85 86 87 88 89</div><input id='attrs-33702d02-600f-48a4-b50e-38f6346a6be3' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-33702d02-600f-48a4-b50e-38f6346a6be3' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2b76f29a-0a34-478f-96ca-5039af677712' class='xr-var-data-in' type='checkbox'><label for='data-2b76f29a-0a34-478f-96ca-5039af677712' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>X</dd><dt><span>long_name :</span></dt><dd>grid index in x for variables at tracer and &#x27;v&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>XC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;v&#x27; variables (e.g., VVEL) have the same x coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>i</dd><dt><span>fullnamepath :</span></dt><dd>/i</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+       54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+       72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      dtype=int32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>j</span></div><div class='xr-var-dims'>(j)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 6 ... 84 85 86 87 88 89</div><input id='attrs-47bc88bb-cea2-4894-bca6-b7e63559a791' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-47bc88bb-cea2-4894-bca6-b7e63559a791' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-b2b14144-8229-4e56-a13e-981ddde17ec5' class='xr-var-data-in' type='checkbox'><label for='data-b2b14144-8229-4e56-a13e-981ddde17ec5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Y</dd><dt><span>long_name :</span></dt><dd>grid index in y for variables at tracer and &#x27;u&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>YC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;u&#x27; variables (e.g., UVEL) have the same y coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>j</dd><dt><span>fullnamepath :</span></dt><dd>/j</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+       54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+       72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      dtype=int32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>k</span></div><div class='xr-var-dims'>(k)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 6 ... 44 45 46 47 48 49</div><input id='attrs-1d4e7930-45bc-4c8b-96ea-c5c77c479470' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1d4e7930-45bc-4c8b-96ea-c5c77c479470' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-eaef53fd-ec30-4734-b8c6-e4fd5ba750a0' class='xr-var-data-in' type='checkbox'><label for='data-eaef53fd-ec30-4734-b8c6-e4fd5ba750a0' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>long_name :</span></dt><dd>grid index in z for tracer variables</dd><dt><span>swap_dim :</span></dt><dd>Z</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>k</dd><dt><span>fullnamepath :</span></dt><dd>/k</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49], dtype=int32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>tile</span></div><div class='xr-var-dims'>(tile)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>0 1 2 3 4 5 6 7 8 9 10 11 12</div><input id='attrs-ee3ba970-f42c-4460-8647-4dde7719c657' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-ee3ba970-f42c-4460-8647-4dde7719c657' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e6c1278e-d99d-4f4e-abe8-554770d3e23b' class='xr-var-data-in' type='checkbox'><label for='data-e6c1278e-d99d-4f4e-abe8-554770d3e23b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>lat-lon-cap tile index</dd><dt><span>comment :</span></dt><dd>The ECCO V4 horizontal model grid is divided into 13 tiles of 90x90 cells for convenience.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>tile</dd><dt><span>fullnamepath :</span></dt><dd>/tile</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12], dtype=int32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>219528 219528 ... 219528 219528</div><input id='attrs-799da4d5-8897-4486-8470-ca87d0c353f4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-799da4d5-8897-4486-8470-ca87d0c353f4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-fe0c51bb-d817-4c04-a031-110ee2cacac7' class='xr-var-data-in' type='checkbox'><label for='data-fe0c51bb-d817-4c04-a031-110ee2cacac7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>center time of averaging period</dd><dt><span>axis :</span></dt><dd>T</dd><dt><span>bounds :</span></dt><dd>time_bnds</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>units :</span></dt><dd>hours since 1992-01-01T12:00:00</dd><dt><span>calendar :</span></dt><dd>proleptic_gregorian</dd><dt><span>origname :</span></dt><dd>time</dd><dt><span>fullnamepath :</span></dt><dd>/time</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([219528, 219528, 219528, 219528, 219528, 219528, 219528, 219528, 219528,
+       219528, 219528, 219528], dtype=int32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-22319a01-265e-40ca-9820-e5aace2c5466' class='xr-section-summary-in' type='checkbox'  checked><label for='section-22319a01-265e-40ca-9820-e5aace2c5466' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>THETA</span></div><div class='xr-var-dims'>(time, k, tile, j, i)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1, 50, 13, 90, 90), meta=np.ndarray&gt;</div><input id='attrs-69b7c909-db28-47ce-8cd3-91ed507d011f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-69b7c909-db28-47ce-8cd3-91ed507d011f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-02d812d0-50c0-4878-b45b-7a3ae171ce8b' class='xr-var-data-in' type='checkbox'><label for='data-02d812d0-50c0-4878-b45b-7a3ae171ce8b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Potential temperature </dd><dt><span>units :</span></dt><dd>degree_C</dd><dt><span>coverage_content_type :</span></dt><dd>modelResult</dd><dt><span>standard_name :</span></dt><dd>sea_water_potential_temperature</dd><dt><span>comment :</span></dt><dd>Sea water potential temperature is the temperature a parcel of sea water would have if moved adiabatically to sea level pressure. Note: the equation of state is a modified UNESCO formula by Jackett and McDougall (1995), which uses the model variable potential temperature as input assuming a horizontally and temporally constant pressure of $p_0=-g ho_{0} z$.</dd><dt><span>valid_min :</span></dt><dd>-2.2909388542175293</dd><dt><span>valid_max :</span></dt><dd>36.032955169677734</dd><dt><span>origname :</span></dt><dd>THETA</dd><dt><span>fullnamepath :</span></dt><dd>/THETA</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -2177,206 +1846,24 @@ Attributes: (12/62)
 </svg>
         </td>
     </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>i</span></div><div class='xr-var-dims'>(/time, /i)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1, 90), meta=np.ndarray&gt;</div><input id='attrs-1663b138-f0cb-4095-aef8-1302982fce28' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1663b138-f0cb-4095-aef8-1302982fce28' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-09a97b93-3f0d-41d4-acd2-f3be3d79e4bc' class='xr-var-data-in' type='checkbox'><label for='data-09a97b93-3f0d-41d4-acd2-f3be3d79e4bc' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>X</dd><dt><span>long_name :</span></dt><dd>grid index in x for variables at tracer and &#x27;v&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>XC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;v&#x27; variables (e.g., VVEL) have the same x coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>i</dd><dt><span>fullnamepath :</span></dt><dd>/i</dd><dt><span>dims :</span></dt><dd>[&#x27;i&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><table>
-    <tr>
-        <td>
-            <table style="border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <td> </td>
-                        <th> Array </th>
-                        <th> Chunk </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                    <tr>
-                        <th> Bytes </th>
-                        <td> 4.22 kiB </td>
-                        <td> 360 B </td>
-                    </tr>
-                    
-                    <tr>
-                        <th> Shape </th>
-                        <td> (12, 90) </td>
-                        <td> (1, 90) </td>
-                    </tr>
-                    <tr>
-                        <th> Dask graph </th>
-                        <td colspan="2"> 12 chunks in 37 graph layers </td>
-                    </tr>
-                    <tr>
-                        <th> Data type </th>
-                        <td colspan="2"> int32 numpy.ndarray </td>
-                    </tr>
-                </tbody>
-            </table>
-        </td>
-        <td>
-        <svg width="170" height="90" style="stroke:rgb(0,0,0);stroke-width:1" >
-
-  <!-- Horizontal lines -->
-  <line x1="0" y1="0" x2="120" y2="0" style="stroke-width:2" />
-  <line x1="0" y1="3" x2="120" y2="3" />
-  <line x1="0" y1="6" x2="120" y2="6" />
-  <line x1="0" y1="10" x2="120" y2="10" />
-  <line x1="0" y1="13" x2="120" y2="13" />
-  <line x1="0" y1="16" x2="120" y2="16" />
-  <line x1="0" y1="20" x2="120" y2="20" />
-  <line x1="0" y1="23" x2="120" y2="23" />
-  <line x1="0" y1="26" x2="120" y2="26" />
-  <line x1="0" y1="30" x2="120" y2="30" />
-  <line x1="0" y1="33" x2="120" y2="33" />
-  <line x1="0" y1="36" x2="120" y2="36" />
-  <line x1="0" y1="40" x2="120" y2="40" style="stroke-width:2" />
-
-  <!-- Vertical lines -->
-  <line x1="0" y1="0" x2="0" y2="40" style="stroke-width:2" />
-  <line x1="120" y1="0" x2="120" y2="40" style="stroke-width:2" />
-
-  <!-- Colored Rectangle -->
-  <polygon points="0.0,0.0 120.0,0.0 120.0,40.124120868580135 0.0,40.124120868580135" style="fill:#ECB172A0;stroke-width:0"/>
-
-  <!-- Text -->
-  <text x="60.000000" y="60.124121" font-size="1.0rem" font-weight="100" text-anchor="middle" >90</text>
-  <text x="140.000000" y="20.062060" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(0,140.000000,20.062060)">12</text>
-</svg>
-        </td>
-    </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>j</span></div><div class='xr-var-dims'>(/time, /j)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1, 90), meta=np.ndarray&gt;</div><input id='attrs-f4af78f5-1c84-4d22-a355-6d5b98579b6a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f4af78f5-1c84-4d22-a355-6d5b98579b6a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-940849d0-be44-4fcb-a7ce-e853041e0445' class='xr-var-data-in' type='checkbox'><label for='data-940849d0-be44-4fcb-a7ce-e853041e0445' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Y</dd><dt><span>long_name :</span></dt><dd>grid index in y for variables at tracer and &#x27;u&#x27; locations</dd><dt><span>swap_dim :</span></dt><dd>YC</dd><dt><span>comment :</span></dt><dd>In the Arakawa C-grid system, tracer (e.g., THETA) and &#x27;u&#x27; variables (e.g., UVEL) have the same y coordinate on the model grid.</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>j</dd><dt><span>fullnamepath :</span></dt><dd>/j</dd><dt><span>dims :</span></dt><dd>[&#x27;j&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><table>
-    <tr>
-        <td>
-            <table style="border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <td> </td>
-                        <th> Array </th>
-                        <th> Chunk </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                    <tr>
-                        <th> Bytes </th>
-                        <td> 4.22 kiB </td>
-                        <td> 360 B </td>
-                    </tr>
-                    
-                    <tr>
-                        <th> Shape </th>
-                        <td> (12, 90) </td>
-                        <td> (1, 90) </td>
-                    </tr>
-                    <tr>
-                        <th> Dask graph </th>
-                        <td colspan="2"> 12 chunks in 37 graph layers </td>
-                    </tr>
-                    <tr>
-                        <th> Data type </th>
-                        <td colspan="2"> int32 numpy.ndarray </td>
-                    </tr>
-                </tbody>
-            </table>
-        </td>
-        <td>
-        <svg width="170" height="90" style="stroke:rgb(0,0,0);stroke-width:1" >
-
-  <!-- Horizontal lines -->
-  <line x1="0" y1="0" x2="120" y2="0" style="stroke-width:2" />
-  <line x1="0" y1="3" x2="120" y2="3" />
-  <line x1="0" y1="6" x2="120" y2="6" />
-  <line x1="0" y1="10" x2="120" y2="10" />
-  <line x1="0" y1="13" x2="120" y2="13" />
-  <line x1="0" y1="16" x2="120" y2="16" />
-  <line x1="0" y1="20" x2="120" y2="20" />
-  <line x1="0" y1="23" x2="120" y2="23" />
-  <line x1="0" y1="26" x2="120" y2="26" />
-  <line x1="0" y1="30" x2="120" y2="30" />
-  <line x1="0" y1="33" x2="120" y2="33" />
-  <line x1="0" y1="36" x2="120" y2="36" />
-  <line x1="0" y1="40" x2="120" y2="40" style="stroke-width:2" />
-
-  <!-- Vertical lines -->
-  <line x1="0" y1="0" x2="0" y2="40" style="stroke-width:2" />
-  <line x1="120" y1="0" x2="120" y2="40" style="stroke-width:2" />
-
-  <!-- Colored Rectangle -->
-  <polygon points="0.0,0.0 120.0,0.0 120.0,40.124120868580135 0.0,40.124120868580135" style="fill:#ECB172A0;stroke-width:0"/>
-
-  <!-- Text -->
-  <text x="60.000000" y="60.124121" font-size="1.0rem" font-weight="100" text-anchor="middle" >90</text>
-  <text x="140.000000" y="20.062060" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(0,140.000000,20.062060)">12</text>
-</svg>
-        </td>
-    </tr>
-</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>k</span></div><div class='xr-var-dims'>(/time, /k)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1, 50), meta=np.ndarray&gt;</div><input id='attrs-402ba105-ea87-4b62-9664-c39c19aab185' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-402ba105-ea87-4b62-9664-c39c19aab185' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-c61a4d8c-768c-4b37-8f02-3030be4b6163' class='xr-var-data-in' type='checkbox'><label for='data-c61a4d8c-768c-4b37-8f02-3030be4b6163' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>axis :</span></dt><dd>Z</dd><dt><span>long_name :</span></dt><dd>grid index in z for tracer variables</dd><dt><span>swap_dim :</span></dt><dd>Z</dd><dt><span>coverage_content_type :</span></dt><dd>coordinate</dd><dt><span>origname :</span></dt><dd>k</dd><dt><span>fullnamepath :</span></dt><dd>/k</dd><dt><span>dims :</span></dt><dd>[&#x27;k&#x27;]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><table>
-    <tr>
-        <td>
-            <table style="border-collapse: collapse;">
-                <thead>
-                    <tr>
-                        <td> </td>
-                        <th> Array </th>
-                        <th> Chunk </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                    <tr>
-                        <th> Bytes </th>
-                        <td> 2.34 kiB </td>
-                        <td> 200 B </td>
-                    </tr>
-                    
-                    <tr>
-                        <th> Shape </th>
-                        <td> (12, 50) </td>
-                        <td> (1, 50) </td>
-                    </tr>
-                    <tr>
-                        <th> Dask graph </th>
-                        <td colspan="2"> 12 chunks in 37 graph layers </td>
-                    </tr>
-                    <tr>
-                        <th> Data type </th>
-                        <td colspan="2"> int32 numpy.ndarray </td>
-                    </tr>
-                </tbody>
-            </table>
-        </td>
-        <td>
-        <svg width="170" height="92" style="stroke:rgb(0,0,0);stroke-width:1" >
-
-  <!-- Horizontal lines -->
-  <line x1="0" y1="0" x2="120" y2="0" style="stroke-width:2" />
-  <line x1="0" y1="3" x2="120" y2="3" />
-  <line x1="0" y1="7" x2="120" y2="7" />
-  <line x1="0" y1="10" x2="120" y2="10" />
-  <line x1="0" y1="14" x2="120" y2="14" />
-  <line x1="0" y1="17" x2="120" y2="17" />
-  <line x1="0" y1="21" x2="120" y2="21" />
-  <line x1="0" y1="24" x2="120" y2="24" />
-  <line x1="0" y1="28" x2="120" y2="28" />
-  <line x1="0" y1="32" x2="120" y2="32" />
-  <line x1="0" y1="35" x2="120" y2="35" />
-  <line x1="0" y1="39" x2="120" y2="39" />
-  <line x1="0" y1="42" x2="120" y2="42" style="stroke-width:2" />
-
-  <!-- Vertical lines -->
-  <line x1="0" y1="0" x2="0" y2="42" style="stroke-width:2" />
-  <line x1="120" y1="0" x2="120" y2="42" style="stroke-width:2" />
-
-  <!-- Colored Rectangle -->
-  <polygon points="0.0,0.0 120.0,0.0 120.0,42.74428809874332 0.0,42.74428809874332" style="fill:#ECB172A0;stroke-width:0"/>
-
-  <!-- Text -->
-  <text x="60.000000" y="62.744288" font-size="1.0rem" font-weight="100" text-anchor="middle" >50</text>
-  <text x="140.000000" y="21.372144" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(0,140.000000,21.372144)">12</text>
-</svg>
-        </td>
-    </tr>
-</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-953ebd87-ec46-49b8-9545-14bbd5afa911' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-953ebd87-ec46-49b8-9545-14bbd5afa911' class='xr-section-summary'  title='Expand/collapse section'>Indexes: <span>(0)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'></ul></div></li><li class='xr-section-item'><input id='section-67970b99-cd34-4e2e-971e-6dc7f4024a7a' class='xr-section-summary-in' type='checkbox'  ><label for='section-67970b99-cd34-4e2e-971e-6dc7f4024a7a' class='xr-section-summary' >Attributes: <span>(62)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>acknowledgement :</span></dt><dd>This research was carried out by the Jet Propulsion Laboratory, managed by the California Institute of Technology under a contract with the National Aeronautics and Space Administration.</dd><dt><span>author :</span></dt><dd>Ian Fenty and Ou Wang</dd><dt><span>cdm_data_type :</span></dt><dd>Grid</dd><dt><span>comment :</span></dt><dd>Fields provided on the curvilinear lat-lon-cap 90 (llc90) native grid used in the ECCO model.</dd><dt><span>Conventions :</span></dt><dd>CF-1.8, ACDD-1.3</dd><dt><span>coordinates_comment :</span></dt><dd>Note: the global &#x27;coordinates&#x27; attribute describes auxillary coordinates.</dd><dt><span>creator_email :</span></dt><dd>ecco-group@mit.edu</dd><dt><span>creator_institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>creator_name :</span></dt><dd>ECCO Consortium</dd><dt><span>creator_type :</span></dt><dd>group</dd><dt><span>creator_url :</span></dt><dd>https://ecco-group.org</dd><dt><span>date_created :</span></dt><dd>2020-12-18T14:40:07</dd><dt><span>date_issued :</span></dt><dd>2020-12-18T14:40:07</dd><dt><span>date_metadata_modified :</span></dt><dd>2021-03-15T21:56:23</dd><dt><span>date_modified :</span></dt><dd>2021-03-15T21:56:23</dd><dt><span>geospatial_bounds_crs :</span></dt><dd>EPSG:4326</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>geospatial_vertical_max :</span></dt><dd>0.0</dd><dt><span>geospatial_vertical_min :</span></dt><dd>-6134.5</dd><dt><span>geospatial_vertical_positive :</span></dt><dd>up</dd><dt><span>geospatial_vertical_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_vertical_units :</span></dt><dd>meter</dd><dt><span>history :</span></dt><dd>Inaugural release of an ECCO Central Estimate solution to PO.DAAC</dd><dt><span>id :</span></dt><dd>10.5067/ECL5M-OTS44</dd><dt><span>institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>instrument_vocabulary :</span></dt><dd>GCMD instrument keywords</dd><dt><span>keywords :</span></dt><dd>EARTH SCIENCE &gt; OCEANS &gt; SALINITY/DENSITY &gt; SALINITY, EARTH SCIENCE &gt; OCEANS &gt; OCEAN TEMPERATURE &gt; POTENTIAL TEMPERATURE, EARTH SCIENCE SERVICES &gt; MODELS &gt; EARTH SCIENCE REANALYSES/ASSIMILATION MODELS</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>license :</span></dt><dd>Public Domain</dd><dt><span>metadata_link :</span></dt><dd>https://cmr.earthdata.nasa.gov/search/collections.umm_json?ShortName=ECCO_L4_TEMP_SALINITY_LLC0090GRID_MONTHLY_V4R4</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.jpl</dd><dt><span>platform :</span></dt><dd>ERS-1/2, TOPEX/Poseidon, Geosat Follow-On (GFO), ENVISAT, Jason-1, Jason-2, CryoSat-2, SARAL/AltiKa, Jason-3, AVHRR, Aquarius, SSM/I, SSMIS, GRACE, DTU17MDT, Argo, WOCE, GO-SHIP, MEOP, Ice Tethered Profilers (ITP)</dd><dt><span>platform_vocabulary :</span></dt><dd>GCMD platform keywords</dd><dt><span>processing_level :</span></dt><dd>L4</dd><dt><span>product_name :</span></dt><dd>OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-04_ECCO_V4r4_native_llc0090.nc</dd><dt><span>product_time_coverage_end :</span></dt><dd>2018-01-01T00:00:00</dd><dt><span>product_time_coverage_start :</span></dt><dd>1992-01-01T12:00:00</dd><dt><span>product_version :</span></dt><dd>Version 4, Release 4</dd><dt><span>program :</span></dt><dd>NASA Physical Oceanography, Cryosphere, Modeling, Analysis, and Prediction (MAP)</dd><dt><span>project :</span></dt><dd>Estimating the Circulation and Climate of the Ocean (ECCO)</dd><dt><span>publisher_email :</span></dt><dd>podaac@podaac.jpl.nasa.gov</dd><dt><span>publisher_institution :</span></dt><dd>PO.DAAC</dd><dt><span>publisher_name :</span></dt><dd>Physical Oceanography Distributed Active Archive Center (PO.DAAC)</dd><dt><span>publisher_type :</span></dt><dd>institution</dd><dt><span>publisher_url :</span></dt><dd>https://podaac.jpl.nasa.gov</dd><dt><span>references :</span></dt><dd>ECCO Consortium, Fukumori, I., Wang, O., Fenty, I., Forget, G., Heimbach, P., &amp; Ponte, R. M. 2020. Synopsis of the ECCO Central Production Global Ocean and Sea-Ice State Estimate (Version 4 Release 4). doi:10.5281/zenodo.3765928</dd><dt><span>source :</span></dt><dd>The ECCO V4r4 state estimate was produced by fitting a free-running solution of the MITgcm (checkpoint 66g) to satellite and in situ observational data in a least squares sense using the adjoint method</dd><dt><span>standard_name_vocabulary :</span></dt><dd>NetCDF Climate and Forecast (CF) Metadata Convention</dd><dt><span>summary :</span></dt><dd>This dataset provides monthly-averaged ocean potential temperature and salinity on the lat-lon-cap 90 (llc90) native model grid from the ECCO Version 4 Release 4 (V4r4) ocean and sea-ice state estimate. Estimating the Circulation and Climate of the Ocean (ECCO) state estimates are dynamically and kinematically-consistent reconstructions of the three-dimensional, time-evolving ocean, sea-ice, and surface atmospheric states. ECCO V4r4 is a free-running solution of a global, nominally 1-degree configuration of the MIT general circulation model (MITgcm) that has been fit to observations in a least-squares sense. Observational data constraints used in V4r4 include sea surface height (SSH) from satellite altimeters [ERS-1/2, TOPEX/Poseidon, GFO, ENVISAT, Jason-1,2,3, CryoSat-2, and SARAL/AltiKa]; sea surface temperature (SST) from satellite radiometers [AVHRR], sea surface salinity (SSS) from the Aquarius satellite radiometer/scatterometer, ocean bottom pressure (OBP) from the GRACE satellite gravimeter; sea-ice concentration from satellite radiometers [SSM/I and SSMIS], and in-situ ocean temperature and salinity measured with conductivity-temperature-depth (CTD) sensors and expendable bathythermographs (XBTs) from several programs [e.g., WOCE, GO-SHIP, Argo, and others] and platforms [e.g., research vessels, gliders, moorings, ice-tethered profilers, and instrumented pinnipeds]. V4r4 covers the period 1992-01-01T12:00:00 to 2018-01-01T00:00:00.</dd><dt><span>time_coverage_duration :</span></dt><dd>P1M</dd><dt><span>time_coverage_end :</span></dt><dd>2017-05-01T00:00:00</dd><dt><span>time_coverage_resolution :</span></dt><dd>P1M</dd><dt><span>time_coverage_start :</span></dt><dd>2017-04-01T00:00:00</dd><dt><span>title :</span></dt><dd>ECCO Ocean Temperature and Salinity - Monthly Mean llc90 Grid (Version 4 Release 4)</dd><dt><span>uuid :</span></dt><dd>fa96f474-4181-11eb-bcb1-0cc47a3f47b1</dd></dl></div></li></ul></div></div></div></div>
+</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-0f790ad2-2750-40ac-a26a-5fce84922929' class='xr-section-summary-in' type='checkbox'  ><label for='section-0f790ad2-2750-40ac-a26a-5fce84922929' class='xr-section-summary' >Indexes: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>i</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-5fab0ae4-f0ff-4f4a-8b71-c8bed55692ef' class='xr-index-data-in' type='checkbox'/><label for='index-5fab0ae4-f0ff-4f4a-8b71-c8bed55692ef' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+       54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+       72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      dtype=&#x27;int32&#x27;, name=&#x27;i&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>j</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-0789660d-0cda-4058-882e-72b2f6b195a4' class='xr-index-data-in' type='checkbox'/><label for='index-0789660d-0cda-4058-882e-72b2f6b195a4' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
+       54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+       72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89],
+      dtype=&#x27;int32&#x27;, name=&#x27;j&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>k</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-4dc489b8-bf15-45b7-9dca-c53b8a0731b0' class='xr-index-data-in' type='checkbox'/><label for='index-4dc489b8-bf15-45b7-9dca-c53b8a0731b0' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17,
+       18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+       36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49],
+      dtype=&#x27;int32&#x27;, name=&#x27;k&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>tile</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-d4e8bbcc-fd85-442b-a50a-e82b075d14c7' class='xr-index-data-in' type='checkbox'/><label for='index-d4e8bbcc-fd85-442b-a50a-e82b075d14c7' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], dtype=&#x27;int32&#x27;, name=&#x27;tile&#x27;))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>time</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-90ec847f-6fdb-4733-be9e-9fb38a5f6fc9' class='xr-index-data-in' type='checkbox'/><label for='index-90ec847f-6fdb-4733-be9e-9fb38a5f6fc9' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([219528, 219528, 219528, 219528, 219528, 219528, 219528, 219528, 219528,
+       219528, 219528, 219528],
+      dtype=&#x27;int32&#x27;, name=&#x27;time&#x27;))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-7df85f5a-602c-4e7f-a92d-0ce7a796c9f7' class='xr-section-summary-in' type='checkbox'  ><label for='section-7df85f5a-602c-4e7f-a92d-0ce7a796c9f7' class='xr-section-summary' >Attributes: <span>(62)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>acknowledgement :</span></dt><dd>This research was carried out by the Jet Propulsion Laboratory, managed by the California Institute of Technology under a contract with the National Aeronautics and Space Administration.</dd><dt><span>author :</span></dt><dd>Ian Fenty and Ou Wang</dd><dt><span>cdm_data_type :</span></dt><dd>Grid</dd><dt><span>comment :</span></dt><dd>Fields provided on the curvilinear lat-lon-cap 90 (llc90) native grid used in the ECCO model.</dd><dt><span>Conventions :</span></dt><dd>CF-1.8, ACDD-1.3</dd><dt><span>coordinates_comment :</span></dt><dd>Note: the global &#x27;coordinates&#x27; attribute describes auxillary coordinates.</dd><dt><span>creator_email :</span></dt><dd>ecco-group@mit.edu</dd><dt><span>creator_institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>creator_name :</span></dt><dd>ECCO Consortium</dd><dt><span>creator_type :</span></dt><dd>group</dd><dt><span>creator_url :</span></dt><dd>https://ecco-group.org</dd><dt><span>date_created :</span></dt><dd>2020-12-18T14:40:09</dd><dt><span>date_issued :</span></dt><dd>2020-12-18T14:40:09</dd><dt><span>date_metadata_modified :</span></dt><dd>2021-03-15T21:56:26</dd><dt><span>date_modified :</span></dt><dd>2021-03-15T21:56:26</dd><dt><span>geospatial_bounds_crs :</span></dt><dd>EPSG:4326</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>geospatial_vertical_max :</span></dt><dd>0.0</dd><dt><span>geospatial_vertical_min :</span></dt><dd>-6134.5</dd><dt><span>geospatial_vertical_positive :</span></dt><dd>up</dd><dt><span>geospatial_vertical_resolution :</span></dt><dd>variable</dd><dt><span>geospatial_vertical_units :</span></dt><dd>meter</dd><dt><span>history :</span></dt><dd>Inaugural release of an ECCO Central Estimate solution to PO.DAAC</dd><dt><span>id :</span></dt><dd>10.5067/ECL5M-OTS44</dd><dt><span>institution :</span></dt><dd>NASA Jet Propulsion Laboratory (JPL)</dd><dt><span>instrument_vocabulary :</span></dt><dd>GCMD instrument keywords</dd><dt><span>keywords :</span></dt><dd>EARTH SCIENCE &gt; OCEANS &gt; OCEAN TEMPERATURE &gt; POTENTIAL TEMPERATURE, EARTH SCIENCE SERVICES &gt; MODELS &gt; EARTH SCIENCE REANALYSES/ASSIMILATION MODELS, EARTH SCIENCE &gt; OCEANS &gt; SALINITY/DENSITY &gt; SALINITY</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>license :</span></dt><dd>Public Domain</dd><dt><span>metadata_link :</span></dt><dd>https://cmr.earthdata.nasa.gov/search/collections.umm_json?ShortName=ECCO_L4_TEMP_SALINITY_LLC0090GRID_MONTHLY_V4R4</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.jpl</dd><dt><span>platform :</span></dt><dd>ERS-1/2, TOPEX/Poseidon, Geosat Follow-On (GFO), ENVISAT, Jason-1, Jason-2, CryoSat-2, SARAL/AltiKa, Jason-3, AVHRR, Aquarius, SSM/I, SSMIS, GRACE, DTU17MDT, Argo, WOCE, GO-SHIP, MEOP, Ice Tethered Profilers (ITP)</dd><dt><span>platform_vocabulary :</span></dt><dd>GCMD platform keywords</dd><dt><span>processing_level :</span></dt><dd>L4</dd><dt><span>product_name :</span></dt><dd>OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-10_ECCO_V4r4_native_llc0090.nc</dd><dt><span>product_time_coverage_end :</span></dt><dd>2018-01-01T00:00:00</dd><dt><span>product_time_coverage_start :</span></dt><dd>1992-01-01T12:00:00</dd><dt><span>product_version :</span></dt><dd>Version 4, Release 4</dd><dt><span>program :</span></dt><dd>NASA Physical Oceanography, Cryosphere, Modeling, Analysis, and Prediction (MAP)</dd><dt><span>project :</span></dt><dd>Estimating the Circulation and Climate of the Ocean (ECCO)</dd><dt><span>publisher_email :</span></dt><dd>podaac@podaac.jpl.nasa.gov</dd><dt><span>publisher_institution :</span></dt><dd>PO.DAAC</dd><dt><span>publisher_name :</span></dt><dd>Physical Oceanography Distributed Active Archive Center (PO.DAAC)</dd><dt><span>publisher_type :</span></dt><dd>institution</dd><dt><span>publisher_url :</span></dt><dd>https://podaac.jpl.nasa.gov</dd><dt><span>references :</span></dt><dd>ECCO Consortium, Fukumori, I., Wang, O., Fenty, I., Forget, G., Heimbach, P., &amp; Ponte, R. M. 2020. Synopsis of the ECCO Central Production Global Ocean and Sea-Ice State Estimate (Version 4 Release 4). doi:10.5281/zenodo.3765928</dd><dt><span>source :</span></dt><dd>The ECCO V4r4 state estimate was produced by fitting a free-running solution of the MITgcm (checkpoint 66g) to satellite and in situ observational data in a least squares sense using the adjoint method</dd><dt><span>standard_name_vocabulary :</span></dt><dd>NetCDF Climate and Forecast (CF) Metadata Convention</dd><dt><span>summary :</span></dt><dd>This dataset provides monthly-averaged ocean potential temperature and salinity on the lat-lon-cap 90 (llc90) native model grid from the ECCO Version 4 Release 4 (V4r4) ocean and sea-ice state estimate. Estimating the Circulation and Climate of the Ocean (ECCO) state estimates are dynamically and kinematically-consistent reconstructions of the three-dimensional, time-evolving ocean, sea-ice, and surface atmospheric states. ECCO V4r4 is a free-running solution of a global, nominally 1-degree configuration of the MIT general circulation model (MITgcm) that has been fit to observations in a least-squares sense. Observational data constraints used in V4r4 include sea surface height (SSH) from satellite altimeters [ERS-1/2, TOPEX/Poseidon, GFO, ENVISAT, Jason-1,2,3, CryoSat-2, and SARAL/AltiKa]; sea surface temperature (SST) from satellite radiometers [AVHRR], sea surface salinity (SSS) from the Aquarius satellite radiometer/scatterometer, ocean bottom pressure (OBP) from the GRACE satellite gravimeter; sea-ice concentration from satellite radiometers [SSM/I and SSMIS], and in-situ ocean temperature and salinity measured with conductivity-temperature-depth (CTD) sensors and expendable bathythermographs (XBTs) from several programs [e.g., WOCE, GO-SHIP, Argo, and others] and platforms [e.g., research vessels, gliders, moorings, ice-tethered profilers, and instrumented pinnipeds]. V4r4 covers the period 1992-01-01T12:00:00 to 2018-01-01T00:00:00.</dd><dt><span>time_coverage_duration :</span></dt><dd>P1M</dd><dt><span>time_coverage_end :</span></dt><dd>2017-11-01T00:00:00</dd><dt><span>time_coverage_resolution :</span></dt><dd>P1M</dd><dt><span>time_coverage_start :</span></dt><dd>2017-10-01T00:00:00</dd><dt><span>title :</span></dt><dd>ECCO Ocean Temperature and Salinity - Monthly Mean llc90 Grid (Version 4 Release 4)</dd><dt><span>uuid :</span></dt><dd>fba8c270-4181-11eb-a317-0cc47a3f47df</dd></dl></div></li></ul></div></div></div></div>
 </div>
+</section>
 <section id="finally-we-plot-theta">
 <h3>Finally, we plot <code class="docutils literal notranslate"><span class="pre">THETA</span></code><a class="headerlink" href="#finally-we-plot-theta" title="Link to this heading">#</a></h3>
 <div class="cell docutils container">
@@ -2496,9 +1983,6 @@ Attributes: (12/62)
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pydap-xarray-to-aggregate-multiple-urls">pydap + xarray to aggregate multiple URLs</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-ces-to-pre-select-only-variables-of-interest">Using CEs to pre-select only variables of interest</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#multiple-files-in-parallel">Multiple files in parallel</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#any-subsequent-try-should-take-milliseconds">Any subsequent try should take milliseconds!</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#finally-we-plot-theta">Finally, we plot <code class="docutils literal notranslate"><span class="pre">THETA</span></code></a></li>
 </ul>
 </li>

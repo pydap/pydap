@@ -1,13 +1,13 @@
 Running a server
 ================
 .. warning::
-    The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the Github issue tracker https://github.com/pydap/pydap/issues. If you have an example in which you configured pydap as a server, consider adding to this documentation. We always want to hear how PyDAP is being used.
+    The information regarding this page may be outdated. If you notice the following examples are not running correctly, consider reporting in the GitHub issue tracker https://github.com/pydap/pydap/issues. If you have an example in which you configured `pydap` as a server, consider adding to this documentation. We always want to hear how PyDAP is being used.
 
-pydap comes with a lightweight and scalable OPeNDAP server, implemented as a `WSGI <http://wsgi.org/>`_ application. Being a WSGI `application <http://wsgi.org/wsgi/Applications>`_, pydap can run on a variety of `servers <http://wsgi.org/wsgi/Servers>`_, and frameworks including Apache, `Nginx <https://www.nginx.com/>`_, IIS, `uWSGI <https://uwsgi-docs.readthedocs.io/en/latest/>`_, `Flask <http://flask.pocoo.org/>`_ or as a standalone Python process. It can also be seamless combined with different `middleware <http://wsgi.org/wsgi/Middleware_and_Utilities>`_ for authentication/authorization, GZip compression, and much more.
+`pydap` comes with a lightweight and scalable OPeNDAP server, implemented as a `WSGI <http://wsgi.org/>`_ application. Being a WSGI `application <http://wsgi.org/wsgi/Applications>`_, pydap can run on a variety of `servers <http://wsgi.org/wsgi/Servers>`_, and frameworks including Apache, `Nginx <https://www.nginx.com/>`_, IIS, `uWSGI <https://uwsgi-docs.readthedocs.io/en/latest/>`_, `Flask <http://flask.pocoo.org/>`_ or as a standalone Python process. It can also be seamless combined with different `middleware <http://wsgi.org/wsgi/Middleware_and_Utilities>`_ for authentication/authorization, GZip compression, and much more.
 
 There is no one right way to run pydap server; your application requirements and software stack will inform your deployment decisions. In this chapter we provide a few examples to try and get you on the right track.
 
-In order to distribute your data first you need to install a proper `handler <handlers.html>`_, that will convert the data format to the pydap data model.
+In order to distribute your data first you need to install a proper `handler <handlers.html>`_, that will convert the data format to the `pydap` data model.
 
 Running standalone
 ------------------
@@ -16,19 +16,19 @@ If you just want to quickly test the pydap server, you can run it as a standalon
 
 .. code-block:: bash
 
-    pip install "pydap[server]"
+    $ pip install "pydap[server]"
 
 and then just run the ``pydap`` script that pip installs into your bin directory:
 
 .. code-block:: bash
 
-    pydap --data /path/to/my/data/files --port 8080
+    $ pydap --data /path/to/my/data/files --port 8080
 
 To change the default directory listing, the help page and the HTML form, you can point a switch to your template directory
 
 .. code-block:: bash
 
-    pydap --data /path/to/my/data/files --templates /path/to/my/templates.
+    $ pydap --data /path/to/my/data/files --templates /path/to/my/templates.
 
 The HTML form template is fairly complex, since it contain some application logic and some Javascript code, so be careful to not break anything.
 
@@ -43,7 +43,6 @@ pydap follows the `WSGI specification <https://www.fullstackpython.com/wsgi-serv
 
     from pydap.wsgi.app import DapServer
     application = DapServer('/path/to/my/data/files')
-
 
 Flask
 -----
@@ -67,16 +66,16 @@ For a robust deployment you can run pydap with Apache, using `mod_wsgi <http://m
 
 .. code-block:: bash
 
-    mkdir /var/www/pydap
-    python3 -m venv /var/www/pydap/env
+    $ mkdir /var/www/pydap
+    $ python3 -m venv /var/www/pydap/env
 
-If you want the sandbox to use your system installed packages (like Numpy, e.g.) you can use the ``--system-site-packages`` flag:
+If you want the sandbox to use your system installed packages (like `numpy`, e.g.) you can use the ``--system-site-packages`` flag:
 
 .. code-block:: bash
 
     $ python3 -m venv --system-site-packages /var/www/pydap/env
 
-Now let's activate the sandbox and install pydap -- this way the module and its dependencies can be isolated from the system libraries:
+Now let's activate the sandbox and install `pydap` -- this way the module and its dependencies can be isolated from the system libraries:
 
 .. code-block:: bash
 
@@ -139,7 +138,6 @@ This is the file I use for the `test.pydap.org <http://test.pydap.org/>`_ virtua
 
 You can find more information on the `mod_wsgi configuration guide <http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide>`_. Just remember that pydap is a WSGI application like any other else, so any information on WSGI applications applies to it as well.
 
-
 uWSGI
 -----
 
@@ -177,7 +175,6 @@ In order to make it run automatically during boot on Linux you can type:
 .. code-block:: bash
 
     $ sudo initctl reload-configuration
-
 
 Docker
 ------

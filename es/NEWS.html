@@ -345,11 +345,12 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.4</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.3</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.5.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.5.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.5</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.4</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.3</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.5.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.5.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.5.0</a></li>
 </ul>
             </nav>
         </div>
@@ -364,7 +365,25 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="lo-nuevo">
 <h1>Lo Nuevo<a class="headerlink" href="#lo-nuevo" title="Link to this heading">#</a></h1>
 <section id="id1">
-<h2>3.5.4<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>3.5.5<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p><em>Release date: 2025-April-13</em></p>
+<ul class="simple">
+<li><p>Documentacion por &#64;Mikejmnez en #461 #462, #464, #465, #467, #469,</p></li>
+<li><p>Remueve archivos innecesarios por &#64;Mikejmnez en #463</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">decode_times=False</span></code> is el default &#64;Mikejmnez en #470</p></li>
+<li><p>Anade <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">3.13</span></code> a github testing por &#64;Mikejmnez en #472</p></li>
+<li><p>Dimensiones globales ahora son determinadas al inicializar el dataset por &#64;Mikejmnez en #475</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">hooks</span></code> por &#64;pre-commit-ci in #476</p></li>
+<li><p>Incluye <code class="docutils literal notranslate"><span class="pre">caching</span></code> cuando se utilizan dap4 urls, y se reusa el URL de las dimensiones, en el caso de datacubes. Por &#64;Mikejmnez en #473</p></li>
+<li><p>Include <code class="docutils literal notranslate"><span class="pre">Python3.13</span></code> metadata y errores gramaticales por &#64;Zeitsperre en #477</p></li>
+<li><p>Mejora la declaracion de las dimensions de BaseType rn DAP2. Por &#64;Mikejmnez en #481</p></li>
+<li><p>Mejora del <code class="docutils literal notranslate"><span class="pre">netcdf</span> <span class="pre">handler</span></code>, para ser consistente con el parser de dmr. Por &#64;Mikejmnez en #479</p></li>
+<li><p>Cambio de nombre,  <code class="docutils literal notranslate"><span class="pre">datacube_urls</span></code> es ahora <code class="docutils literal notranslate"><span class="pre">consolidate_metadata</span></code> por &#64;Mikejmnez en #483</p></li>
+<li><p>Mejora de la advertencia en pruebas. Por &#64;Mikejmnez en #484</p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>3.5.4<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
 <p><em>Fecha de lanzamiento: 18 de marzo de 2025</em></p>
 <ul class="simple">
 <li><p>Actualizacion de pre-commit hooks por &#64;pre-commit-ci in #431</p></li>
@@ -379,8 +398,8 @@ document.write(`
 <li><p>Cambio predeterminado: Ahora output_grid=False es el argumento predeterminado para open_url. Por &#64;Mikejmnez en #457</p></li>
 </ul>
 </section>
-<section id="id2">
-<h2>3.5.3<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="id3">
+<h2>3.5.3<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
 <p><em>Fecha de lanzamiento: 6 de enero de 2025</em></p>
 <ul class="simple">
 <li><p>Se mejora el paralelismo en la lectura de fragmentos de datos binarios. Este problema afectaba especialmente a datasets con <code class="docutils literal notranslate"><span class="pre">chunks</span></code> muy pequeños, pero ya no es el caso. Por &#64;Mikejmnez en #419</p></li>
@@ -391,8 +410,8 @@ document.write(`
 <li><p>Se agrega soporte para decodificar encabezados de fragmentos y establecer la longitud del DMR de forma genérica, además de detectar automáticamente la endianidad de los datos. Esto permite a pydap analizar respuestas DAP4 de TDS y Hyrax sin necesidad de lógica adicional para identificar el servidor que generó la respuesta. Por &#64;Mikejmnez en #428</p></li>
 </ul>
 </section>
-<section id="id3">
-<h2>3.5.2<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id4">
+<h2>3.5.2<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p><em>Fecha de lanzamiento: 19 de noviembre de 2024</em></p>
 <ul class="simple">
 <li><p>Se agrega insignia de Zenodo por &#64;Mikejmnez <a class="github reference external" href="https://github.com/pydap/pydap/pull/405">pydap/pydap#405</a></p></li>
@@ -403,8 +422,8 @@ document.write(`
 <li><p>Corrección rápida: Se implementa un parche temporal para analizar respuestas DAP4 de TDS, con un mensaje de advertencia recomendando el uso de DAP2. Por &#64;Mikejmnez en <a class="github reference external" href="https://github.com/pydap/pydap/pull/415">pydap/pydap#415</a></p></li>
 </ul>
 </section>
-<section id="id4">
-<h2>3.5.1<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h2>3.5.1<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <p><em>Fecha de lanzamiento: 28 de octubre de 2024</em></p>
 <ul class="simple">
 <li><p>Soporte para DAP4:</p>
@@ -437,8 +456,8 @@ document.write(`
 </li>
 </ul>
 </section>
-<section id="id5">
-<h2>3.5.0<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>3.5.0<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <p><em>Fecha de lanzamiento: 16-Aug-2024</em></p>
 <ul class="simple">
 <li><p>Soporte de DAP4:</p>
@@ -549,11 +568,12 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.4</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.3</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.5.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.5.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.5</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.4</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.3</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.5.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.5.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.5.0</a></li>
 </ul>
   </nav></div>
 

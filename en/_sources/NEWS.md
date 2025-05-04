@@ -1,6 +1,24 @@
 What's New
 ==========
 
+3.5.5
+------
+*Release date: 2025-April-13*
+
+* Update documentation by @Mikejmnez in #461 #462, #464, #465, #467, #469,
+* remove unnecessary file by @Mikejmnez in #463
+* Sets `decode_times=False` when reading in parallel by @Mikejmnez in #470
+* add python 3.13 to testing by @Mikejmnez in #472
+* set global dims when initiating the dataset by @Mikejmnez in #475
+* Update pre-commit hooks by @pre-commit-ci in #476
+* enables caching of multiple dap4 urls and custom cache key for dimensions dap responses by @Mikejmnez in #473
+* Add Python3.13 metadata and fix spelling mistakes by @Zeitsperre in #477
+* update BaseType's reference to dimensions in DAP2 by @Mikejmnez in #481
+* update netcdf handler to be consistent with dmr parser when creating … by @Mikejmnez in #479
+* rename datacube_urls to consolidate_metadata by @Mikejmnez in #483
+* fix test warn by @Mikejmnez in #484
+
+
 3.5.4
 ------
 *Release date: 2025-March-18*

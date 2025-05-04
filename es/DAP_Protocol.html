@@ -484,7 +484,6 @@ document.write(`
  &#39;source&#39;: &#39;ATL03 ATBD Section 7.3&#39;,
  &#39;units&#39;: &#39;meters&#39;,
  &#39;path&#39;: &#39;/gt1r/bckgrd_atlas&#39;,
- &#39;dims&#39;: [&#39;delta_time&#39;],
  &#39;Maps&#39;: (&#39;/gt1r/bckgrd_atlas/delta_time&#39;,)}
 </pre></div>
 </div>
@@ -497,7 +496,29 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;/gt1r/bckgrd_atlas/delta_time&#39;]
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="nn">File ~/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:244,</span> in <span class="ni">DapType.__getattr__</span><span class="nt">(self, attr)</span>
+<span class="g g-Whitespace">    </span><span class="mi">243</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">244</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">245</span> <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+
+<span class="ne">KeyError</span>: &#39;dimensions&#39;
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;/gt1r/bckgrd_atlas/bckgrd_int_height&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span> <span class="c1"># dimensions of the variable</span>
+
+<span class="nn">File ~/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:246,</span> in <span class="ni">DapType.__getattr__</span><span class="nt">(self, attr)</span>
+<span class="g g-Whitespace">    </span><span class="mi">244</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">245</span> <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">246</span>     <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">247</span>         <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; object has no attribute &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">attr</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">248</span>     <span class="p">)</span>
+
+<span class="ne">AttributeError</span>: &#39;&lt;class &#39;pydap.model.BaseType&#39;&gt;&#39; object has no attribute &#39;dimensions&#39;
 </pre></div>
 </div>
 </div>
@@ -505,11 +526,6 @@ document.write(`
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;/gt1r/bckgrd_atlas&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span> <span class="c1"># Dimension of the Group</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;delta_time&#39;: 89490}
 </pre></div>
 </div>
 </div>
@@ -530,11 +546,6 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Your request was for a response that uses the DAP2 data model. This dataset contains variables whose data type is not compatible with that data model, causing this request to FAIL. To access this dataset ask for the DAP4 binary response encoding.
-</pre></div>
-</div>
-</div>
 </div>
 <p>In the case above, a variable is of <code class="docutils literal notranslate"><span class="pre">Int64</span></code> (atomic) type, which causes the error. However, if instead the attribute is a type that is not supported by DAP2 model, the server will not raise an <code class="docutils literal notranslate"><span class="pre">HTTPError</span></code>, and <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> will download an <code class="docutils literal notranslate"><span class="pre">incomplete</span></code> dataset (with missing attributes)</p>
 </section>
@@ -548,11 +559,6 @@ document.write(`
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;DatasetType with children &#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;&gt;
-</pre></div>
-</div>
-</div>
 </div>
 <p>Here we used the <code class="docutils literal notranslate"><span class="pre">pydap.client.open_url</span></code> function to open an <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> URL specifying the location of the dataset. When we access the remote
 dataset the function returns a <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> object, which is a fancy dictionary that stores other variables. We can
@@ -561,18 +567,6 @@ check the names of the store variables like we would do with a Python dictionary
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.coads_climatology.nc
-├──COADSX
-├──COADSY
-├──TIME
-├──SST
-├──AIRT
-├──UWND
-└──VWND
 </pre></div>
 </div>
 </div>
@@ -588,26 +582,10 @@ check the names of the store variables like we would do with a Python dictionary
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;missing_value&#39;: -9.99999979e+33,
- &#39;_FillValue&#39;: -9.99999979e+33,
- &#39;long_name&#39;: &#39;SEA SURFACE TEMPERATURE&#39;,
- &#39;history&#39;: &#39;From coads_climatology&#39;,
- &#39;units&#39;: &#39;Deg C&#39;,
- &#39;dims&#39;: [&#39;TIME&#39;, &#39;COADSY&#39;, &#39;COADSX&#39;],
- &#39;Maps&#39;: (&#39;/TIME&#39;, &#39;/COADSY&#39;, &#39;/COADSX&#39;)}
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;/SST&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;/TIME&#39;, &#39;/COADSY&#39;, &#39;/COADSX&#39;]
 </pre></div>
 </div>
 </div>
@@ -617,13 +595,6 @@ check the names of the store variables like we would do with a Python dictionary
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
 <span class="n">sst</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SST&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">125</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Type of object: &#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 4.04 ms, sys: 2.2 ms, total: 6.24 ms
-Wall time: 422 ms
 </pre></div>
 </div>
 </div>
@@ -638,43 +609,10 @@ Wall time: 422 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;DatasetType with children &#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;&gt;
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.coads_climatology.nc
-├──COADSX
-├──COADSY
-├──TIME
-├──SST
-│  ├──SST
-│  ├──TIME
-│  ├──COADSY
-│  └──COADSX
-├──AIRT
-│  ├──AIRT
-│  ├──TIME
-│  ├──COADSY
-│  └──COADSX
-├──UWND
-│  ├──UWND
-│  ├──TIME
-│  ├──COADSY
-│  └──COADSX
-└──VWND
-   ├──VWND
-   ├──TIME
-   ├──COADSY
-   └──COADSX
 </pre></div>
 </div>
 </div>
@@ -686,21 +624,11 @@ Wall time: 422 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;GridType with array &#39;SST&#39; and maps &#39;TIME&#39;, &#39;COADSY&#39;, &#39;COADSX&#39;&gt;
-</pre></div>
-</div>
-</div>
 </div>
 <p>Note that the variable is of type <code class="docutils literal notranslate"><span class="pre">GridType</span></code>, a multidimensional array with specific axes defining each of its dimensions:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">dimensions</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;TIME&#39;, &#39;COADSY&#39;, &#39;COADSX&#39;)
 </pre></div>
 </div>
 </div>
@@ -711,20 +639,10 @@ Wall time: 422 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(12, 90, 180)
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">sst</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4
 </pre></div>
 </div>
 </div>
@@ -738,11 +656,6 @@ Wall time: 422 ms
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">,</span> <span class="n">output_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">dataset</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;DatasetType with children &#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;&gt;
 </pre></div>
 </div>
 </div>
@@ -768,22 +681,10 @@ Wall time: 422 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 4.61 ms, sys: 7.26 ms, total: 11.9 ms
-Wall time: 226 ms
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>numpy.ndarray
 </pre></div>
 </div>
 </div>
@@ -800,22 +701,10 @@ Wall time: 226 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 2.3 ms, sys: 1.02 ms, total: 3.32 ms
-Wall time: 155 ms
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 35, 80)
 </pre></div>
 </div>
 </div>
@@ -844,32 +733,10 @@ Wall time: 155 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.gsodock1.dat
-└──URI_GSO-Dock
-   ├──Time
-   ├──Depth
-   ├──Sea_Temp
-   ├──Salinity
-   ├──DO%20
-   ├──pH
-   ├──Turbidity
-   ├──Air_Temp
-   ├──Wind_Speed
-   ├──Wind_Direction
-   └──Barometric_Pres
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;URI_GSO-Dock&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;SequenceType with children &#39;Time&#39;, &#39;Depth&#39;, &#39;Sea_Temp&#39;, &#39;Salinity&#39;, &#39;DO%20&#39;, &#39;pH&#39;, &#39;Turbidity&#39;, &#39;Air_Temp&#39;, &#39;Wind_Speed&#39;, &#39;Wind_Direction&#39;, &#39;Barometric_Pres&#39;&gt;
 </pre></div>
 </div>
 </div>
@@ -886,76 +753,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.s
-├──trajectory
-├──wmo_id
-├──profile_id
-├──time
-├──latitude
-├──longitude
-├──depth
-├──conductivity
-├──conductivity_qc
-├──density
-├──density_qc
-├──depth_qc
-├──instrument_ctd
-├──lat_qc
-├──lat_uv
-├──lat_uv_qc
-├──lon_qc
-├──lon_uv
-├──lon_uv_qc
-├──platform_meta
-├──precise_lat
-├──precise_lon
-├──precise_time
-├──pressure
-├──pressure_qc
-├──profile_lat_qc
-├──profile_lon_qc
-├──profile_time_qc
-├──qartod_conductivity_flat_line_flag
-├──qartod_conductivity_gross_range_flag
-├──qartod_conductivity_primary_flag
-├──qartod_conductivity_rate_of_change_flag
-├──qartod_conductivity_spike_flag
-├──qartod_density_flat_line_flag
-├──qartod_density_gross_range_flag
-├──qartod_density_primary_flag
-├──qartod_density_rate_of_change_flag
-├──qartod_density_spike_flag
-├──qartod_location_test_flag
-├──qartod_pressure_flat_line_flag
-├──qartod_pressure_gross_range_flag
-├──qartod_pressure_primary_flag
-├──qartod_pressure_rate_of_change_flag
-├──qartod_pressure_spike_flag
-├──qartod_salinity_flat_line_flag
-├──qartod_salinity_gross_range_flag
-├──qartod_salinity_primary_flag
-├──qartod_salinity_rate_of_change_flag
-├──qartod_salinity_spike_flag
-├──qartod_temperature_flat_line_flag
-├──qartod_temperature_gross_range_flag
-├──qartod_temperature_primary_flag
-├──qartod_temperature_rate_of_change_flag
-├──qartod_temperature_spike_flag
-├──salinity
-├──salinity_qc
-├──temperature
-├──temperature_qc
-├──time_qc
-├──time_uv
-├──time_uv_qc
-├──u
-├──u_qc
-├──v
-└──v_qc
-</pre></div>
-</div>
-</div>
 </div>
 <p>Where the variables <code class="docutils literal notranslate"><span class="pre">s</span></code> identifies the sequential data.</p>
 <div class="cell docutils container">
@@ -964,209 +761,11 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pydap.model.SequenceType
-</pre></div>
-</div>
-</div>
 </div>
 <p>We can further identify each individual glider data by looking at <code class="docutils literal notranslate"><span class="pre">profile_id</span></code>, a value that is unique for each of them. You can inspect the raw values are follows</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="nb">id</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iterdata</span><span class="p">()]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int32(1),
- np.int32(2),
- np.int32(3),
- np.int32(4),
- np.int32(5),
- np.int32(6),
- np.int32(7),
- np.int32(8),
- np.int32(9),
- np.int32(10),
- np.int32(11),
- np.int32(12),
- np.int32(13),
- np.int32(14),
- np.int32(15),
- np.int32(16),
- np.int32(17),
- np.int32(18),
- np.int32(19),
- np.int32(20),
- np.int32(21),
- np.int32(22),
- np.int32(23),
- np.int32(24),
- np.int32(25),
- np.int32(26),
- np.int32(27),
- np.int32(28),
- np.int32(29),
- np.int32(30),
- np.int32(31),
- np.int32(32),
- np.int32(33),
- np.int32(34),
- np.int32(35),
- np.int32(36),
- np.int32(37),
- np.int32(38),
- np.int32(39),
- np.int32(40),
- np.int32(41),
- np.int32(42),
- np.int32(43),
- np.int32(44),
- np.int32(45),
- np.int32(46),
- np.int32(47),
- np.int32(48),
- np.int32(49),
- np.int32(50),
- np.int32(51),
- np.int32(52),
- np.int32(53),
- np.int32(54),
- np.int32(55),
- np.int32(56),
- np.int32(57),
- np.int32(58),
- np.int32(59),
- np.int32(60),
- np.int32(61),
- np.int32(62),
- np.int32(63),
- np.int32(64),
- np.int32(65),
- np.int32(66),
- np.int32(67),
- np.int32(68),
- np.int32(69),
- np.int32(70),
- np.int32(71),
- np.int32(72),
- np.int32(73),
- np.int32(74),
- np.int32(75),
- np.int32(76),
- np.int32(77),
- np.int32(78),
- np.int32(79),
- np.int32(80),
- np.int32(81),
- np.int32(82),
- np.int32(83),
- np.int32(84),
- np.int32(85),
- np.int32(86),
- np.int32(87),
- np.int32(88),
- np.int32(89),
- np.int32(90),
- np.int32(91),
- np.int32(92),
- np.int32(93),
- np.int32(94),
- np.int32(95),
- np.int32(96),
- np.int32(97),
- np.int32(98),
- np.int32(99),
- np.int32(100),
- np.int32(101),
- np.int32(102),
- np.int32(103),
- np.int32(104),
- np.int32(105),
- np.int32(106),
- np.int32(107),
- np.int32(108),
- np.int32(109),
- np.int32(110),
- np.int32(111),
- np.int32(112),
- np.int32(113),
- np.int32(114),
- np.int32(115),
- np.int32(116),
- np.int32(117),
- np.int32(118),
- np.int32(119),
- np.int32(120),
- np.int32(121),
- np.int32(122),
- np.int32(123),
- np.int32(124),
- np.int32(125),
- np.int32(126),
- np.int32(127),
- np.int32(128),
- np.int32(129),
- np.int32(130),
- np.int32(131),
- np.int32(132),
- np.int32(133),
- np.int32(134),
- np.int32(135),
- np.int32(136),
- np.int32(137),
- np.int32(138),
- np.int32(139),
- np.int32(140),
- np.int32(141),
- np.int32(142),
- np.int32(143),
- np.int32(144),
- np.int32(145),
- np.int32(146),
- np.int32(147),
- np.int32(148),
- np.int32(149),
- np.int32(150),
- np.int32(151),
- np.int32(152),
- np.int32(153),
- np.int32(154),
- np.int32(155),
- np.int32(156),
- np.int32(157),
- np.int32(158),
- np.int32(159),
- np.int32(160),
- np.int32(161),
- np.int32(162),
- np.int32(163),
- np.int32(164),
- np.int32(165),
- np.int32(166),
- np.int32(167),
- np.int32(168),
- np.int32(169),
- np.int32(170),
- np.int32(171),
- np.int32(172),
- np.int32(173),
- np.int32(174),
- np.int32(175),
- np.int32(176),
- np.int32(177),
- np.int32(178),
- np.int32(179),
- np.int32(180),
- np.int32(181),
- np.int32(182),
- np.int32(183),
- np.int32(184),
- np.int32(185),
- np.int32(186),
- np.int32(187),
- np.int32(188),
- np.int32(189)]
 </pre></div>
 </div>
 </div>
@@ -1182,18 +781,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_FillValue&#39;: -1,
- &#39;actual_range&#39;: [1, 189],
- &#39;cf_role&#39;: &#39;profile_id&#39;,
- &#39;comment&#39;: &#39;Sequential profile number within the trajectory.  This value is unique in each file that is part of a single trajectory/deployment.&#39;,
- &#39;ioos_category&#39;: &#39;Identifier&#39;,
- &#39;long_name&#39;: &#39;Profile ID&#39;,
- &#39;valid_max&#39;: 2147483647,
- &#39;valid_min&#39;: 1}
-</pre></div>
-</div>
-</div>
 </div>
 <p>The first thing we’d like to do is limit our very simple analysis. We consider only a single glider and only inspect the variables <code class="docutils literal notranslate"><span class="pre">depth</span></code> and <code class="docutils literal notranslate"><span class="pre">temperature</span></code>. This is simlar to <code class="docutils literal notranslate"><span class="pre">column-wise</span> <span class="pre">selection</span></code>.</p>
 <p>To accomplish that we use pydap’s simple logic as follows</p>
@@ -1202,15 +789,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seq</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)]</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
 <span class="n">seq</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;pydap.model.SequenceType&#39;&gt;
-.s
-├──profile_id
-├──depth
-└──temperature
 </pre></div>
 </div>
 </div>
@@ -1224,11 +802,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">glid5</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)][</span><span class="n">seq</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">==</span><span class="mi">5</span><span class="p">]</span>
 <span class="n">glid5</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;SequenceType with children &#39;profile_id&#39;, &#39;depth&#39;, &#39;temperature&#39;&gt;
 </pre></div>
 </div>
 </div>
@@ -1262,9 +835,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/9ab773202be91ba9e234cfbfcc6adc210ddabe6364601be24152a8e05e61fe0b.png" src="_images/9ab773202be91ba9e234cfbfcc6adc210ddabe6364601be24152a8e05e61fe0b.png" />
 </div>
 </div>
 </section>

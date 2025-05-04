@@ -1,6 +1,24 @@
 Lo Nuevo
 ========
 
+3.5.5
+------
+*Release date: 2025-April-13*
+
+* Documentacion por @Mikejmnez en #461 #462, #464, #465, #467, #469,
+* Remueve archivos innecesarios por @Mikejmnez en #463
+* `decode_times=False` is el default @Mikejmnez en #470
+* Anade `python 3.13` a github testing por @Mikejmnez en #472
+* Dimensiones globales ahora son determinadas al inicializar el dataset por @Mikejmnez en #475
+* `pre-commit hooks` por @pre-commit-ci in #476
+* Incluye `caching` cuando se utilizan dap4 urls, y se reusa el URL de las dimensiones, en el caso de datacubes. Por @Mikejmnez en #473
+* Include `Python3.13` metadata y errores gramaticales por @Zeitsperre en #477
+* Mejora la declaracion de las dimensions de BaseType rn DAP2. Por @Mikejmnez en #481
+* Mejora del `netcdf handler`, para ser consistente con el parser de dmr. Por @Mikejmnez en #479
+* Cambio de nombre,  `datacube_urls` es ahora `consolidate_metadata` por @Mikejmnez en #483
+* Mejora de la advertencia en pruebas. Por @Mikejmnez en #484
+
+
 3.5.4
 ------
 *Fecha de lanzamiento: 18 de marzo de 2025*
