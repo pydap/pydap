@@ -150,7 +150,7 @@ def open_url(
     return dataset
 
 
-def consolidate_metadata(urls, session):
+def consolidate_metadata(urls, session, concat_dim=None):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs,
     provided as a list, by caching the DMR response of each URL, along
     with caching the DAP response of all dimensions in the datacube.
@@ -159,8 +159,15 @@ def consolidate_metadata(urls, session):
     urls : list
         The URLs of the datasets that define a datacube. Each URL must begin
         with the same base URL, and begin with `dap4://`.
-        session : requests-cache.CachedSession
-            A requests session object.
+    session : requests-cache.CachedSession
+        A requests session object.
+    concat_dim : str, optional (default=None)
+        A dimensions name (string) to concatenate across the datasets to form
+        a datacube. If `None`, all dimensions present across the datacube
+        are assigned to a single cache key, i.e. that of the first URL.
+        When `concat_dim` is provided, no cache key is assigned to the
+        dimension, and the dap response associated with that dimension
+        is then downloaded for each URL.
     """
 
     if not isinstance(session, CachedSession):
@@ -200,7 +207,6 @@ def consolidate_metadata(urls, session):
             results = list(
                 executor.map(lambda url: open_dmr(url, session=Session), dmr_urls)
             )
-
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     # identify dimensions that repeat across the urls
@@ -211,6 +217,20 @@ def consolidate_metadata(urls, session):
 
     # TODO: make sure count of dimensions is the same as the number of urls
 
+    if concat_dim is not None and set([concat_dim]).issubset(dims):
+        dims.remove(concat_dim)
+        concat_dim_urls = [
+            url.split("?")[0]
+            + ".dap?dap4.ce="
+            + concat_dim
+            + "[0:1:"
+            + str(results[i].dimensions[concat_dim] - 1)
+            + "]"
+            for i, url in enumerate(URLs)
+        ]
+    else:
+        concat_dim_urls = []
+
     new_urls = [
         base_url
         + ".dap?dap4.ce="
@@ -220,6 +240,9 @@ def consolidate_metadata(urls, session):
         + "%5D"
         for dim in list(dims)
     ]
+    # add the non-cached urls to download dimension dap data.
+    new_urls.extend(concat_dim_urls)
+
     # xarray does not escaped CE
     dim_ces = set(
         [
@@ -228,7 +251,7 @@ def consolidate_metadata(urls, session):
         ]
     )
     if dims:
-        print("datacube has dimensions", dim_ces)
+        print("\ndatacube has dimensions", dim_ces)
         # create custom cache keys
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs
