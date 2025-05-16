@@ -24,7 +24,7 @@ Los usuarios principiantes de `OPeNDAP`, sin embargo, usualmente tienen que inve
 
 | ![WhyPydap](/images/WhyPydap.png) |
 |:--:|
-| *Figure 1. Comparacion entre dos maneras de descargar una subregion de archivo cientifico remoto en un servidor de OPeNDAP. En este ejemplo, la cobertura de los datos dentro del archivo remoto es global, y el usuario de pydap descarga solamente la region de interes al indexar el arreglo numerico de pydap. La mandera comun de OPeNDAP es por medio del `Data Request Form` que permite al usuario contruir manualmente el URL con su Expression de Restriccion.* |
+| *Figure 1. Comparacion entre 3 maneras de usar OPeNDAP para descargar una subregion de archivo cientifico remoto expuesto por un servidor de OPeNDAP. En este ejemplo, la cobertura de los datos dentro del archivo remoto es global, y el usuario de Pydap descarga solamente la region de interes al indexar el arreglo numerico de pydap. Para utilizar Pydap por medio de Xarray, es necesario definir pydap como motor (`engine='pydap'`). `Note` el reemplazo del esquema de http por dap4 en el URL. El acceso directo al servidor OPeNDAP es por medio del `Data Request Form` que permite al usuario construir manualmente el URL con su Expression de Restriccion.* |
 
 
 `Pydap` permite el acceso de informacion cientifica disponible en servidores de OPeNDAP de una manera pythonica, interactiva y exploratoria. En breve, `pydap`:

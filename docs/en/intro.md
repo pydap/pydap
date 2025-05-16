@@ -23,7 +23,7 @@ Beginner OPeNDAP users may rapidly find themselves spending the time to better u
 
 | ![WhyPydap](/images/WhyPydap.png) |
 |:--:|
-| *Figure 1. Comparison of ways to download a subset of an entire remote file. In this example, the remote data covers the globe, and a pydap user downloads a subset by slicing the pydap array. A traditional OPeNDAP native approach is to use a Data Request Form to manually construct the URL along with its Constraint Expression.* |
+| *Figure 1. Comparison of 3 ways to download a subset of a remote file exposed by an OPeNDAP server. In this example, the data covers the globe, and a Pydap user downloads a subset by slicing the pydap array. To use Pydap via Xarray, one can specify `engine='pydap'` (`Note` the scheme change to the URL). A traditional OPeNDAP native approach is to use a `Data Request Form` to manually construct the URL along with its Constraint Expression.* |
 
 
 `Pydap` enables access to data on OPeNDAP servers in a pythonic way, and enables interactive and exploratory subsetting of remote datasets. To summarize `pydap`:
