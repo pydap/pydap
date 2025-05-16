@@ -31,10 +31,6 @@ sphinx:
     html_theme_options:
       navigation_with_keys: false
 
-# Add a bibtex file so that we can create citations
-bibtex_bibfiles:
-- references.bib
-
 # Information about where the book exists on the web
 repository:
   url: https://github.com/pydap/pydap
