@@ -150,7 +150,7 @@ def open_url(
     return dataset
 
 
-def consolidate_metadata(urls, session):
+def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose=False):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs,
     provided as a list, by caching the DMR response of each URL, along
     with caching the DAP response of all dimensions in the datacube.
@@ -159,8 +159,24 @@ def consolidate_metadata(urls, session):
     urls : list
         The URLs of the datasets that define a datacube. Each URL must begin
         with the same base URL, and begin with `dap4://`.
-        session : requests-cache.CachedSession
-            A requests session object.
+    session : requests-cache.CachedSession
+        A requests session object.
+    concat_dim : str, optional (default=None)
+        A dimensions name (string) to concatenate across the datasets to form
+        a datacube. If `None`, all dimensions present across the datacube
+        are assigned to a single cache key, i.e. that of the first URL.
+        When `concat_dim` is provided, no cache key is assigned to the
+        dimension, and the dap response associated with that dimension
+        is then downloaded for each URL.
+    safe_mode : bool, optional (default=True)
+        If `True`, the DMR response is downloaded for each URL, creating a
+        empty pydap dataset. Then, dimensions and variables are checked
+        for consistency. All variables and dimensions must be identical
+        across all URLs. If `False`, only the first URL DMR response is
+        downloaded, and the rest of the DMRs are assigned the same
+        cache key as the first URL, to avoid downloading the DMR
+        response for each URL. This is much faster, but does not check
+        for consistency across the URLs.
     """
 
     if not isinstance(session, CachedSession):
@@ -189,27 +205,58 @@ def consolidate_metadata(urls, session):
         return None
     # All URLs begin with dap4 - to make sure DAP4 compliant
     URLs = ["http" + urls[i][4:] for i in range(len(urls))]
+    # nURLs = [url.split("?")[0] for url in URLs]
     ncores = min(len(urls), os.cpu_count() * 4)
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
-
-    # this caches the dmr
-    with session as Session:  # Authenticate once
-        with ThreadPoolExecutor(max_workers=ncores) as executor:
-            results = list(
-                executor.map(lambda url: open_dmr(url, session=Session), dmr_urls)
+    if safe_mode:
+        with session as Session:  # Authenticate once
+            with ThreadPoolExecutor(max_workers=ncores) as executor:
+                results = list(
+                    executor.map(lambda url: open_dmr(url, session=Session), dmr_urls)
+                )
+        if [ds.dimensions for ds in results].count(results[0].dimensions) != len(
+            results
+        ):
+            warnings.warn(
+                "The dimensions of the datasets are identical across all urls. "
+                "Please check the URLs and try again."
             )
-
+            return None
+    else:
+        #  Caches a single dmr and creates a cache key for all dmr urls
+        #  to avoid downloading multiple dmr responses.
+        patch_session_for_shared_dap_cache(
+            session, {}, known_url_list=dmr_urls, verbose=verbose
+        )
+        results = [open_dmr(dmr_urls[0], session=session)]
+        # Does not download the dmr responses, as a cached key was created.
+        # But needs to run so the URL is assigned the key.
+        with session as Session:  # Authenticate once
+            with ThreadPoolExecutor(max_workers=ncores) as executor:
+                _ = list(executor.map(lambda url: Session.get(url), dmr_urls))
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     # identify dimensions that repeat across the urls
-    nested = [
-        [val for val in results[i].dimensions.keys()] for i in range(len(results))
-    ]
-    dims = set([item for sublist in nested for item in sublist])
+    dims = set(list(results[0].dimensions.keys()))
 
+    # check if all urls have the same dimensions
     # TODO: make sure count of dimensions is the same as the number of urls
+
+    if concat_dim is not None and set([concat_dim]).issubset(dims):
+        dims.remove(concat_dim)
+        concat_dim_urls = [
+            url.split("?")[0]
+            + ".dap?dap4.ce="
+            + concat_dim
+            + "[0:1:"
+            + str(results[0].dimensions[concat_dim] - 1)
+            + "]"
+            for i, url in enumerate(URLs)
+        ]
+    else:
+        concat_dim_urls = []
 
     new_urls = [
         base_url
@@ -220,6 +267,9 @@ def consolidate_metadata(urls, session):
         + "%5D"
         for dim in list(dims)
     ]
+    # add the non-cached urls to download dimension dap data.
+    new_urls.extend(concat_dim_urls)
+
     # xarray does not escaped CE
     dim_ces = set(
         [
@@ -228,11 +278,15 @@ def consolidate_metadata(urls, session):
         ]
     )
     if dims:
-        print("datacube has dimensions", dim_ces)
-        # create custom cache keys
+        if verbose:
+            print("==========================================")
+            print(
+                "\ndatacube has dimensions", dim_ces, ", and concat dim: ", concat_dim
+            )
         patch_session_for_shared_dap_cache(
-            session, shared_vars=dim_ces, known_url_list=URLs
+            session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )
+        # print("now get dap responses for dimensions")
         with session as Session:  # Authenticate once / download dap for each dim
             with ThreadPoolExecutor(max_workers=ncores) as executor:
                 results = list(executor.map(lambda url: Session.get(url), new_urls))
@@ -465,47 +519,116 @@ def compute_base_url_prefix(url_list):
     return f"{parsed_example.scheme}://{parsed_example.netloc}{common_path}"
 
 
-def patch_session_for_shared_dap_cache(session, shared_vars, known_url_list=None):
+def try_generate_custom_key(request, config, verbose=False):
+    parsed = urlparse(request.url)
+    path = parsed.path
+    ext = path.split(".")[-1]  # e.g. 'dap' or 'dmr'
+    query = parse_qs(parsed.query)
+    dap4_ce = query.get("dap4.ce", [None])[0]
+    if dap4_ce:
+        dap4_ce = unquote(dap4_ce)
+
+    shared_vars = config.get("shared_vars", set())
+    general_base = config.get("general_base")
+    known_url_list = config.get("known_url_list", [])
+    is_dmr = config.get("is_dmr", False)
+
+    if ext == "dmr" and not is_dmr:
+        return None
+    if ext == "dap" and (not shared_vars or dap4_ce not in shared_vars):
+        return None
+    if verbose:
+        print("-------------------------------------------------------")
+        print("request.url: ", request.url)
+        print("-------------------------------------------------------")
+        print("shared_vars: ", shared_vars)
+        print("query: ", query)
+        print("known urls", known_url_list)
+        print("is_dmr: ", is_dmr)
+
+    shared_ext = ext
+
+    # Earthdata URLs
+    if parsed.netloc == "opendap.earthdata.nasa.gov":
+        match = re.search(r"(/providers/[^/]+/collections/[^/]+)", path)
+        if match:
+
+            dataset_path = match.group(1)
+            base_url = (
+                f"{parsed.scheme}://{parsed.netloc}{dataset_path}/shared.{shared_ext}"
+            )
+            if verbose:
+                print("-------------------------------------------------------")
+                print("match")
+                print("-------------------------------------------------------")
+                print(
+                    f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
+                    if dap4_ce
+                    else base_url
+                )
+            return (
+                f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}" if dap4_ce else base_url
+            )
+
+    # General POSIX-style URLs
+    if general_base and path.startswith(urlparse(general_base).path):
+        base_path = urlparse(general_base).path
+        base_url = f"{parsed.scheme}://{parsed.netloc}{base_path}/shared.{shared_ext}"
+        if verbose:
+            print("======== NON-cloud url ========")
+            print(
+                f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}" if dap4_ce else base_url
+            )
+        return f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}" if dap4_ce else base_url
+
+    return None
+
+
+def patch_session_for_shared_dap_cache(
+    session, shared_vars, known_url_list=None, verbose=False
+):
     """
-    Patch CachedSession to normalize cache keys for:
-    - Earthdata URLs: group by DAAC + collection_id
-    - General POSIX-style URLs: group by shared base path (computed from known_url_list)
+    Patch CachedSession to support multiple incremental cache key configurations.
+    Repeated calls extend the list of supported URL patterns.
     """
-    original_create_key = session.cache.create_key
-    general_base = compute_base_url_prefix(known_url_list) if known_url_list else None
+    if known_url_list is None:
+        known_url_list = []
 
-    def custom_create_key(request, **kwargs):
-        parsed = urlparse(request.url)
-        path = unquote(parsed.path)
-        query = parse_qs(parsed.query)
-        dap4_ce = query.get("dap4.ce", [None])[0]
-        if dap4_ce:
-            dap4_ce = unquote(dap4_ce)
+    # Compute new config entry
+    # queries = [urlparse(url).query for url in known_url_list]
+    is_dmr = len(known_url_list) > 0 and all(".dmr" in url for url in known_url_list)
+    general_base = compute_base_url_prefix(known_url_list) if known_url_list else ""
 
-        if dap4_ce in shared_vars:
-            # Handle Earthdata-style URLs
-            if parsed.netloc == "opendap.earthdata.nasa.gov":
-                match = re.search(r"(/providers/[^/]+/collections/[^/]+)", path)
-                if match:
-                    dataset_path = match.group(1)
-                    base_url = (
-                        f"{parsed.scheme}://{parsed.netloc}{dataset_path}/shared.dap"
-                    )
-                    normalized_url = f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
-                    return normalized_url
+    new_config = {
+        "shared_vars": set(shared_vars),
+        "known_url_list": known_url_list,
+        "general_base": general_base,
+        "is_dmr": is_dmr,
+    }
 
-            # Handle general POSIX-style URLs
-            base_path = urlparse(general_base).path
-            if general_base and path.startswith(base_path):
-                # Use the computed shared base + virtual shared filename
-                # url_path=urlparse(general_base).path
-                base_url = f"{parsed.scheme}://{parsed.netloc}{base_path}/shared.nc"
-                normalized_url = f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
-                return normalized_url
+    # Initialize list of configs if needed
+    if not hasattr(session, "_dap_cache_configs"):
+        session._dap_cache_configs = []
+        original_create_key = session.cache.create_key
 
-        return original_create_key(request, **kwargs)
+        def custom_create_key(request, **kwargs):
+            # Skip auth URLs
+            if any(x in request.url for x in ["urs", "oauth", "login"]):
+                return original_create_key(request, **kwargs)
 
-    session.cache.create_key = custom_create_key
+            # Try each config in order
+            for cfg in session._dap_cache_configs:
+                key = try_generate_custom_key(request, cfg, verbose)
+                if key:
+                    return key
+
+            # Fall back to original behavior
+            return original_create_key(request, **kwargs)
+
+        session.cache.create_key = custom_create_key
+
+    # Append the new config to the session
+    session._dap_cache_configs.append(new_config)
 
 
 if __name__ == "__main__":
