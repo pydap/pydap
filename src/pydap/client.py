@@ -150,7 +150,11 @@ def open_url(
     return dataset
 
 
+<<<<<<< HEAD
 def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose=False):
+=======
+def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True):
+>>>>>>> cc24f0a (replace `dap4` ---> `http`)
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs,
     provided as a list, by caching the DMR response of each URL, along
     with caching the DAP response of all dimensions in the datacube.
@@ -205,22 +209,30 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
         return None
     # All URLs begin with dap4 - to make sure DAP4 compliant
 <<<<<<< HEAD
+<<<<<<< HEAD
     URLs = ["http" + urls[i][4:] for i in range(len(urls))]
 =======
     URLs = ["https" + urls[i][4:] for i in range(len(urls))]
 >>>>>>> ff2924f (enables separate dap configs to session to handle multiple custom cache keys)
+=======
+    URLs = ["http" + urls[i][4:] for i in range(len(urls))]
+>>>>>>> cc24f0a (replace `dap4` ---> `http`)
     # nURLs = [url.split("?")[0] for url in URLs]
     ncores = min(len(urls), os.cpu_count() * 4)
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> cc24f0a (replace `dap4` ---> `http`)
     if safe_mode:
         with session as Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
                 results = list(
                     executor.map(lambda url: open_dmr(url, session=Session), dmr_urls)
                 )
+<<<<<<< HEAD
         if [ds.dimensions for ds in results].count(results[0].dimensions) != len(
             results
         ):
@@ -245,6 +257,12 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
         patch_session_for_shared_dap_cache(
             session, {}, known_url_list=dmr_urls, verbose=verbose
         )
+=======
+    else:
+        #  Caches a single dmr and creates a cache key for all dmr urls
+        #  to avoid downloading multiple dmr responses.
+        patch_session_for_shared_dap_cache(session, {}, known_url_list=dmr_urls)
+>>>>>>> cc24f0a (replace `dap4` ---> `http`)
         results = [open_dmr(dmr_urls[0], session=session)]
         # Does not download the dmr responses, as a cached key was created.
         # But needs to run so the URL is assigned the key.
@@ -294,13 +312,18 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
             for dim in list(dims)
         ]
     )
-    print("dim_ces: ", dim_ces)
+    # print("dim_ces: ", dim_ces)
     if dims:
+<<<<<<< HEAD
         if verbose:
             print("==========================================")
             print(
                 "\ndatacube has dimensions", dim_ces, ", and concat dim: ", concat_dim
             )
+=======
+        # print("\ndatacube has dimensions", dim_ces)
+        # create custom cache keys
+>>>>>>> cc24f0a (replace `dap4` ---> `http`)
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )
