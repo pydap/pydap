@@ -437,35 +437,35 @@ def test_warning_nondap4urls_consolidate_metadata(urls, cached_session):
 ce1 = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
 
 
-# @pytest.mark.parametrize(
-#     "urls",
-#     [
-#         [
-#             "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
-#             "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce1,
-#         ],
-#     ],
-# )
-# def test_cached_consolidate_metadata(urls, cached_session):
-#     """Test that `consolidate_metadata` effectively caches the dmr of the urls, along
-#     with the dap4 urls of the dimensions
-#     """
-#     cached_session.cache.clear()
-#     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
-#     dims = list(pyds.dimensions)  # dimensions of full dataset
+@pytest.mark.parametrize(
+    "urls",
+    [
+        [
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce1,
+        ],
+    ],
+)
+def test_cached_consolidate_metadata(urls, cached_session):
+    """Test that `consolidate_metadata` effectively caches the dmr of the urls, along
+    with the dap4 urls of the dimensions
+    """
+    cached_session.cache.clear()
+    pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
+    dims = list(pyds.dimensions)  # dimensions of full dataset
 
-#     consolidate_metadata(urls, cached_session)
-#     # check that the cached session has all the dmr urls and
-#     # caches the dap response of the dimensions only once
-#     assert len(cached_session.cache.urls()) == len(urls) + len(dims)
-#     # THE FOLLOWING IS AN IMPORTANT CHECK. THE EXTRA CACHED URLS
-#     # ARE THE DAP RESPONSES OF EACH DIMENSION. AND THESE ARE THE LAST
-#     # TO CACHE. MEANING THE FIRST ELEMENTS OF THE LIST OF CACHED URLS.
-#     dap_urls = [url.replace("dap4", "http") for url in urls]
-#     dim_dap_urls = [dap_urls[0] + ".dap?dap4.ce=" + dim for dim in dims]
-#     N = len(dims)  # should be 3 for this dataset.
-#     for n in range(N):
-#         assert cached_session.cache.urls()[n].split("%")[0] == dim_dap_urls[n]
+    consolidate_metadata(urls, cached_session)
+    # check that the cached session has all the dmr urls and
+    # caches the dap response of the dimensions only once
+    assert len(cached_session.cache.urls()) == len(urls) + len(dims)
+    # THE FOLLOWING IS AN IMPORTANT CHECK. THE EXTRA CACHED URLS
+    # ARE THE DAP RESPONSES OF EACH DIMENSION. AND THESE ARE THE LAST
+    # TO CACHE. MEANING THE FIRST ELEMENTS OF THE LIST OF CACHED URLS.
+    dap_urls = [url.replace("dap4", "http") for url in urls]
+    dim_dap_urls = [dap_urls[0] + ".dap?dap4.ce=" + dim for dim in dims]
+    N = len(dims)  # should be 3 for this dataset.
+    for n in range(N):
+        assert cached_session.cache.urls()[n].split("%")[0] == dim_dap_urls[n]
 
 
 @pytest.mark.parametrize(
