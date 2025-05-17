@@ -220,7 +220,7 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
             results
         ):
             warnings.warn(
-                "The dimensions of the datasets are not the same. "
+                "The dimensions of the datasets are identical across all urls. "
                 "Please check the URLs and try again."
             )
             return None

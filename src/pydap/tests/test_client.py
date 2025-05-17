@@ -398,7 +398,7 @@ def test_warning_consolidate_metadata():
     cached_session as a parameter.
     """
     urls = ["dap4://localhost:8001/", "dap4://localhost:8002/"]
-    with pytest.warns(Warning):
+    with pytest.warns(UserWarning):
         consolidate_metadata(urls, requests.Session())
 
 
@@ -430,7 +430,7 @@ def test_warning_nondap4urls_consolidate_metadata(urls, cached_session):
     that are do not have `dap4` as their scheme.
     """
     cached_session.cache.clear()
-    with pytest.warns(Warning):
+    with pytest.warns(UserWarning):
         consolidate_metadata(urls, cached_session)
 
 
@@ -511,7 +511,7 @@ def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)  # here there are 3 dimensions
     if safe_mode:
-        with pytest.warns(Warning):
+        with pytest.warns(UserWarning):
             consolidate_metadata(urls, session=cached_session, safe_mode=safe_mode)
         assert len(cached_session.cache.urls()) == len(urls)
         # dmrs where cached, but not the dimensions
