@@ -460,7 +460,7 @@ def test_cached_consolidate_metadata_matching_dims(urls, safe_mode):
 
     In both scenarios, the dap urls of the dimensions are cached
     """
-    cached_session = create_session(use_cache=True)
+    cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)  # dimensions of full dataset
