@@ -434,7 +434,8 @@ def test_warning_nondap4urls_consolidate_metadata(urls, cached_session):
         consolidate_metadata(urls, cached_session)
 
 
-ce1 = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
+ce1 = "?dap4.ce=/i;/j;/l;/bears"
+ce2 = "?dap4.ce=/i;/j;/l;/order"
 
 
 @pytest.mark.parametrize(
@@ -443,21 +444,29 @@ ce1 = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
         [
             "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
             "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce1,
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce2,
         ],
     ],
 )
-def test_cached_consolidate_metadata(urls, cached_session):
-    """Test that `consolidate_metadata` effectively caches the dmr of the urls, along
-    with the dap4 urls of the dimensions
+@pytest.mark.parametrize("safe_mode", [True, False])
+def test_cached_consolidate_metadata_matching_dims(urls, cached_session, safe_mode):
+    """Test the behavior of the chaching implemented in `consolidate_metadata`.
+    the `safe_mode` parameter means that all dmr urls are cached, and
+    the dimensions of each dmr_url are checked for consistency.
+
+    when `safe_mode` is False, only the first dmr url is cached.
+
+    In both scenarios, the dap urls of the dimensions are cached
     """
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)  # dimensions of full dataset
+    consolidate_metadata(urls, session=cached_session, safe_mode=safe_mode)
 
-    consolidate_metadata(urls, cached_session)
     # check that the cached session has all the dmr urls and
     # caches the dap response of the dimensions only once
     assert len(cached_session.cache.urls()) == len(urls) + len(dims)
+
     # THE FOLLOWING IS AN IMPORTANT CHECK. THE EXTRA CACHED URLS
     # ARE THE DAP RESPONSES OF EACH DIMENSION. AND THESE ARE THE LAST
     # TO CACHE. MEANING THE FIRST ELEMENTS OF THE LIST OF CACHED URLS.
