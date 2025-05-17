@@ -565,7 +565,7 @@ class StructureType(DapType, Mapping):
         out = {}
         Bcs = [key for key in self.children() if isinstance(key, BaseType)]
         for var in Bcs:
-            if "dims" in var.attributes:
+            if hasattr(var, "dims"):
                 dims = var.dims
             else:
                 dims = []
