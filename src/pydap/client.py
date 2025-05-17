@@ -238,6 +238,7 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
                 )
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         if [ds.dimensions for ds in results].count(results[0].dimensions) != len(
             results
         ):
@@ -270,6 +271,9 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
 >>>>>>> cc24f0a (replace `dap4` ---> `http`)
 =======
         if not [ds.dimensions for ds in results].count(results[0].dimensions) == len(
+=======
+        if [ds.dimensions for ds in results].count(results[0].dimensions) != len(
+>>>>>>> a47dc83 (add a test that checks dims are same across all urls. If not do not cache the daps urls of dimensions)
             results
         ):
             warnings.warn(
