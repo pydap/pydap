@@ -216,7 +216,7 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
                 results = list(
                     executor.map(lambda url: open_dmr(url, session=Session), dmr_urls)
                 )
-        if not [ds.dimensions for ds in results].count(results[0].dimensions) == len(
+        if [ds.dimensions for ds in results].count(results[0].dimensions) != len(
             results
         ):
             warnings.warn(

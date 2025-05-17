@@ -449,15 +449,18 @@ ce2 = "?dap4.ce=/i;/j;/l;/order"
     ],
 )
 @pytest.mark.parametrize("safe_mode", [True, False])
-def test_cached_consolidate_metadata_matching_dims(urls, cached_session, safe_mode):
+def test_cached_consolidate_metadata_matching_dims(urls, safe_mode):
     """Test the behavior of the chaching implemented in `consolidate_metadata`.
     the `safe_mode` parameter means that all dmr urls are cached, and
     the dimensions of each dmr_url are checked for consistency.
 
-    when `safe_mode` is False, only the first dmr url is cached.
+    when `safe_mode` is False, only the first dmr url is cached if
+    all dmr urls CEs are identical. If the CEs are not identical,
+    then a cache is created for each dmr url with different CEs.
 
     In both scenarios, the dap urls of the dimensions are cached
     """
+    cached_session = create_session(use_cache=True)
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)  # dimensions of full dataset
@@ -475,6 +478,48 @@ def test_cached_consolidate_metadata_matching_dims(urls, cached_session, safe_mo
     N = len(dims)  # should be 3 for this dataset.
     for n in range(N):
         assert cached_session.cache.urls()[n].split("%")[0] == dim_dap_urls[n]
+
+
+ce1 = "?dap4.ce=/i;/j;/bears"
+ce2 = "?dap4.ce=/i;/j;/order"
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
+        [
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce1,
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce2,
+        ],
+    ],
+)
+@pytest.mark.parametrize("safe_mode", [True, False])
+def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
+    """Test the behavior of the chaching implemented in `consolidate_metadata`.
+    the `safe_mode` parameter means that all dmr urls are cached, and
+    the dimensions of each dmr_url are checked for consistency.
+
+    when `safe_mode` is False, only the first dmr url is cached if
+    all dmr urls CEs are identical. If the CEs are not identical,
+    then a cache is created for each dmr url with different CEs.
+
+    In both scenarios, the dap urls of the dimensions are cached
+    """
+    cached_session = create_session(use_cache=True)
+    cached_session.cache.clear()
+    pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
+    dims = list(pyds.dimensions)  # here there are 3 dimensions
+    if safe_mode:
+        with pytest.warns(Warning):
+            consolidate_metadata(urls, session=cached_session, safe_mode=safe_mode)
+        assert len(cached_session.cache.urls()) == len(urls)
+        # dmrs where cached, but not the dimensions
+    else:
+        consolidate_metadata(urls, session=cached_session, safe_mode=safe_mode)
+        # caches all DMRs and caches the dap responses of the dimensions
+        # of the first URL
+        assert len(cached_session.cache.urls()) == len(urls) + len(dims)
 
 
 @pytest.mark.parametrize(
