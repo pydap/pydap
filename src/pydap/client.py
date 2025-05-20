@@ -514,7 +514,7 @@ def get_cmr_urls(ccid, time_range=None, bounding_box=None):
     Get the URLs for a given collection ID (ccid) from the CMR API.
     Optionally filter by time range and bounding box.
     """
-    cmr_url = "https://cmr.earthdata.nasa.gov/search/granules.json"
+    cmr_url = "https://cmr.earthdata.nasa.gov/search/granules"
     params = {"concept_id": ccid, "page_size": 500}
     if time_range:
         params["temporal"] = time_range
@@ -524,17 +524,22 @@ def get_cmr_urls(ccid, time_range=None, bounding_box=None):
     headers = {
         "Accept": "application/vnd.nasa.cmr.umm+json",
     }
-    cmr_response = session.get(cmr_url, params=params, hearders=headers).json()
+    cmr_response = session.get(cmr_url, params=params, headers=headers).json()
     items = [
         cmr_response["items"][i]["umm"]["RelatedUrls"]
-        for i in range(cmr_response["items"])
+        for i in range(len(cmr_response["items"]))
     ]
-    granule_urls = [
-        d["URL"]
-        for item in items
-        for d in item
-        if d.get("Description") == "OPeNDAP request URL"
-    ]
+    granule_urls = list(
+        {
+            d["URL"]
+            for item in items
+            for d in item
+            if (
+                d.get("Description") == "OPeNDAP request URL"
+                or d.get("Subtype") == "OPENDAP DATA"
+            )
+        }
+    )
     return granule_urls
 
 
