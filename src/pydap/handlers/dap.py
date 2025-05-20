@@ -95,7 +95,7 @@ class DAPHandler(BaseHandler):
                 # the other alternative occurs during testing
                 # the server - only when protocol and scheme match,
                 # should pydap change the scheme provided by user
-                self.scheme = "http"
+                self.scheme = "https"
         else:
             self.protocol = self.determine_protocol()
         self.get_kwargs = get_kwargs or {}
@@ -121,7 +121,7 @@ class DAPHandler(BaseHandler):
         if self.scheme not in ["http", "https"]:
             if self.scheme in ["dap4", "dap2"]:
                 protocol = self.scheme
-                self.scheme = "http"  # revert to http
+                self.scheme = "https"
                 return protocol
             else:
                 raise TypeError(
