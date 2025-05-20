@@ -446,10 +446,13 @@ ce1 = "?dap4.ce=/i[0:1:1];/j[0:1:2];/bears[0:1:1][0:1:2];/l[0:1:2]"
         ],
     ],
 )
-def test_cached_consolidate_metadata(urls, cached_session):
+def test_cached_consolidate_metadata(
+    urls,
+):
     """Test that `consolidate_metadata` effectively caches the dmr of the urls, along
     with the dap4 urls of the dimensions
     """
+    cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)  # dimensions of full dataset

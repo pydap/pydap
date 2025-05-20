@@ -3,7 +3,11 @@ import warnings
 
 import requests
 from requests.adapters import HTTPAdapter
-from requests.exceptions import HTTPError
+from requests.exceptions import (
+    ConnectionError,
+    HTTPError,
+    SSLError,
+)
 from requests.utils import urlparse, urlunparse
 from requests_cache import CachedSession
 from urllib3 import Retry
@@ -54,7 +58,6 @@ def GET(
     if application:
         _, _, path, _, query, fragment = urlparse(url)
         url = urlunparse(("", "", path, "", _quote(query), fragment))
-
     res = create_request(
         url,
         application=application,
@@ -162,9 +165,24 @@ def create_request(
             session = create_session(**args)
         if "Authorization" in session.headers:
             get_kwargs["auth"] = None
-        req = session.get(
-            url, timeout=timeout, verify=verify, allow_redirects=True, **get_kwargs
-        )
+        try:
+            req = session.get(
+                url, timeout=timeout, verify=verify, allow_redirects=True, **get_kwargs
+            )
+        except (ConnectionError, SSLError) as e:
+            # some opendap servers do not support https, but they do support http.
+            parsed = urlparse(url)
+            if parsed.scheme == "https":
+                http_url = urlunparse(parsed._replace(scheme="http"))
+                req = session.get(
+                    http_url,
+                    timeout=timeout,
+                    verify=verify,
+                    allow_redirects=True,
+                    **get_kwargs,
+                )
+            else:
+                raise e
         try:
             req.raise_for_status()
             return req
@@ -242,6 +260,10 @@ def create_session(
     retry_args = session_kwargs.pop("retry_args", {})
     if "total" not in retry_args:
         retry_args.setdefault("total", 5)
+    if "status" not in retry_args:
+        retry_args.setdefault("status", 2)
+    if "connect" not in retry_args:
+        retry_args.setdefault("connect", 1)
     if "status_forcelist" not in retry_args:
         retry_args.setdefault("status_forcelist", [500, 502, 503, 504])
     if "backoff_factor" not in retry_args:
