@@ -265,7 +265,7 @@ def create_session(
     if "connect" not in retry_args:
         retry_args.setdefault("connect", 1)
     if "status_forcelist" not in retry_args:
-        retry_args.setdefault("status_forcelist", [502, 503, 504])
+        retry_args.setdefault("status_forcelist", [500, 502, 503, 504])
     if "backoff_factor" not in retry_args:
         retry_args.setdefault("backoff_factor", 0.1)
     if "allowed_methods" not in retry_args:
