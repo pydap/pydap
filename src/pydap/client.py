@@ -52,6 +52,7 @@ from io import BytesIO, open
 from os.path import commonprefix
 from urllib.parse import parse_qs, unquote, urlencode
 
+import requests
 from requests.utils import urlparse, urlunparse
 from requests_cache import CachedSession
 
@@ -506,6 +507,35 @@ def patch_session_for_shared_dap_cache(session, shared_vars, known_url_list=None
         return original_create_key(request, **kwargs)
 
     session.cache.create_key = custom_create_key
+
+
+def get_cmr_urls(ccid, time_range=None, bounding_box=None):
+    """
+    Get the URLs for a given collection ID (ccid) from the CMR API.
+    Optionally filter by time range and bounding box.
+    """
+    cmr_url = "https://cmr.earthdata.nasa.gov/search/granules.json"
+    params = {"concept_id": ccid, "page_size": 500}
+    if time_range:
+        params["temporal"] = time_range
+    if bounding_box:
+        params["bounding_box"] = bounding_box
+    session = requests.Session()
+    headers = {
+        "Accept": "application/vnd.nasa.cmr.umm+json",
+    }
+    cmr_response = session.get(cmr_url, params=params, hearders=headers).json()
+    items = [
+        cmr_response["items"][i]["umm"]["RelatedUrls"]
+        for i in range(cmr_response["hits"])
+    ]
+    granule_urls = [
+        d["URL"]
+        for item in items
+        for d in item
+        if d.get("Description") == "OPeNDAP request URL"
+    ]
+    return granule_urls
 
 
 if __name__ == "__main__":
