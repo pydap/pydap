@@ -527,7 +527,7 @@ def get_cmr_urls(ccid, time_range=None, bounding_box=None):
     cmr_response = session.get(cmr_url, params=params, hearders=headers).json()
     items = [
         cmr_response["items"][i]["umm"]["RelatedUrls"]
-        for i in range(cmr_response["hits"])
+        for i in range(cmr_response["items"])
     ]
     granule_urls = [
         d["URL"]
