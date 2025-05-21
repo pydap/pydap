@@ -150,17 +150,20 @@ def open_url(
     return dataset
 
 
-def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose=False):
-    """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs,
-    provided as a list, by caching the DMR response of each URL, along
-    with caching the DAP response of all dimensions in the datacube.
+def consolidate_metadata(
+    urls, session, concat_dim=None, safe_mode=False, verbose=False
+):
+    """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
+    data cube, i.e. urls share identical variables and dimensions. This is done
+    by caching the DMR response of each URL, and the DAP response of all dimensions
+    in the datacube.
+
     Parameters
     ----------
     urls : list
         The URLs of the datasets that define a datacube. Each URL must begin
         with the same base URL, and begin with `dap4://`.
     session : requests-cache.CachedSession
-        A requests session object.
     concat_dim : str, optional (default=None)
         A dimensions name (string) to concatenate across the datasets to form
         a datacube. If `None`, all dimensions present across the datacube
@@ -168,15 +171,18 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
         When `concat_dim` is provided, no cache key is assigned to the
         dimension, and the dap response associated with that dimension
         is then downloaded for each URL.
-    safe_mode : bool, optional (default=True)
+    safe_mode : bool, optional (default=False)
         If `True`, the DMR response is downloaded for each URL, creating a
-        empty pydap dataset. Then, dimensions and variables are checked
-        for consistency. All variables and dimensions must be identical
-        across all URLs. If `False`, only the first URL DMR response is
+        empty pydap dataset. dimensions are checked for datacube consistency.
+        When `False`, only the first URL DMR response is
         downloaded, and the rest of the DMRs are assigned the same
         cache key as the first URL, to avoid downloading the DMR
         response for each URL. This is much faster, but does not check
         for consistency across the URLs.
+    verbose: bool, optional (default=False)
+        For debugging purposes. If `True`, prints various URLs, normalized
+        cache-keys, and other information.
+
     """
 
     if not isinstance(session, CachedSession):
@@ -285,7 +291,6 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )
-        # print("now get dap responses for dimensions")
         with session as Session:  # Authenticate once / download dap for each dim
             with ThreadPoolExecutor(max_workers=ncores) as executor:
                 results = list(executor.map(lambda url: Session.get(url), new_urls))
