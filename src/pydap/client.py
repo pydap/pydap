@@ -172,9 +172,9 @@ def consolidate_metadata(
         backend are fully tested. The filesystem backend is not yet supported.
     concat_dim : str, optional (default=None)
         A dimensions name (string) to concatenate across the datasets to form
-        a datacube. If `None`, all dimensions present across the datacube
+        a datacube. If `None`, each dimension across the datacube
         are assigned to a single cache key, i.e. that of the first URL.
-        When `concat_dim` is provided, no cache key is assigned to the
+        When `concat_dim` is provided, no cache key is created for that
         dimension, and the dap response associated with that dimension
         is then downloaded for each URL.
     safe_mode : bool, optional (default=False)
@@ -249,11 +249,7 @@ def consolidate_metadata(
 
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
-    # identify dimensions that repeat across the urls
     dims = set(list(results[0].dimensions.keys()))
-    # check if all urls have the same dimensions
-    # TODO: make sure count of dimensions is the same as the number of urls
-
     if concat_dim is not None and set([concat_dim]).issubset(dims):
         dims.remove(concat_dim)
         concat_dim_urls = [
@@ -277,10 +273,7 @@ def consolidate_metadata(
         + "%5D"
         for dim in list(dims)
     ]
-    # add the non-cached urls to download dimension dap data.
     new_urls.extend(concat_dim_urls)
-
-    # xarray does not escaped CE
     dim_ces = set(
         [
             dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]"
@@ -288,18 +281,19 @@ def consolidate_metadata(
         ]
     )
     if dims:
-        print("datacube has dimensions", dim_ces, f", and concat dim: {concat_dim}")
+        print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )
-        with session as Session:  # Authenticate once / download dap for each dim
+        with session as Session:
             _ = download_all_urls(Session, new_urls, ncores=ncores)
-            # with ThreadPoolExecutor(max_workers=ncores) as executor:
-            #     _ = executor.map(lambda url: Session.get(url), new_urls)
     return None
 
 
 def fetch_dim(url, session, timeout=5):
+    """helper function that enables catch of http vs https
+    connection errors (mostly for testing).
+    """
     try:
         resp = session.get(url, timeout=timeout)
         resp.raise_for_status()
@@ -315,7 +309,10 @@ def fetch_dim(url, session, timeout=5):
             raise e
 
 
-def download_all_urls(session, urls, ncores=10, delay=0):
+def download_all_urls(session, urls, ncores=4):
+    """Helper function that enables parallel download of multiple
+    responses. Enables to identify which URL failed.
+    """
     results = []
     with ThreadPoolExecutor(max_workers=ncores) as executor:
         future_to_url = {executor.submit(fetch_dim, url, session): url for url in urls}
@@ -574,7 +571,6 @@ def try_generate_custom_key(request, config, verbose=False):
 
     shared_vars = config.get("shared_vars", set())
     general_base = config.get("general_base")
-    known_url_list = config.get("known_url_list", [])
     is_dmr = config.get("is_dmr", False)
 
     if ext == "dmr" and not is_dmr:
@@ -583,13 +579,8 @@ def try_generate_custom_key(request, config, verbose=False):
         return None
 
     if verbose:
-        print("-------------------------------------------------------")
-        print("request.url: ", request.url)
-        print("-------------------------------------------------------")
-        print("shared_vars: ", shared_vars)
-        print("query: ", query)
-        print("known urls", known_url_list)
-        print("is_dmr: ", is_dmr)
+        print("================ request url ========================")
+        print("request.url")
 
     shared_ext = ext
 
@@ -602,9 +593,7 @@ def try_generate_custom_key(request, config, verbose=False):
                 f"{parsed.scheme}://{parsed.netloc}{dataset_path}/shared.{shared_ext}"
             )
             if verbose:
-                print("-------------------------------------------------------")
-                print("match")
-                print("-------------------------------------------------------")
+                print("======== normalized Earthdata url ========")
                 print(
                     f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}"
                     if dap4_ce
@@ -619,7 +608,7 @@ def try_generate_custom_key(request, config, verbose=False):
         base_path = urlparse(general_base).path
         base_url = f"{parsed.scheme}://{parsed.netloc}{base_path}/shared.{shared_ext}"
         if verbose:
-            print("======== NON-cloud url ========")
+            print("======== Normalized url ========")
             print(
                 f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}" if dap4_ce else base_url
             )
