@@ -168,6 +168,8 @@ def consolidate_metadata(
         The URLs of the datasets that define a datacube. Each URL must begin
         with the same base URL, and begin with `dap4://`.
     session : requests-cache.CachedSession
+        A requests-cache session object. Currently, only the sqlite and memory
+        backend are fully tested. The filesystem backend is not yet supported. 
     concat_dim : str, optional (default=None)
         A dimensions name (string) to concatenate across the datasets to form
         a datacube. If `None`, all dimensions present across the datacube
