@@ -242,10 +242,9 @@ def consolidate_metadata(
         results = [open_dmr(dmr_urls[0], session=session)]
         # Does not download the dmr responses, as a cached key was created.
         # But needs to run so the URL is assigned the key.
-        with session as Session:  # Authenticate once
+        with session as Session:
             _ = download_all_urls(Session, dmr_urls, ncores=ncores)
-            # with ThreadPoolExecutor(max_workers=ncores) as executor:
-            #     _ = list(executor.map(lambda url: Session.get(url), dmr_urls))
+
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     # identify dimensions that repeat across the urls
