@@ -47,11 +47,15 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 import os
 import re
 import warnings
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
 from urllib.parse import parse_qs, unquote, urlencode
 
+from requests.exceptions import (
+    ConnectionError,
+    SSLError,
+)
 from requests.utils import urlparse, urlunparse
 from requests_cache import CachedSession
 
@@ -239,13 +243,13 @@ def consolidate_metadata(
         # Does not download the dmr responses, as a cached key was created.
         # But needs to run so the URL is assigned the key.
         with session as Session:  # Authenticate once
-            with ThreadPoolExecutor(max_workers=ncores) as executor:
-                _ = list(executor.map(lambda url: Session.get(url), dmr_urls))
+            _ = download_all_urls(Session, dmr_urls, ncores=ncores)
+            # with ThreadPoolExecutor(max_workers=ncores) as executor:
+            #     _ = list(executor.map(lambda url: Session.get(url), dmr_urls))
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     # identify dimensions that repeat across the urls
     dims = set(list(results[0].dimensions.keys()))
-
     # check if all urls have the same dimensions
     # TODO: make sure count of dimensions is the same as the number of urls
 
@@ -292,9 +296,40 @@ def consolidate_metadata(
             session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )
         with session as Session:  # Authenticate once / download dap for each dim
-            with ThreadPoolExecutor(max_workers=ncores) as executor:
-                results = list(executor.map(lambda url: Session.get(url), new_urls))
+            _ = download_all_urls(Session, new_urls, ncores=ncores)
+            # with ThreadPoolExecutor(max_workers=ncores) as executor:
+            #     _ = executor.map(lambda url: Session.get(url), new_urls)
     return None
+
+
+def fetch_dim(url, session, timeout=5):
+    try:
+        resp = session.get(url, timeout=timeout)
+        resp.raise_for_status()
+        return resp
+    except (ConnectionError, SSLError) as e:
+        parsed = urlparse(url)
+        if parsed.scheme == "https":
+            url = url.replace("https://", "http://")
+            resp = session.get(url)
+            resp.raise_for_status()
+            return resp
+        else:
+            raise e
+
+
+def download_all_urls(session, urls, ncores=10, delay=0):
+    results = []
+    with ThreadPoolExecutor(max_workers=ncores) as executor:
+        future_to_url = {executor.submit(fetch_dim, url, session): url for url in urls}
+        for future in as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                result = future.result()
+                results.append(result)
+            except Exception as e:
+                print(f"[ERROR] Unexpected failure for {url}: {e}")
+    return results
 
 
 def open_file(file_path, das_path=None):
@@ -319,7 +354,15 @@ def open_dmr(path, session=None):
         # Open a remote dmr
         if session is None:
             session = create_session()
-        r = session.get(path, stream=True)
+        try:
+            r = session.get(path)
+        except (ConnectionError, SSLError) as e:
+            parsed = urlparse(path)
+            if parsed.scheme == "https":
+                path = path.replace("https://", "http://")
+                r = session.get(path)
+            else:
+                raise e
         dmr = r.text
         dataset = DMRParser(dmr).init_dataset()
         return dataset
