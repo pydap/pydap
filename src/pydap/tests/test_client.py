@@ -525,6 +525,47 @@ def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
 @pytest.mark.parametrize(
     "urls",
     [
+        [
+            "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+            "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+        ],
+    ],
+)
+@pytest.mark.parametrize("concat_dim", [None, "TIME"])
+def test_consolidate_metadata_concat_dim(urls, concat_dim):
+    """Test the behavior of the chaching implemented in `consolidate_metadata`.
+    The `concat_dim` parameter means that the datasets are concatenated along
+    the specified dimension. If `concat_dim` is None, the dat response of
+    all dimensions are cached associated with that of the first URLs. This happens
+    when there is no concat dimension along all urls (sometime time is not defined),
+    and dimensions and metadata is identical across (level 3/4 datasets).
+
+    When there is a concat dimension, the dap response of all urls are all individually
+    downloaded and cached. So there should be N dap responses for N urls associated with
+    a dimension.
+    """
+    cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    cached_session.cache.clear()
+    pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
+    dims = list(pyds.dimensions)
+    # download all dmr for testing - not recommmended in production.
+    consolidate_metadata(
+        urls, session=cached_session, safe_mode=True, concat_dim=concat_dim
+    )
+    if not concat_dim:
+        assert len(cached_session.cache.urls()) == len(urls) + len(dims)
+    else:
+        N_concat_dims = len(urls)
+        N_non_concat_dims = len(dims) - 1  # only one dimension is concatenated
+        assert (
+            len(cached_session.cache.urls())
+            == len(urls) + N_concat_dims + N_non_concat_dims
+        )
+
+
+@pytest.mark.parametrize(
+    "urls",
+    [
         ["http://localhost:8001/", 1, "http://localhost:8003/"],
         [
             "dap2://localhost:8001/",

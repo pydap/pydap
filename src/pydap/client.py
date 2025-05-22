@@ -169,7 +169,7 @@ def consolidate_metadata(
         with the same base URL, and begin with `dap4://`.
     session : requests-cache.CachedSession
         A requests-cache session object. Currently, only the sqlite and memory
-        backend are fully tested. The filesystem backend is not yet supported. 
+        backend are fully tested. The filesystem backend is not yet supported.
     concat_dim : str, optional (default=None)
         A dimensions name (string) to concatenate across the datasets to form
         a datacube. If `None`, all dimensions present across the datacube
@@ -288,11 +288,7 @@ def consolidate_metadata(
         ]
     )
     if dims:
-        if verbose:
-            print("==========================================")
-            print(
-                "\ndatacube has dimensions", dim_ces, ", and concat dim: ", concat_dim
-            )
+        print("datacube has dimensions", dim_ces, f", and concat dim: {concat_dim}")
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )
