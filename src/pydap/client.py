@@ -846,6 +846,10 @@ def get_cmr_urls(
             cmr_url += "?bounding_box%5B%5D=" + "%2C".join(str(x) for x in bounding_box)
         elif isinstance(bounding_box, dict):
             ces = []
+            if "Union" in bounding_box:
+                extra = bounding_box.pop("Union", None)
+            else:
+                extra = False
             for key, value in bounding_box.items():
                 if isinstance(value, list):
                     ces.append(
@@ -856,55 +860,86 @@ def get_cmr_urls(
                         "bounding_box must be a list or a dictionary of lists."
                     )
             cmr_url += "?" + "&".join(ces)
+            if extra:
+                cmr_url += "&options%5Bbounding_box%5D%5Bor%5D=true"
         else:
-            raise ValueError("bounding_box must be a list or a dictionary of lists.")
+            raise ValueError("`bounding_box` must be a list or a dictionary of lists.")
     if polygon:
         if isinstance(polygon, list):
             cmr_url += "?polygon%5B%5D=" + "%2C".join(str(x) for x in polygon)
         elif isinstance(polygon, dict):
             ces = []
+            if "Union" in bounding_box:
+                extra = bounding_box.pop("Union", None)
+            else:
+                extra = False
             for key, value in polygon.items():
                 if isinstance(value, list):
-                    ces.append(
-                        "bounding_box%5B%5D=" + "%2C".join(str(x) for x in value)
-                    )
+                    ces.append("polygon%5B%5D=" + "%2C".join(str(x) for x in value))
                 else:
                     raise ValueError("polygon must be a list or a dictionary of lists.")
             cmr_url += "?" + "&".join(ces)
+            if extra:
+                cmr_url += "&options%5Bpolygon%5D%5Bor%5D=true"
+        else:
+            raise ValueError("`polygon` must be a list or a dictionary of lists.")
     if line:
         if isinstance(line, list):
             cmr_url += "?line%5B%5D=" + "%2C".join(str(x) for x in line)
         elif isinstance(line, dict):
             ces = []
+            if "Union" in bounding_box:
+                extra = bounding_box.pop("Union", None)
+            else:
+                extra = False
             for key, value in line.items():
                 if isinstance(value, list):
                     ces.append("line%5B%5D=" + "%2C".join(str(x) for x in value))
                 else:
                     raise ValueError("line must be a list or a dictionary of lists.")
             cmr_url += "?" + "&".join(ces)
+            if extra:
+                cmr_url += "&options%5Bline%5D%5Bor%5D=true"
+        else:
+            raise ValueError("`line` must be a list or a dictionary of lists.")
     if circle:
         if isinstance(circle, list):
             cmr_url += "?circle%5B%5D=" + "%2C".join(str(x) for x in circle)
         elif isinstance(circle, dict):
             ces = []
+            if "Union" in bounding_box:
+                extra = bounding_box.pop("Union", None)
+            else:
+                extra = False
             for key, value in circle.items():
                 if isinstance(value, list):
                     ces.append("circle%5B%5D=" + "%2C".join(str(x) for x in value))
                 else:
                     raise ValueError("circle must be a list or a dictionary of lists.")
             cmr_url += "?" + "&".join(ces)
+            if extra:
+                cmr_url += "&options%5Bcircle%5D%5Bor%5D=true"
+        else:
+            raise ValueError("`circle` must be a list or a dictionary of lists.")
     if point:
         if isinstance(point, list):
             cmr_url += "?point%5B%5D=" + "%2C".join(str(x) for x in point)
         elif isinstance(point, dict):
             ces = []
+            if "Union" in bounding_box:
+                extra = bounding_box.pop("Union", None)
+            else:
+                extra = False
             for key, value in point.items():
                 if isinstance(value, list):
                     ces.append("point%5B%5D=" + "%2C".join(str(x) for x in value))
                 else:
                     raise ValueError("point must be a list or a dictionary of lists.")
             cmr_url += "?" + "&".join(ces)
-
+            if extra:
+                cmr_url += "&options%5Bpoint%5D%5Bor%5D=true"
+        else:
+            raise ValueError("`point` must be a list or a dictionary of lists.")
     if session is None or not isinstance(session, (requests.Session, CachedSession)):
         session = create_session()
     try:
