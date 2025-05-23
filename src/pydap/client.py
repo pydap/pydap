@@ -44,6 +44,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 """
 
+import datetime as dt
 import os
 import re
 import warnings
@@ -669,11 +670,12 @@ def get_cmr_urls(
     ccid=None,
     doi=None,
     time_range=None,
-    bounding_box=None,
-    point=None,
-    polygon=None,
-    line=None,
-    circle=None,
+    bounding_box=list | dict | None,
+    point=list | dict | None,
+    polygon=list | dict | None,
+    line=list | dict | None,
+    circle=list | dict | None,
+    session=None,
     limit=50,
 ):
     """
@@ -682,7 +684,7 @@ def get_cmr_urls(
     the search by time range and spatial shapes (bounding box, point, polygon, line,
     circle)
 
-    NOTE: A query could consist of multiple spatial parameters of different types, two
+    `NOTE`: A query could consist of multiple spatial parameters of different types, two
     bounding boxes and a polygon for example. If multiple spatial parameters are
     present, all the parameters irrespective of their type are AND-ed in a query. So, if
     a query contains two bounding boxes and a polygon for example, it will return only
@@ -695,9 +697,12 @@ def get_cmr_urls(
         doi : str
             The DOI of the collection to search for. This is an alternative to using
             the ccid parameter.
-        time_range : str | None
-            The time range to filter by, in the format
-            "YYYY-MM-DDTHH:MM:SSZ,YYYY-MM-DDTHH:MM:SSZ".
+        time_range : list | None
+            The time range to filter by. The time range is a list of two elements,
+            each element a datetime.datetime object, of a string in the format
+            YYYY-MM-DDTHH:MM:SSZ.
+            Example1: ["2023-01-01T00:00:00Z", "2023-12-31T23:59:59Z"]
+            Example2: [datetime.datetime(2023, 1, 1), datetime.datetime(2023, 12, 31)]
         bounding_box : list | dict | None
             The bounding box to filter by, in the format [west, south, east, north].
             Supports multiple bounding boxes.
@@ -750,30 +755,122 @@ def get_cmr_urls(
         raise ValueError("Either ccid or doi must be provided.")
     if ccid and doi:
         warnings.warn("Both ccid and doi are provided. Using ccid for the search.")
+
     cmr_url = "https://cmr.earthdata.nasa.gov/search/granules"
     headers = {
         "Accept": "application/vnd.nasa.cmr.umm+json",
     }
+
     params = {"page_size": limit}
+
     if ccid:
         params["concept_id"] = ccid
     if doi:
         params["doi"] = doi
-    if time_range:
-        params["temporal"] = time_range
-    if bounding_box and isinstance(bounding_box, list):
-        cmr_url += "?bounding_box%5B%5D=" + "%2C".join(str(x) for x in bounding_box)
-    if polygon and isinstance(polygon, list):
-        cmr_url += "?polygon%5B%5D=" + "%2C".join(str(x) for x in polygon)
-    if line and isinstance(line, list):
-        cmr_url += "?line%5B%5D=" + "%2C".join(str(x) for x in line)
-    if circle and isinstance(circle, list):
-        cmr_url += "?circle%5B%5D=" + "%2C".join(str(x) for x in circle)
-    if point and isinstance(point, list):
-        cmr_url += "?point%5B%5D=" + "%2C".join(str(x) for x in point)
 
-    session = requests.Session()
-    cmr_response = session.get(cmr_url, params=params, headers=headers).json()
+    if time_range and isinstance(time_range, list):
+        if len(time_range) != 2:
+            warnings.warns("time_range must be a list of two elements.")
+            return None
+        if all(isinstance(x, dt.datetime) for x in time_range):
+            dt_format = "%Y-%m-%dT%H:%M:%SZ"
+            temporal_str = (
+                time_range[0].strftime(dt_format)
+                + ","
+                + time_range[1].strftime(dt_format)
+            )
+        else:
+            try:
+                dt.datetime.strptime(time_range[0], "%Y-%m-%dT%H:%M:%SZ")
+                dt.datetime.strptime(time_range[1], "%Y-%m-%dT%H:%M:%SZ")
+                temporal_str = time_range[0] + "," + time_range[1]
+            except ValueError:
+                warnings.warns(
+                    "time_range must be a list of two elements each a string in the"
+                    " format YYYY-MM-DDTHH:MM:SSZ."
+                )
+                return None
+        params["temporal"] = temporal_str
+    elif time_range and not isinstance(time_range, list):
+        warnings.warns(
+            "time_range must be a list of two elements or a string in the format"
+            " YYYY-MM-DDTHH:MM:SSZ."
+        )
+        return None
+    if bounding_box:
+        if isinstance(bounding_box, list):
+            cmr_url += "?bounding_box%5B%5D=" + "%2C".join(str(x) for x in bounding_box)
+        elif isinstance(bounding_box, dict):
+            ces = []
+            for key, value in bounding_box.items():
+                if isinstance(value, list):
+                    ces.append(
+                        "bounding_box%5B%5D=" + "%2C".join(str(x) for x in value)
+                    )
+                else:
+                    raise ValueError(
+                        "bounding_box must be a list or a dictionary of lists."
+                    )
+            cmr_url += "?" + "&".join(ces)
+        else:
+            raise ValueError("bounding_box must be a list or a dictionary of lists.")
+    if polygon:
+        if isinstance(polygon, list):
+            cmr_url += "?polygon%5B%5D=" + "%2C".join(str(x) for x in polygon)
+        elif isinstance(polygon, dict):
+            ces = []
+            for key, value in polygon.items():
+                if isinstance(value, list):
+                    ces.append(
+                        "bounding_box%5B%5D=" + "%2C".join(str(x) for x in value)
+                    )
+                else:
+                    raise ValueError("polygon must be a list or a dictionary of lists.")
+            cmr_url += "?" + "&".join(ces)
+    if line:
+        if isinstance(line, list):
+            cmr_url += "?line%5B%5D=" + "%2C".join(str(x) for x in line)
+        elif isinstance(line, dict):
+            ces = []
+            for key, value in line.items():
+                if isinstance(value, list):
+                    ces.append("line%5B%5D=" + "%2C".join(str(x) for x in value))
+                else:
+                    raise ValueError("line must be a list or a dictionary of lists.")
+            cmr_url += "?" + "&".join(ces)
+    if circle:
+        if isinstance(circle, list):
+            cmr_url += "?circle%5B%5D=" + "%2C".join(str(x) for x in circle)
+        elif isinstance(circle, dict):
+            ces = []
+            for key, value in circle.items():
+                if isinstance(value, list):
+                    ces.append("circle%5B%5D=" + "%2C".join(str(x) for x in value))
+                else:
+                    raise ValueError("circle must be a list or a dictionary of lists.")
+            cmr_url += "?" + "&".join(ces)
+    if point:
+        if isinstance(point, list):
+            cmr_url += "?point%5B%5D=" + "%2C".join(str(x) for x in point)
+        elif isinstance(point, dict):
+            ces = []
+            for key, value in point.items():
+                if isinstance(value, list):
+                    ces.append("point%5B%5D=" + "%2C".join(str(x) for x in value))
+                else:
+                    raise ValueError("point must be a list or a dictionary of lists.")
+            cmr_url += "?" + "&".join(ces)
+
+    if session is None or not isinstance(session, (requests.Session, CachedSession)):
+        session = create_session()
+    try:
+        r = session.get(cmr_url, params=params, headers=headers)
+        r.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error - something went wrong: {e}")
+        return None
+
+    cmr_response = r.json()
     items = [
         cmr_response["items"][i]["umm"]["RelatedUrls"]
         for i in range(len(cmr_response["items"]))
