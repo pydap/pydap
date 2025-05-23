@@ -509,21 +509,24 @@ def patch_session_for_shared_dap_cache(session, shared_vars, known_url_list=None
     session.cache.create_key = custom_create_key
 
 
-def get_cmr_urls(ccid, time_range=None, bounding_box=None):
+def get_cmr_urls(ccid, time_range=None, bounding_box=None, limit=500):
     """
     Get the URLs for a given collection ID (ccid) from the CMR API.
     Optionally filter by time range and bounding box.
+    
+    See:    https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
     """
     cmr_url = "https://cmr.earthdata.nasa.gov/search/granules"
-    params = {"concept_id": ccid, "page_size": 500}
+    params = {"concept_id": ccid, "page_size": limit}
     if time_range:
         params["temporal"] = time_range
     if bounding_box:
-        params["bounding_box"] = bounding_box
+        cmr_url += "?bounding_box%5B%5D=" + "%2C".join(str(x) for x in bounding_box)
     session = requests.Session()
     headers = {
         "Accept": "application/vnd.nasa.cmr.umm+json",
     }
+    print("cmr_url", cmr_url)
     cmr_response = session.get(cmr_url, params=params, headers=headers).json()
     items = [
         cmr_response["items"][i]["umm"]["RelatedUrls"]
