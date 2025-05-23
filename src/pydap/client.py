@@ -513,7 +513,7 @@ def get_cmr_urls(ccid, time_range=None, bounding_box=None, limit=500):
     """
     Get the URLs for a given collection ID (ccid) from the CMR API.
     Optionally filter by time range and bounding box.
-    
+
     See:    https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
     """
     cmr_url = "https://cmr.earthdata.nasa.gov/search/granules"
