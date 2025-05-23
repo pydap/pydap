@@ -690,6 +690,22 @@ def get_cmr_urls(
     a query contains two bounding boxes and a polygon for example, it will return only
     those collections which intersect both the bounding boxes and the polygon.
 
+    `NOTE`: The spatial parameters are not mutually exclusive. You can use multiple
+    spatial parameters in a single query. For example, you can use a bounding box and a
+    polygon in the same query. When the spatial parameters are different types, theser
+    are AND-ed together, meaning the search will return results that intersect all
+    spatial parameters. For example, if you use a bounding box and a polygon in the same
+    query, the results will include only those collections that intersect both the
+    bounding box andf the polygon. When the spatial parameters are the same type, they
+    are AND-ed together by default. However, it is possible to make them OR-ed by adding
+    an extra key-value pair to the bounding box, point, polygon, line, or circle
+    parameters (dict). The key is "Union" and the value can be `True` of `False`.
+    If `True`, the spatial parameters are OR-ed together. For example, if you use two
+    bounding boxes in the same query, and set the "Union" key to `True`, the results
+    will include all collections that intersect either of the bounding boxes. If
+    `False` (default), the results will include only those collections that intersect
+    both bounding boxes. The same applies to the other spatial parameters.
+
     Parameters
     ----------
         ccid : str
@@ -703,37 +719,65 @@ def get_cmr_urls(
             YYYY-MM-DDTHH:MM:SSZ.
             Example1: ["2023-01-01T00:00:00Z", "2023-12-31T23:59:59Z"]
             Example2: [datetime.datetime(2023, 1, 1), datetime.datetime(2023, 12, 31)]
+
         bounding_box : list | dict | None
             The bounding box to filter by, in the format [west, south, east, north].
             Supports multiple bounding boxes.
+
+            Example1: bounding_box = [lon1, lat1, lon2, lat2]
+            Example2: bounding_box = {"box1": [lon1, lat1, lon2, lat2],
+                                      "box2": [lon3, lat3, lon4, lat4]}
+            Example3: bounding_box = {"box1": [lon1, lat1, lon2, lat2],
+                                      "box2": [lon3, lat3, lon4, lat4],
+                                      "Union": True}
+            The "Union" key is optional (if not present is set to `False`).
+
         point: list | dict | None
-            Search using a point involves using a pair of values representing the point
-            coordinates as parameters. The point to filter by, in the format
-            [longitude, latitude]. Supports multiple points as nested lists.
-            Example: [[lon1, lat1], [lon2, lat2], ...]
+            Search using a pair of values representing the point coordinates as
+            parameters, in the format [longitude, latitude]. Supports multiple
+            points, as a dictionary.
+
+                Example1: point = [lon1, lat1]
+                Example2: point = {"point1": [lon1, lat1], "point2": [lon2, lat2]}
+                Example3: point = {"point1": [lon1, lat1], "point2": [lon2, lat2],
+                                   "Union": True}
+            The "Union" key is optional (if not present is set to `False`).
+
         polygon: list | dict | None
             The polygon to filter by. Polygon points are provided in counter-clockwise
             order. The last point should match the first point to close the polygon.
-            The values are listed comma separated in longitude latitude order, i.e.
-            [lon1, lat1, lon2, lat2, lon3, lat3]. Supports multiple polygons,
-            in that case polygon must be a dictionary. Example:
-            {"poly1": [lon1, lat1, lon2, lat2, ..., lon1, lat1],
-             "poly2": [lon1, lat1, lon2, lat2, ..., lon1, lat1]}
+            The values are listed comma separated in longitude latitude order. Supports
+            multiple polygons, in that case polygon MUST be a dictionary.
+
+            Examples:
+                polygon = [lon1, lat1, lon2, lat2, lon3, lat3, lon1, lat1]
+                polygon = {"poly1": [lon1, lat1, lon2, lat2, ..., lon1, lat1],
+                           "poly2": [lon1, lat1, lon2, lat2, ..., lon1, lat1],
+                            "Union": True}
+            The "Union" key is optional (if not present is set to `False`).
+
         line: list | dict | None
             Lines are provided as a list of comma separated values representing
             coordinates of points along the line. The coordinates are listed in the
             format [lon1, lat1, lon2, lat2, ...]. Multiple lines can be provided, and in
-            that scenario it must be a dictionary. Example:
-                   {'line1': [lon1, lat1, lon2, lat2, ...],
-                    'line2':  [lon1, lat1, lon2, lat2, ...],
-                    }
+            that scenario it must be a dictionary.
+            Examples:
+                line = [lon1, lat1, lon2, lat2, ...]
+                line = {'line1': [lon11, lat11, lon12, lat12, ...],
+                        'line2': [lon21, lat21, lon22, lat22, ...]}
+
         circle: list | dict | None
             Circle defines a circle area on the earth with a center point and a radius.
             The center parameters must be 3 comma-separated numbers: longitude of the
             center point, latitude of the center point, radius of the circle in meters.
-            Multiple circles can be provided as nested lists. Example:
-                    {"circle1}: [-87.629717,41.878112,1000],
-                     "circle2": [-75,41.878112,1000]}
+            Multiple circles can be provided as nested lists.
+            Example:
+                circle = [lon, lat, radius]
+                circle = {"circle1": [lon1, lat1, radius1],
+                          "circle2": [lon2, lat2, radius2]}
+
+        session : requests.Session | None
+            A requests session object. If None, a new session is created.
 
         limit : int
             The maximum number of results to return. Default is 50.
