@@ -509,24 +509,114 @@ def patch_session_for_shared_dap_cache(session, shared_vars, known_url_list=None
     session.cache.create_key = custom_create_key
 
 
-def get_cmr_urls(ccid, time_range=None, bounding_box=None, limit=500):
+def get_cmr_urls(
+    ccid=None,
+    doi=None,
+    time_range=None,
+    bounding_box=None,
+    point=None,
+    polygon=None,
+    line=None,
+    circle=None,
+    limit=50,
+):
     """
-    Get the URLs for a given collection ID (ccid) from the CMR API.
-    Optionally filter by time range and bounding box.
+    Get the granule OPeNDAP URLs associated with a given concept collection ID (ccid) or
+    collection DOI (doi) from the CMR API. This functions allows you to filter
+    the search by time range and spatial shapes (bounding box, point, polygon, line,
+    circle)
 
-    See:    https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
+    NOTE: A query could consist of multiple spatial parameters of different types, two
+    bounding boxes and a polygon for example. If multiple spatial parameters are
+    present, all the parameters irrespective of their type are AND-ed in a query. So, if
+    a query contains two bounding boxes and a polygon for example, it will return only
+    those collections which intersect both the bounding boxes and the polygon.
+
+    Parameters
+    ----------
+        ccid : str
+            The collection concept ID to search for.
+        doi : str
+            The DOI of the collection to search for. This is an alternative to using
+            the ccid parameter.
+        time_range : str | None
+            The time range to filter by, in the format
+            "YYYY-MM-DDTHH:MM:SSZ,YYYY-MM-DDTHH:MM:SSZ".
+        bounding_box : list | dict | None
+            The bounding box to filter by, in the format [west, south, east, north].
+            Supports multiple bounding boxes.
+        point: list | dict | None
+            Search using a point involves using a pair of values representing the point
+            coordinates as parameters. The point to filter by, in the format
+            [longitude, latitude]. Supports multiple points as nested lists.
+            Example: [[lon1, lat1], [lon2, lat2], ...]
+        polygon: list | dict | None
+            The polygon to filter by. Polygon points are provided in counter-clockwise
+            order. The last point should match the first point to close the polygon.
+            The values are listed comma separated in longitude latitude order, i.e.
+            [lon1, lat1, lon2, lat2, lon3, lat3]. Supports multiple polygons,
+            in that case polygon must be a dictionary. Example:
+            {"poly1": [lon1, lat1, lon2, lat2, ..., lon1, lat1],
+             "poly2": [lon1, lat1, lon2, lat2, ..., lon1, lat1]}
+        line: list | dict | None
+            Lines are provided as a list of comma separated values representing
+            coordinates of points along the line. The coordinates are listed in the
+            format [lon1, lat1, lon2, lat2, ...]. Multiple lines can be provided, and in
+            that scenario it must be a dictionary. Example:
+                   {'line1': [lon1, lat1, lon2, lat2, ...],
+                    'line2':  [lon1, lat1, lon2, lat2, ...],
+                    }
+        circle: list | dict | None
+            Circle defines a circle area on the earth with a center point and a radius.
+            The center parameters must be 3 comma-separated numbers: longitude of the
+            center point, latitude of the center point, radius of the circle in meters.
+            Multiple circles can be provided as nested lists. Example:
+                    {"circle1}: [-87.629717,41.878112,1000],
+                     "circle2": [-75,41.878112,1000]}
+
+        limit : int
+            The maximum number of results to return. Default is 50.
+
+    Returns:
+    ---------
+        list
+            A list of granule OPeNDAP URLs.
+
+    See:
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-polygon
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-bounding-box
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-point
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-line
     """
+
+    if not ccid and not doi:
+        raise ValueError("Either ccid or doi must be provided.")
+    if ccid and doi:
+        warnings.warn("Both ccid and doi are provided. Using ccid for the search.")
     cmr_url = "https://cmr.earthdata.nasa.gov/search/granules"
-    params = {"concept_id": ccid, "page_size": limit}
-    if time_range:
-        params["temporal"] = time_range
-    if bounding_box:
-        cmr_url += "?bounding_box%5B%5D=" + "%2C".join(str(x) for x in bounding_box)
-    session = requests.Session()
     headers = {
         "Accept": "application/vnd.nasa.cmr.umm+json",
     }
-    print("cmr_url", cmr_url)
+    params = {"page_size": limit}
+    if ccid:
+        params["concept_id"] = ccid
+    if doi:
+        params["doi"] = doi
+    if time_range:
+        params["temporal"] = time_range
+    if bounding_box and isinstance(bounding_box, list):
+        cmr_url += "?bounding_box%5B%5D=" + "%2C".join(str(x) for x in bounding_box)
+    if polygon and isinstance(polygon, list):
+        cmr_url += "?polygon%5B%5D=" + "%2C".join(str(x) for x in polygon)
+    if line and isinstance(line, list):
+        cmr_url += "?line%5B%5D=" + "%2C".join(str(x) for x in line)
+    if circle and isinstance(circle, list):
+        cmr_url += "?circle%5B%5D=" + "%2C".join(str(x) for x in circle)
+    if point and isinstance(point, list):
+        cmr_url += "?point%5B%5D=" + "%2C".join(str(x) for x in point)
+
+    session = requests.Session()
     cmr_response = session.get(cmr_url, params=params, headers=headers).json()
     items = [
         cmr_response["items"][i]["umm"]["RelatedUrls"]
