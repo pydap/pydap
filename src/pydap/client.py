@@ -670,11 +670,11 @@ def get_cmr_urls(
     ccid=None,
     doi=None,
     time_range=None,
-    bounding_box=list | dict | None,
-    point=list | dict | None,
-    polygon=list | dict | None,
-    line=list | dict | None,
-    circle=list | dict | None,
+    bounding_box: list | dict | None = None,
+    point: list | dict | None = None,
+    polygon: list | dict | None = None,
+    line: list | dict | None = None,
+    circle: list | dict | None = None,
     session=None,
     limit=50,
 ):
@@ -797,20 +797,20 @@ def get_cmr_urls(
 
     if not ccid and not doi:
         raise ValueError("Either ccid or doi must be provided.")
-    if ccid and doi:
-        warnings.warn("Both ccid and doi are provided. Using ccid for the search.")
 
     cmr_url = "https://cmr.earthdata.nasa.gov/search/granules"
     headers = {
         "Accept": "application/vnd.nasa.cmr.umm+json",
     }
-
+    if session is None or not isinstance(session, (requests.Session, CachedSession)):
+        session = create_session()
     params = {"page_size": limit}
 
-    if ccid:
-        params["concept_id"] = ccid
     if doi:
-        params["doi"] = doi
+        doisearch = "https://cmr.earthdata.nasa.gov/search/collections.json?doi=" + doi
+        ccid = session.get(doisearch).json()["feed"]["entry"][0]["id"]
+
+    params["concept_id"] = ccid
 
     if time_range and isinstance(time_range, list):
         if len(time_range) != 2:
@@ -940,8 +940,7 @@ def get_cmr_urls(
                 cmr_url += "&options%5Bpoint%5D%5Bor%5D=true"
         else:
             raise ValueError("`point` must be a list or a dictionary of lists.")
-    if session is None or not isinstance(session, (requests.Session, CachedSession)):
-        session = create_session()
+
     try:
         r = session.get(cmr_url, params=params, headers=headers)
         r.raise_for_status()
