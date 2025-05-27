@@ -783,6 +783,40 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
             + "&point%5B%5D=100%2C20&point%5B%5D=80%2C20"
             + "&options%5Bpoint%5D%5Bor%5D=true",
         ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "polygon": [10, 10, 30, 10, 30, 20, 10, 20, 10, 10],
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C20%2C10%2C10",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "polygon": {
+                    "p1": [10, 10, 30, 10, 30, 20, 10, 20, 10, 10],
+                    "p2": [11, 11, 31, 11, 31, 21, 11, 21, 11, 11],
+                },
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C20%2C10%2C10"
+            + "&polygon%5B%5D=11%2C11%2C31%2C11%2C31%2C21%2C11%2C21%2C11%2C11",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "polygon": {
+                    "p1": [10, 10, 30, 10, 30, 20, 10, 20, 10, 10],
+                    "p2": [11, 11, 31, 11, 31, 21, 11, 21, 11, 11],
+                    "Union": True,
+                },
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C20%2C10%2C10"
+            + "&polygon%5B%5D=11%2C11%2C31%2C11%2C31%2C21%2C11%2C21%2C11%2C11"
+            + "&options%5Bpolygon%5D%5Bor%5D=true",
+        ],
     ],
 )
 def test_get_cmr_urls(param, expected):
