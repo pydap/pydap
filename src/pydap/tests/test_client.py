@@ -9,6 +9,7 @@ import requests
 from ..client import (
     compute_base_url_prefix,
     consolidate_metadata,
+    get_cmr_urls,
     open_dmr,
     open_dods_url,
     open_file,
@@ -16,6 +17,7 @@ from ..client import (
     patch_session_for_shared_dap_cache,
 )
 from ..handlers.lib import BaseHandler
+from ..lib import _quote
 from ..model import BaseType, DatasetType, GridType
 from ..net import create_session
 from .datasets import SimpleGrid, SimpleSequence, SimpleStructure
@@ -692,3 +694,34 @@ def test_patch_session_for_shared_dap_cache(urls, cached_session):
 
     # assert that there is no new cached key
     assert len(cached_session.cache.urls()) == len(dimensions)
+
+
+@pytest.mark.parametrize(
+    "param",
+    [
+        {"doi": "10.5067/ECL5M-OTS44"},
+    ],
+)
+@pytest.mark.parametrize(
+    "expected",
+    [
+        "concept_id=C1991543728-POCLOUD&page_size=50",
+    ],
+)
+def test_get_cmr_urls(param, expected):
+    """Test that get_cmr_urls returns the correct urls."""
+    session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    cmr_urls = get_cmr_urls(**param, session=session)
+    assert isinstance(cmr_urls, list)
+    assert len(cmr_urls) > 0
+    cmr_url = "https://cmr.earthdata.nasa.gov/search/"
+    cached_urls = session.cache.urls()
+    if "doi" in param.keys():
+        # when searching by doi, first pydap searches for the concept_collection id
+        # and then searches for granules using that id.
+        # the first url is the collection search
+        url = cmr_url + "collections.json?doi="
+        doi_query = _quote(param["doi"]).replace("/", "%2F").replace("%2E", ".")
+        assert url + doi_query == cached_urls[0]
+        cached_urls = cached_urls[1:]  # remove the first url
+    assert cmr_url + "granules?" + expected == cached_urls[0]
