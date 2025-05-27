@@ -1,5 +1,6 @@
 """Test the pydap client."""
 
+import datetime as dt
 import os
 
 import numpy as np
@@ -696,16 +697,33 @@ def test_patch_session_for_shared_dap_cache(urls, cached_session):
     assert len(cached_session.cache.urls()) == len(dimensions)
 
 
+ccid = "concept_id=C2076114664-LPCLOUD"
+start_date = dt.datetime(2020, 1, 1)
+end_date = dt.datetime(2020, 1, 31)
+dt_format = "%Y-%m-%dT%H:%M:%SZ"
+
+
 @pytest.mark.parametrize(
-    "param",
+    "param, expected",
     [
-        {"doi": "10.5067/ECL5M-OTS44"},
-    ],
-)
-@pytest.mark.parametrize(
-    "expected",
-    [
-        "concept_id=C1991543728-POCLOUD&page_size=50",
+        [{"doi": "10.5067/ECL5M-OTS44"}, "concept_id=C1991543728-POCLOUD&page_size=50"],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "time_range": [start_date, end_date],
+            },
+            ccid + "&temporal=2020-01-01T00%3A00%3A00Z%2C2020-01-31T00%3A00%3A00Z",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "time_range": [
+                    start_date.strftime(dt_format),
+                    end_date.strftime(dt_format),
+                ],
+            },
+            ccid + "&temporal=2020-01-01T00%3A00%3A00Z%2C2020-01-31T00%3A00%3A00Z",
+        ],
     ],
 )
 def test_get_cmr_urls(param, expected):
@@ -724,4 +742,8 @@ def test_get_cmr_urls(param, expected):
         doi_query = _quote(param["doi"]).replace("/", "%2F").replace("%2E", ".")
         assert url + doi_query == cached_urls[0]
         cached_urls = cached_urls[1:]  # remove the first url
-    assert cmr_url + "granules?" + expected == cached_urls[0]
+    cached_urls = cached_urls[0].split("?")[-1]  # get only the query part of the url
+    if "page_size" not in param.keys():
+        # if page_size is not specified, it defaults to 50
+        expected += "&page_size=50"
+    assert set(expected.split("&")) == set(cached_urls.split("&"))
