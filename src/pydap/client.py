@@ -44,6 +44,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 """
 
+import datetime as dt
 import os
 import re
 import warnings
@@ -52,6 +53,7 @@ from io import BytesIO, open
 from os.path import commonprefix
 from urllib.parse import parse_qs, unquote, urlencode
 
+import requests
 from requests.exceptions import (
     ConnectionError,
     SSLError,
@@ -662,6 +664,307 @@ def patch_session_for_shared_dap_cache(
 
     # Append the new config to the session
     session._dap_cache_configs.append(new_config)
+
+
+def get_cmr_urls(
+    ccid=None,
+    doi=None,
+    time_range=None,
+    bounding_box: list | dict | None = None,
+    point: list | dict | None = None,
+    polygon: list | dict | None = None,
+    line: list | dict | None = None,
+    circle: list | dict | None = None,
+    session=None,
+    limit=50,
+):
+    """
+    Get the granule OPeNDAP URLs associated with a given concept collection ID (ccid) or
+    collection DOI (doi) from the CMR API. This functions allows you to filter
+    the search by time range and spatial shapes (bounding box, point, polygon, line,
+    circle)
+
+    `NOTE`: A query could consist of multiple spatial parameters of different types, two
+    bounding boxes and a polygon for example. If multiple spatial parameters are
+    present, all the parameters irrespective of their type are AND-ed in a query. So, if
+    a query contains two bounding boxes and a polygon for example, it will return only
+    those collections which intersect both the bounding boxes and the polygon.
+
+    `NOTE`: The spatial parameters are not mutually exclusive. You can use multiple
+    spatial parameters in a single query. For example, you can use a bounding box and a
+    polygon in the same query. When the spatial parameters are different types, theser
+    are AND-ed together, meaning the search will return results that intersect all
+    spatial parameters. For example, if you use a bounding box and a polygon in the same
+    query, the results will include only those collections that intersect both the
+    bounding box andf the polygon. When the spatial parameters are the same type, they
+    are AND-ed together by default. However, it is possible to make them OR-ed by adding
+    an extra key-value pair to the bounding box, point, polygon, line, or circle
+    parameters (dict). The key is "Union" and the value can be `True` of `False`.
+    If `True`, the spatial parameters are OR-ed together. For example, if you use two
+    bounding boxes in the same query, and set the "Union" key to `True`, the results
+    will include all collections that intersect either of the bounding boxes. If
+    `False` (default), the results will include only those collections that intersect
+    both bounding boxes. The same applies to the other spatial parameters.
+
+    Parameters
+    ----------
+        ccid : str
+            The collection concept ID to search for.
+        doi : str
+            The DOI of the collection to search for. This is an alternative to using
+            the ccid parameter.
+        time_range : list | None
+            The time range to filter by. The time range is a list of two elements,
+            each element a datetime.datetime object, of a string in the format
+            YYYY-MM-DDTHH:MM:SSZ.
+            Example1: ["2023-01-01T00:00:00Z", "2023-12-31T23:59:59Z"]
+            Example2: [datetime.datetime(2023, 1, 1), datetime.datetime(2023, 12, 31)]
+
+        bounding_box : list | dict | None
+            The bounding box to filter by, in the format [west, south, east, north].
+            Supports multiple bounding boxes.
+
+            Example1: bounding_box = [lon1, lat1, lon2, lat2]
+            Example2: bounding_box = {"box1": [lon1, lat1, lon2, lat2],
+                                      "box2": [lon3, lat3, lon4, lat4]}
+            Example3: bounding_box = {"box1": [lon1, lat1, lon2, lat2],
+                                      "box2": [lon3, lat3, lon4, lat4],
+                                      "Union": True}
+            The "Union" key is optional (if not present is set to `False`).
+
+        point: list | dict | None
+            Search using a pair of values representing the point coordinates as
+            parameters, in the format [longitude, latitude]. Supports multiple
+            points, as a dictionary.
+
+                Example1: point = [lon1, lat1]
+                Example2: point = {"point1": [lon1, lat1], "point2": [lon2, lat2]}
+                Example3: point = {"point1": [lon1, lat1], "point2": [lon2, lat2],
+                                   "Union": True}
+            The "Union" key is optional (if not present is set to `False`).
+
+        polygon: list | dict | None
+            The polygon to filter by. Polygon points are provided in counter-clockwise
+            order. The last point should match the first point to close the polygon.
+            The values are listed comma separated in longitude latitude order. Supports
+            multiple polygons, in that case polygon MUST be a dictionary.
+
+            Examples:
+                polygon = [lon1, lat1, lon2, lat2, lon3, lat3, lon1, lat1]
+                polygon = {"poly1": [lon1, lat1, lon2, lat2, ..., lon1, lat1],
+                           "poly2": [lon1, lat1, lon2, lat2, ..., lon1, lat1],
+                            "Union": True}
+            The "Union" key is optional (if not present is set to `False`).
+
+        line: list | dict | None
+            Lines are provided as a list of comma separated values representing
+            coordinates of points along the line. The coordinates are listed in the
+            format [lon1, lat1, lon2, lat2, ...]. Multiple lines can be provided, and in
+            that scenario it must be a dictionary.
+            Examples:
+                line = [lon1, lat1, lon2, lat2, ...]
+                line = {'line1': [lon11, lat11, lon12, lat12, ...],
+                        'line2': [lon21, lat21, lon22, lat22, ...]}
+
+        circle: list | dict | None
+            Circle defines a circle area on the earth with a center point and a radius.
+            The center parameters must be 3 comma-separated numbers: longitude of the
+            center point, latitude of the center point, radius of the circle in meters.
+            Multiple circles can be provided as nested lists.
+            Example:
+                circle = [lon, lat, radius]
+                circle = {"circle1": [lon1, lat1, radius1],
+                          "circle2": [lon2, lat2, radius2]}
+
+        session : requests.Session | None
+            A requests session object. If None, a new session is created.
+
+        limit : int
+            The maximum number of results to return. Default is 50.
+
+    Returns:
+    ---------
+        list
+            A list of granule OPeNDAP URLs.
+
+    See:
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-polygon
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-bounding-box
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-point
+        https://cmr.earthdata.nasa.gov/search/site/docs/search/api.html#c-line
+    """
+
+    if not ccid and not doi:
+        raise ValueError("Either ccid or doi must be provided.")
+
+    cmr_url = "https://cmr.earthdata.nasa.gov/search/granules"
+    headers = {
+        "Accept": "application/vnd.nasa.cmr.umm+json",
+    }
+    if session is None or not isinstance(session, (requests.Session, CachedSession)):
+        session = create_session()
+    params = {"page_size": limit}
+
+    if doi:
+        doisearch = "https://cmr.earthdata.nasa.gov/search/collections.json?doi=" + doi
+        ccid = session.get(doisearch).json()["feed"]["entry"][0]["id"]
+
+    params["concept_id"] = ccid
+
+    if time_range and isinstance(time_range, list):
+        if len(time_range) != 2:
+            warnings.warns("time_range must be a list of two elements.")
+            return None
+        if all(isinstance(x, dt.datetime) for x in time_range):
+            dt_format = "%Y-%m-%dT%H:%M:%SZ"
+            temporal_str = (
+                time_range[0].strftime(dt_format)
+                + ","
+                + time_range[1].strftime(dt_format)
+            )
+        else:
+            try:
+                dt.datetime.strptime(time_range[0], "%Y-%m-%dT%H:%M:%SZ")
+                dt.datetime.strptime(time_range[1], "%Y-%m-%dT%H:%M:%SZ")
+                temporal_str = time_range[0] + "," + time_range[1]
+            except ValueError:
+                warnings.warns(
+                    "time_range must be a list of two elements each a string in the"
+                    " format YYYY-MM-DDTHH:MM:SSZ."
+                )
+                return None
+        params["temporal"] = temporal_str
+    elif time_range and not isinstance(time_range, list):
+        warnings.warns(
+            "time_range must be a list of two elements or a string in the format"
+            " YYYY-MM-DDTHH:MM:SSZ."
+        )
+        return None
+    if bounding_box:
+        if isinstance(bounding_box, list):
+            cmr_url += "?bounding_box%5B%5D=" + "%2C".join(str(x) for x in bounding_box)
+        elif isinstance(bounding_box, dict):
+            ces = []
+            if "Union" in bounding_box:
+                extra = bounding_box.pop("Union", None)
+            else:
+                extra = False
+            for key, value in bounding_box.items():
+                if isinstance(value, list):
+                    ces.append(
+                        "bounding_box%5B%5D=" + "%2C".join(str(x) for x in value)
+                    )
+                else:
+                    raise ValueError(
+                        "bounding_box must be a list or a dictionary of lists."
+                    )
+            cmr_url += "?" + "&".join(ces)
+            if extra:
+                cmr_url += "&options%5Bbounding_box%5D%5Bor%5D=true"
+        else:
+            raise ValueError("`bounding_box` must be a list or a dictionary of lists.")
+    if polygon:
+        if isinstance(polygon, list):
+            cmr_url += "?polygon%5B%5D=" + "%2C".join(str(x) for x in polygon)
+        elif isinstance(polygon, dict):
+            ces = []
+            if "Union" in polygon:
+                extra = polygon.pop("Union", None)
+            else:
+                extra = False
+            for key, value in polygon.items():
+                if isinstance(value, list):
+                    ces.append("polygon%5B%5D=" + "%2C".join(str(x) for x in value))
+                else:
+                    raise ValueError("polygon must be a list or a dictionary of lists.")
+            cmr_url += "?" + "&".join(ces)
+            if extra:
+                cmr_url += "&options%5Bpolygon%5D%5Bor%5D=true"
+        else:
+            raise ValueError("`polygon` must be a list or a dictionary of lists.")
+    if line:
+        if isinstance(line, list):
+            cmr_url += "?line%5B%5D=" + "%2C".join(str(x) for x in line)
+        elif isinstance(line, dict):
+            ces = []
+            if "Union" in line:
+                extra = line.pop("Union", None)
+            else:
+                extra = False
+            for key, value in line.items():
+                if isinstance(value, list):
+                    ces.append("line%5B%5D=" + "%2C".join(str(x) for x in value))
+                else:
+                    raise ValueError("line must be a list or a dictionary of lists.")
+            cmr_url += "?" + "&".join(ces)
+            if extra:
+                cmr_url += "&options%5Bline%5D%5Bor%5D=true"
+        else:
+            raise ValueError("`line` must be a list or a dictionary of lists.")
+    if circle:
+        if isinstance(circle, list):
+            cmr_url += "?circle%5B%5D=" + "%2C".join(str(x) for x in circle)
+        elif isinstance(circle, dict):
+            ces = []
+            if "Union" in circle:
+                extra = circle.pop("Union", None)
+            else:
+                extra = False
+            for key, value in circle.items():
+                if isinstance(value, list):
+                    ces.append("circle%5B%5D=" + "%2C".join(str(x) for x in value))
+                else:
+                    raise ValueError("circle must be a list or a dictionary of lists.")
+            cmr_url += "?" + "&".join(ces)
+            if extra:
+                cmr_url += "&options%5Bcircle%5D%5Bor%5D=true"
+        else:
+            raise ValueError("`circle` must be a list or a dictionary of lists.")
+    if point:
+        if isinstance(point, list):
+            cmr_url += "?point%5B%5D=" + "%2C".join(str(x) for x in point)
+        elif isinstance(point, dict):
+            ces = []
+            if "Union" in point:
+                extra = point.pop("Union", None)
+            else:
+                extra = False
+            for key, value in point.items():
+                if isinstance(value, list):
+                    ces.append("point%5B%5D=" + "%2C".join(str(x) for x in value))
+                else:
+                    raise ValueError("point must be a list or a dictionary of lists.")
+            cmr_url += "?" + "&".join(ces)
+            if extra:
+                cmr_url += "&options%5Bpoint%5D%5Bor%5D=true"
+        else:
+            raise ValueError("`point` must be a list or a dictionary of lists.")
+
+    try:
+        r = session.get(cmr_url, params=params, headers=headers)
+        r.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Error - something went wrong: {e}")
+        return None
+
+    cmr_response = r.json()
+    items = [
+        cmr_response["items"][i]["umm"]["RelatedUrls"]
+        for i in range(len(cmr_response["items"]))
+    ]
+    granule_urls = list(
+        {
+            d["URL"]
+            for item in items
+            for d in item
+            if (
+                d.get("Description") == "OPeNDAP request URL"
+                or d.get("Subtype") == "OPENDAP DATA"
+            )
+        }
+    )
+    return granule_urls
 
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 """Test the pydap client."""
 
+import datetime as dt
 import os
 
 import numpy as np
@@ -9,6 +10,7 @@ import requests
 from ..client import (
     compute_base_url_prefix,
     consolidate_metadata,
+    get_cmr_urls,
     open_dmr,
     open_dods_url,
     open_file,
@@ -16,6 +18,7 @@ from ..client import (
     patch_session_for_shared_dap_cache,
 )
 from ..handlers.lib import BaseHandler
+from ..lib import _quote
 from ..model import BaseType, DatasetType, GridType
 from ..net import create_session
 from .datasets import SimpleGrid, SimpleSequence, SimpleStructure
@@ -692,3 +695,214 @@ def test_patch_session_for_shared_dap_cache(urls, cached_session):
 
     # assert that there is no new cached key
     assert len(cached_session.cache.urls()) == len(dimensions)
+
+
+ccid = "concept_id=C2076114664-LPCLOUD"
+start_date = dt.datetime(2020, 1, 1)
+end_date = dt.datetime(2020, 1, 31)
+dt_format = "%Y-%m-%dT%H:%M:%SZ"
+bbox1 = "bounding_box%5B%5D=-10%2C-5%2C10%2C5"
+bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
+
+
+@pytest.mark.parametrize(
+    "param, expected",
+    [
+        [{"doi": "10.5067/ECL5M-OTS44"}, "concept_id=C1991543728-POCLOUD&page_size=50"],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "time_range": [start_date, end_date],
+            },
+            ccid + "&temporal=2020-01-01T00%3A00%3A00Z%2C2020-01-31T00%3A00%3A00Z",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "time_range": [
+                    start_date.strftime(dt_format),
+                    end_date.strftime(dt_format),
+                ],
+            },
+            ccid + "&temporal=2020-01-01T00%3A00%3A00Z%2C2020-01-31T00%3A00%3A00Z",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "bounding_box": list((-130.8, 41, -124, 45)),
+            },
+            ccid + "&bounding_box%5B%5D=-130.8%2C41%2C-124%2C45",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "bounding_box": {
+                    "key1": list((-10, -5, 10, 5)),
+                    "key2": list((-11, -6, 11, 6)),
+                },
+            },
+            ccid + "&" + bbox1 + "&" + bbox2,
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "bounding_box": {
+                    "key1": list((-10, -5, 10, 5)),
+                    "key2": list((-11, -6, 11, 6)),
+                    "Union": True,
+                },
+            },
+            ccid
+            + "&"
+            + bbox1
+            + "&"
+            + bbox2
+            + "&options%5Bbounding_box%5D%5Bor%5D=true",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "point": [100, 20],
+            },
+            ccid + "&point%5B%5D=100%2C20",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "point": {"point1": [100, 20], "point2": [80, 20]},
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&point%5B%5D=100%2C20&point%5B%5D=80%2C20",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "point": {"point1": [100, 20], "point2": [80, 20], "Union": True},
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&point%5B%5D=100%2C20&point%5B%5D=80%2C20"
+            + "&options%5Bpoint%5D%5Bor%5D=true",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "polygon": [10, 10, 30, 10, 30, 20, 10, 20, 10, 10],
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C20%2C10%2C10",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "polygon": {
+                    "p1": [10, 10, 30, 10, 30, 20, 10, 20, 10, 10],
+                    "p2": [11, 11, 31, 11, 31, 21, 11, 21, 11, 11],
+                },
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C20%2C10%2C10"
+            + "&polygon%5B%5D=11%2C11%2C31%2C11%2C31%2C21%2C11%2C21%2C11%2C11",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "polygon": {
+                    "p1": [10, 10, 30, 10, 30, 20, 10, 20, 10, 10],
+                    "p2": [11, 11, 31, 11, 31, 21, 11, 21, 11, 11],
+                    "Union": True,
+                },
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C20%2C10%2C10"
+            + "&polygon%5B%5D=11%2C11%2C31%2C11%2C31%2C21%2C11%2C21%2C11%2C11"
+            + "&options%5Bpolygon%5D%5Bor%5D=true",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "line": [-0.37, -14.07, 4.75, 1.27, 25.13, -15.51],
+            },
+            ccid + "&line%5B%5D=-0.37%2C-14.07%2C4.75%2C1.27%2C25.13%2C-15.51",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "line": {
+                    "line1": [-0.37, -14.07, 4.75, 1.27, 25.13, -15.51],
+                    "line2": [-1.37, -15.07, 5.75, 2.27, 26.13, -16.51],
+                },
+            },
+            ccid
+            + "&line%5B%5D=-0.37%2C-14.07%2C4.75%2C1.27%2C25.13%2C-15.51"
+            + "&line%5B%5D=-1.37%2C-15.07%2C5.75%2C2.27%2C26.13%2C-16.51",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "line": {
+                    "line1": [-0.37, -14.07, 4.75, 1.27, 25.13, -15.51],
+                    "line2": [-1.37, -15.07, 5.75, 2.27, 26.13, -16.51],
+                    "Union": True,
+                },
+            },
+            ccid
+            + "&line%5B%5D=-0.37%2C-14.07%2C4.75%2C1.27%2C25.13%2C-15.51"
+            + "&line%5B%5D=-1.37%2C-15.07%2C5.75%2C2.27%2C26.13%2C-16.51"
+            + "&options%5Bline%5D%5Bor%5D=true",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "circle": [-87.629717, 41.878112, 1000],
+            },
+            ccid + "&circle%5B%5D=-87.629717%2C41.878112%2C1000",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "circle": {
+                    "c1": [-87.629717, 41.878112, 1000],
+                    "c2": [-75, 41.878112, 1000],
+                },
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&circle%5B%5D=-87.629717%2C41.878112%2C1000"
+            + "&circle%5B%5D=-75%2C41.878112%2C1000",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "circle": {
+                    "c1": [-87.629717, 41.878112, 1000],
+                    "c2": [-75, 41.878112, 1000],
+                    "Union": True,
+                },
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&circle%5B%5D=-87.629717%2C41.878112%2C1000"
+            + "&circle%5B%5D=-75%2C41.878112%2C1000"
+            + "&options%5Bcircle%5D%5Bor%5D=true",
+        ],
+    ],
+)
+def test_get_cmr_urls(param, expected):
+    """Test that get_cmr_urls returns the correct urls."""
+    session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    cmr_urls = get_cmr_urls(**param, session=session)
+    assert isinstance(cmr_urls, list)
+    assert len(cmr_urls) > 0
+    cmr_url = "https://cmr.earthdata.nasa.gov/search/"
+    cached_urls = session.cache.urls()
+    if "doi" in param.keys():
+        # when searching by doi, first pydap searches for the concept_collection id
+        # and then searches for granules using that id.
+        # the first url is the collection search
+        url = cmr_url + "collections.json?doi="
+        doi_query = _quote(param["doi"]).replace("/", "%2F").replace("%2E", ".")
+        assert url + doi_query == cached_urls[0]
+        cached_urls = cached_urls[1:]  # remove the first url
+    cached_urls = cached_urls[0].split("?")[-1]  # get only the query part of the url
+    if "limit" not in param.keys():
+        # if page_size is not specified, it defaults to 50
+        expected += "&page_size=50"
+    assert set(expected.split("&")) == set(cached_urls.split("&"))
