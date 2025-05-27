@@ -701,6 +701,8 @@ ccid = "concept_id=C2076114664-LPCLOUD"
 start_date = dt.datetime(2020, 1, 1)
 end_date = dt.datetime(2020, 1, 31)
 dt_format = "%Y-%m-%dT%H:%M:%SZ"
+bbox1 = "bounding_box%5B%5D=-10%2C-5%2C10%2C5"
+bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
 
 
 @pytest.mark.parametrize(
@@ -724,6 +726,39 @@ dt_format = "%Y-%m-%dT%H:%M:%SZ"
             },
             ccid + "&temporal=2020-01-01T00%3A00%3A00Z%2C2020-01-31T00%3A00%3A00Z",
         ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "bounding_box": list((-130.8, 41, -124, 45)),
+            },
+            ccid + "&bounding_box%5B%5D=-130.8%2C41%2C-124%2C45",
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "bounding_box": {
+                    "key1": list((-10, -5, 10, 5)),
+                    "key2": list((-11, -6, 11, 6)),
+                },
+            },
+            ccid + "&" + bbox1 + "&" + bbox2,
+        ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "bounding_box": {
+                    "key1": list((-10, -5, 10, 5)),
+                    "key2": list((-11, -6, 11, 6)),
+                    "Union": True,
+                },
+            },
+            ccid
+            + "&"
+            + bbox1
+            + "&"
+            + bbox2
+            + "&options%5Bbounding_box%5D%5Bor%5D=true",
+        ],
     ],
 )
 def test_get_cmr_urls(param, expected):
@@ -743,7 +778,7 @@ def test_get_cmr_urls(param, expected):
         assert url + doi_query == cached_urls[0]
         cached_urls = cached_urls[1:]  # remove the first url
     cached_urls = cached_urls[0].split("?")[-1]  # get only the query part of the url
-    if "page_size" not in param.keys():
+    if "limit" not in param.keys():
         # if page_size is not specified, it defaults to 50
         expected += "&page_size=50"
     assert set(expected.split("&")) == set(cached_urls.split("&"))
