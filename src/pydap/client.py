@@ -869,8 +869,8 @@ def get_cmr_urls(
             cmr_url += "?polygon%5B%5D=" + "%2C".join(str(x) for x in polygon)
         elif isinstance(polygon, dict):
             ces = []
-            if "Union" in bounding_box:
-                extra = bounding_box.pop("Union", None)
+            if "Union" in polygon:
+                extra = polygon.pop("Union", None)
             else:
                 extra = False
             for key, value in polygon.items():
@@ -888,8 +888,8 @@ def get_cmr_urls(
             cmr_url += "?line%5B%5D=" + "%2C".join(str(x) for x in line)
         elif isinstance(line, dict):
             ces = []
-            if "Union" in bounding_box:
-                extra = bounding_box.pop("Union", None)
+            if "Union" in line:
+                extra = line.pop("Union", None)
             else:
                 extra = False
             for key, value in line.items():
@@ -907,8 +907,8 @@ def get_cmr_urls(
             cmr_url += "?circle%5B%5D=" + "%2C".join(str(x) for x in circle)
         elif isinstance(circle, dict):
             ces = []
-            if "Union" in bounding_box:
-                extra = bounding_box.pop("Union", None)
+            if "Union" in circle:
+                extra = circle.pop("Union", None)
             else:
                 extra = False
             for key, value in circle.items():
@@ -926,8 +926,8 @@ def get_cmr_urls(
             cmr_url += "?point%5B%5D=" + "%2C".join(str(x) for x in point)
         elif isinstance(point, dict):
             ces = []
-            if "Union" in bounding_box:
-                extra = bounding_box.pop("Union", None)
+            if "Union" in point:
+                extra = point.pop("Union", None)
             else:
                 extra = False
             for key, value in point.items():
