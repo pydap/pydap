@@ -759,6 +759,30 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
             + bbox2
             + "&options%5Bbounding_box%5D%5Bor%5D=true",
         ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "point": [100, 20],
+            },
+            ccid + "&point%5B%5D=100%2C20",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "point": {"point1": [100, 20], "point2": [80, 20]},
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&point%5B%5D=100%2C20&point%5B%5D=80%2C20",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "point": {"point1": [100, 20], "point2": [80, 20], "Union": True},
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&point%5B%5D=100%2C20&point%5B%5D=80%2C20"
+            + "&options%5Bpoint%5D%5Bor%5D=true",
+        ],
     ],
 )
 def test_get_cmr_urls(param, expected):
