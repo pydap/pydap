@@ -850,6 +850,39 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
             + "&line%5B%5D=-1.37%2C-15.07%2C5.75%2C2.27%2C26.13%2C-16.51"
             + "&options%5Bline%5D%5Bor%5D=true",
         ],
+        [
+            {
+                "ccid": ccid.split("=")[-1],
+                "circle": [-87.629717, 41.878112, 1000],
+            },
+            ccid + "&circle%5B%5D=-87.629717%2C41.878112%2C1000",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "circle": {
+                    "c1": [-87.629717, 41.878112, 1000],
+                    "c2": [-75, 41.878112, 1000],
+                },
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&circle%5B%5D=-87.629717%2C41.878112%2C1000"
+            + "&circle%5B%5D=-75%2C41.878112%2C1000",
+        ],
+        [
+            {
+                "ccid": "C1991543728-POCLOUD",
+                "circle": {
+                    "c1": [-87.629717, 41.878112, 1000],
+                    "c2": [-75, 41.878112, 1000],
+                    "Union": True,
+                },
+            },
+            "concept_id=C1991543728-POCLOUD"
+            + "&circle%5B%5D=-87.629717%2C41.878112%2C1000"
+            + "&circle%5B%5D=-75%2C41.878112%2C1000"
+            + "&options%5Bcircle%5D%5Bor%5D=true",
+        ],
     ],
 )
 def test_get_cmr_urls(param, expected):
