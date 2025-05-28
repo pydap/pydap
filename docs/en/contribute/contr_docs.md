@@ -24,7 +24,7 @@ conda activate pydap_docs
 ```{note}
 If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
 ```
-3. Install `pydap` in `developer` mode and making sure that all notebooks properly build with the newer changes. To do so, run
+3. Install `pydap` in `developer` mode, to make sure that all notebooks are properly built. To do install in dev mode, run
 
 ```shell
 pip install -e .
