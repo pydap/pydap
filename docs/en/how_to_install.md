@@ -34,7 +34,7 @@ We recommend to use package installation managers like `conda`/`mamba`. This app
 
 ## Dependencies
 ### Minimal Required
-The following are required to run pydap as a client.
+The following are required to run `pydap` as a client.
 
 - `python>=3.10`
 - `numpy`
@@ -44,13 +44,15 @@ The following are required to run pydap as a client.
 - `beautifulsoup4`
 - `lxml`
 - `Webob`
--
+
+These are install with every `pydap` installation.
+
 ## Reproducible (conda) environments
 
 You can easily use conda to install `pydap` or `pydap-server`, along with any optional packages for sharing a reproducible workflow. For example:
 
 ```shell
-    $ conda create -n pydap_env -c conda-forge python=3.10 pydap-server
+    $ conda create -n pydap_env -c conda-forge python=3.11 pydap-server
     $ conda activate pydap_env
 ```
 
