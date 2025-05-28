@@ -93,7 +93,8 @@ def _basetype(var, level=0, sequence=0):
     shape = var.shape[sequence:]
 
     if var.dims:
-        shape = "".join(map("[{0[0]} = {0[1]}]".format, zip(var.dims, shape)))
+        dims = [dim.split("/")[-1] for dim in var.dims]
+        shape = "".join(map("[{0[0]} = {0[1]}]".format, zip(dims, shape)))
     elif len(shape) == 1:
         shape = "[{0} = {1}]".format(var.name, shape[0])
     else:
