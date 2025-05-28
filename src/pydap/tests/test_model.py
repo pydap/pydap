@@ -89,7 +89,7 @@ def test_BaseType_no_data():
     assert var.dims == []
 
 
-def test_BaseType_data_and_dimensions():
+def test_BaseType_data_and_dims():
     """Test data and dimensions assignment."""
     var = BaseType(
         "var",
@@ -102,6 +102,19 @@ def test_BaseType_data_and_dimensions():
     assert var.dims == [
         "x",
     ]
+
+
+def test_BaseType_raiseWarning_dimensions():
+    """Test data and dimensions assignment."""
+    with pytest.warns(DeprecationWarning, match="`dimensions`"):
+        var = BaseType(
+            "var",
+            [42],
+            [
+                "x",
+            ],
+        )
+        assert var.dimensions == ("x",)
 
 
 def test_BaseType_repr():
