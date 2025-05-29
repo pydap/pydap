@@ -263,6 +263,26 @@ def consolidate_metadata(
             + "]"
             for i, url in enumerate(URLs)
         ]
+        if results[0].dimensions[concat_dim]>1:
+            print("Creating 2 more urls. Size: ", results[0].dimensions[concat_dim])
+        concat_dim_urls += [
+            url.split("?")[0]
+            + ".dap?dap4.ce="
+            + concat_dim
+            + "[0:1:0]"
+            for i, url in enumerate(URLs)
+        ]
+        concat_dim_urls += [
+            url.split("?")[0]
+            + ".dap?dap4.ce="
+            + concat_dim
+            + "["
+            + str(results[0].dimensions[concat_dim] - 1)
+            + ":1:"
+            + str(results[0].dimensions[concat_dim] - 1)
+            + "]"
+            for i, url in enumerate(URLs)
+        ]
     else:
         concat_dim_urls = []
 
