@@ -258,30 +258,41 @@ def consolidate_metadata(
             url.split("?")[0]
             + ".dap?dap4.ce="
             + concat_dim
-            + "[0:1:"
+            + "%5B0:1:"
             + str(results[0].dimensions[concat_dim] - 1)
-            + "]"
+            + "%5D"
             for i, url in enumerate(URLs)
         ]
         if results[0].dimensions[concat_dim] > 1:
-            print("Creating 2 more urls. Size: ", results[0].dimensions[concat_dim])
-        concat_dim_urls += [
-            url.split("?")[0] + ".dap?dap4.ce=" + concat_dim + "[0:1:0]"
-            for i, url in enumerate(URLs)
-        ]
-        concat_dim_urls += [
-            url.split("?")[0]
-            + ".dap?dap4.ce="
-            + concat_dim
-            + "["
-            + str(results[0].dimensions[concat_dim] - 1)
-            + ":1:"
-            + str(results[0].dimensions[concat_dim] - 1)
-            + "]"
-            for i, url in enumerate(URLs)
-        ]
+            concat_dim_urls += [
+                url.split("?")[0] + ".dap?dap4.ce=" + concat_dim + "[0:1:0]"
+                for i, url in enumerate(URLs)
+            ]
+            concat_dim_urls += [
+                url.split("?")[0]
+                + ".dap?dap4.ce="
+                + concat_dim
+                + "["
+                + str(results[0].dimensions[concat_dim] - 1)
+                + ":1:"
+                + str(results[0].dimensions[concat_dim] - 1)
+                + "]"
+                for i, url in enumerate(URLs)
+            ]
+            add_dims = set(
+                [
+                    concat_dim + "[0:1:0]",
+                    concat_dim
+                    + "["
+                    + str(results[0].dimensions[concat_dim] - 1)
+                    + ":1:"
+                    + str(results[0].dimensions[concat_dim] - 1)
+                    + "]",
+                ]
+            )
     else:
         concat_dim_urls = []
+        add_dims = set()
 
     new_urls = [
         base_url
@@ -293,6 +304,7 @@ def consolidate_metadata(
         for dim in list(dims)
     ]
     new_urls.extend(concat_dim_urls)
+    # print("new urls", new_urls)
     dim_ces = set(
         [
             dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]"
@@ -301,6 +313,7 @@ def consolidate_metadata(
     )
     if dims:
         print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
+        dim_ces.update(add_dims)
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )
@@ -599,7 +612,7 @@ def try_generate_custom_key(request, config, verbose=False):
 
     if verbose:
         print("================ request url ========================")
-        print("request.url")
+        print(request.url)
 
     shared_ext = ext
 
