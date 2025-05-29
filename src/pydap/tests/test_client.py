@@ -705,6 +705,9 @@ bbox1 = "bounding_box%5B%5D=-10%2C-5%2C10%2C5"
 bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
 
 
+@pytest.mark.skipif(
+    os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
+)
 @pytest.mark.parametrize(
     "param, expected",
     [

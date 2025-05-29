@@ -290,6 +290,17 @@ class BaseType(DapType):
         except AttributeError:
             return self._shape
 
+    @property
+    def dimensions(self):
+        """Return the name of the axes."""
+        warnings.warn(
+            "The use of `dimensions` on a `BaseType` array will get "
+            "deprecated on a future release. Use `dims` instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return tuple(self.dims)
+
     def reshape(self, *args):
         """Method that reshapes the data:"""
         self.data = self.data.reshape(*args)
@@ -1064,6 +1075,11 @@ class GridType(StructureType):
     def dimensions(self):
         """Return the name of the axes."""
         return tuple(list(self.keys())[1:])
+
+    @property
+    def dims(self):
+        """Return the name of the axes."""
+        return list(self.dimensions)
 
     @property
     def type(self):

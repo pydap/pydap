@@ -24,23 +24,17 @@ conda activate pydap_docs
 ```{note}
 If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
 ```
-
-The `docs/environment.yml` file provides a ready-to-use environment (it installs `pydap-server`). However, if you have made new changes to the code, we recommend installing pydap in `dev` mode and making sure that all notebooks properly build.
+3. Install `pydap` in `developer` mode, to make sure that all notebooks are properly built. To do install in dev mode, run
 
 ```shell
 pip install -e .
 ```
-or to install `pydap` directly from the main branch:
 
-```shell
-pip install --upgrade git+https://github.com/pydap/pydap.git
-```
+4. Create a new branch, and set its upstream and use git (see [steps 3 and 4 from contributing to the code](contr_cod.md))
 
-3. Create a new branch, and set its upstream and use git (see [steps 3 and 4 from contributing to the code](contr_cod.md))
+5. The documentation is now split into two source files, one in English (you can find it in: `docs/en`), and one in Spanish (los puedes encontrar aqui `docs/es`). Depending on which version of the documentation you are contributing, you can modify the source files.
 
-4. The documentation is now split into two source files, one in English (you can find it in: `docs/en`), and one in Spanish (los puedes encontrar aqui `docs/es`). Depending on which version of the documentation you are contributing, you can modify the source files.
-
-5. Once you have made changes to the source files of the documentation (either in `docs/en` or `docs/es`), use the `build.sh` to clean and build `html` documentation files (you may need to make `build.sh`1= executable with `chmod +x `)
+6. Once you have made changes to the source files of the documentation (either in `docs/en` or `docs/es`), use the `build.sh` to clean and build `html` documentation files (you may need to make `build.sh`1= executable with `chmod +x `)
 ```shell
 cd docs
 chmod +x build.sh
@@ -52,7 +46,7 @@ Many of the tutorial examples in the documentation require EDL Authentication vi
 ```
 Depending on how many changes you have done to the documentation, this last step may take a while. It also depends on the type of files added to the documentation (`ipynb` are slower to build).
 
-6. Once the build process is finished, you can inspect the locally built html files. The `build.sh` creates a redirect at the base of the built html files. Thus, to open the English documentation execute
+7. Once the build process is finished, you can inspect the locally built html files. The `build.sh` creates a redirect at the base of the built html files. Thus, to open the English documentation execute
 ```shell
 open _build/html/index.html
 ```
@@ -69,9 +63,9 @@ Make sure to check that **ALL** notebooks were successfully built.
 The documentation will have a toggle to manually switch between the English and Spanish versions.
 ```
 
-7. Push all changes and create a PR. `PyDAP` follows the recommendations of keeping the `source` files on `main`, and the `build` files on the `gh-pages` branch.
+8. Push all changes and create a PR. `PyDAP` follows the recommendations of keeping the `source` files on `main`, and the `build` files on the `gh-pages` branch.
 ```{note}
 Do not include passwords or tokens. You are only submitting `source` files.
 ```
 
-8. Once a maintaner of `PyDAP` has approved your PR it will get merged into `main`. The maintainer of `PyDAP` can publish the documentation and update the `gh-pages` branch. Broadly, the steps to publish the documentation (i.e. rebuild the `gh-pages` branch) are detailed and described here: https://jupyterbook.org/en/stable/start/publish.html.
+9. Once a maintaner of `PyDAP` has approved your PR it will get merged into `main`. The maintainer of `PyDAP` can publish the documentation and update the `gh-pages` branch. Broadly, the steps to publish the documentation (i.e. rebuild the `gh-pages` branch) are detailed and described here: https://jupyterbook.org/en/stable/start/publish.html.
