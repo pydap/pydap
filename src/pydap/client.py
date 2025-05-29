@@ -313,7 +313,11 @@ def consolidate_metadata(
     )
     if dims:
         print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
-        dim_ces.update(add_dims)
+        if not safe_mode:
+            # if `safe_mode` is False, only download 2 dap responses, one for the
+            # first element of the concat_dim, and one for the last element of
+            # a single URLs. Create cache keys for rest 2*N urls.
+            dim_ces.update(add_dims)
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )

@@ -547,11 +547,12 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
     downloaded and cached. So there should be N dap responses for N urls associated with
     a dimension.
     """
+    safe_mode = True
     cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
     cached_session.cache.clear()
     # download all dmr for testing - not most performant
     consolidate_metadata(
-        urls, session=cached_session, safe_mode=True, concat_dim=concat_dim
+        urls, session=cached_session, safe_mode=safe_mode, concat_dim=concat_dim
     )
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)
@@ -559,10 +560,10 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
         assert len(cached_session.cache.urls()) == len(urls) + len(dims)
     else:
         N_concat_dims = len(urls)
-        if pyds.dimensions[concat_dim] > 1:
-            N_concat_dims += (
-                2  # 2 extra dap responses downloaded (1st and last element)
-            )
+        if pyds.dimensions[concat_dim] > 1 and safe_mode:
+            # there are 2 extra dap responses per url
+            # one for 1st element, and another for last element
+            N_concat_dims += 2 * N_concat_dims  #
         N_non_concat_dims = len(dims) - 1  # only one dimension is concatenated
         assert (
             len(cached_session.cache.urls())
