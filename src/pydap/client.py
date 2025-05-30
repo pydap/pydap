@@ -168,8 +168,6 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
         The URLs of the datasets that define a datacube. Each URL must begin
         with the same base URL, and begin with `dap4://`.
     session : requests-cache.CachedSession
-        A requests-cache session object. Currently, only the sqlite and memory
-        backend are fully tested. The filesystem backend is not yet supported.
     concat_dim : str, optional (default=None)
         A dimensions name (string) to concatenate across the datasets to form
         a datacube. If `None`, each dimension across the datacube
@@ -185,9 +183,8 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
         cache key as the first URL, to avoid downloading the DMR
         response for each URL. This is faster, but does not check
         for consistency across the URLs.
-
-        `NOTE`: If `concat_dim` is provided, and the length of the dimensions
-        is greater than one, `safe_mode` is automatically set to `True` always.
+        `NOTE`: If `concat_dim` is defined, and its dimension has a lenght
+        greater than one, `safe_mode` is automatically set to `True` always.
     verbose: bool, optional (default=False)
         For debugging purposes. If `True`, prints various URLs, normalized
         cache-keys, and other information.
@@ -233,7 +230,7 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
                 UserWarning,
                 stacklevel=3,
             )
-        safe_mode = True
+            safe_mode = True
     if safe_mode:
         with session as Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
@@ -243,8 +240,8 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
         _dim_check = results[0].dimensions
         if not all(d == _dim_check for d in [ds.dimensions for ds in results]):
             warnings.warn(
-                "The dimensions of the datasets are not identical across all urls. "
-                "Please check the URLs and try again."
+                "The dimensions of the datasets are not identical across all remote "
+                "dataset. Please check the URLs and try again."
             )
             return None
     else:
