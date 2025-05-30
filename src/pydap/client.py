@@ -156,9 +156,7 @@ def open_url(
     return dataset
 
 
-def consolidate_metadata(
-    urls, session, concat_dim=None, safe_mode=False, verbose=False
-):
+def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose=False):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
     by caching the DMR response of each URL, and the DAP response of all dimensions
@@ -179,14 +177,17 @@ def consolidate_metadata(
         When `concat_dim` is provided, no cache key is created for that
         dimension, and the dap response associated with that dimension
         is then downloaded for each URL.
-    safe_mode : bool, optional (default=False)
-        If `True`, the DMR response is downloaded for each URL, creating a
-        empty pydap dataset. dimensions are checked for datacube consistency.
-        When `False`, only the first URL DMR response is
+    safe_mode : bool, optional (default=True)
+        If `True`, all DMR responses are downloaded for each URL, creating a
+        empty pydap dataset. dimensions names and sizes are checked for
+        datacube consistency. When `False`, only the first URL DMR response is
         downloaded, and the rest of the DMRs are assigned the same
         cache key as the first URL, to avoid downloading the DMR
-        response for each URL. This is much faster, but does not check
+        response for each URL. This is faster, but does not check
         for consistency across the URLs.
+
+        `NOTE`: If `concat_dim` is provided, and the length of the dimensions
+        is greater than one, `safe_mode` is automatically set to `True` always.
     verbose: bool, optional (default=False)
         For debugging purposes. If `True`, prints various URLs, normalized
         cache-keys, and other information.
