@@ -156,9 +156,7 @@ def open_url(
     return dataset
 
 
-def consolidate_metadata(
-    urls, session, concat_dim=None, safe_mode=False, verbose=False
-):
+def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose=False):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
     by caching the DMR response of each URL, and the DAP response of all dimensions
@@ -170,8 +168,6 @@ def consolidate_metadata(
         The URLs of the datasets that define a datacube. Each URL must begin
         with the same base URL, and begin with `dap4://`.
     session : requests-cache.CachedSession
-        A requests-cache session object. Currently, only the sqlite and memory
-        backend are fully tested. The filesystem backend is not yet supported.
     concat_dim : str, optional (default=None)
         A dimensions name (string) to concatenate across the datasets to form
         a datacube. If `None`, each dimension across the datacube
@@ -179,14 +175,16 @@ def consolidate_metadata(
         When `concat_dim` is provided, no cache key is created for that
         dimension, and the dap response associated with that dimension
         is then downloaded for each URL.
-    safe_mode : bool, optional (default=False)
-        If `True`, the DMR response is downloaded for each URL, creating a
-        empty pydap dataset. dimensions are checked for datacube consistency.
-        When `False`, only the first URL DMR response is
+    safe_mode : bool, optional (default=True)
+        If `True`, all DMR responses are downloaded for each URL, creating a
+        empty pydap dataset. dimensions names and sizes are checked for
+        datacube consistency. When `False`, only the first URL DMR response is
         downloaded, and the rest of the DMRs are assigned the same
         cache key as the first URL, to avoid downloading the DMR
-        response for each URL. This is much faster, but does not check
+        response for each URL. This is faster, but does not check
         for consistency across the URLs.
+        `NOTE`: If `concat_dim` is defined, and its dimension has a lenght
+        greater than one, `safe_mode` is automatically set to `True` always.
     verbose: bool, optional (default=False)
         For debugging purposes. If `True`, prints various URLs, normalized
         cache-keys, and other information.
@@ -223,18 +221,27 @@ def consolidate_metadata(
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
+    pyds = open_dmr(dmr_urls[0], session=session)
+    if concat_dim and pyds.dimensions[concat_dim] > 1:
+        if not safe_mode:
+            warnings.warn(
+                f"Length of dim `{concat_dim}` is greater than one, "
+                "reverting to `safe_mode=True`.",
+                UserWarning,
+                stacklevel=3,
+            )
+            safe_mode = True
     if safe_mode:
         with session as Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
                 results = list(
                     executor.map(lambda url: open_dmr(url, session=Session), dmr_urls)
                 )
-        if [ds.dimensions for ds in results].count(results[0].dimensions) != len(
-            results
-        ):
+        _dim_check = results[0].dimensions
+        if not all(d == _dim_check for d in [ds.dimensions for ds in results]):
             warnings.warn(
-                "The dimensions of the datasets are not identical across all urls. "
-                "Please check the URLs and try again."
+                "The dimensions of the datasets are not identical across all remote "
+                "dataset. Please check the URLs and try again."
             )
             return None
     else:
@@ -248,21 +255,41 @@ def consolidate_metadata(
         # But needs to run so the URL is assigned the key.
         with session as Session:
             _ = download_all_urls(Session, dmr_urls, ncores=ncores)
-
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     dims = set(list(results[0].dimensions.keys()))
+    add_dims = set()
     if concat_dim is not None and set([concat_dim]).issubset(dims):
         dims.remove(concat_dim)
         concat_dim_urls = [
             url.split("?")[0]
             + ".dap?dap4.ce="
             + concat_dim
-            + "[0:1:"
+            + "%5B0:1:"
             + str(results[0].dimensions[concat_dim] - 1)
-            + "]"
+            + "%5D"
             for i, url in enumerate(URLs)
         ]
+        if results[0].dimensions[concat_dim] > 1:
+            _size = results[0].dimensions[concat_dim] - 1
+            index_slices = ["%5B0:1:0%5D", f"%5B{_size}:1:{_size}%5D"]
+            concat_dim_urls += [
+                url.split("?")[0] + ".dap?dap4.ce=" + concat_dim + index
+                for url in URLs
+                for index in index_slices
+            ]
+            add_dims = set(
+                [
+                    concat_dim + "[0:1:0]",
+                    concat_dim
+                    + "["
+                    + str(results[0].dimensions[concat_dim] - 1)
+                    + ":1:"
+                    + str(results[0].dimensions[concat_dim] - 1)
+                    + "]",
+                ]
+            )
+            dims.update([concat_dim])
     else:
         concat_dim_urls = []
 
@@ -284,6 +311,7 @@ def consolidate_metadata(
     )
     if dims:
         print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
+        dim_ces.update(add_dims)
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )
@@ -582,7 +610,7 @@ def try_generate_custom_key(request, config, verbose=False):
 
     if verbose:
         print("================ request url ========================")
-        print("request.url")
+        print(request.url)
 
     shared_ext = ext
 
@@ -953,18 +981,16 @@ def get_cmr_urls(
         cmr_response["items"][i]["umm"]["RelatedUrls"]
         for i in range(len(cmr_response["items"]))
     ]
-    granule_urls = list(
-        {
-            d["URL"]
-            for item in items
-            for d in item
+    granules_urls = []
+    for item in items:
+        for i in range(len(item)):
             if (
-                d.get("Description") == "OPeNDAP request URL"
-                or d.get("Subtype") == "OPENDAP DATA"
-            )
-        }
-    )
-    return granule_urls
+                item[i].get("Description") == "OPeNDAP request URL"
+                or item[i].get("Subtype") == "OPENDAP DATA"
+            ):
+                granules_urls.append(item[i]["URL"])
+
+    return granules_urls
 
 
 if __name__ == "__main__":
