@@ -535,8 +535,7 @@ def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
     ],
 )
 @pytest.mark.parametrize("concat_dim", [None, "TIME"])
-@pytest.mark.parametrize("safe_mode", [False, True])
-def test_consolidate_metadata_concat_dim(urls, concat_dim, safe_mode):
+def test_consolidate_metadata_concat_dim(urls, concat_dim):
     """Test the behavior of the chaching implemented in `consolidate_metadata`
     when there is a concat dimension, and (extra) this concat_dim may be an array
     of length >= 1.
@@ -547,47 +546,37 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim, safe_mode):
     The rest of the (non-concat) dimensions behave the same as when `concat_dim` is
     None.
 
-    `safe_mode` is important, when it is set to True, all DMRs are downloaded.
-    Otherwise, only one DMR is downloaded in total. The rest are assigned a cache key.
-
     In addition, when the `concat_dim` has length >1, there is an extra behaviour to
     test:
         * `safe_mode=True`: 2 extra dap responses of the `concat_dim` are downloaded,
             per URL. These are 1st and last elements of the `concat_dim` array. Total
             extra dap responses downloaded are 2 * N, where N is the number of URLs.
-        * `safe_mode=False`: only 2 extra dap responses of the `concat_dim` are
-            downloaded for all URLs (1st and last element of the `concat_dim` array).
-            The rest are assigned the same cache key. Total extra dap responses
-            downloaded are 2.
-
     """
     cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
     cached_session.cache.clear()
     # download all dmr for testing - not most performant
     consolidate_metadata(
-        urls, session=cached_session, safe_mode=safe_mode, concat_dim=concat_dim
+        urls, session=cached_session, safe_mode=False, concat_dim=concat_dim
     )
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)
+
+    N_dmr_urls = 1  # Since `safe_mode=False`, only 1 DMR is downloaded
+
     if not concat_dim:
         # Without `concat_dim` set, only one dap response is downloaded per URL.
-        if safe_mode:
-            # when safe_mode is True, then all dmrs are downloaded.
-            assert len(cached_session.cache.urls()) == len(urls) + len(dims)
-        else:
-            # only 1 DMR is downloaded. Rest are assigned a cache key.
-            assert len(cached_session.cache.urls()) == 1 + len(dims)
+        assert len(cached_session.cache.urls()) == N_dmr_urls + len(dims)
     else:
         # concat dim is set. Must download N dap responses for the concat_dim.
-        N_concat_dims = len(urls)
-        # if safe_mode is True, then all DMRs are downloaded. Otherwise, only 1 DMR is.
-        N_dmr_urls = len(urls) if safe_mode else 1
-        if pyds.dimensions[concat_dim] > 1 and safe_mode:
-            # there are 2 extra dap responses per url
-            # one for 1st element, and another for last element
-            N_concat_dims += 2 * N_concat_dims  # 2N extra dap responses
-        elif pyds.dimensions[concat_dim] > 1 and not safe_mode:
-            N_concat_dims += 2  # only 2 extra dap responses
+        N_concat_dims = len(urls)  # see below !
+        if pyds.dimensions[concat_dim] > 1:
+            N_concat_dims = 1  # only one dap response of the concat dim is downloaded!
+
+            # there are 2 extra dap responses: 1st and last elements
+            # of concat dim array (one url only!)
+            N_concat_dims += 2
+            N_dmr_urls = len(urls)  # safe_mode becomes True, and all dmrs
+            # are downloaded
         N_non_concat_dims = len(dims) - 1  # only one dimension is concatenated
         assert (
             len(cached_session.cache.urls())

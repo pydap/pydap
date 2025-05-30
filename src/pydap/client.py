@@ -223,6 +223,16 @@ def consolidate_metadata(
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
+    pyds = open_dmr(dmr_urls[0], session=session)
+    if concat_dim and pyds.dimensions[concat_dim] > 1:
+        if not safe_mode:
+            warnings.warn(
+                f"Length of dim `{concat_dim}` is greater than one, "
+                "reverting to `safe_mode=True`.",
+                UserWarning,
+                stacklevel=3,
+            )
+        safe_mode = True
     if safe_mode:
         with session as Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
@@ -248,10 +258,10 @@ def consolidate_metadata(
         # But needs to run so the URL is assigned the key.
         with session as Session:
             _ = download_all_urls(Session, dmr_urls, ncores=ncores)
-
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     dims = set(list(results[0].dimensions.keys()))
+    add_dims = set()
     if concat_dim is not None and set([concat_dim]).issubset(dims):
         dims.remove(concat_dim)
         concat_dim_urls = [
@@ -264,20 +274,12 @@ def consolidate_metadata(
             for i, url in enumerate(URLs)
         ]
         if results[0].dimensions[concat_dim] > 1:
+            _size = results[0].dimensions[concat_dim] - 1
+            index_slices = ["%5B0:1:0%5D", f"%5B{_size}:1:{_size}%5D"]
             concat_dim_urls += [
-                url.split("?")[0] + ".dap?dap4.ce=" + concat_dim + "[0:1:0]"
-                for i, url in enumerate(URLs)
-            ]
-            concat_dim_urls += [
-                url.split("?")[0]
-                + ".dap?dap4.ce="
-                + concat_dim
-                + "["
-                + str(results[0].dimensions[concat_dim] - 1)
-                + ":1:"
-                + str(results[0].dimensions[concat_dim] - 1)
-                + "]"
-                for i, url in enumerate(URLs)
+                url.split("?")[0] + ".dap?dap4.ce=" + concat_dim + index
+                for url in URLs
+                for index in index_slices
             ]
             add_dims = set(
                 [
@@ -290,9 +292,9 @@ def consolidate_metadata(
                     + "]",
                 ]
             )
+            dims.update([concat_dim])
     else:
         concat_dim_urls = []
-        add_dims = set()
 
     new_urls = [
         base_url
@@ -304,7 +306,6 @@ def consolidate_metadata(
         for dim in list(dims)
     ]
     new_urls.extend(concat_dim_urls)
-    # print("new urls", new_urls)
     dim_ces = set(
         [
             dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]"
@@ -313,11 +314,7 @@ def consolidate_metadata(
     )
     if dims:
         print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
-        if not safe_mode:
-            # if `safe_mode` is False, only download 2 dap responses, one for the
-            # first element of the concat_dim, and one for the last element of
-            # a single URLs. Create cache keys for rest 2*N urls.
-            dim_ces.update(add_dims)
+        dim_ces.update(add_dims)
         patch_session_for_shared_dap_cache(
             session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
         )
@@ -987,18 +984,16 @@ def get_cmr_urls(
         cmr_response["items"][i]["umm"]["RelatedUrls"]
         for i in range(len(cmr_response["items"]))
     ]
-    granule_urls = list(
-        {
-            d["URL"]
-            for item in items
-            for d in item
+    granules_urls = []
+    for item in items:
+        for i in range(len(item)):
             if (
-                d.get("Description") == "OPeNDAP request URL"
-                or d.get("Subtype") == "OPENDAP DATA"
-            )
-        }
-    )
-    return granule_urls
+                item[i].get("Description") == "OPeNDAP request URL"
+                or item[i].get("Subtype") == "OPENDAP DATA"
+            ):
+                granules_urls.append(item[i]["URL"])
+
+    return granules_urls
 
 
 if __name__ == "__main__":
