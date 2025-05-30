@@ -239,9 +239,8 @@ def consolidate_metadata(
                 results = list(
                     executor.map(lambda url: open_dmr(url, session=Session), dmr_urls)
                 )
-        if [ds.dimensions for ds in results].count(results[0].dimensions) != len(
-            results
-        ):
+        _dim_check = results[0].dimensions
+        if not all(d == _dim_check for d in [ds.dimensions for ds in results]):
             warnings.warn(
                 "The dimensions of the datasets are not identical across all urls. "
                 "Please check the URLs and try again."
