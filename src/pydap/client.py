@@ -156,7 +156,9 @@ def open_url(
     return dataset
 
 
-def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose=False):
+def consolidate_metadata(
+    urls, session, concat_dim=None, safe_mode=True, set_maps=False, verbose=False
+):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
     by caching the DMR response of each URL, and the DAP response of all dimensions
@@ -298,14 +300,17 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
     new_dims = set.intersection(dims, var_names)
     named_dims = set.difference(dims, new_dims)
     dims = new_dims
-    maps = None or set(
-        [
-            item.split("/")[-1]
-            for var in list(pyds.variables())
-            for item in pyds[var].Maps
-            if item.split("/")[-1] not in pyds.dimensions
-        ]
-    )
+
+    maps_ces = None
+    if set_maps:
+        maps = None or set(
+            [
+                item.split("/")[-1]
+                for var in list(pyds.variables())
+                for item in pyds[var].Maps
+                if item.split("/")[-1] not in pyds.dimensions
+            ]
+        )
 
     new_urls = [
         base_url
@@ -323,6 +328,7 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
             for dim in list(dims) + list(named_dims)
         ]
     )
+
     if maps:
         map_urls = [
             base_url
@@ -337,11 +343,11 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
             [coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]" for coord in list(maps)]
         )
         new_urls.extend(map_urls)
-
     if dims or concat_dim:
         print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
         dim_ces.update(add_dims)
-        dim_ces.update(maps_ces)
+        if maps_ces:
+            dim_ces.update(maps_ces)
         if dim_ces:
             patch_session_for_shared_dap_cache(
                 session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
