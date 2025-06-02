@@ -301,17 +301,6 @@ def consolidate_metadata(
     named_dims = set.difference(dims, new_dims)
     dims = new_dims
 
-    maps_ces = None
-    if set_maps:
-        maps = None or set(
-            [
-                item.split("/")[-1]
-                for var in list(pyds.variables())
-                for item in pyds[var].Maps
-                if item.split("/")[-1] not in pyds.dimensions
-            ]
-        )
-
     new_urls = [
         base_url
         + ".dap?dap4.ce="
@@ -329,20 +318,34 @@ def consolidate_metadata(
         ]
     )
 
-    if maps:
-        map_urls = [
-            base_url
-            + ".dap?dap4.ce="
-            + coord
-            + "%5B0:1:"
-            + str(len(pyds[coord]) - 1)
-            + "%5D"
-            for coord in list(maps)
-        ]
-        maps_ces = set(
-            [coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]" for coord in list(maps)]
+    maps_ces = None
+    if set_maps:
+        maps = None or set(
+            [
+                item.split("/")[-1]
+                for var in list(pyds.variables())
+                for item in pyds[var].Maps
+                if item.split("/")[-1] not in pyds.dimensions
+            ]
         )
-        new_urls.extend(map_urls)
+
+        if maps:
+            map_urls = [
+                base_url
+                + ".dap?dap4.ce="
+                + coord
+                + "%5B0:1:"
+                + str(len(pyds[coord]) - 1)
+                + "%5D"
+                for coord in list(maps)
+            ]
+            maps_ces = set(
+                [
+                    coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]"
+                    for coord in list(maps)
+                ]
+            )
+            new_urls.extend(map_urls)
     if dims or concat_dim:
         print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
         dim_ces.update(add_dims)
