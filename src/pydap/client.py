@@ -882,7 +882,7 @@ def get_cmr_urls(
 
     if time_range and isinstance(time_range, list):
         if len(time_range) != 2:
-            warnings.warns("time_range must be a list of two elements.")
+            warnings.warn("time_range must be a list of two elements.")
             return None
         if all(isinstance(x, dt.datetime) for x in time_range):
             dt_format = "%Y-%m-%dT%H:%M:%SZ"
@@ -897,14 +897,14 @@ def get_cmr_urls(
                 dt.datetime.strptime(time_range[1], "%Y-%m-%dT%H:%M:%SZ")
                 temporal_str = time_range[0] + "," + time_range[1]
             except ValueError:
-                warnings.warns(
+                warnings.warn(
                     "time_range must be a list of two elements each a string in the"
                     " format YYYY-MM-DDTHH:MM:SSZ."
                 )
                 return None
         params["temporal"] = temporal_str
     elif time_range and not isinstance(time_range, list):
-        warnings.warns(
+        warnings.warn(
             "time_range must be a list of two elements or a string in the format"
             " YYYY-MM-DDTHH:MM:SSZ."
         )
