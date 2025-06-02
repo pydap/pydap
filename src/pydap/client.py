@@ -221,7 +221,7 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
-    pyds = open_dmr(dmr_urls[0], session=session)
+    pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
     if concat_dim and pyds.dimensions[concat_dim] > 1:
         if not safe_mode:
             warnings.warn(
@@ -293,6 +293,20 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
     else:
         concat_dim_urls = []
 
+    # check for named dimensions
+    var_names = list(pyds.variables())
+    new_dims = set.intersection(dims, var_names)
+    named_dims = set.difference(dims, new_dims)
+    dims = new_dims
+    maps = None or set(
+        [
+            item.split("/")[-1]
+            for var in list(pyds.variables())
+            for item in pyds[var].Maps
+            if item.split("/")[-1] not in pyds.dimensions
+        ]
+    )
+
     new_urls = [
         base_url
         + ".dap?dap4.ce="
@@ -306,15 +320,32 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
     dim_ces = set(
         [
             dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]"
-            for dim in list(dims)
+            for dim in list(dims) + list(named_dims)
         ]
     )
-    if dims:
+    if maps:
+        map_urls = [
+            base_url
+            + ".dap?dap4.ce="
+            + coord
+            + "%5B0:1:"
+            + str(len(pyds[coord]) - 1)
+            + "%5D"
+            for coord in list(maps)
+        ]
+        maps_ces = set(
+            [coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]" for coord in list(maps)]
+        )
+        new_urls.extend(map_urls)
+
+    if dims or concat_dim:
         print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
         dim_ces.update(add_dims)
-        patch_session_for_shared_dap_cache(
-            session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
-        )
+        dim_ces.update(maps_ces)
+        if dim_ces:
+            patch_session_for_shared_dap_cache(
+                session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
+            )
         with session as Session:
             _ = download_all_urls(Session, new_urls, ncores=ncores)
     return None
