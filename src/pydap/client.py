@@ -156,7 +156,9 @@ def open_url(
     return dataset
 
 
-def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose=False):
+def consolidate_metadata(
+    urls, session, concat_dim=None, safe_mode=True, set_maps=False, verbose=False
+):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
     by caching the DMR response of each URL, and the DAP response of all dimensions
@@ -221,7 +223,7 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
-    pyds = open_dmr(dmr_urls[0], session=session)
+    pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
     if concat_dim and pyds.dimensions[concat_dim] > 1:
         if not safe_mode:
             warnings.warn(
@@ -293,6 +295,12 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
     else:
         concat_dim_urls = []
 
+    # check for named dimensions
+    var_names = list(pyds.variables())
+    new_dims = set.intersection(dims, var_names)
+    named_dims = set.difference(dims, new_dims)
+    dims = new_dims
+
     new_urls = [
         base_url
         + ".dap?dap4.ce="
@@ -306,15 +314,47 @@ def consolidate_metadata(urls, session, concat_dim=None, safe_mode=True, verbose
     dim_ces = set(
         [
             dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]"
-            for dim in list(dims)
+            for dim in list(dims) + list(named_dims)
         ]
     )
-    if dims:
+
+    maps_ces = None
+    if set_maps:
+        maps = None or set(
+            [
+                item.split("/")[-1]
+                for var in list(pyds.variables())
+                for item in pyds[var].Maps
+                if item.split("/")[-1] not in pyds.dimensions
+            ]
+        )
+
+        if maps:
+            map_urls = [
+                base_url
+                + ".dap?dap4.ce="
+                + coord
+                + "%5B0:1:"
+                + str(len(pyds[coord]) - 1)
+                + "%5D"
+                for coord in list(maps)
+            ]
+            maps_ces = set(
+                [
+                    coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]"
+                    for coord in list(maps)
+                ]
+            )
+            new_urls.extend(map_urls)
+    if dims or concat_dim:
         print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
         dim_ces.update(add_dims)
-        patch_session_for_shared_dap_cache(
-            session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
-        )
+        if maps_ces:
+            dim_ces.update(maps_ces)
+        if dim_ces:
+            patch_session_for_shared_dap_cache(
+                session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
+            )
         with session as Session:
             _ = download_all_urls(Session, new_urls, ncores=ncores)
     return None
@@ -842,7 +882,7 @@ def get_cmr_urls(
 
     if time_range and isinstance(time_range, list):
         if len(time_range) != 2:
-            warnings.warns("time_range must be a list of two elements.")
+            warnings.warn("time_range must be a list of two elements.")
             return None
         if all(isinstance(x, dt.datetime) for x in time_range):
             dt_format = "%Y-%m-%dT%H:%M:%SZ"
@@ -857,14 +897,14 @@ def get_cmr_urls(
                 dt.datetime.strptime(time_range[1], "%Y-%m-%dT%H:%M:%SZ")
                 temporal_str = time_range[0] + "," + time_range[1]
             except ValueError:
-                warnings.warns(
+                warnings.warn(
                     "time_range must be a list of two elements each a string in the"
                     " format YYYY-MM-DDTHH:MM:SSZ."
                 )
                 return None
         params["temporal"] = temporal_str
     elif time_range and not isinstance(time_range, list):
-        warnings.warns(
+        warnings.warn(
             "time_range must be a list of two elements or a string in the format"
             " YYYY-MM-DDTHH:MM:SSZ."
         )
