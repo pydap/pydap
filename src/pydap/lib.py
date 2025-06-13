@@ -407,8 +407,9 @@ class nBytesReader:
     def __init__(self, source):
         if isinstance(source, (bytes, bytearray)):
             import io
+
             self.data = io.BytesIO(source)
-        elif hasattr(source, 'read'):
+        elif hasattr(source, "read"):
             self.data = source
         else:
             raise TypeError("Expected bytes or a file-like object with .read()")
@@ -418,12 +419,13 @@ class nBytesReader:
 
     def peek(self, n):
         import io
+
         if isinstance(self.data, io.BytesIO):
             current_pos = self.data.tell()
             out = self.data.read(n)
             self.data.seek(current_pos)
             return out
-        elif hasattr(self.data, 'peek'):
+        elif hasattr(self.data, "peek"):
             return self.data.peek(n)
         else:
             # Manual peek fallback: read + seek back (requires seekable stream)

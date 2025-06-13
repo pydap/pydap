@@ -9,13 +9,14 @@ dataset to the internal model.
 import copy
 import gzip
 import io
-import tempfile
+
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 import logging
 import pprint
 import re
 import sys
+import tempfile
 import warnings
 from concurrent.futures import ThreadPoolExecutor
 from io import BufferedReader, BytesIO
@@ -32,13 +33,13 @@ from pydap.lib import (
     DEFAULT_TIMEOUT,
     START_OF_SEQUENCE,
     BytesReader,
-    nBytesReader,
     StreamReader,
     _quote,
     combine_slices,
     encode,
     fix_slice,
     hyperslab,
+    nBytesReader,
     walk,
 )
 from pydap.model import BaseType, GridType, SequenceType, StructureType
@@ -867,14 +868,14 @@ def stream2bytearray(data):
 
     # Precompute chunk positions
     chunk_positions = []
-    offset = data.data.tell() # current position in the stream
+    offset = data.data.tell()  # current position in the stream
     last = False
     while not last:
         # Read the chunk header
         chunk_header = numpy.frombuffer(data.slice(offset=offset, n=4), dtype=">u4")[0]
         # chunk_header = numpy.frombuffer(data[offset : offset + 4], dtype=">u4")[0]
         chunk_size = chunk_header & 0x00FFFFFF
-        
+
         chunk_type = (chunk_header >> 24) & 0xFF
         last, _, _ = decode_chunktype(chunk_type)
         chunk_positions.append((offset + 4, chunk_size))
@@ -959,7 +960,6 @@ class UNPACKDAP4DATA(object):
                 `io.BufferedReader`
                 """
             )
-
 
     def safe_dmr_and_data(self):
         """
