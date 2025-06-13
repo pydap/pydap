@@ -18,7 +18,6 @@ import re
 import sys
 import tempfile
 import warnings
-from concurrent.futures import ThreadPoolExecutor
 from io import BufferedReader, BytesIO
 from itertools import chain
 
@@ -879,7 +878,7 @@ def stream2bytearray(data):
     for offset, length in chunk_positions:
         data.data.seek(offset)
         results.append(data.data.read(length))
-    
+
     buffer = bytearray()
     # Combine results
     for chunk_data in results:
