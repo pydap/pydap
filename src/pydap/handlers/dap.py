@@ -9,7 +9,7 @@ dataset to the internal model.
 import copy
 import gzip
 import io
-
+import tempfile
 # handlers should be set by the application
 # http://docs.python.org/2/howto/logging.html#configuring-logging-for-a-library
 import logging
@@ -32,6 +32,7 @@ from pydap.lib import (
     DEFAULT_TIMEOUT,
     START_OF_SEQUENCE,
     BytesReader,
+    nBytesReader,
     StreamReader,
     _quote,
     combine_slices,
@@ -498,7 +499,7 @@ class BaseProxyDap4(BaseProxyDap2):
         )
 
         dataset = UNPACKDAP4DATA(r, self.user_charset).dataset
-        self.checksum = dataset[self.id].attributes["checksum"]
+        # self.checksum = dataset[self.id].attributes["checksum"]
         self.data = dataset[self.id].data
         return self.data
 
@@ -849,7 +850,7 @@ def process_chunk(data, offset, chunk_size):
     """
     Process a chunk of data
     """
-    chunk_data = data[offset : offset + chunk_size]
+    chunk_data = data.slice(offset=offset, n=chunk_size)
     return chunk_data
 
 
@@ -866,11 +867,14 @@ def stream2bytearray(data):
 
     # Precompute chunk positions
     chunk_positions = []
-    offset = 0
-    while offset < len(data):
+    offset = data.data.tell() # current position in the stream
+    last = False
+    while not last:
         # Read the chunk header
-        chunk_header = numpy.frombuffer(data[offset : offset + 4], dtype=">u4")[0]
+        chunk_header = numpy.frombuffer(data.slice(offset=offset, n=4), dtype=">u4")[0]
+        # chunk_header = numpy.frombuffer(data[offset : offset + 4], dtype=">u4")[0]
         chunk_size = chunk_header & 0x00FFFFFF
+        
         chunk_type = (chunk_header >> 24) & 0xFF
         last, _, _ = decode_chunktype(chunk_type)
         chunk_positions.append((offset + 4, chunk_size))
@@ -915,22 +919,38 @@ class UNPACKDAP4DATA(object):
 
     def __init__(self, r, user_charset="ascii"):
         self.user_charset = user_charset
-        if isinstance(r, webob_Response):  # a Webob response
+        if isinstance(r, requests.Response):
+            # remote dataset
             self.r = r
-            if self.r.content_encoding == "gzip":
-                self.raw = BytesReader(
-                    gzip.GzipFile(fileobj=BytesIO(self.r.body)).read()
-                )
+            CHUNK_SIZE = 1048576  # 1 MB
+            with tempfile.TemporaryFile() as tmp:
+                # write the response to a temporary file
+                # so that we can read it in chunks
+                for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
+                    if chunk:  # filter out keep-alive chunks
+                        tmp.write(chunk)
+                tmp.seek(0)
+                self.raw = nBytesReader(tmp)
+                self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
+                dataset = dmr_to_dataset(self.dmr)
+                self.dataset = self.unpack_dap4_data(dataset)
+        elif isinstance(r, (webob_Response, BufferedReader)):
+            if isinstance(r, webob_Response):
+                self.r = r
+                if self.r.content_encoding == "gzip":
+                    self.raw = nBytesReader(
+                        gzip.GzipFile(fileobj=BytesIO(self.r.body)).read()
+                    )
+                else:
+                    self.raw = nBytesReader(r.body)
             else:
-                self.raw = BytesReader(r.body)
-        elif isinstance(r, BufferedReader):
-            # r comes from reading a local file
-            self.r = webob_Response()  # make empty response
-            self.raw = BytesReader(r.read())
-        elif isinstance(r, requests.Response):
-            # r comes from reading a remote dataset
-            self.r = r
-            self.raw = BytesReader(r.content)
+                # r comes from reading a local file
+                self.r = webob_Response()  # make empty response
+                self.raw = nBytesReader(r.read())
+            self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
+            # need to split dmr from data
+            dataset = dmr_to_dataset(self.dmr)
+            self.dataset = self.unpack_dap4_data(dataset)
         else:
             raise TypeError(
                 """
@@ -939,10 +959,7 @@ class UNPACKDAP4DATA(object):
                 `io.BufferedReader`
                 """
             )
-        self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
-        # need to split dmr from data
-        dataset = dmr_to_dataset(self.dmr)
-        self.dataset = self.unpack_dap4_data(dataset)
+
 
     def safe_dmr_and_data(self):
         """
@@ -962,7 +979,7 @@ class UNPACKDAP4DATA(object):
             )
         else:
             dmr = self.raw.read(dmr_length).decode(self.user_charset)
-        data = self.raw.data
+        data = self.raw
         # get endianness from first chunk
         _, _, endianness = decode_chunktype(chunk_type)
         return dmr, data, endianness
@@ -974,7 +991,7 @@ class UNPACKDAP4DATA(object):
         response).
         """
         # need self. data and self.dataset
-        checksum_dtype = numpy.dtype(self.endianness + "u4")
+        # checksum_dtype = numpy.dtype(self.endianness + "u4")
         buffer = stream2bytearray(self.data)
         start = 0
         for variable in walk(dataset, BaseType):
@@ -987,11 +1004,11 @@ class UNPACKDAP4DATA(object):
                 variable=variable,
                 endian=self.endianness,
             )
-            checksum = numpy.frombuffer(
-                buffer[stop : stop + 4], dtype=checksum_dtype
-            ).byteswap("=")
+            # checksum = numpy.frombuffer(
+            #     buffer[stop : stop + 4], dtype=checksum_dtype
+            # ).byteswap("=")
             variable._set_data(data)
-            variable.attributes["checksum"] = checksum
+            # variable.attributes["checksum"] = checksum
             # Jump over the 4 byte chunk_header
             start = stop + 4
         return dataset

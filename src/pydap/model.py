@@ -357,7 +357,7 @@ class BaseType(DapType):
         out = copy.copy(self)
         out.data = self._get_data_index(index)
         if type(self.data).__name__ == "BaseProxyDap4":
-            out.attributes["checksum"] = self.data.checksum
+            # out.attributes["checksum"] = self.data.checksum
             out.attributes["Maps"] = self.Maps
         return out
 
