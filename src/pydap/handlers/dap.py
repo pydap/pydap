@@ -38,7 +38,7 @@ from pydap.lib import (
     encode,
     fix_slice,
     hyperslab,
-    nBytesReader,
+    old_BytesReader,
     walk,
 )
 from pydap.model import BaseType, GridType, SequenceType, StructureType
@@ -417,7 +417,7 @@ class BaseProxyDap2(object):
 
         # Parse received dataset:
         dataset = dds_to_dataset(dds)
-        dataset.data = unpack_dap2_data(BytesReader(data), dataset)
+        dataset.data = unpack_dap2_data(old_BytesReader(data), dataset)
         return dataset[self.id].data
 
     def __len__(self):
@@ -922,7 +922,7 @@ class UNPACKDAP4DATA(object):
                     if chunk:  # filter out keep-alive chunks
                         tmp.write(chunk)
                 tmp.seek(0)
-                self.raw = nBytesReader(tmp)
+                self.raw = BytesReader(tmp)
                 self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
                 dataset = dmr_to_dataset(self.dmr)
                 self.dataset = self.unpack_dap4_data(dataset)
@@ -930,15 +930,15 @@ class UNPACKDAP4DATA(object):
             if isinstance(r, webob_Response):
                 self.r = r
                 if self.r.content_encoding == "gzip":
-                    self.raw = nBytesReader(
+                    self.raw = BytesReader(
                         gzip.GzipFile(fileobj=BytesIO(self.r.body)).read()
                     )
                 else:
-                    self.raw = nBytesReader(r.body)
+                    self.raw = BytesReader(r.body)
             else:
                 # r comes from reading a local file
                 self.r = webob_Response()  # make empty response
-                self.raw = nBytesReader(r.read())
+                self.raw = BytesReader(r.read())
             self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
             # need to split dmr from data
             dataset = dmr_to_dataset(self.dmr)

@@ -385,7 +385,7 @@ class StreamReader(object):
         return out
 
 
-class BytesReader(object):
+class old_BytesReader(object):
     """Class to allow reading a `bytes` object."""
 
     def __init__(self, data):
@@ -401,7 +401,7 @@ class BytesReader(object):
         return self.data[:n]
 
 
-class nBytesReader:
+class BytesReader:
     """Class to allow reading from a file-like object or bytes."""
 
     def __init__(self, source):
