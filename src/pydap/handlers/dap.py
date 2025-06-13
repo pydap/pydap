@@ -875,20 +875,22 @@ def stream2bytearray(data):
         chunk_header = numpy.frombuffer(data.slice(offset=offset, n=4), dtype=">u4")[0]
         # chunk_header = numpy.frombuffer(data[offset : offset + 4], dtype=">u4")[0]
         chunk_size = chunk_header & 0x00FFFFFF
-
         chunk_type = (chunk_header >> 24) & 0xFF
         last, _, _ = decode_chunktype(chunk_type)
         chunk_positions.append((offset + 4, chunk_size))
         offset += 4 + chunk_size
         if last:
             break
-
+    # print("Chunk positions:", chunk_positions[:5])
+    results = []
+    for i in range(len(chunk_positions)):
+        results.append(data.slice(offset=chunk_positions[i][0], n=chunk_positions[i][1]))
     # Process chunks in parallel
     buffer = bytearray()
-    with ThreadPoolExecutor() as executor:
-        results = list(
-            executor.map(lambda args: process_chunk(data, *args), chunk_positions)
-        )
+    # with ThreadPoolExecutor() as executor:
+    #     results = list(
+    #         executor.map(lambda args: process_chunk(data, *args), chunk_positions)
+    #     )
     # Combine results
     for chunk_data in results:
         buffer.extend(chunk_data)
