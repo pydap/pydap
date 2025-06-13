@@ -847,14 +847,6 @@ def decode_variable(buffer, start, stop, variable, endian):
     return data
 
 
-def process_chunk(data, offset, chunk_size):
-    """
-    Process a chunk of data
-    """
-    chunk_data = data.slice(offset=offset, n=chunk_size)
-    return chunk_data
-
-
 def stream2bytearray(data):
     """
     Computes the buffer size of the (binary) data form dap response.
@@ -881,16 +873,14 @@ def stream2bytearray(data):
         offset += 4 + chunk_size
         if last:
             break
-    # print("Chunk positions:", chunk_positions[:5])
+
+    # Process chunks serially (used to be parallelized- no penalty when serialized).
     results = []
-    for i in range(len(chunk_positions)):
-        results.append(data.slice(offset=chunk_positions[i][0], n=chunk_positions[i][1]))
-    # Process chunks in parallel
+    for offset, length in chunk_positions:
+        data.data.seek(offset)
+        results.append(data.data.read(length))
+    
     buffer = bytearray()
-    # with ThreadPoolExecutor() as executor:
-    #     results = list(
-    #         executor.map(lambda args: process_chunk(data, *args), chunk_positions)
-    #     )
     # Combine results
     for chunk_data in results:
         buffer.extend(chunk_data)
@@ -992,8 +982,7 @@ class UNPACKDAP4DATA(object):
         (BaseType only) with data that is currently in binary form (within a dap
         response).
         """
-        # need self. data and self.dataset
-        # checksum_dtype = numpy.dtype(self.endianness + "u4")
+        checksum_dtype = numpy.dtype(self.endianness + "u4")
         buffer = stream2bytearray(self.data)
         start = 0
         for variable in walk(dataset, BaseType):
@@ -1006,11 +995,11 @@ class UNPACKDAP4DATA(object):
                 variable=variable,
                 endian=self.endianness,
             )
-            # checksum = numpy.frombuffer(
-            #     buffer[stop : stop + 4], dtype=checksum_dtype
-            # ).byteswap("=")
+            checksum = numpy.frombuffer(
+                buffer[stop : stop + 4], dtype=checksum_dtype
+            ).byteswap("=")
             variable._set_data(data)
-            # variable.attributes["checksum"] = checksum
+            variable.attributes["checksum"] = checksum
             # Jump over the 4 byte chunk_header
             start = stop + 4
         return dataset
