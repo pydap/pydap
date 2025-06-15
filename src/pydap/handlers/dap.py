@@ -16,8 +16,8 @@ import logging
 import pprint
 import re
 import sys
+import tempfile
 import warnings
-from concurrent.futures import ThreadPoolExecutor
 from io import BufferedReader, BytesIO
 from itertools import chain
 
@@ -38,6 +38,7 @@ from pydap.lib import (
     encode,
     fix_slice,
     hyperslab,
+    old_BytesReader,
     walk,
 )
 from pydap.model import BaseType, GridType, SequenceType, StructureType
@@ -416,7 +417,7 @@ class BaseProxyDap2(object):
 
         # Parse received dataset:
         dataset = dds_to_dataset(dds)
-        dataset.data = unpack_dap2_data(BytesReader(data), dataset)
+        dataset.data = unpack_dap2_data(old_BytesReader(data), dataset)
         return dataset[self.id].data
 
     def __len__(self):
@@ -498,7 +499,7 @@ class BaseProxyDap4(BaseProxyDap2):
         )
 
         dataset = UNPACKDAP4DATA(r, self.user_charset).dataset
-        self.checksum = dataset[self.id].attributes["checksum"]
+        # self.checksum = dataset[self.id].attributes["checksum"]
         self.data = dataset[self.id].data
         return self.data
 
@@ -845,14 +846,6 @@ def decode_variable(buffer, start, stop, variable, endian):
     return data
 
 
-def process_chunk(data, offset, chunk_size):
-    """
-    Process a chunk of data
-    """
-    chunk_data = data[offset : offset + chunk_size]
-    return chunk_data
-
-
 def stream2bytearray(data):
     """
     Computes the buffer size of the (binary) data form dap response.
@@ -866,10 +859,12 @@ def stream2bytearray(data):
 
     # Precompute chunk positions
     chunk_positions = []
-    offset = 0
-    while offset < len(data):
+    offset = data.data.tell()  # current position in the stream
+    last = False
+    while not last:
         # Read the chunk header
-        chunk_header = numpy.frombuffer(data[offset : offset + 4], dtype=">u4")[0]
+        chunk_header = numpy.frombuffer(data.slice(offset=offset, n=4), dtype=">u4")[0]
+        # chunk_header = numpy.frombuffer(data[offset : offset + 4], dtype=">u4")[0]
         chunk_size = chunk_header & 0x00FFFFFF
         chunk_type = (chunk_header >> 24) & 0xFF
         last, _, _ = decode_chunktype(chunk_type)
@@ -878,12 +873,13 @@ def stream2bytearray(data):
         if last:
             break
 
-    # Process chunks in parallel
+    # Process chunks serially (used to be parallelized- no penalty when serialized).
+    results = []
+    for offset, length in chunk_positions:
+        data.data.seek(offset)
+        results.append(data.data.read(length))
+
     buffer = bytearray()
-    with ThreadPoolExecutor() as executor:
-        results = list(
-            executor.map(lambda args: process_chunk(data, *args), chunk_positions)
-        )
     # Combine results
     for chunk_data in results:
         buffer.extend(chunk_data)
@@ -915,22 +911,38 @@ class UNPACKDAP4DATA(object):
 
     def __init__(self, r, user_charset="ascii"):
         self.user_charset = user_charset
-        if isinstance(r, webob_Response):  # a Webob response
+        if isinstance(r, requests.Response):
+            # remote dataset
             self.r = r
-            if self.r.content_encoding == "gzip":
-                self.raw = BytesReader(
-                    gzip.GzipFile(fileobj=BytesIO(self.r.body)).read()
-                )
+            CHUNK_SIZE = 1048576  # 1 MB
+            with tempfile.TemporaryFile() as tmp:
+                # write the response to a temporary file
+                # so that we can read it in chunks
+                for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
+                    if chunk:  # filter out keep-alive chunks
+                        tmp.write(chunk)
+                tmp.seek(0)
+                self.raw = BytesReader(tmp)
+                self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
+                dataset = dmr_to_dataset(self.dmr)
+                self.dataset = self.unpack_dap4_data(dataset)
+        elif isinstance(r, (webob_Response, BufferedReader)):
+            if isinstance(r, webob_Response):
+                self.r = r
+                if self.r.content_encoding == "gzip":
+                    self.raw = BytesReader(
+                        gzip.GzipFile(fileobj=BytesIO(self.r.body)).read()
+                    )
+                else:
+                    self.raw = BytesReader(r.body)
             else:
-                self.raw = BytesReader(r.body)
-        elif isinstance(r, BufferedReader):
-            # r comes from reading a local file
-            self.r = webob_Response()  # make empty response
-            self.raw = BytesReader(r.read())
-        elif isinstance(r, requests.Response):
-            # r comes from reading a remote dataset
-            self.r = r
-            self.raw = BytesReader(r.content)
+                # r comes from reading a local file
+                self.r = webob_Response()  # make empty response
+                self.raw = BytesReader(r.read())
+            self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
+            # need to split dmr from data
+            dataset = dmr_to_dataset(self.dmr)
+            self.dataset = self.unpack_dap4_data(dataset)
         else:
             raise TypeError(
                 """
@@ -939,10 +951,6 @@ class UNPACKDAP4DATA(object):
                 `io.BufferedReader`
                 """
             )
-        self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
-        # need to split dmr from data
-        dataset = dmr_to_dataset(self.dmr)
-        self.dataset = self.unpack_dap4_data(dataset)
 
     def safe_dmr_and_data(self):
         """
@@ -962,7 +970,7 @@ class UNPACKDAP4DATA(object):
             )
         else:
             dmr = self.raw.read(dmr_length).decode(self.user_charset)
-        data = self.raw.data
+        data = self.raw
         # get endianness from first chunk
         _, _, endianness = decode_chunktype(chunk_type)
         return dmr, data, endianness
@@ -973,7 +981,6 @@ class UNPACKDAP4DATA(object):
         (BaseType only) with data that is currently in binary form (within a dap
         response).
         """
-        # need self. data and self.dataset
         checksum_dtype = numpy.dtype(self.endianness + "u4")
         buffer = stream2bytearray(self.data)
         start = 0
