@@ -182,11 +182,11 @@ When you *slice* a ``BaseType`` array, the slice is simply passed onto the data 
 .. doctest::
 
     >>> b[-1]
-    <BaseType with data array(shape=(), dtype=int32)>
+    <BaseType with data array(shape=(), dtype=int64)>
     >>> b[-1].data
     array(3)
     >>> b[:2]
-    <BaseType with data array(shape=(2,), dtype=int32)>
+    <BaseType with data array(shape=(2,), dtype=int64)>
     >>> b[:2].data
     array([0, 1])
 
