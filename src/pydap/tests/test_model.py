@@ -120,7 +120,7 @@ def test_BaseType_raiseWarning_dimensions():
 def test_BaseType_repr():
     """Test ``__repr__`` method."""
     var = BaseType("var", 42, foo="bar")
-    assert repr(var) == "<BaseType with data array(42)>"
+    assert repr(var) == "<BaseType with data array(shape=(), dtype=int64)>"
 
 
 def test_BaseType_dtype():

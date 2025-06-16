@@ -41,7 +41,7 @@ from pydap.lib import (
     old_BytesReader,
     walk,
 )
-from pydap.model import BaseType, GridType, SequenceType, StructureType
+from pydap.model import BaseType, DapDecodedArray, GridType, SequenceType, StructureType
 from pydap.net import GET
 from pydap.parsers import parse_ce
 from pydap.parsers.das import add_attributes, parse_das
@@ -841,9 +841,9 @@ def get_count(variable):
 def decode_variable(buffer, start, stop, variable, endian):
     dtype = variable.dtype
     dtype = dtype.newbyteorder(endian)
-    data = numpy.frombuffer(buffer[start:stop], dtype=dtype).astype(dtype)
+    data = numpy.frombuffer(buffer[start:stop], dtype=dtype)  # .astype(dtype)
     data = data.reshape(variable.shape)
-    return data
+    return DapDecodedArray(data)
 
 
 def stream2bytearray(data):
@@ -923,7 +923,7 @@ class UNPACKDAP4DATA(object):
                         tmp.write(chunk)
                 tmp.seek(0)
                 self.raw = BytesReader(tmp)
-                self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
+                self.dmr, self.endianness = self.safe_dmr_and_data()
                 dataset = dmr_to_dataset(self.dmr)
                 self.dataset = self.unpack_dap4_data(dataset)
         elif isinstance(r, (webob_Response, BufferedReader)):
@@ -939,7 +939,7 @@ class UNPACKDAP4DATA(object):
                 # r comes from reading a local file
                 self.r = webob_Response()  # make empty response
                 self.raw = BytesReader(r.read())
-            self.dmr, self.data, self.endianness = self.safe_dmr_and_data()
+            self.dmr, self.endianness = self.safe_dmr_and_data()
             # need to split dmr from data
             dataset = dmr_to_dataset(self.dmr)
             self.dataset = self.unpack_dap4_data(dataset)
@@ -970,10 +970,9 @@ class UNPACKDAP4DATA(object):
             )
         else:
             dmr = self.raw.read(dmr_length).decode(self.user_charset)
-        data = self.raw
         # get endianness from first chunk
         _, _, endianness = decode_chunktype(chunk_type)
-        return dmr, data, endianness
+        return dmr, endianness
 
     def unpack_dap4_data(self, dataset):
         """
@@ -982,7 +981,7 @@ class UNPACKDAP4DATA(object):
         response).
         """
         checksum_dtype = numpy.dtype(self.endianness + "u4")
-        buffer = stream2bytearray(self.data)
+        buffer = stream2bytearray(self.raw)
         start = 0
         for variable in walk(dataset, BaseType):
             count = get_count(variable)
