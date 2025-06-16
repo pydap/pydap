@@ -166,9 +166,23 @@ def create_request(
         if "Authorization" in session.headers:
             get_kwargs["auth"] = None
         try:
-            req = session.get(
-                url, timeout=timeout, verify=verify, allow_redirects=True, **get_kwargs
-            )
+            if not isinstance(session, CachedSession):
+                req = session.get(
+                    url,
+                    timeout=timeout,
+                    verify=verify,
+                    allow_redirects=True,
+                    **get_kwargs,
+                )
+            else:
+                with session.cache_disabled():
+                    req = session.get(
+                        url,
+                        timeout=timeout,
+                        verify=verify,
+                        allow_redirects=True,
+                        **get_kwargs,
+                    )
         except (ConnectionError, SSLError) as e:
             # some opendap servers do not support https, but they do support http.
             parsed = urlparse(url)
