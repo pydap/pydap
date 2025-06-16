@@ -77,7 +77,7 @@ def test_open_url_dap4_shape():
     filename = "netcdf/examples/200803061600_HFRadar_USEGC_6km_rtv_SIO.nc"
     CE = "?dap4.ce=/lon[100:1:199]"
     ds_ce = open_url(url + filename + CE)
-    data = ds_ce["lon"][:]
+    data = ds_ce["lon"][:].data
     assert data.shape == (100,)
 
 

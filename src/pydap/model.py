@@ -10,7 +10,7 @@ Here's a simple example of a `BaseType` variable::
     >>> bar = BaseType('bar', np.arange(4, dtype='i'))
     >>> foobar = BaseType('foobar', np.arange(4, dtype='i'))
     >>> foo[-2:]
-    <BaseType with data array([2, 3], dtype=int32)>
+    <BaseType with data array(shape=(2,), dtype=int32)>
     >>> foo[-2:].data
     array([2, 3], dtype=int32)
     >>> foo.data[-2:]
@@ -87,7 +87,7 @@ dictionaries and they iterate over sliced values.
 Selecting only one child returns the child::
 
     >>> dataset.s['foo']
-    <BaseType with data array([0, 1, 2, 3], dtype=int32)>
+    <BaseType with data array(shape=(4,), dtype=int32)>
 
 A `GridType` is a special container where the first child should be an
 n-dimensional `BaseType`. This children should be followed by `n` additional
@@ -100,14 +100,13 @@ variable::
     >>> rain['x'] = BaseType('x', np.arange(3), units='degrees_east')
     >>> rain['y'] = BaseType('y', np.arange(2), units='degrees_north')
     >>> rain.array  #doctest: +ELLIPSIS
-    <BaseType with data array([[0, 1, 2],
-           [3, 4, 5]])>
+    <BaseType with data array(shape=(2, 3), dtype=int64)>
     >>> type(rain.maps)
     <class 'collections.OrderedDict'>
     >>> for item in rain.maps.items():
     ...     print(item)
-    ('x', <BaseType with data array([0, 1, 2])>)
-    ('y', <BaseType with data array([0, 1])>)
+    ('x', <BaseType with data array(shape=(3,), dtype=int64)>)
+    ('y', <BaseType with data array(shape=(2,), dtype=int64)>)
 
 There a last special container called `SequenceType`. This data structure is
 analogous to a series of records (or rows), with one column for each of its
@@ -252,6 +251,55 @@ class DapType(object):
         return ()
 
 
+class SelfClearingArray:
+    def __init__(self, array):
+        self._array = array
+
+    def _consume(self):
+        if self._array is None:
+            raise RuntimeError("This array has already been cleared.")
+        arr = self._array
+        self._array = None
+        return arr
+
+    def __array__(self, dtype=None):
+        arr = self._consume()
+        return arr.astype(dtype) if dtype else arr
+
+    def __getitem__(self, key):
+        arr = self._consume()
+        return arr[key]
+
+    def __len__(self):
+        arr = self._consume()
+        return len(arr)
+
+    # def __repr__(self):
+    #     return f"<SelfClearingArray: {type(self._array)}>"
+
+    def __iter__(self):
+        arr = self._consume()
+        return iter(arr)
+
+
+class DapDecodedArray:
+    def __init__(self, array: np.ndarray):
+        self.array = array
+
+    def __array__(self, dtype=None):
+        return np.asarray(self.array, dtype=dtype)
+
+    def __getitem__(self, key):
+        return self.array[key]  # Allows [:] to work
+
+    def __len__(self):
+        return len(self.array)
+
+    def __repr__(self):
+        # Render the actual data
+        return repr(np.asarray(self))
+
+
 class BaseType(DapType):
     """A thin wrapper over Numpy arrays."""
 
@@ -267,8 +315,16 @@ class BaseType(DapType):
         self._itemsize = None
         self._nbytes = None
 
+    # def __repr__(self):
+    #     return "<%s with data %s>" % (type(self).__name__, repr(self.data))
     def __repr__(self):
-        return "<%s with data %s>" % (type(self).__name__, repr(self.data))
+        if isinstance(self._data, SelfClearingArray):
+            summary = "<SelfClearingArray (unread)>"
+        elif isinstance(self._data, np.ndarray):
+            summary = f"array(shape={self._data.shape}, dtype={self._data.dtype})"
+        else:
+            summary = repr(self._data)
+        return f"<{type(self).__name__} with data {summary}>"
 
     @property
     def path(self):
@@ -355,10 +411,24 @@ class BaseType(DapType):
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
         out = copy.copy(self)
-        out.data = self._get_data_index(index)
+        data = self._get_data_index(index)
+
+        # Check if index is a full slice (e.g., [:], ..., or tuple of all slice(None))
+        if (
+            index == slice(None)
+            or index == Ellipsis
+            or (isinstance(index, tuple) and all(i == slice(None) for i in index))
+        ):
+            try:
+                # Unwrap DapDecodedArray or SelfClearingArray
+                data = np.asarray(data)
+            except Exception:
+                pass  # Leave as-is for types that don't support __array__
+        out.data = data
         if type(self.data).__name__ == "BaseProxyDap4":
             # out.attributes["checksum"] = self.data.checksum
             out.attributes["Maps"] = self.Maps
+
         return out
 
     def __len__(self):
@@ -387,19 +457,22 @@ class BaseType(DapType):
         if self._is_string_dtype and isinstance(self._data, np.ndarray):
             return np.vectorize(decode_np_strings)(self._data[index])
         else:
-            return self._data[index]
+            return self._get_data()[index]
 
     def _get_data(self):
         return self._data
 
     def _set_data(self, data):
-        self._data = data
-        if np.isscalar(data):
-            # Convert scalar data to
-            # numpy scalar, otherwise
-            # ``.dtype`` and ``.shape``
-            # methods will fail.
-            self._data = np.array(data)
+        if isinstance(data, DapDecodedArray):
+            self._data = SelfClearingArray(data.array)
+        else:
+            self._data = data
+            if np.isscalar(data):
+                # Convert scalar data to
+                # numpy scalar, otherwise
+                # ``.dtype`` and ``.shape``
+                # methods will fail.
+                self._data = np.array(data)
 
     data = property(_get_data, _set_data)
 
