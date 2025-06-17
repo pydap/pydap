@@ -250,7 +250,7 @@ def consolidate_metadata(
         #  Caches a single dmr and creates a cache key for all dmr urls
         #  to avoid downloading multiple dmr responses.
         patch_session_for_shared_dap_cache(
-            session, {}, known_url_list=dmr_urls, verbose=verbose
+            session, {}, None, known_url_list=dmr_urls, verbose=verbose
         )
         results = [open_dmr(dmr_urls[0], session=session)]
         # Does not download the dmr responses, as a cached key was created.
@@ -353,7 +353,11 @@ def consolidate_metadata(
             dim_ces.update(maps_ces)
         if dim_ces:
             patch_session_for_shared_dap_cache(
-                session, shared_vars=dim_ces, known_url_list=URLs, verbose=verbose
+                session,
+                shared_vars=dim_ces,
+                concat_dim=concat_dim,
+                known_url_list=URLs,
+                verbose=verbose,
             )
         with session as Session:
             _ = download_all_urls(Session, new_urls, ncores=ncores)
@@ -633,28 +637,51 @@ def compute_base_url_prefix(url_list):
 def try_generate_custom_key(request, config, verbose=False):
     parsed = urlparse(request.url)
     path = parsed.path
-    ext = path.split(".")[-1]  # e.g. 'dap' or 'dmr'
+    ext = path.split(".")[-1]  # e.g., 'dap' or 'dmr'
     query = parse_qs(parsed.query)
     dap4_ce = query.get("dap4.ce", [None])[0]
     if dap4_ce:
         dap4_ce = unquote(dap4_ce)
 
     shared_vars = config.get("shared_vars", set())
-    general_base = config.get("general_base")
+    shared_base_vars = {v.split("[")[0] for v in shared_vars}
+    concat_dim = config.get("concat_dim")
     is_dmr = config.get("is_dmr", False)
 
     if ext == "dmr" and not is_dmr:
         return None
-    if ext == "dap" and (not shared_vars or dap4_ce not in shared_vars):
+
+    if ext != "dap" or not dap4_ce:
         return None
 
+    # Extract variable names from dap4.ce (e.g., "THETA[0:1:100]" → "THETA")
+    vars_in_ce = re.findall(r"([a-zA-Z_][\w]*)\s*\[", dap4_ce)
+    vars_set = set(vars_in_ce)
+
+    # === Case 1: All shared vars → reuse shared cache key
+    if vars_set and vars_set.issubset(shared_base_vars):
+        # Reuse across known_url_list → build common base
+        if verbose:
+            print(f"[SHARED] {dap4_ce} → shared key")
+        return base_url_cache(parsed, config, ext, dap4_ce, verbose)
+
+    # === Case 2: Exactly one var and it's the concat_dim → allow per-file caching
+    if vars_set == {concat_dim}:
+        if verbose:
+            print(f"[PER-FILE] {dap4_ce} → fallback to default key")
+        return None  # fallback to per-URL caching
+
+    # === Case 3: Includes non-shared, non-concat → block caching
     if verbose:
-        print("================ request url ========================")
-        print(request.url)
+        print(f"[BLOCK] Non-shared, non-concat vars in dap4.ce: {dap4_ce}")
+    return False  # do not cache
 
-    shared_ext = ext
 
+def base_url_cache(parsed, config, shared_ext, dap4_ce, verbose):
     # Earthdata URLs
+    general_base = config.get("general_base")
+    path = parsed.path
+
     if parsed.netloc == "opendap.earthdata.nasa.gov":
         match = re.search(r"(/providers/[^/]+/collections/[^/]+)", path)
         if match:
@@ -684,11 +711,9 @@ def try_generate_custom_key(request, config, verbose=False):
             )
         return f"{base_url}?{urlencode({'dap4.ce': dap4_ce})}" if dap4_ce else base_url
 
-    return None
-
 
 def patch_session_for_shared_dap_cache(
-    session, shared_vars, known_url_list=None, verbose=False
+    session, shared_vars, concat_dim, known_url_list=None, verbose=False
 ):
     """
     Patch CachedSession to support multiple incremental cache key configurations.
@@ -704,6 +729,7 @@ def patch_session_for_shared_dap_cache(
 
     new_config = {
         "shared_vars": set(shared_vars),
+        "concat_dim": concat_dim,
         "known_url_list": known_url_list,
         "general_base": general_base,
         "is_dmr": is_dmr,
@@ -715,17 +741,20 @@ def patch_session_for_shared_dap_cache(
         original_create_key = session.cache.create_key
 
         def custom_create_key(request, **kwargs):
-            # Skip auth URLs
             if any(x in request.url for x in ["urs", "oauth", "login"]):
                 return original_create_key(request, **kwargs)
 
-            # Try each config in order
             for cfg in session._dap_cache_configs:
                 key = try_generate_custom_key(request, cfg, verbose)
-                if key:
+                if key is False:
+                    if verbose:
+                        print(
+                            f"[BLOCK-CACHE] Preventing caching for URL: {request.url}"
+                        )
+                    return None  # <-- Critical: DO NOT fall back
+                elif key:
                     return key
-
-            # Fall back to original behavior
+            # Fallback only if no config matched AND not explicitly blocked
             return original_create_key(request, **kwargs)
 
         session.cache.create_key = custom_create_key

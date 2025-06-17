@@ -166,16 +166,17 @@ def create_request(
         if "Authorization" in session.headers:
             get_kwargs["auth"] = None
         try:
-            if not isinstance(session, CachedSession):
-                req = session.get(
-                    url,
-                    timeout=timeout,
-                    verify=verify,
-                    allow_redirects=True,
-                    **get_kwargs,
-                )
-            else:
-                with session.cache_disabled():
+            if isinstance(session, CachedSession):
+                if should_skip_cache(url, session):
+                    with session.cache_disabled():
+                        req = session.get(
+                            url,
+                            timeout=timeout,
+                            verify=verify,
+                            allow_redirects=True,
+                            **get_kwargs,
+                        )
+                else:
                     req = session.get(
                         url,
                         timeout=timeout,
@@ -183,6 +184,14 @@ def create_request(
                         allow_redirects=True,
                         **get_kwargs,
                     )
+            else:
+                req = session.get(
+                    url,
+                    timeout=timeout,
+                    verify=verify,
+                    allow_redirects=True,
+                    **get_kwargs,
+                )
         except (ConnectionError, SSLError) as e:
             # some opendap servers do not support https, but they do support http.
             parsed = urlparse(url)
@@ -204,6 +213,19 @@ def create_request(
             raise HTTPError(
                 f"HTTP Error occurred {http_err} - Failed to fetch data from `{url}`"
             ) from http_err
+
+
+def should_skip_cache(url, session):
+    """helper function to see if a url is permissible to cache
+    or not. Must be used after `Consolidate_metadata`
+    """
+    from pydap.client import try_generate_custom_key
+
+    for cfg in getattr(session, "_dap_cache_configs", []):
+        key = try_generate_custom_key(type("Req", (), {"url": url}), cfg)
+        if key is False:
+            return True
+    return False
 
 
 def create_session(
