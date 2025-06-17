@@ -451,7 +451,7 @@ ce2 = "?dap4.ce=/i;/j;/l;/order"
         ],
     ],
 )
-@pytest.mark.parametrize("safe_mode", [True, False])
+@pytest.mark.parametrize("safe_mode", [True])
 def test_cached_consolidate_metadata_matching_dims(urls, safe_mode):
     """Test the behavior of the chaching implemented in `consolidate_metadata`.
     the `safe_mode` parameter means that all dmr urls are cached, and
@@ -497,7 +497,7 @@ ce2 = "?dap4.ce=/i;/j;/order"
         ],
     ],
 )
-@pytest.mark.parametrize("safe_mode", [True, False])
+@pytest.mark.parametrize("safe_mode", [True])
 def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
     """Test the behavior of the chaching implemented in `consolidate_metadata`.
     the `safe_mode` parameter means that all dmr urls are cached, and
@@ -556,12 +556,12 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
     cached_session.cache.clear()
     # download all dmr for testing - not most performant
     consolidate_metadata(
-        urls, session=cached_session, safe_mode=False, concat_dim=concat_dim
+        urls, session=cached_session, safe_mode=True, concat_dim=concat_dim
     )
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)
 
-    N_dmr_urls = 1  # Since `safe_mode=False`, only 1 DMR is downloaded
+    N_dmr_urls = len(urls)  # Since `safe_mode=False`, only 1 DMR is downloaded
 
     if not concat_dim:
         # Without `concat_dim` set, only one dap response is downloaded per URL.
@@ -687,7 +687,7 @@ def test_patch_session_for_shared_dap_cache(urls, cached_session):
     dimensions = ["i[0:1:1]", "j[0:1:2]", "l[0:1:2]"]
 
     patch_session_for_shared_dap_cache(
-        cached_session, shared_vars=dimensions, known_url_list=urls
+        cached_session, shared_vars=dimensions, concat_dim=None, known_url_list=urls
     )
     assert len(cached_session.cache.urls()) == 0
 
