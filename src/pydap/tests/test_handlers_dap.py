@@ -645,6 +645,7 @@ class TestArrayStringBaseType(unittest.TestCase):
         """Test the ``__getitem__`` method."""
         np.testing.assert_array_equal(self.data[:].data, self.original_data)
 
+
 class TestUnpackDap4Data(unittest.TestCase):
     """
     Tests some properties of the class UNPACKDAP4DATA.
