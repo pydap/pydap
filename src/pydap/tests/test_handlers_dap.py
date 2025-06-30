@@ -635,7 +635,7 @@ class TestArrayStringBaseType(unittest.TestCase):
     def setUp(self):
         """Create a WSGI app with array data"""
         dataset = DatasetType("test")
-        self.original_data = np.array([["This ", "is "], ["a ", "test"]], dtype="<U5")
+        self.original_data = np.array([["This ", "is "], ["a ", "test"]], dtype="|S4")
         dataset["s"] = BaseType("s", self.original_data)
         self.app = BaseHandler(dataset)
 
@@ -643,12 +643,7 @@ class TestArrayStringBaseType(unittest.TestCase):
 
     def test_getitem(self):
         """Test the ``__getitem__`` method."""
-        if np.__version__ < "2.3.0":
-            # numpy 2.3.0 changed the behavior of string arrays
-            # see https://github.com/pydap/pydap/issues/510
-            np.testing.assert_array_equal(self.data[:], self.original_data)
-        # np.testing.assert_array_equal(self.data[:], self.original_data)
-
+        np.testing.assert_array_equal(self.data[:].data, self.original_data)
 
 class TestUnpackDap4Data(unittest.TestCase):
     """
