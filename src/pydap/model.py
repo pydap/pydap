@@ -426,7 +426,7 @@ class BaseType(DapType):
                 pass  # Leave as-is for types that don't support __array__
         out.data = data
         if type(self.data).__name__ == "BaseProxyDap4":
-            # out.attributes["checksum"] = self.data.checksum
+            out.attributes["_DAP4_Checksum_CRC32"] = self.data.checksum
             out.attributes["Maps"] = self.Maps
 
         return out

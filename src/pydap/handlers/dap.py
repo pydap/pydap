@@ -66,6 +66,7 @@ class DAPHandler(BaseHandler):
         output_grid=True,
         timeout=DEFAULT_TIMEOUT,
         verify=True,
+        checksum=False,
         user_charset="ascii",
         protocol=None,
         get_kwargs=None,
@@ -76,6 +77,7 @@ class DAPHandler(BaseHandler):
         self.output_grid = output_grid
         self.timeout = timeout
         self.verify = verify
+        self.checksum = checksum
         self.user_charset = user_charset
         self.url = url
 
@@ -246,6 +248,7 @@ class DAPHandler(BaseHandler):
                 session=self.session,
                 timeout=self.timeout,
                 verify=self.verify,
+                checksum=self.checksum,
                 get_kwargs={**self.get_kwargs, "stream": True},
             )
 
@@ -459,6 +462,7 @@ class BaseProxyDap4(BaseProxyDap2):
         session=None,
         timeout=DEFAULT_TIMEOUT,
         verify=True,
+        checksum=False,
         user_charset="ascii",
         get_kwargs=None,
     ):
@@ -471,6 +475,7 @@ class BaseProxyDap4(BaseProxyDap2):
         self.session = session
         self.timeout = timeout
         self.verify = verify
+        self.checksum = checksum
         self.user_charset = user_charset
         self.get_kwargs = get_kwargs or {}
 
@@ -498,8 +503,10 @@ class BaseProxyDap4(BaseProxyDap2):
             get_kwargs=self.get_kwargs,
         )
 
-        dataset = UNPACKDAP4DATA(r, self.user_charset).dataset
-        # self.checksum = dataset[self.id].attributes["checksum"]
+        dataset = UNPACKDAP4DATA(r, self.checksum, self.user_charset).dataset
+        if self.checksum:
+            # update it
+            self.checksum = dataset[self.id].attributes["_DAP4_Checksum_CRC32"]
         self.data = dataset[self.id].data
         return self.data
 
@@ -933,8 +940,9 @@ class UNPACKDAP4DATA(object):
             See `pydap.net.get.open_dap_file`
     """
 
-    def __init__(self, r, user_charset="ascii"):
+    def __init__(self, r, checksum=False, user_charset="ascii"):
         self.user_charset = user_charset
+        self.checksum = checksum
         if isinstance(r, requests.Response):
             # remote dataset
             self.r = r
@@ -1017,11 +1025,14 @@ class UNPACKDAP4DATA(object):
                 variable=variable,
                 endian=self.endianness,
             )
-            checksum = numpy.frombuffer(
-                buffer[stop : stop + 4], dtype=checksum_dtype
-            ).byteswap("=")
             variable._set_data(data)
-            variable.attributes["checksum"] = checksum
+
+            if self.checksum:
+                checksum = numpy.frombuffer(
+                    buffer[stop : stop + 4], dtype=checksum_dtype
+                )
+                variable.attributes["_DAP4_Checksum_CRC32"] = checksum[0]
+
             # Jump over the 4 byte chunk_header
             start = stop + 4
         return dataset
