@@ -841,9 +841,35 @@ def get_count(variable):
 def decode_variable(buffer, start, stop, variable, endian):
     dtype = variable.dtype
     dtype = dtype.newbyteorder(endian)
-    data = numpy.frombuffer(buffer[start:stop], dtype=dtype)  # .astype(dtype)
-    data = data.reshape(variable.shape)
-    return DapDecodedArray(data)
+    if dtype.kind == "S":
+        data = numpy.array(decode_utf8_string_array(buffer)).astype(dtype.kind)
+        data = data.reshape(variable.shape)
+        return data
+    else:
+        data = numpy.frombuffer(buffer[start:stop], dtype=dtype)
+        data = data.reshape(variable.shape)
+        return DapDecodedArray(data)
+
+
+def decode_utf8_string_array(buffer):
+    offset = 0
+    strings = []
+
+    while offset < len(buffer) - 4:  # last four elements are the checksums
+        # 1. Read 8-byte little-endian length
+        length_bytes = buffer[offset : offset + 8]
+        strlen = int.from_bytes(length_bytes, byteorder="little")
+        offset += 8
+
+        # 2. Read the UTF-8 string
+        str_bytes = buffer[offset : offset + strlen]
+        offset += strlen
+
+        # 3. Decode the bytes to Python string (UTF-8)
+        decoded_str = str_bytes.decode("utf-8")
+        strings.append(decoded_str)
+
+    return strings
 
 
 def stream2bytearray(data):
@@ -864,7 +890,6 @@ def stream2bytearray(data):
     while not last:
         # Read the chunk header
         chunk_header = numpy.frombuffer(data.slice(offset=offset, n=4), dtype=">u4")[0]
-        # chunk_header = numpy.frombuffer(data[offset : offset + 4], dtype=">u4")[0]
         chunk_size = chunk_header & 0x00FFFFFF
         chunk_type = (chunk_header >> 24) & 0xFF
         last, _, _ = decode_chunktype(chunk_type)
@@ -872,7 +897,6 @@ def stream2bytearray(data):
         offset += 4 + chunk_size
         if last:
             break
-
     # Process chunks serially (used to be parallelized- no penalty when serialized).
     results = []
     for offset, length in chunk_positions:
