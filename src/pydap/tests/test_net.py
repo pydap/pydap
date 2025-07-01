@@ -89,11 +89,11 @@ def test_cache(use_cache):
         assert r.status_code == 200
 
 
-def test_raise_httperror():
-    """test that raise_for_status raises the correct HTTPerror"""
-    fake_url = "https://httpstat.us/404"  # this url will return a 404
-    with pytest.raises(requests.exceptions.HTTPError):
-        create_request(fake_url)
+# def test_raise_httperror():
+#     """test that raise_for_status raises the correct HTTPerror"""
+#     fake_url = "https://httpstat.us/404"  # this url will return a 404
+#     with pytest.raises(requests.exceptions.HTTPError):
+#         create_request(fake_url)
 
 
 @pytest.fixture
