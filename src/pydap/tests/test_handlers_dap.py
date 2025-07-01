@@ -14,6 +14,7 @@ from pydap.handlers.dap import (
     BaseProxyDap2,
     DAPHandler,
     SequenceProxy,
+    decode_utf8_string_array,
     dmr_to_dataset,
     find_pattern_in_string_iter,
     walk,
@@ -671,3 +672,45 @@ class TestUnpackDap4Data(unittest.TestCase):
 
     def testResponse(self):
         self.assertIsInstance(self.unpacker.r, Response)
+
+
+buffer1 = bytearray(
+    b"\x04\x00\x00\x00\x00\x00\x00\x00"
+    + b"This"
+    + b"\x02\x00\x00\x00\x00\x00\x00\x00"
+    + b"is"
+    + b"\x01\x00\x00\x00\x00\x00\x00\x00"
+    + b"a"
+    + b"\x04\x00\x00\x00\x00\x00\x00\x00"
+    + b"Test"
+)
+
+buffer2 = bytearray(b"\x16\x00\x00\x00\x00\x00\x00\x00" + b"This is a string")
+
+
+@pytest.mark.parametrize(
+    "data, expected",
+    [
+        (buffer1, ["This", "is", "a", "Test"]),
+        (buffer2, ["This is a string"]),
+    ],
+)
+def test_decode_utf8_string_array(data, expected):
+    result = decode_utf8_string_array(data)
+    assert result == expected
+
+
+def test_dap_handler_string_array():
+    """Tests that the DAPHandler can handle a string array."""
+    url = "dap4://test.opendap.org/opendap/data/nc/bears.nc"
+    pyds = DAPHandler(url).dataset
+
+    # this is what the data should be.
+    actual_data = np.array(
+        [[b"ind", b"ist", b"ing"], [b"uis", b"hab", b"le"]], dtype="|S3"
+    )
+
+    assert (
+        repr(pyds["bears"][:]) == "<BaseType with data array(shape=(2, 3), dtype=|S3)>"
+    )
+    np.testing.assert_equal(pyds["bears"][:].data, actual_data)
