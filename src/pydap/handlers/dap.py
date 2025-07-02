@@ -490,7 +490,10 @@ class BaseProxyDap4(BaseProxyDap2):
         scheme, netloc, path, _, query, fragment = urlparse(self.baseurl)
         ce = "dap4.ce=" + self.id + hyperslab(index)
         url = urlunparse((scheme, netloc, path + ".dap", "", ce, fragment)).rstrip("&")
-
+        if self.checksum:
+            url += "&dap4.checksum=true"
+        else:
+            url += "&dap4.checksum=false"
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
 
