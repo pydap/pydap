@@ -427,8 +427,7 @@ class BaseType(DapType):
         out.data = data
         if type(self.data).__name__ == "BaseProxyDap4":
             out.attributes["_DAP4_Checksum_CRC32"] = self.data.checksum
-            out.attributes["Maps"] = self.Maps
-
+            out.attributes.update({"Maps": self.Maps})
         return out
 
     def __len__(self):

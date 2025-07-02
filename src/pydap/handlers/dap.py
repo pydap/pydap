@@ -504,10 +504,10 @@ class BaseProxyDap4(BaseProxyDap2):
         )
 
         dataset = UNPACKDAP4DATA(r, self.checksum, self.user_charset).dataset
-        if self.checksum:
-            # update it
-            self.checksum = dataset[self.id].attributes["_DAP4_Checksum_CRC32"]
         self.data = dataset[self.id].data
+        if self.checksum:
+            self.checksum = dataset[self.id].attributes["_DAP4_Checksum_CRC32"]
+
         return self.data
 
 
