@@ -29,6 +29,8 @@ from pydap.tests.datasets import (
     VerySimpleSequence,
 )
 
+from ..net import create_session
+
 try:
     from unittest.mock import patch
 except ImportError:
@@ -720,7 +722,8 @@ def test_dap_handler_string_array():
 def test_checksum(checksum):
     """Test that the checksum if applied correctly, when requests"""
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-    pyds = DAPHandler(url, checksum=checksum).dataset
+    session = create_session()
+    pyds = DAPHandler(url, session=session, checksum=checksum).dataset
     Y = pyds["SimpleGroup/Y"][:]
     if not checksum:
         assert not hasattr(Y, "_DAP4_Checksum_CRC32")
