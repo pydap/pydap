@@ -29,6 +29,8 @@ from pydap.tests.datasets import (
     VerySimpleSequence,
 )
 
+from ..net import create_session
+
 try:
     from unittest.mock import patch
 except ImportError:
@@ -714,3 +716,22 @@ def test_dap_handler_string_array():
         repr(pyds["bears"][:]) == "<BaseType with data array(shape=(2, 3), dtype=|S3)>"
     )
     np.testing.assert_equal(pyds["bears"][:].data, actual_data)
+
+
+@pytest.mark.parametrize("checksum", [True, False])
+def test_checksum(checksum):
+    """Test that the checksum if applied correctly, when requests"""
+    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+    session = create_session()
+    pyds = DAPHandler(url, session=session, checksum=checksum).dataset
+    Y = pyds["SimpleGroup/Y"][:]
+    if not checksum:
+        assert not hasattr(Y, "_DAP4_Checksum_CRC32")
+    else:
+        import zlib
+
+        for var in walk(pyds, BaseType):
+            assert hasattr(var[:], "_DAP4_Checksum_CRC32")
+            buffer = bytearray(var[:].data)
+            checksum = zlib.crc32(buffer)
+            assert var[:].attributes["_DAP4_Checksum_CRC32"] == checksum
