@@ -13,7 +13,7 @@ from requests_cache import CachedSession
 from urllib3 import Retry
 from webob.request import Request as webob_Request
 
-from .lib import DEFAULT_TIMEOUT, _quote
+from .lib import DEFAULT_TIMEOUT, __version__, _quote
 
 
 def GET(
@@ -210,6 +210,40 @@ def create_request(
             req.raise_for_status()
             return req
         except HTTPError as http_err:
+            path = urlparse(url).path.split("/")[1:]
+            if req.status_code == 400 and set(("thredds", "dap4")).issubset(set(path)):
+                # this is an issue with thredds+dap4 and incorrect redirect url
+                # by requests.session. See https://github.com/pydap/pydap/issues/442
+                _, net, path, params, query, frag = urlparse(url)
+                # make sure scheme is `https` - we are disabling redirects
+                nurl = urlunparse(("https", net, path, params, query, frag))
+                req = session.get(nurl, allow_redirects=False, verify=True)
+                if not req.status_code == 307:
+                    raise HTTPError(
+                        "HTTP Error - attempting to retrieve data failed ",
+                        f"from {url} ",
+                    )
+                re_url = req.headers.get("Location")
+                # make sure scheme is `https` - we are disabling redirects
+                _, net, path, params, query, frag = urlparse(re_url)
+                re_url = urlunparse(("https", net, path, params, query, frag))
+                retry_response = session.get(re_url, allow_redirects=False, verify=True)
+                if retry_response.status_code == 403:
+                    # now reuse session with original arguments!
+                    req = session.get(
+                        url,  # original - unchanged url
+                        timeout=timeout,
+                        verify=verify,
+                        allow_redirects=True,
+                        **get_kwargs,
+                    )
+                    return req
+                else:
+                    raise HTTPError(
+                        "HTTP Error - Failed to correctly authenticate on this "
+                        "Thredds Data server under the DAP4 protocol. See GH issue"
+                        "https://github.com/pydap/pydap/issues/442"
+                    )
             raise HTTPError(
                 f"HTTP Error occurred {http_err} - Failed to fetch data from `{url}`"
             ) from http_err
@@ -260,6 +294,7 @@ def create_session(
     session_kwargs = session_kwargs or {}
     token = session_kwargs.pop("token", None)
     cache_kwargs = cache_kwargs or {}
+    headers = [("User-agent", "pydap/{}".format(__version__))]
     if use_cache:
         expire_after = cache_kwargs.pop("expire_after", None)
         if not expire_after:
@@ -292,6 +327,7 @@ def create_session(
         session = requests.Session()
         for key, value in session_kwargs.items():
             setattr(session, key, value)
+    session.headers.update(headers)
     # Handle retry arguments separately
     retry_args = session_kwargs.pop("retry_args", {})
     if "total" not in retry_args:
@@ -317,3 +353,12 @@ def create_session(
     if token:
         session.headers.update({"Authorization": f"Bearer {token}"})
     return session
+
+
+def save_cookies(url, sesssion):
+    """
+    some tds servers fail upon first try to authenticate.
+    Needs to store cookies
+    """
+
+    pass
