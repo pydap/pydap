@@ -254,6 +254,12 @@ class DapType(object):
         """Return iterator over children."""
         return ()
 
+    def assign_dataset_recursive(self, dataset):
+        # assign the root dataset to each Dap type in a hierarchy.
+        self.dataset = dataset
+        for child in self.children():
+            child.assign_dataset_recursive(dataset)
+
 
 class SelfClearingArray:
     def __init__(self, array):
@@ -698,12 +704,6 @@ class DatasetType(StructureType):
             )
         self._session = session
         self.dataset = self  # assign itself as the dataset
-
-    def assign_dataset_recursive(self, dataset):
-        # assign the root dataset to each Dap type in a hierarchy.
-        self.dataset = dataset
-        for child in self.children():
-            child.assign_dataset_recursive(dataset)
 
     @property
     def session(self):

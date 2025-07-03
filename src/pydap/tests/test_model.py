@@ -762,3 +762,21 @@ def test_DatasetType_set_parent():
     assert ds["Group1/subGroup2/var"].parent.parent.id == "Group1"
     assert ds["Group1"].parent.id == "root"
     assert ds["Group2"].parent.id == "root"
+
+
+def test_set_dataset():
+    """
+    Tests that the dataset is set correctly for all dap objects in the hierarchy.
+    """
+    ds = DatasetType("root")
+    ds.createGroup("Group1")
+    ds.createGroup("Group2")
+    ds.createGroup("Group1/subGroup2")
+    ds.createVariable("Group1/subGroup2/var")
+
+    ds.assign_dataset_recursive(ds)
+
+    assert ds.dataset.id == "root"
+    assert ds["Group1"].dataset.id == "root"
+    assert ds["Group1/subGroup2"].dataset.id == "root"
+    assert ds["Group1/subGroup2/var"].dataset.id == "root"
