@@ -207,6 +207,10 @@ class DapType(object):
         # Set the id to the name.
         self._id = self.name
 
+        # Set parent and dataset to keep track of parent references
+        self.parent = None
+        self.dataset = None
+
     def __repr__(self):
         return "DapType(%s)" % ", ".join(map(repr, [self.name, self.attributes]))
 
