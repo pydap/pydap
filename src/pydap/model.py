@@ -493,6 +493,7 @@ class StructureType(DapType, Mapping):
         # allow some keys to be hidden:
         self._visible_keys = []
         self._dict = OrderedDict()
+        self._children = OrderedDict()
 
     def __repr__(self):
         return "<%s with children %s>" % (
@@ -566,6 +567,8 @@ class StructureType(DapType, Mapping):
         return tree(self)
 
     def __setitem__(self, key, item):
+        item.parent = self
+        self._children[key] = item
         key = _quote(key)
         if key != item.name:
             raise KeyError(
@@ -694,6 +697,13 @@ class DatasetType(StructureType):
                 "`requests_cache.CachedSession` instance"
             )
         self._session = session
+        self.dataset = self  # assign itself as the dataset
+
+    def assign_dataset_recursive(self, dataset):
+        # assign the root dataset to each Dap type in a hierarchy.
+        self.dataset = dataset
+        for child in self.children():
+            child.assign_dataset_recursive(dataset)
 
     @property
     def session(self):
@@ -759,6 +769,8 @@ class DatasetType(StructureType):
         if len(key.split(".")) == 1:
             # The parent name does not go into the children ids.
             item.id = item.name
+            if isinstance(item, GroupType) and not item.parent:
+                item.parent = self
         else:
             parts = key.split("/")[-1]
             item.id = (".").join(parts.split("."))
