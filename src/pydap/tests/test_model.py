@@ -733,3 +733,50 @@ def test_error_session(session):
         # test attemps to set the session object with a string type - not allowed
         with pytest.raises(TypeError):
             DatasetType("name", session=session)
+
+
+def test_DatasetType_set_parent():
+    """Tests that setting a parent within a nested Hierarchy
+        yields the right parent/child relationship.
+
+        root.
+        |-- Group1
+        |   |-- subGroup2
+        |   |   |-- var
+        |-- Group2
+
+        Check that the parent of `var` is `subGroup2`
+        and the parent of `subGroup2` is `Group1`.
+
+        Also test that for each of the dap elements, `.dataset` returns
+        the root.
+    `
+    """
+    ds = DatasetType("root")
+    ds.createGroup("Group1")
+    ds.createGroup("Group2")
+    ds.createGroup("Group1/subGroup2")
+    ds.createVariable("Group1/subGroup2/var")
+
+    assert ds["Group1/subGroup2/var"].parent.id == "subGroup2"
+    assert ds["Group1/subGroup2/var"].parent.parent.id == "Group1"
+    assert ds["Group1"].parent.id == "root"
+    assert ds["Group2"].parent.id == "root"
+
+
+def test_set_dataset():
+    """
+    Tests that the dataset is set correctly for all dap objects in the hierarchy.
+    """
+    ds = DatasetType("root")
+    ds.createGroup("Group1")
+    ds.createGroup("Group2")
+    ds.createGroup("Group1/subGroup2")
+    ds.createVariable("Group1/subGroup2/var")
+
+    ds.assign_dataset_recursive(ds)
+
+    assert ds.dataset.id == "root"
+    assert ds["Group1"].dataset.id == "root"
+    assert ds["Group1/subGroup2"].dataset.id == "root"
+    assert ds["Group1/subGroup2/var"].dataset.id == "root"
