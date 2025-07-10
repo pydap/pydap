@@ -61,14 +61,19 @@ from requests.exceptions import (
 from requests.utils import urlparse, urlunparse
 from requests_cache import CachedSession
 
-from .handlers.dap import UNPACKDAP4DATA, DAPHandler, StreamReader, unpack_dap2_data
-from .lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
-from .lib import encode
-from .model import DapType
-from .net import GET, create_session
-from .parsers.das import add_attributes, parse_das
-from .parsers.dds import dds_to_dataset
-from .parsers.dmr import DMRParser, dmr_to_dataset
+from pydap.handlers.dap import (
+    UNPACKDAP4DATA,
+    DAPHandler,
+    StreamReader,
+    unpack_dap2_data,
+)
+from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
+from pydap.lib import encode
+from pydap.model import DapType
+from pydap.net import GET, create_session
+from pydap.parsers.das import add_attributes, parse_das
+from pydap.parsers.dds import dds_to_dataset
+from pydap.parsers.dmr import DMRParser, dmr_to_dataset
 
 
 def open_url(

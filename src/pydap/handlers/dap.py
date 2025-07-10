@@ -252,6 +252,8 @@ class DAPHandler(BaseHandler):
                 get_kwargs={**self.get_kwargs, "stream": True},
             )
 
+        self.dataset.assign_dataset_recursive(self.dataset)
+
         # apply projections to BaseType only
         # CE for sequences and structs
         # are not ready (see https://github.com/pydap/pydap/issues/314)
@@ -484,12 +486,19 @@ class BaseProxyDap4(BaseProxyDap2):
             map(repr, [self.baseurl, self.id, self.dtype, self.shape, self.slice])
         )
 
-    def __getitem__(self, index):
+    def __getitem__(self, index, build_only=False):
         # build download url
         index = combine_slices(self.slice, fix_slice(index, self.shape))
+
         scheme, netloc, path, _, query, fragment = urlparse(self.baseurl)
-        ce = "dap4.ce=" + self.id + hyperslab(index)
-        url = urlunparse((scheme, netloc, path + ".dap", "", ce, fragment)).rstrip("&")
+        self.ce = "dap4.ce=" + self.id + hyperslab(index)
+
+        if build_only:
+            # In batch mode: just store CE, don't fetch
+            return self
+        url = urlunparse((scheme, netloc, path + ".dap", "", self.ce, fragment)).rstrip(
+            "&"
+        )
         if self.checksum:
             url += "&dap4.checksum=true"
         else:
@@ -507,11 +516,11 @@ class BaseProxyDap4(BaseProxyDap2):
         )
 
         dataset = UNPACKDAP4DATA(r, self.checksum, self.user_charset).dataset
-        self.data = dataset[self.id].data
+        self._data = dataset[self.id]._data
         if self.checksum:
             self.checksum = dataset[self.id].attributes["_DAP4_Checksum_CRC32"]
 
-        return self.data
+        return self._data
 
 
 class SequenceProxy(object):
@@ -948,6 +957,7 @@ class UNPACKDAP4DATA(object):
         self.checksum = checksum
         if isinstance(r, requests.Response):
             # remote dataset
+
             self.r = r
             CHUNK_SIZE = 1048576  # 1 MB
             with tempfile.TemporaryFile() as tmp:

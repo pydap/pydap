@@ -776,7 +776,7 @@ def test_set_dataset():
 
     ds.assign_dataset_recursive(ds)
 
-    assert ds.dataset.id == "root"
-    assert ds["Group1"].dataset.id == "root"
-    assert ds["Group1/subGroup2"].dataset.id == "root"
-    assert ds["Group1/subGroup2/var"].dataset.id == "root"
+    assert ds.dataset.id == "/"
+    assert ds["Group1"].dataset.id == "/"
+    assert ds["Group1/subGroup2"].dataset.id == "/"
+    assert ds["Group1/subGroup2/var"].dataset.id == "/"

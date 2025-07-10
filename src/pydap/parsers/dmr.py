@@ -268,7 +268,6 @@ def dmr_to_dataset(dmr):
                 variable["shape"] += (variables[dim]["size"],)
             else:
                 variable["shape"] += (named_dimensions[dim],)
-
     for name, variable in variables.items():
         var_name = variable["name"]
         path = None
@@ -327,6 +326,8 @@ def dmr_to_dataset(dmr):
                 dataset.createStructure(("/").join(parts), path=path)
         else:
             dataset.createVariable(**var_kwargs)
+        # assign root to each variable
+        dataset.assign_dataset_recursive(dataset)
 
     return dataset
 
@@ -391,7 +392,6 @@ class DMRParser(object):
                 Maps=Maps,
                 attributes=attributes,
             )
-
         return dataset
 
 
