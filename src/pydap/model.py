@@ -594,6 +594,16 @@ class BaseType(DapType):
             return self._data.ce
         return None
 
+    def is_dimension_var(self):
+        if not self.dataset:
+            return False
+        parent_path = "/".join(self.id.split("/")[:-1])
+        parent = self.dataset
+        if parent_path:
+            for part in parent_path.split("/"):
+                parent = parent[part]
+        return self.name in getattr(parent, "dimensions", [])
+
 
 class StructureType(DapType, Mapping):
     """A dict-like object holding other variables."""
@@ -1053,6 +1063,9 @@ class DatasetType(StructureType):
 
     def register_for_batch(self, var):
         """Register a key for batch processing."""
+        if var.is_dimension_var():
+            print(f"[batch] Skipping dimension: {var.id}")
+            return
         self._batch_registry = {v for v in self._batch_registry if v.id != var.id}
         self._batch_registry.add(var)
 
