@@ -253,6 +253,7 @@ class DAPHandler(BaseHandler):
             )
 
         self.dataset.assign_dataset_recursive(self.dataset)
+        # self.dataset.enable_batch_mode()
 
         # apply projections to BaseType only
         # CE for sequences and structs
