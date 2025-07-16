@@ -1080,7 +1080,7 @@ class DatasetType(StructureType):
     def _start_batch_timer(self):
         if self._current_batch_promise is None:
             self._current_batch_promise = BatchPromise()
-            print("[Batch] New promise created:", id(self._current_batch_promise))
+            # print("[Batch] New promise created:", id(self._current_batch_promise))
 
         if not self._batch_timer:
             promise_for_this_batch = self._current_batch_promise
@@ -1113,9 +1113,9 @@ class DatasetType(StructureType):
         var._batch_promise = self._current_batch_promise
 
     def _resolve_batch(self, batch_promise):
-        # variables = [var for var in self._batch_registry if not var._is_data_loaded()]
+        from pydap.handlers.dap import UNPACKDAP4DATA
 
-        print(f"[Batch] Resolving promise: {id(batch_promise)}")
+        # print(f"[Batch] Resolving promise: {id(batch_promise)}")
         variables = [
             var
             for var in self._batch_registry
@@ -1125,7 +1125,6 @@ class DatasetType(StructureType):
 
         if not variables:
             self._batch_timer = None
-            # self._current_batch_promise = None
             return
 
         constraint_expressions = [
@@ -1146,10 +1145,9 @@ class DatasetType(StructureType):
         ce_string = "?dap4.ce=" + ";".join(constraint_expressions)
         _dap_url = base_url.replace("https", "http") + ".dap" + ce_string
 
-        print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}")
+        # print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}")
 
         r = self._session.get(_dap_url, verify=True, timeout=512, allow_redirects=True)
-        from pydap.handlers.dap import UNPACKDAP4DATA
 
         parsed_dataset = UNPACKDAP4DATA(r, checksum=True, user_charset="ascii").dataset
 
@@ -1163,8 +1161,6 @@ class DatasetType(StructureType):
             var._batch_promise = None
 
         # Resolve the promise for all waiting arrays
-        # if self._current_batch_promise:
-        # print(f"Collection results from {id(batch_promise)}")
         batch_promise.set_results(results_dict)
 
         # Clean up
