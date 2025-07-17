@@ -49,6 +49,11 @@ from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import dmr_to_dataset
 from pydap.responses.dods import DAP2_response_dtypemap
 
+try:
+    import httpx
+except ImportError:
+    httpx = None
+
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
@@ -956,15 +961,15 @@ class UNPACKDAP4DATA(object):
     def __init__(self, r, checksum=False, user_charset="ascii"):
         self.user_charset = user_charset
         self.checksum = checksum
-        if isinstance(r, requests.Response):
+        self.r = r
+        try:
+            iterator = self.iter_body()
+            CHUNK_SIZE = 1048576
             # remote dataset
-
-            self.r = r
-            CHUNK_SIZE = 1048576  # 1 MB
             with tempfile.TemporaryFile() as tmp:
                 # write the response to a temporary file
                 # so that we can read it in chunks
-                for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
+                for chunk in iterator(chunk_size=CHUNK_SIZE):
                     if chunk:  # filter out keep-alive chunks
                         tmp.write(chunk)
                 tmp.seek(0)
@@ -972,7 +977,7 @@ class UNPACKDAP4DATA(object):
                 self.dmr, self.endianness = self.safe_dmr_and_data()
                 dataset = dmr_to_dataset(self.dmr)
                 self.dataset = self.unpack_dap4_data(dataset)
-        elif isinstance(r, (webob_Response, BufferedReader)):
+        except TypeError:
             if isinstance(r, webob_Response):
                 self.r = r
                 if self.r.content_encoding == "gzip":
@@ -981,22 +986,36 @@ class UNPACKDAP4DATA(object):
                     )
                 else:
                     self.raw = BytesReader(r.body)
-            else:
+            elif isinstance(r, BufferedReader):
                 # r comes from reading a local file
                 self.r = webob_Response()  # make empty response
                 self.raw = BytesReader(r.read())
+            else:
+                raise TypeError(
+                    """
+                    Unrecognized file type object for unpacking dap4 binary data.
+                    Acceptable formats are `webob.response.Response` and
+                    `io.BufferedReader`
+                    """
+                )
             self.dmr, self.endianness = self.safe_dmr_and_data()
             # need to split dmr from data
             dataset = dmr_to_dataset(self.dmr)
             self.dataset = self.unpack_dap4_data(dataset)
+
+    def iter_body(self):
+        """
+        enables iterate over a response, whether the response
+        if a requests.Response, requests_cache.Response, or
+        httpx.Respose
+        """
+
+        if isinstance(self.r, requests.Response):
+            return self.r.iter_content
+        elif httpx is not None and isinstance(self.r, httpx.Response):
+            return self.r.iter_bytes
         else:
-            raise TypeError(
-                """
-                Unrecognized file type object for unpacking dap4 binary data.
-                Acceptable formats are `webob.response.Response` and
-                `io.BufferedReader`
-                """
-            )
+            raise TypeError("Unsupported response type")
 
     def safe_dmr_and_data(self):
         """
