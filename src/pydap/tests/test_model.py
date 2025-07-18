@@ -780,3 +780,12 @@ def test_set_dataset():
     assert ds["Group1"].dataset.id == "/"
     assert ds["Group1/subGroup2"].dataset.id == "/"
     assert ds["Group1/subGroup2/var"].dataset.id == "/"
+
+
+def test_enable_batch_mode():
+    """Test that batch mode can be enabled."""
+    ds = DatasetType("root")
+    ds.enable_batch_mode()
+    assert ds.is_batch_mode() is True
+    ds.disable_batch_mode()
+    assert ds.is_batch_mode() is False
