@@ -232,6 +232,7 @@ def consolidate_metadata(
     ]
     pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
     if concat_dim and pyds.dimensions[concat_dim] > 1:
+        session.headers["concat_dim"] = concat_dim
         if not safe_mode:
             warnings.warn(
                 f"Length of dim `{concat_dim}` is greater than one, "
