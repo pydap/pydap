@@ -181,6 +181,7 @@ import requests
 import requests_cache
 
 from pydap.lib import _quote, decode_np_strings, tree, walk
+from pydap.net import GET
 
 __all__ = [
     "BaseType",
@@ -1147,12 +1148,9 @@ class DatasetType(StructureType):
         _dap_url += "&dap4.checksum=true"
 
         # print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}")
-        try:
-            r = self._session.get(_dap_url, allow_redirects=True, verify=True, timeout=512, stream=True)
-        except:
-            # there is an connection Max Retry Error when testing with the test.opendap.org server, which
-            # has `http` as its opendap end-point, and does not redirect to `https`.
-            r = self._session.get(_dap_url.replace("https", "http"), allow_redirects=True, verify=True, timeout=512, stream=True)
+
+        r = GET(_dap_url, get_kwargs={"stream": True}, session=self._session)
+
         parsed_dataset = UNPACKDAP4DATA(r, checksum=True, user_charset="ascii").dataset
 
         # Collect results
