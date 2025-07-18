@@ -169,6 +169,7 @@ therefore highly recommended.
 import copy
 import operator
 import re
+import threading
 import warnings
 from collections import OrderedDict
 from collections.abc import Mapping
@@ -179,7 +180,8 @@ import numpy as np
 import requests
 import requests_cache
 
-from .lib import _quote, decode_np_strings, tree, walk
+from pydap.lib import _quote, decode_np_strings, tree, walk
+from pydap.net import GET
 
 __all__ = [
     "BaseType",
@@ -200,16 +202,14 @@ class DapType(object):
     """
 
     def __init__(self, name="nameless", attributes=None, **kwargs):
-        self.name = _quote(name)
+        self._name = _quote(name)
         self.attributes = attributes or {}
         self.attributes.update(kwargs)
-
-        # Set the id to the name.
-        self._id = self.name
 
         # Set parent and dataset to keep track of parent references
         self.parent = None
         self.dataset = None
+        self._id = self.name
 
     def __repr__(self):
         return "DapType(%s)" % ", ".join(map(repr, [self.name, self.attributes]))
@@ -254,11 +254,43 @@ class DapType(object):
         """Return iterator over children."""
         return ()
 
-    def assign_dataset_recursive(self, dataset):
-        # assign the root dataset to each Dap type in a hierarchy.
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    def assign_dataset_recursive(self, dataset=None, path=""):
+        if dataset is None:
+            dataset = self
+            path = ""
+
         self.dataset = dataset
+        self.id = path or "/"  # <-- KEY LINE!
+
+        if isinstance(self, BaseType):
+            if type(self._data).__name__ == "BaseProxyDap4" and not hasattr(
+                self, "_original_data_args"
+            ):
+                # Store the original data for later use
+                self._original_data_args = (
+                    self._data.baseurl,
+                    self._data.id,
+                    self._data.dtype,
+                    self._data.shape,
+                    self._data.application,
+                    self._data.session,
+                    self._data.timeout,
+                    self._data.verify,
+                    self._data.checksum,
+                    self._data.user_charset,
+                    self._data.get_kwargs,
+                )
         for child in self.children():
-            child.assign_dataset_recursive(dataset)
+            child_path = f"{path}/{child.name}" if path else f"/{child.name}"
+            child.assign_dataset_recursive(dataset, child_path)
 
 
 class SelfClearingArray:
@@ -310,6 +342,47 @@ class DapDecodedArray:
         return repr(np.asarray(self))
 
 
+class BatchFutureArray:
+    def __init__(self, basetype, batch_promise):
+        self.basetype = basetype
+        self.promise = batch_promise
+        self._pending_slice = None
+
+    def __getitem__(self, index):
+        self._pending_slice = index
+        if self.basetype.dataset and self.basetype.dataset.is_batch_mode():
+            self.basetype.dataset.register_for_batch(self.basetype)
+        return self
+
+    def _wait(self):
+        return self.promise.wait_for_result(self.basetype.id)
+
+    def __array__(self, dtype=None, copy=None):
+        result = np.asarray(self._wait())
+        if self._pending_slice is not None:
+            return np.asarray(result[self._pending_slice])
+        if dtype is not None:
+            result = result.astype(dtype, copy=False)
+        return result
+
+
+class BatchPromise:
+    def __init__(self):
+        self._event = threading.Event()
+        self._results = {}
+
+    def set_results(self, results):
+        self._results = results
+        self._event.set()
+
+    def wait_for_result(self, var_id):
+        self._event.wait()
+        return self._results[var_id]
+
+    def is_resolved(self):
+        return self._event.is_set()
+
+
 class BaseType(DapType):
     """A thin wrapper over Numpy arrays."""
 
@@ -324,6 +397,7 @@ class BaseType(DapType):
         self._shape = ()
         self._itemsize = None
         self._nbytes = None
+        self._is_registered_for_batch = False
 
     # def __repr__(self):
     #     return "<%s with data %s>" % (type(self).__name__, repr(self.data))
@@ -336,23 +410,26 @@ class BaseType(DapType):
             summary = repr(self._data)
         return f"<{type(self).__name__} with data {summary}>"
 
+    def __hash__(self):
+        return hash(self._id)
+
     @property
     def path(self):
         try:
-            return self.data.path
+            return self._data.path
         except AttributeError:
             return None
 
     @property
     def dtype(self):
         """Property that returns the data dtype."""
-        return self.data.dtype
+        return self._data.dtype
 
     @property
     def shape(self):
         """Property that returns the data shape."""
         try:
-            return self.data.shape
+            return self._data.shape
         except AttributeError:
             return self._shape
 
@@ -382,11 +459,14 @@ class BaseType(DapType):
 
     @property
     def itemsize(self):
-        return np.asarray([], dtype=self.data.dtype).itemsize
+        return np.asarray([], dtype=self._data.dtype).itemsize
 
     @property
     def nbytes(self):
         return self.itemsize * self.size
+
+    def is_remote_dapdata(self):
+        return type(self._data).__name__ == "BaseProxyDap4"
 
     def __copy__(self):
         """A lightweight copy of the variable.
@@ -395,31 +475,45 @@ class BaseType(DapType):
         dimensions, same name, and a view of the data.
 
         """
-        out = type(self)(self.name, self.data, self.dims[:], self.attributes.copy())
+        out = type(self)(self.name, self._data, self.dims[:], self.attributes.copy())
         out.id = self.id
         return out
 
     # Comparisons are passed to the data.
     def __eq__(self, other):
-        return self.data == other
+        return self._data == other
 
     def __ne__(self, other):
-        return self.data != other
+        return self._data != other
 
     def __ge__(self, other):
-        return self.data >= other
+        return self._data >= other
 
     def __le__(self, other):
-        return self.data <= other
+        return self._data <= other
 
     def __gt__(self, other):
-        return self.data > other
+        return self._data > other
 
     def __lt__(self, other):
-        return self.data < other
+        return self._data < other
 
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
+
+        if self.dataset and self.dataset.is_batch_mode():
+            # Batch mode: just remember the slice
+            out = type(self).__new__(type(self))
+            out.__dict__ = self.__dict__.copy()
+            out._pending_batch_slice = index
+            if hasattr(self, "_original_data_args"):
+                from pydap.handlers.dap import BaseProxyDap4
+
+                out._data = BaseProxyDap4(*self._original_data_args)
+            else:
+                out._data = self._data
+            return out
+
         out = copy.copy(self)
         data = self._get_data_index(index)
 
@@ -435,10 +529,10 @@ class BaseType(DapType):
             except Exception:
                 pass  # Leave as-is for types that don't support __array__
         out.data = data
-        if type(self.data).__name__ == "BaseProxyDap4":
-            if self.data.checksum:
+        if type(self._data).__name__ == "BaseProxyDap4":
+            if self._data.checksum:
                 # updates it if defined
-                out.attributes["_DAP4_Checksum_CRC32"] = self.data.checksum
+                out.attributes["_DAP4_Checksum_CRC32"] = self._data.checksum
             out.attributes.update({"Maps": self.Maps})
         return out
 
@@ -472,7 +566,18 @@ class BaseType(DapType):
         else:
             return self._get_data()[index]
 
+    def _is_data_loaded(self):
+        return isinstance(self._data, (np.ndarray, SelfClearingArray))
+
     def _get_data(self):
+        # Check if this is DAP4 remote data *and* batch mode is enabled
+        if (
+            self.dataset
+            and self.dataset.is_batch_mode()
+            and self.is_remote_dapdata()
+            and not self._is_data_loaded()
+        ):
+            return self._get_data_batched()
         return self._data
 
     def _set_data(self, data):
@@ -481,13 +586,47 @@ class BaseType(DapType):
         else:
             self._data = data
             if np.isscalar(data):
-                # Convert scalar data to
-                # numpy scalar, otherwise
-                # ``.dtype`` and ``.shape``
-                # methods will fail.
+                # Convert scalar data to numpy scalar, otherwise `.dtype` and
+                # `.shape` methods will fail.
                 self._data = np.array(data)
 
     data = property(_get_data, _set_data)
+
+    def _get_data_batched(self):
+        """Get data in batch mode."""
+        if self.dataset and not self._is_registered_for_batch:
+            self.dataset.register_for_batch(self)
+            self._is_registered_for_batch = True
+
+        future = BatchFutureArray(self, self._batch_promise)
+
+        return future
+
+    def build_ce(self):
+        if self.is_remote_dapdata() and hasattr(self._data, "ce") and self._data.ce:
+            return self._data.ce
+
+        if (
+            self.dataset
+            and self.dataset.is_batch_mode()
+            and hasattr(self, "_pending_batch_slice")
+        ):
+            self._data = self._data.__getitem__(
+                self._pending_batch_slice, build_only=True
+            )
+            del self._pending_batch_slice
+            return self._data.ce
+        return None
+
+    def is_dimension_var(self):
+        if not self.dataset:
+            return False
+        parent_path = "/".join(self.id.split("/")[:-1])
+        parent = self.dataset
+        if parent_path:
+            for part in parent_path.split("/"):
+                parent = parent[part]
+        return self.name in getattr(parent, "dimensions", [])
 
 
 class StructureType(DapType, Mapping):
@@ -500,6 +639,8 @@ class StructureType(DapType, Mapping):
         self._visible_keys = []
         self._dict = OrderedDict()
         self._children = OrderedDict()
+
+        self._current_batch_promise = None
 
     def __repr__(self):
         return "<%s with children %s>" % (
@@ -532,7 +673,19 @@ class StructureType(DapType, Mapping):
     def _getitem_string(self, key):
         """Assume that key is a string type"""
         try:
-            return self._dict[_quote(key)]
+            child = self._dict[_quote(key)]
+            if isinstance(child, BaseType):
+                if getattr(child, "dataset", None) and child.dataset.is_batch_mode():
+                    out = type(child).__new__(type(child))
+                    out.__dict__ = child.__dict__.copy()
+                    out._pending_batch_slice = None
+                    if hasattr(child, "_data") and child.is_remote_dapdata():
+                        out._data = child._data
+                    return out
+                else:
+                    return child
+            else:
+                return child
         except KeyError:
             splitted = key.split(".")
             if len(splitted) > 1:
@@ -704,6 +857,10 @@ class DatasetType(StructureType):
             )
         self._session = session
         self.dataset = self  # assign itself as the dataset
+        self._batch_mode = False
+        self._batch_timeout = 0.2
+        self._batch_registry = set()
+        self._batch_timer = None
 
     @property
     def session(self):
@@ -920,6 +1077,117 @@ class DatasetType(StructureType):
         Also: https://docs.opendap.org/index.php/DAP4:_Specification_Volume_1
         """
         return self.createDapType(StructureType, name, **attrs)
+
+    def _start_batch_timer(self):
+        if self._current_batch_promise is None:
+            self._current_batch_promise = BatchPromise()
+            # print("[Batch] New promise created:", id(self._current_batch_promise))
+
+        if not self._batch_timer:
+            promise_for_this_batch = self._current_batch_promise
+            self._batch_timer = threading.Timer(
+                self._batch_timeout,
+                lambda: self._resolve_batch(promise_for_this_batch),
+            )
+            self._batch_timer.start()
+
+    def enable_batch_mode(self, timeout=0.2):
+        """Turn on batching with specified timeout window in seconds."""
+        self._batch_mode = True
+        self._batch_timeout = timeout
+        self._batch_registry = set()
+        self._batch_timer = None
+        self._batch_results = {}
+        self._dap_url = None
+
+    def register_for_batch(self, var):
+        """Register a key for batch processing."""
+
+        # Remove this exact object (by identity, not equality)
+        self._batch_registry = {v for v in self._batch_registry if v.id != var.id}
+        self._batch_registry.add(var)
+
+        if not self._batch_timer:
+            # Start the timer if not already running
+            self._batch_timer = self._start_batch_timer()
+
+        var._batch_promise = self._current_batch_promise
+
+    def _resolve_batch(self, batch_promise):
+        from pydap.handlers.dap import UNPACKDAP4DATA
+
+        # print(f"[Batch] Resolving promise: {id(batch_promise)}")
+        variables = [
+            var
+            for var in self._batch_registry
+            if getattr(var, "_pending_batch_slice", None) is not None
+            and not var._is_data_loaded()
+        ]
+
+        if not variables:
+            self._batch_timer = None
+            return
+
+        constraint_expressions = [
+            _quote(var.build_ce().split("=")[-1])
+            for var in variables
+            if var.build_ce() is not None
+        ]
+
+        if not constraint_expressions:
+            self._batch_registry.clear()
+            self._batch_timer = None
+            # self._current_batch_promise = None
+            return
+
+        base_url = variables[0]._data.baseurl if variables[0]._data else None
+
+        # Build the single dap4.ce query parameter
+        ce_string = "?dap4.ce=" + ";".join(constraint_expressions)
+        _dap_url = base_url + ".dap" + ce_string
+        _dap_url += "&dap4.checksum=true"
+
+        # print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}")
+
+        r = GET(_dap_url, get_kwargs={"stream": True}, session=self._session)
+
+        parsed_dataset = UNPACKDAP4DATA(r, checksum=True, user_charset="ascii").dataset
+
+        # Collect results
+        results_dict = {}
+        for var in variables:
+            results_dict[var.id] = np.asarray(parsed_dataset[var.id].data[:])
+            var._pending_batch_slice = None
+            var._is_registered_for_batch = False
+            self._batch_registry.discard(var)
+            var._batch_promise = None
+
+        # Resolve the promise for all waiting arrays
+        batch_promise.set_results(results_dict)
+
+        # Clean up
+        self._batch_registry.clear()
+        self._batch_timer = None
+        self._current_batch_promise = None
+
+        return None
+
+    def disable_batch_mode(self):
+        """Turn off batching completely."""
+        self._batch_mode = False
+        self._batch_registry = set()
+        self._batch_timer = None
+        self._batch_results = {}
+
+    def is_batch_mode(self):
+        """Check if batching is currently enabled."""
+        return getattr(self, "_batch_mode", False)
+
+    def clear_batch_state(self):
+        """Clear any current batch registry and results without disabling mode."""
+        self._batch_registry = set()
+        self._batch_timer = None
+        self._batch_results = {}
 
 
 class SequenceType(StructureType):

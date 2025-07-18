@@ -776,7 +776,16 @@ def test_set_dataset():
 
     ds.assign_dataset_recursive(ds)
 
-    assert ds.dataset.id == "root"
-    assert ds["Group1"].dataset.id == "root"
-    assert ds["Group1/subGroup2"].dataset.id == "root"
-    assert ds["Group1/subGroup2/var"].dataset.id == "root"
+    assert ds.dataset.id == "/"
+    assert ds["Group1"].dataset.id == "/"
+    assert ds["Group1/subGroup2"].dataset.id == "/"
+    assert ds["Group1/subGroup2/var"].dataset.id == "/"
+
+
+def test_enable_batch_mode():
+    """Test that batch mode can be enabled."""
+    ds = DatasetType("root")
+    ds.enable_batch_mode()
+    assert ds.is_batch_mode() is True
+    ds.disable_batch_mode()
+    assert ds.is_batch_mode() is False
