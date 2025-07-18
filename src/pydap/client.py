@@ -156,7 +156,9 @@ def open_url(
     )
     dataset = handler.dataset
     dataset._session = session
-
+    if handler.protocol == "dap4" and application is None:
+        # always enable batch mode for dap4 datasets
+        dataset.enable_batch_mode()
     # attach server-side functions
     dataset.functions = Functions(url, application, session, timeout=timeout)
 

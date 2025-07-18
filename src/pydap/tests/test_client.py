@@ -58,7 +58,9 @@ def test_open_url_dap4(remote_url):
     # test single data point
     constrain1 = "dap4.ce=/s33[0][0]"
     data_dap4 = open_url(base_url + "?" + constrain1)
-    assert data_dap4["s33"][:].data == data_original["s33"][0, 0].data
+    assert np.asarray(data_dap4["s33"][:].data) == np.asarray(
+        data_original["s33"][0, 0].data
+    )
 
     # subset of vars by indexes
     var1 = "/s33[0:1:2][0:1:2];"
@@ -77,7 +79,7 @@ def test_open_url_dap4_shape():
     filename = "netcdf/examples/200803061600_HFRadar_USEGC_6km_rtv_SIO.nc"
     CE = "?dap4.ce=/lon[100:1:199]"
     ds_ce = open_url(url + filename + CE)
-    data = ds_ce["lon"][:].data
+    data = np.asarray(ds_ce["lon"][:].data)
     assert data.shape == (100,)
 
 
@@ -570,7 +572,7 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
         # Without `concat_dim` set, only one dap response is downloaded per URL.
         assert len(cached_session.cache.urls()) == N_dmr_urls + len(dims)
     else:
-        # concat dim is set. Must download N dap responses for the concat_dim.        
+        # concat dim is set. Must download N dap responses for the concat_dim.
         N_concat_dims = len(urls)  # see below !
         if pyds.dimensions[concat_dim] > 1:
             N_concat_dims = 1  # only one dap response of the concat dim is downloaded!
