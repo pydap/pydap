@@ -156,7 +156,9 @@ def open_url(
     )
     dataset = handler.dataset
     dataset._session = session
-
+    if handler.protocol == "dap4" and application is None:
+        # always enable batch mode for dap4 datasets
+        dataset.enable_batch_mode()
     # attach server-side functions
     dataset.functions = Functions(url, application, session, timeout=timeout)
 
@@ -232,6 +234,7 @@ def consolidate_metadata(
     ]
     pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
     if concat_dim and pyds.dimensions[concat_dim] > 1:
+        session.headers["concat_dim"] = concat_dim
         if not safe_mode:
             warnings.warn(
                 f"Length of dim `{concat_dim}` is greater than one, "

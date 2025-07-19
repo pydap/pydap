@@ -1103,6 +1103,15 @@ class DatasetType(StructureType):
     def register_for_batch(self, var):
         """Register a key for batch processing."""
 
+        # before registering, check if a variable needs to be ignored
+        concat_dim = self._session.headers.get("concat_dim", None)
+
+        if concat_dim:
+            # If concat_dim is set, we need to ignore this variable
+            var._pending_batch_slice = None
+            var._is_registered_for_batch = False
+            return
+
         # Remove this exact object (by identity, not equality)
         self._batch_registry = {v for v in self._batch_registry if v.id != var.id}
         self._batch_registry.add(var)
