@@ -314,7 +314,11 @@ def consolidate_metadata(
     named_dims = set.difference(dims, new_dims)
     dims = new_dims
 
-    constrains_dims = [dim + "%5B0:1:" + str(results[0].dimensions[dim] - 1) + "%5D" for dim in dims if dim!= concat_dim]
+    constrains_dims = [
+        dim + "%5B0:1:" + str(results[0].dimensions[dim] - 1) + "%5D"
+        for dim in dims
+        if dim != concat_dim
+    ]
     new_urls = [base_url + ".dap?dap4.ce=" + ";".join(constrains_dims)]
     new_urls.extend(concat_dim_urls)
     dim_ces = set(

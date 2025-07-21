@@ -501,7 +501,12 @@ class BaseType(DapType):
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
 
-        if self.dataset and self.dataset.is_batch_mode() and self.id != "/"+str(self.dataset._session.headers.get('concat_dim', None)):
+        if (
+            self.dataset
+            and self.dataset.is_batch_mode()
+            and self.id
+            != "/" + str(self.dataset._session.headers.get("concat_dim", None))
+        ):
             # Batch mode: just remember the slice
             out = type(self).__new__(type(self))
             out.__dict__ = self.__dict__.copy()
@@ -1108,7 +1113,7 @@ class DatasetType(StructureType):
         # before registering, check if a variable needs to be ignored
         # concat_dim = self._session.headers.get("concat_dim", None)
         # print("[registering for batch]", var.id)
-        
+
         # if concat_dim:
         #     # If concat_dim is set, we need to ignore this variable
         #     var._pending_batch_slice = None
@@ -1119,7 +1124,7 @@ class DatasetType(StructureType):
         self._batch_registry = {v for v in self._batch_registry if v.id != var.id}
         self._batch_registry.add(var)
         var._is_registered_for_batch = True
-        
+
         if not self._batch_timer:
             # Start the timer if not already running
             self._batch_timer = self._start_batch_timer()
