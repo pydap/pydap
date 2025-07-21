@@ -501,11 +501,12 @@ class BaseType(DapType):
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
 
-        if self.dataset and self.dataset.is_batch_mode():
+        if self.dataset and self.dataset.is_batch_mode() and self.id != "/"+str(self.dataset._session.headers.get('concat_dim', None)):
             # Batch mode: just remember the slice
             out = type(self).__new__(type(self))
             out.__dict__ = self.__dict__.copy()
             out._pending_batch_slice = index
+            out._is_registered_for_batch = True
             if hasattr(self, "_original_data_args"):
                 from pydap.handlers.dap import BaseProxyDap4
 
@@ -575,6 +576,7 @@ class BaseType(DapType):
             self.dataset
             and self.dataset.is_batch_mode()
             and self.is_remote_dapdata()
+            and self._is_registered_for_batch
             and not self._is_data_loaded()
         ):
             return self._get_data_batched()
@@ -594,7 +596,7 @@ class BaseType(DapType):
 
     def _get_data_batched(self):
         """Get data in batch mode."""
-        if self.dataset and not self._is_registered_for_batch:
+        if self.dataset and self._is_registered_for_batch:
             self.dataset.register_for_batch(self)
             self._is_registered_for_batch = True
 
@@ -1104,18 +1106,20 @@ class DatasetType(StructureType):
         """Register a key for batch processing."""
 
         # before registering, check if a variable needs to be ignored
-        concat_dim = self._session.headers.get("concat_dim", None)
-
-        if concat_dim:
-            # If concat_dim is set, we need to ignore this variable
-            var._pending_batch_slice = None
-            var._is_registered_for_batch = False
-            return
+        # concat_dim = self._session.headers.get("concat_dim", None)
+        # print("[registering for batch]", var.id)
+        
+        # if concat_dim:
+        #     # If concat_dim is set, we need to ignore this variable
+        #     var._pending_batch_slice = None
+        #     var._is_registered_for_batch = False
+        #     return
 
         # Remove this exact object (by identity, not equality)
         self._batch_registry = {v for v in self._batch_registry if v.id != var.id}
         self._batch_registry.add(var)
-
+        var._is_registered_for_batch = True
+        
         if not self._batch_timer:
             # Start the timer if not already running
             self._batch_timer = self._start_batch_timer()
@@ -1146,7 +1150,6 @@ class DatasetType(StructureType):
         if not constraint_expressions:
             self._batch_registry.clear()
             self._batch_timer = None
-            # self._current_batch_promise = None
             return
 
         base_url = variables[0]._data.baseurl if variables[0]._data else None
@@ -1156,7 +1159,7 @@ class DatasetType(StructureType):
         _dap_url = base_url + ".dap" + ce_string
         _dap_url += "&dap4.checksum=true"
 
-        # print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}")
+        print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}")
 
         r = GET(_dap_url, get_kwargs={"stream": True}, session=self._session)
 
