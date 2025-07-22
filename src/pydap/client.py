@@ -272,7 +272,6 @@ def consolidate_metadata(
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     dims = set(list(results[0].dimensions))
-    print(dims)
     add_dims = set()
     if concat_dim is not None and set([concat_dim]).issubset(dims):
         dims.remove(concat_dim)
@@ -319,7 +318,7 @@ def consolidate_metadata(
         for dim in dims
         if dim != concat_dim
     ]
-    new_urls = [base_url + ".dap?dap4.ce=" + ";".join(constrains_dims)]
+    new_urls = [base_url + ".dap?dap4.ce=" + ";".join(constrains_dims) + '&dap4.checksum=true']
     new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [

@@ -1164,7 +1164,7 @@ class DatasetType(StructureType):
         _dap_url = base_url + ".dap" + ce_string
         _dap_url += "&dap4.checksum=true"
 
-        print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}")
+        print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}\n")
 
         r = GET(_dap_url, get_kwargs={"stream": True}, session=self._session)
 
