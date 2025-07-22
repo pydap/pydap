@@ -561,14 +561,13 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
         urls, session=cached_session, safe_mode=True, concat_dim=concat_dim
     )
 
-
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)
 
     N_dmr_urls = len(urls)  # Since `safe_mode=False`, only 1 DMR is downloaded
 
     if not concat_dim:
-        assert cached_session.headers.get("concat_dim") == None
+        assert cached_session.headers.get("concat_dim") is None
         # Without `concat_dim` set, only one dap response is downloaded per URL.
         assert len(cached_session.cache.urls()) == N_dmr_urls + len(dims)
     else:

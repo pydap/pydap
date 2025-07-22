@@ -318,7 +318,9 @@ def consolidate_metadata(
         for dim in dims
         if dim != concat_dim
     ]
-    new_urls = [base_url + ".dap?dap4.ce=" + ";".join(constrains_dims) + '&dap4.checksum=true']
+    new_urls = [
+        base_url + ".dap?dap4.ce=" + ";".join(constrains_dims) + "&dap4.checksum=true"
+    ]
     new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [
