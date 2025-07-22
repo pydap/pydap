@@ -610,7 +610,7 @@ class BaseType(DapType):
         return future
 
     def build_ce(self):
-        if self.is_remote_dapdata() and hasattr(self._data, "ce") and self._data.ce:
+        if self.is_remote_dapdata() and hasattr(self._data, "ce") and self._data.ce and not hasattr(self, "_pending_batch_slice"):
             return self._data.ce
 
         if (
