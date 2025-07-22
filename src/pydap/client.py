@@ -156,7 +156,9 @@ def open_url(
     )
     dataset = handler.dataset
     dataset._session = session
-
+    if handler.protocol == "dap4" and application is None:
+        # always enable batch mode for dap4 datasets
+        dataset.enable_batch_mode()
     # attach server-side functions
     dataset.functions = Functions(url, application, session, timeout=timeout)
 
@@ -232,6 +234,9 @@ def consolidate_metadata(
     ]
     pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
     if concat_dim and pyds.dimensions[concat_dim] > 1:
+        if not concat_dim.startswith("/"):
+            named_concat_dim = "/" + concat_dim
+        session.headers["concat_dim"] = named_concat_dim
         if not safe_mode:
             warnings.warn(
                 f"Length of dim `{concat_dim}` is greater than one, "
@@ -266,7 +271,7 @@ def consolidate_metadata(
             _ = download_all_urls(Session, dmr_urls, ncores=ncores)
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
-    dims = set(list(results[0].dimensions.keys()))
+    dims = set(list(results[0].dimensions))
     add_dims = set()
     if concat_dim is not None and set([concat_dim]).issubset(dims):
         dims.remove(concat_dim)
@@ -308,14 +313,13 @@ def consolidate_metadata(
     named_dims = set.difference(dims, new_dims)
     dims = new_dims
 
+    constrains_dims = [
+        dim + "%5B0:1:" + str(results[0].dimensions[dim] - 1) + "%5D"
+        for dim in dims
+        if dim != concat_dim
+    ]
     new_urls = [
-        base_url
-        + ".dap?dap4.ce="
-        + dim
-        + "%5B0:1:"
-        + str(results[0].dimensions[dim] - 1)
-        + "%5D"
-        for dim in list(dims)
+        base_url + ".dap?dap4.ce=" + ";".join(constrains_dims) + "&dap4.checksum=true"
     ]
     new_urls.extend(concat_dim_urls)
     dim_ces = set(

@@ -58,7 +58,9 @@ def test_open_url_dap4(remote_url):
     # test single data point
     constrain1 = "dap4.ce=/s33[0][0]"
     data_dap4 = open_url(base_url + "?" + constrain1)
-    assert data_dap4["s33"][:].data == data_original["s33"][0, 0].data
+    assert np.asarray(data_dap4["s33"][:].data) == np.asarray(
+        data_original["s33"][0, 0].data
+    )
 
     # subset of vars by indexes
     var1 = "/s33[0:1:2][0:1:2];"
@@ -77,7 +79,7 @@ def test_open_url_dap4_shape():
     filename = "netcdf/examples/200803061600_HFRadar_USEGC_6km_rtv_SIO.nc"
     CE = "?dap4.ce=/lon[100:1:199]"
     ds_ce = open_url(url + filename + CE)
-    data = ds_ce["lon"][:].data
+    data = np.asarray(ds_ce["lon"][:].data)
     assert data.shape == (100,)
 
 
@@ -441,6 +443,9 @@ ce1 = "?dap4.ce=/i;/j;/l;/bears"
 ce2 = "?dap4.ce=/i;/j;/l;/order"
 
 
+@pytest.mark.skipif(
+    os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
+)
 @pytest.mark.parametrize(
     "urls",
     [
@@ -525,6 +530,9 @@ def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
         assert len(cached_session.cache.urls()) == len(urls) + len(dims)
 
 
+@pytest.mark.skipif(
+    os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
+)
 @pytest.mark.parametrize(
     "urls",
     [
@@ -558,15 +566,18 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
     consolidate_metadata(
         urls, session=cached_session, safe_mode=True, concat_dim=concat_dim
     )
+
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)
 
     N_dmr_urls = len(urls)  # Since `safe_mode=False`, only 1 DMR is downloaded
 
     if not concat_dim:
+        assert cached_session.headers.get("concat_dim") is None
         # Without `concat_dim` set, only one dap response is downloaded per URL.
         assert len(cached_session.cache.urls()) == N_dmr_urls + len(dims)
     else:
+        cached_session.headers.get("concat_dim") == "/" + concat_dim
         # concat dim is set. Must download N dap responses for the concat_dim.
         N_concat_dims = len(urls)  # see below !
         if pyds.dimensions[concat_dim] > 1:
