@@ -442,6 +442,7 @@ def test_warning_nondap4urls_consolidate_metadata(urls, cached_session):
 ce1 = "?dap4.ce=/i;/j;/l;/bears"
 ce2 = "?dap4.ce=/i;/j;/l;/order"
 
+
 @pytest.mark.skipif(
     os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
 )
@@ -527,6 +528,7 @@ def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
         # caches all DMRs and caches the dap responses of the dimensions
         # of the first URL
         assert len(cached_session.cache.urls()) == len(urls) + len(dims)
+
 
 @pytest.mark.skipif(
     os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
