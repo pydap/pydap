@@ -289,8 +289,6 @@ def consolidate_metadata(
             + "&dap4.checksum=true"
             for i, url in enumerate(URLs)
         ]
-
-        print(concat_dim_urls)
         if results[0].dimensions[concat_dim] > 1:
             _size = results[0].dimensions[concat_dim] - 1
             index_slices = ["%5B0:1:0%5D", f"%5B{_size}:1:{_size}%5D"]
