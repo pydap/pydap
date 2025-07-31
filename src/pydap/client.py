@@ -160,7 +160,7 @@ def open_url(
     )
     dataset = handler.dataset
     dataset._session = session
-    if handler.protocol == "dap4" and batch and application is None:
+    if handler.protocol == "dap4" and application is None: # and batch 
         # always enable batch mode for dap4 datasets
         dataset.enable_batch_mode()
     # attach server-side functions
@@ -285,9 +285,11 @@ def consolidate_metadata(
             + concat_dim
             + "%5B0:1:"
             + str(results[0].dimensions[concat_dim] - 1)
-            + "%5D"
+            + "%5D"+"&dap4.checksum=true"
             for i, url in enumerate(URLs)
         ]
+        
+        print(concat_dim_urls)
         if results[0].dimensions[concat_dim] > 1:
             _size = results[0].dimensions[concat_dim] - 1
             index_slices = ["%5B0:1:0%5D", f"%5B{_size}:1:{_size}%5D"]
