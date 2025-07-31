@@ -1156,9 +1156,7 @@ class DatasetType(StructureType):
         ce_string = "?dap4.ce=" + ";".join(constraint_expressions)
         _dap_url = base_url + ".dap" + ce_string
         _dap_url += "&dap4.checksum=true"
-
-        print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}\n")
-
+        # print("dap url:", _dap_url)
         r = GET(_dap_url, get_kwargs={"stream": True}, session=self._session)
 
         parsed_dataset = UNPACKDAP4DATA(r, checksum=True, user_charset="ascii").dataset
@@ -1178,7 +1176,8 @@ class DatasetType(StructureType):
         # Clean up
         self._batch_registry.clear()
         self._batch_timer = None
-        self._current_batch_promise = None
+        # print(f"Delayed batch promise {id(self._current_batch_promise)}\n")
+        # self._current_batch_promise = None
 
         return None
 
