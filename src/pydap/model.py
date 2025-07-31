@@ -1154,7 +1154,7 @@ class DatasetType(StructureType):
         base_url = variables[0]._data.baseurl if variables[0]._data else None
 
         # Build the single dap4.ce query parameter
-        ce_string = "?dap4.ce=" + ";".join(constraint_expressions)
+        ce_string = "?dap4.ce=" + ";".join(sorted(constraint_expressions))
         _dap_url = base_url + ".dap" + ce_string
         _dap_url += "&dap4.checksum=true"
         # print("dap url:", _dap_url)
