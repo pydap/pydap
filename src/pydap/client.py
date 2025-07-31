@@ -289,26 +289,6 @@ def consolidate_metadata(
             + "&dap4.checksum=true"
             for i, url in enumerate(URLs)
         ]
-        if results[0].dimensions[concat_dim] > 1:
-            _size = results[0].dimensions[concat_dim] - 1
-            index_slices = ["%5B0:1:0%5D", f"%5B{_size}:1:{_size}%5D"]
-            concat_dim_urls += [
-                url.split("?")[0] + ".dap?dap4.ce=" + concat_dim + index
-                for url in URLs
-                for index in index_slices
-            ]
-            add_dims = set(
-                [
-                    concat_dim + "[0:1:0]",
-                    concat_dim
-                    + "["
-                    + str(results[0].dimensions[concat_dim] - 1)
-                    + ":1:"
-                    + str(results[0].dimensions[concat_dim] - 1)
-                    + "]",
-                ]
-            )
-            dims.update([concat_dim])
     else:
         concat_dim_urls = []
 
@@ -316,7 +296,7 @@ def consolidate_metadata(
     var_names = list(pyds.variables())
     new_dims = set.intersection(dims, var_names)
     named_dims = set.difference(dims, new_dims)
-    dims = new_dims
+    dims = sorted(list(new_dims))
 
     constrains_dims = [
         dim + "%5B0:1:" + str(results[0].dimensions[dim] - 1) + "%5D"

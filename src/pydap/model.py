@@ -869,6 +869,7 @@ class DatasetType(StructureType):
             )
         self._session = session
         self.dataset = self  # assign itself as the dataset
+        self.parent = self  # no parent
         self._batch_mode = False
         self._batch_timeout = 0.2
         self._batch_registry = set()
