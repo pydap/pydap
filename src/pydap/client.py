@@ -121,6 +121,9 @@ def open_url(
         is 'dap4'. If the URL ends with '.dods', the protocol is 'dap2'. Another
         option to specify the protocol is to use replace the url scheme (http, https)
         with 'dap2' or 'dap4'.
+    batch: bool (Default: True)
+        Flag that indicates download multiple arrays with single dap response. Not true
+        before.
     use_cache : bool (Default: False)
         Whether to use the cache or not in the requests.
     session_kwargs: dict | None
@@ -158,7 +161,6 @@ def open_url(
     dataset = handler.dataset
     dataset._session = session
     if handler.protocol == "dap4" and batch and application is None:
-        print('batch mode!')
         # always enable batch mode for dap4 datasets
         dataset.enable_batch_mode()
     # attach server-side functions
