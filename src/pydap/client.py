@@ -236,16 +236,7 @@ def consolidate_metadata(
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
-    pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
-    if concat_dim and pyds.dimensions[concat_dim] > 1:
-        if not safe_mode:
-            warnings.warn(
-                f"Length of dim `{concat_dim}` is greater than one, "
-                "reverting to `safe_mode=True`.",
-                UserWarning,
-                stacklevel=3,
-            )
-            safe_mode = True
+
     if safe_mode:
         with session as Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
@@ -293,6 +284,7 @@ def consolidate_metadata(
         concat_dim_urls = []
 
     # check for named dimensions
+    pyds = open_url(dmr_urls[0], session=session, protocol="dap4", batch=False)
     var_names = list(pyds.variables())
     new_dims = set.intersection(dims, var_names)
     named_dims = set.difference(dims, new_dims)
@@ -303,9 +295,11 @@ def consolidate_metadata(
         for dim in dims
         if dim != concat_dim
     ]
+
     new_urls = [
         base_url + ".dap?dap4.ce=" + ";".join(constrains_dims) + "&dap4.checksum=true"
     ]
+    session.headers["consolidated"] = new_urls[0]
     new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [
