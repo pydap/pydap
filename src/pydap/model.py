@@ -180,7 +180,7 @@ import numpy as np
 import requests
 import requests_cache
 
-from pydap.lib import _quote, decode_np_strings, tree, walk
+from pydap.lib import BatchPromise, _quote, decode_np_strings, tree, walk
 from pydap.net import GET
 
 __all__ = [
@@ -366,23 +366,6 @@ class BatchFutureArray:
         return result
 
 
-class BatchPromise:
-    def __init__(self):
-        self._event = threading.Event()
-        self._results = {}
-
-    def set_results(self, results):
-        self._results = results
-        self._event.set()
-
-    def wait_for_result(self, var_id):
-        self._event.wait()
-        return self._results[var_id]
-
-    def is_resolved(self):
-        return self._event.is_set()
-
-
 class BaseType(DapType):
     """A thin wrapper over Numpy arrays."""
 
@@ -501,11 +484,17 @@ class BaseType(DapType):
     # Implement the sequence and iter protocols.
     def __getitem__(self, index):
 
-        if self.dataset and self.dataset.is_batch_mode():
+        if (
+            self.dataset
+            and self.dataset.is_batch_mode()
+            and self.id
+            != "/" + str(self.dataset._session.headers.get("concat_dim", None))
+        ):
             # Batch mode: just remember the slice
             out = type(self).__new__(type(self))
             out.__dict__ = self.__dict__.copy()
             out._pending_batch_slice = index
+            out._is_registered_for_batch = True
             if hasattr(self, "_original_data_args"):
                 from pydap.handlers.dap import BaseProxyDap4
 
@@ -575,6 +564,7 @@ class BaseType(DapType):
             self.dataset
             and self.dataset.is_batch_mode()
             and self.is_remote_dapdata()
+            and self._is_registered_for_batch
             and not self._is_data_loaded()
         ):
             return self._get_data_batched()
@@ -594,7 +584,7 @@ class BaseType(DapType):
 
     def _get_data_batched(self):
         """Get data in batch mode."""
-        if self.dataset and not self._is_registered_for_batch:
+        if self.dataset and self._is_registered_for_batch:
             self.dataset.register_for_batch(self)
             self._is_registered_for_batch = True
 
@@ -603,7 +593,12 @@ class BaseType(DapType):
         return future
 
     def build_ce(self):
-        if self.is_remote_dapdata() and hasattr(self._data, "ce") and self._data.ce:
+        if (
+            self.is_remote_dapdata()
+            and hasattr(self._data, "ce")
+            and self._data.ce
+            and not hasattr(self, "_pending_batch_slice")
+        ):
             return self._data.ce
 
         if (
@@ -857,6 +852,7 @@ class DatasetType(StructureType):
             )
         self._session = session
         self.dataset = self  # assign itself as the dataset
+        self.parent = self  # no parent
         self._batch_mode = False
         self._batch_timeout = 0.2
         self._batch_registry = set()
@@ -1102,10 +1098,9 @@ class DatasetType(StructureType):
 
     def register_for_batch(self, var):
         """Register a key for batch processing."""
-
-        # Remove this exact object (by identity, not equality)
         self._batch_registry = {v for v in self._batch_registry if v.id != var.id}
         self._batch_registry.add(var)
+        var._is_registered_for_batch = True
 
         if not self._batch_timer:
             # Start the timer if not already running
@@ -1137,18 +1132,15 @@ class DatasetType(StructureType):
         if not constraint_expressions:
             self._batch_registry.clear()
             self._batch_timer = None
-            # self._current_batch_promise = None
             return
 
         base_url = variables[0]._data.baseurl if variables[0]._data else None
 
         # Build the single dap4.ce query parameter
-        ce_string = "?dap4.ce=" + ";".join(constraint_expressions)
+        ce_string = "?dap4.ce=" + ";".join(sorted(constraint_expressions))
         _dap_url = base_url + ".dap" + ce_string
         _dap_url += "&dap4.checksum=true"
-
-        # print(f"[Batch] Fetching: {_dap_url} for batch promise {id(batch_promise)}")
-
+        # print("dap url:", _dap_url)
         r = GET(_dap_url, get_kwargs={"stream": True}, session=self._session)
 
         parsed_dataset = UNPACKDAP4DATA(r, checksum=True, user_charset="ascii").dataset
@@ -1168,7 +1160,8 @@ class DatasetType(StructureType):
         # Clean up
         self._batch_registry.clear()
         self._batch_timer = None
-        self._current_batch_promise = None
+        # print(f"Delayed batch promise {id(self._current_batch_promise)}\n")
+        # self._current_batch_promise = None
 
         return None
 

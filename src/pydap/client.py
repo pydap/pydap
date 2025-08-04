@@ -86,6 +86,7 @@ def open_url(
     checksum=False,
     user_charset="ascii",
     protocol=None,
+    batch=False,
     use_cache=False,
     session_kwargs=None,
     cache_kwargs=None,
@@ -120,6 +121,9 @@ def open_url(
         is 'dap4'. If the URL ends with '.dods', the protocol is 'dap2'. Another
         option to specify the protocol is to use replace the url scheme (http, https)
         with 'dap2' or 'dap4'.
+    batch: bool (Default: False)
+        Flag that indicates download multiple arrays with single dap response. Only
+        compatible with DAP4 protocol.
     use_cache : bool (Default: False)
         Whether to use the cache or not in the requests.
     session_kwargs: dict | None
@@ -156,7 +160,9 @@ def open_url(
     )
     dataset = handler.dataset
     dataset._session = session
-
+    if handler.protocol == "dap4" and application is None and batch:  # and batch
+        # always enable batch mode for dap4 datasets
+        dataset.enable_batch_mode()
     # attach server-side functions
     dataset.functions = Functions(url, application, session, timeout=timeout)
 
@@ -230,16 +236,7 @@ def consolidate_metadata(
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
-    pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
-    if concat_dim and pyds.dimensions[concat_dim] > 1:
-        if not safe_mode:
-            warnings.warn(
-                f"Length of dim `{concat_dim}` is greater than one, "
-                "reverting to `safe_mode=True`.",
-                UserWarning,
-                stacklevel=3,
-            )
-            safe_mode = True
+
     if safe_mode:
         with session as Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
@@ -266,9 +263,12 @@ def consolidate_metadata(
             _ = download_all_urls(Session, dmr_urls, ncores=ncores)
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
-    dims = set(list(results[0].dimensions.keys()))
+    dims = set(list(results[0].dimensions))
     add_dims = set()
     if concat_dim is not None and set([concat_dim]).issubset(dims):
+        if not concat_dim.startswith("/"):
+            named_concat_dim = "/" + concat_dim
+            session.headers["concat_dim"] = named_concat_dim
         dims.remove(concat_dim)
         concat_dim_urls = [
             url.split("?")[0]
@@ -277,46 +277,29 @@ def consolidate_metadata(
             + "%5B0:1:"
             + str(results[0].dimensions[concat_dim] - 1)
             + "%5D"
+            + "&dap4.checksum=true"
             for i, url in enumerate(URLs)
         ]
-        if results[0].dimensions[concat_dim] > 1:
-            _size = results[0].dimensions[concat_dim] - 1
-            index_slices = ["%5B0:1:0%5D", f"%5B{_size}:1:{_size}%5D"]
-            concat_dim_urls += [
-                url.split("?")[0] + ".dap?dap4.ce=" + concat_dim + index
-                for url in URLs
-                for index in index_slices
-            ]
-            add_dims = set(
-                [
-                    concat_dim + "[0:1:0]",
-                    concat_dim
-                    + "["
-                    + str(results[0].dimensions[concat_dim] - 1)
-                    + ":1:"
-                    + str(results[0].dimensions[concat_dim] - 1)
-                    + "]",
-                ]
-            )
-            dims.update([concat_dim])
     else:
         concat_dim_urls = []
 
     # check for named dimensions
+    pyds = open_url(dmr_urls[0], session=session, protocol="dap4", batch=False)
     var_names = list(pyds.variables())
     new_dims = set.intersection(dims, var_names)
     named_dims = set.difference(dims, new_dims)
-    dims = new_dims
+    dims = sorted(list(new_dims))
+
+    constrains_dims = [
+        dim + "%5B0:1:" + str(results[0].dimensions[dim] - 1) + "%5D"
+        for dim in dims
+        if dim != concat_dim
+    ]
 
     new_urls = [
-        base_url
-        + ".dap?dap4.ce="
-        + dim
-        + "%5B0:1:"
-        + str(results[0].dimensions[dim] - 1)
-        + "%5D"
-        for dim in list(dims)
+        base_url + ".dap?dap4.ce=" + ";".join(constrains_dims) + "&dap4.checksum=true"
     ]
+    session.headers["consolidated"] = new_urls[0]
     new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [

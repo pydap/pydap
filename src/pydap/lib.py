@@ -1,6 +1,7 @@
 """Basic functions related to the DAP spec."""
 
 import operator
+import threading
 from functools import reduce
 from itertools import zip_longest
 from sys import maxsize as MAXSIZE
@@ -365,6 +366,187 @@ def decode_np_strings(numpy_var):
         return numpy_var.decode("utf-8")
     else:
         return numpy_var
+
+
+def register_all_for_batch(ds, dims, concat_dim=None):
+    """
+    Used to register all dimension array when pydap
+    dataset has been initialized with batch=True.
+
+    Parameters:
+    ----------
+        ds: pydap dataset
+            Must be DAP4, and remote data.
+        dims: list
+            List of dimensions in `ds` that will be processed
+        concat_dim: str | None (default)
+            name of concatenating dimension (e.g. `time`). If not `None`
+            this dimension will NOT be processed together with the other
+            dimensions
+
+    Returns:
+        BatchPromise object
+            all arrays get `registered` to be downloaded together within
+            single dap response
+    """
+    promise = ds._current_batch_promise = BatchPromise()
+    for name in dims:
+        if name in ds.keys():
+            var = ds[name]
+            if not var._is_data_loaded() and var.id != concat_dim:
+                var._pending_batch_slice = slice(None)
+                ds.register_for_batch(var)
+                var._is_registered_for_batch = True
+    ds._start_batch_timer()
+    return promise
+
+
+def fetch_batched_dimensions(ds, dims, concat_dim=None, cache=None):
+    """
+
+    Helper function that fetched dimensions within a pydap dataset
+    or Group, that have been registered for batched download. Only compatible
+    with DAP4 protocol, and batch=True parameter when intializating the
+    pydap dataset.
+
+    Parameters:
+    ----------
+        ds: pydap dataset or Group (dap4)
+        dims: list
+            dimensions within the ds or Group.
+        concat_dim: str | None
+            name of the dimension that is being concatenated
+            This will be processed separately from other non-concat dims
+        cache: bool (False is default)
+            dictionary that stores the name of the dimension and its value
+
+
+    Returns:
+        dict:
+            containing all dimension array data
+    """
+
+    if cache is None:
+        cache = {}
+
+    promise = ds._current_batch_promise
+    promise._event.wait()
+
+    if concat_dim is not None:
+        concat_dim = concat_dim.split("/")[-1]
+
+    for name in dims:
+        if name in ds.keys() and name != concat_dim:
+            data = promise.wait_for_result(ds[name].id)
+            cache[name] = np.asarray(data)
+
+    if concat_dim:
+        var = ds[concat_dim]
+        concat_promise = ds._current_batch_promise = BatchPromise()
+        var._pending_batch_slice = slice(None)
+        ds.register_for_batch(var)
+        ds._start_batch_timer()
+        concat_promise._event.wait()
+        data = concat_promise.wait_for_result(var.id)
+        cache[concat_dim] = np.asarray(data)
+
+    ds._current_batch_promise = None
+    return cache
+
+
+def fetch_consolidated_dimensions(var, cache, concat_dim=None, checksum=True):
+    """
+    Helper function that makes it easier to process previously download
+    dap responses of dimension data, i.e. after `consolidated_metadata`
+    is executed. This helper processes dimension array data that was
+    downloaded / batched together in a single dap response.
+    when the urls for the dap responses are cached.
+
+    This function needs to be run after executing `consolidated_metadata` since
+    in that function, the cache_session object contains special metadata in its
+    headers. It also requires that the pydap dataset associated with the BaseType
+    `var`, is in Batch=True mode.
+
+    Parameters:
+    ----------
+        var: BaseType (DAP4)
+            Must belong to a pydap dataset with batch=True, and pointing to remote
+            data so that `var.dataset` returs the parent dataset object.
+        cache: dict
+            Where dimension array data will be stored.
+        concat_dim: str | None
+            If not None, it defined the concatenated dimension, which is not batched
+            with the rest of the dimensions and therefore needs to be processed
+            differently
+        checksum: bool (Default=True)
+            whether the dap response was requested with checksum=true. If true,
+            there is a checksum value inbetween each variable within the dap
+            response. when `checksum=False`, the dap response was created without the
+            checksum per variable. Important info for decoding
+
+    Returns:
+        cache: dict
+            contains the dimension array data decoded into numpy arrays.
+
+    """
+
+    import pydap
+
+    sess = var.dataset.session
+    if concat_dim:
+        if concat_dim[0] == "/":
+            concat_dim = concat_dim[1:]
+        all_urls = sess.cache.urls()
+        data_url = var.data.baseurl + ".dap"
+        cdim_url = next(
+            url
+            for url in all_urls
+            if url.split("?")[0] == data_url and concat_dim in url.split("?dap4.ce=")[1]
+        )
+        r = sess.get(cdim_url)
+        cpyds = pydap.handlers.dap.UNPACKDAP4DATA(r).dataset
+        cache[concat_dim] = np.asarray(cpyds[concat_dim].data)
+
+    dims_url = sess.headers["consolidated"]
+    r = sess.get(dims_url)
+    pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=checksum).dataset
+    for name in pyds.keys():
+        cache[name] = np.asarray(pyds[name].data)
+    return cache
+
+
+def resolve_batch_for_all_variables(dataset, parent, key):
+    """
+    Resolves a batch promise for all non-dimension variables within the
+    parent container.
+    """
+    dataset._current_batch_promise = BatchPromise()
+
+    for name in list(parent.variables()):
+        var = parent[name]
+        if var.name not in parent.dimensions and not var._is_data_loaded():
+            var._pending_batch_slice = key
+            var._batch_promise = dataset._current_batch_promise
+            dataset.register_for_batch(var)
+
+    dataset._start_batch_timer()
+
+
+class BatchPromise:
+    def __init__(self):
+        self._event = threading.Event()
+        self._results = {}
+
+    def set_results(self, results):
+        self._results = results
+        self._event.set()
+
+    def wait_for_result(self, var_id):
+        self._event.wait()
+        return self._results[var_id]
+
+    def is_resolved(self):
+        return self._event.is_set()
 
 
 class StreamReader(object):
