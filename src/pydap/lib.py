@@ -13,11 +13,6 @@ from requests.utils import unquote as unquote_
 from . import __version__
 from .exceptions import ConstraintExpressionError
 
-# from pydap.model import BatchPromise
-
-# from pydap.handlers.dap import UNPACKDAP4DATA
-
-
 __dap__ = "2.15"
 
 # when installed in --editable mode, the `__version__` can be a very long str
@@ -439,6 +434,23 @@ def fetch_consolidated_dimensions(var, cache, concat_dim=None):
     for name in pyds.keys():
         cache[name] = np.asarray(pyds[name].data)
     return cache
+
+
+def resolve_batch_for_all_variables(dataset, parent, key):
+    """
+    Resolves a batch promise for all non-dimension variables within the
+    parent container.
+    """
+    dataset._current_batch_promise = BatchPromise()
+
+    for name in list(parent.variables()):
+        var = parent[name]
+        if var.name not in parent.dimensions and not var._is_data_loaded():
+            var._pending_batch_slice = key
+            var._batch_promise = dataset._current_batch_promise
+            dataset.register_for_batch(var)
+
+    dataset._start_batch_timer()
 
 
 class BatchPromise:
