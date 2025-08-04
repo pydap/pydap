@@ -369,6 +369,26 @@ def decode_np_strings(numpy_var):
 
 
 def register_all_for_batch(ds, dims, concat_dim=None):
+    """
+    Used to register all dimension array when pydap
+    dataset has been initialized with batch=True.
+
+    Parameters:
+    ----------
+        ds: pydap dataset
+            Must be DAP4, and remote data.
+        dims: list
+            List of dimensions in `ds` that will be processed
+        concat_dim: str | None (default)
+            name of concatenating dimension (e.g. `time`). If not `None`
+            this dimension will NOT be processed together with the other
+            dimensions
+
+    Returns:
+        BatchPromise object
+            all arrays get `registered` to be downloaded together within
+            single dap response
+    """
     promise = ds._current_batch_promise = BatchPromise()
     for name in dims:
         if name in ds.keys():
@@ -382,6 +402,30 @@ def register_all_for_batch(ds, dims, concat_dim=None):
 
 
 def fetch_batched_dimensions(ds, dims, concat_dim=None, cache=None):
+    """
+
+    Helper function that fetched dimensions within a pydap dataset
+    or Group, that have been registered for batched download. Only compatible
+    with DAP4 protocol, and batch=True parameter when intializating the
+    pydap dataset.
+
+    Parameters:
+    ----------
+        ds: pydap dataset or Group (dap4)
+        dims: list
+            dimensions within the ds or Group.
+        concat_dim: str | None
+            name of the dimension that is being concatenated
+            This will be processed separately from other non-concat dims
+        cache: bool (False is default)
+            dictionary that stores the name of the dimension and its value
+
+
+    Returns:
+        dict:
+            containing all dimension array data
+    """
+
     if cache is None:
         cache = {}
 
@@ -410,7 +454,42 @@ def fetch_batched_dimensions(ds, dims, concat_dim=None, cache=None):
     return cache
 
 
-def fetch_consolidated_dimensions(var, cache, concat_dim=None):
+def fetch_consolidated_dimensions(var, cache, concat_dim=None, checksum=True):
+    """
+    Helper function that makes it easier to process previously download
+    dap responses of dimension data, i.e. after `consolidated_metadata`
+    is executed. This helper processes dimension array data that was
+    downloaded / batched together in a single dap response.
+    when the urls for the dap responses are cached.
+
+    This function needs to be run after executing `consolidated_metadata` since
+    in that function, the cache_session object contains special metadata in its
+    headers. It also requires that the pydap dataset associated with the BaseType
+    `var`, is in Batch=True mode.
+
+    Parameters:
+    ----------
+        var: BaseType (DAP4)
+            Must belong to a pydap dataset with batch=True, and pointing to remote
+            data so that `var.dataset` returs the parent dataset object.
+        cache: dict
+            Where dimension array data will be stored.
+        concat_dim: str | None
+            If not None, it defined the concatenated dimension, which is not batched
+            with the rest of the dimensions and therefore needs to be processed
+            differently
+        checksum: bool (Default=True)
+            whether the dap response was requested with checksum=true. If true,
+            there is a checksum value inbetween each variable within the dap
+            response. when `checksum=False`, the dap response was created without the
+            checksum per variable. Important info for decoding
+
+    Returns:
+        cache: dict
+            contains the dimension array data decoded into numpy arrays.
+
+    """
+
     import pydap
 
     sess = var.dataset.session
@@ -430,7 +509,7 @@ def fetch_consolidated_dimensions(var, cache, concat_dim=None):
 
     dims_url = sess.headers["consolidated"]
     r = sess.get(dims_url)
-    pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=True).dataset
+    pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=checksum).dataset
     for name in pyds.keys():
         cache[name] = np.asarray(pyds[name].data)
     return cache

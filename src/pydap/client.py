@@ -121,9 +121,9 @@ def open_url(
         is 'dap4'. If the URL ends with '.dods', the protocol is 'dap2'. Another
         option to specify the protocol is to use replace the url scheme (http, https)
         with 'dap2' or 'dap4'.
-    batch: bool (Default: True)
-        Flag that indicates download multiple arrays with single dap response. Not true
-        before.
+    batch: bool (Default: False)
+        Flag that indicates download multiple arrays with single dap response. Only
+        compatible with DAP4 protocol.
     use_cache : bool (Default: False)
         Whether to use the cache or not in the requests.
     session_kwargs: dict | None
