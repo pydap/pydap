@@ -1,6 +1,7 @@
 """Basic functions related to the DAP spec."""
 
 import operator
+import threading
 from functools import reduce
 from itertools import zip_longest
 from sys import maxsize as MAXSIZE
@@ -11,6 +12,11 @@ from requests.utils import unquote as unquote_
 
 from . import __version__
 from .exceptions import ConstraintExpressionError
+
+# from pydap.model import BatchPromise
+
+# from pydap.handlers.dap import UNPACKDAP4DATA
+
 
 __dap__ = "2.15"
 
@@ -365,6 +371,91 @@ def decode_np_strings(numpy_var):
         return numpy_var.decode("utf-8")
     else:
         return numpy_var
+
+
+def register_all_for_batch(ds, dims, concat_dim=None):
+    promise = ds._current_batch_promise = BatchPromise()
+    for name in dims:
+        if name in ds.keys():
+            var = ds[name]
+            if not var._is_data_loaded() and var.id != concat_dim:
+                var._pending_batch_slice = slice(None)
+                ds.register_for_batch(var)
+                var._is_registered_for_batch = True
+    ds._start_batch_timer()
+    return promise
+
+
+def fetch_batched_dimensions(ds, dims, concat_dim=None, cache=None):
+    if cache is None:
+        cache = {}
+
+    promise = ds._current_batch_promise
+    promise._event.wait()
+
+    if concat_dim is not None:
+        concat_dim = concat_dim.split("/")[-1]
+
+    for name in dims:
+        if name in ds.keys() and name != concat_dim:
+            data = promise.wait_for_result(ds[name].id)
+            cache[name] = np.asarray(data)
+
+    if concat_dim:
+        var = ds[concat_dim]
+        concat_promise = ds._current_batch_promise = BatchPromise()
+        var._pending_batch_slice = slice(None)
+        ds.register_for_batch(var)
+        ds._start_batch_timer()
+        concat_promise._event.wait()
+        data = concat_promise.wait_for_result(var.id)
+        cache[concat_dim] = np.asarray(data)
+
+    ds._current_batch_promise = None
+    return cache
+
+
+def fetch_consolidated_dimensions(var, cache, concat_dim=None):
+    import pydap
+
+    sess = var.dataset.session
+    if concat_dim:
+        if concat_dim[0] == "/":
+            concat_dim = concat_dim[1:]
+        all_urls = sess.cache.urls()
+        data_url = var.data.baseurl + ".dap"
+        cdim_url = next(
+            url
+            for url in all_urls
+            if url.split("?")[0] == data_url and concat_dim in url.split("?dap4.ce=")[1]
+        )
+        r = sess.get(cdim_url)
+        cpyds = pydap.handlers.dap.UNPACKDAP4DATA(r).dataset
+        cache[concat_dim] = np.asarray(cpyds[concat_dim].data)
+
+    dims_url = sess.headers["consolidated"]
+    r = sess.get(dims_url)
+    pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=True).dataset
+    for name in pyds.keys():
+        cache[name] = np.asarray(pyds[name].data)
+    return cache
+
+
+class BatchPromise:
+    def __init__(self):
+        self._event = threading.Event()
+        self._results = {}
+
+    def set_results(self, results):
+        self._results = results
+        self._event.set()
+
+    def wait_for_result(self, var_id):
+        self._event.wait()
+        return self._results[var_id]
+
+    def is_resolved(self):
+        return self._event.is_set()
 
 
 class StreamReader(object):
