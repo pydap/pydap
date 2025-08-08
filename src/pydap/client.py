@@ -200,6 +200,11 @@ def consolidate_metadata(
         for consistency across the URLs.
         `NOTE`: If `concat_dim` is defined, and its dimension has a lenght
         greater than one, `safe_mode` is automatically set to `True` always.
+    set_maps:
+        False by default. Checks for Maps in the opendap model (similar to
+        coords in xarray) that exist in the first remote url dataset. Then
+        downloads all these within a single url. The url address is then
+        stored in the session's headers as `Maps`.
     verbose: bool, optional (default=False)
         For debugging purposes. If `True`, prints various URLs, normalized
         cache-keys, and other information.
@@ -295,19 +300,28 @@ def consolidate_metadata(
         for dim in dims
         if dim != concat_dim
     ]
-
-    new_urls = [
-        base_url + ".dap?dap4.ce=" + ";".join(constrains_dims) + "&dap4.checksum=true"
-    ]
-    session.headers["consolidated"] = new_urls[0]
+    if len(constrains_dims) > 0:
+        new_urls = [
+            base_url
+            + ".dap?dap4.ce="
+            + ";".join(constrains_dims)
+            + "&dap4.checksum=true"
+        ]
+        session.headers["consolidated"] = new_urls[0]
+    else:
+        new_urls = []
+        session.headers["consolidated"] = "null"
     new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [
-            dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]"
-            for dim in list(dims) + list(named_dims)
+            ";".join(
+                [
+                    dim + "[0:1:" + str(results[0].dimensions[dim] - 1) + "]"
+                    for dim in list(dims) + sorted(list(named_dims))
+                ]
+            )
         ]
     )
-
     maps_ces = None
     if set_maps:
         maps = None or set(
@@ -318,17 +332,15 @@ def consolidate_metadata(
                 if item.split("/")[-1] not in pyds.dimensions
             ]
         )
-
         if maps:
             map_urls = [
-                base_url
-                + ".dap?dap4.ce="
-                + coord
-                + "%5B0:1:"
-                + str(len(pyds[coord]) - 1)
-                + "%5D"
+                coord + "%5B0:1:" + str(len(pyds[coord]) - 1) + "%5D"
                 for coord in list(maps)
             ]
+            map_urls = [
+                base_url + ".dap?dap4.ce=" + ";".join(map_urls) + "&dap4.checksum=true"
+            ]
+            session.headers["Maps"] = map_urls[0]  # only a single url
             maps_ces = set(
                 [
                     coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]"
@@ -336,8 +348,14 @@ def consolidate_metadata(
                 ]
             )
             new_urls.extend(map_urls)
+        else:
+            session.headers["Maps"] = "null"
     if dims or concat_dim:
-        print("datacube has dimensions", dim_ces, f", and concat dim: `{concat_dim}`")
+        print(
+            "datacube has dimensions",
+            list(dim_ces)[0].split(";"),
+            f", and concat dim: `{concat_dim}`",
+        )
         dim_ces.update(add_dims)
         if maps_ces:
             dim_ces.update(maps_ces)
