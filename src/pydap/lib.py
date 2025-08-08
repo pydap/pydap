@@ -498,20 +498,21 @@ def fetch_consolidated_dimensions(var, cache, concat_dim=None, checksum=True):
             concat_dim = concat_dim[1:]
         all_urls = sess.cache.urls()
         data_url = var.data.baseurl + ".dap"
-        cdim_url = next(
+        cdim_url = [
             url
             for url in all_urls
             if url.split("?")[0] == data_url and concat_dim in url.split("?dap4.ce=")[1]
-        )
+        ][0]
         r = sess.get(cdim_url)
         cpyds = pydap.handlers.dap.UNPACKDAP4DATA(r).dataset
         cache[concat_dim] = np.asarray(cpyds[concat_dim].data)
 
     dims_url = sess.headers["consolidated"]
-    r = sess.get(dims_url)
-    pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=checksum).dataset
-    for name in pyds.keys():
-        cache[name] = np.asarray(pyds[name].data)
+    if dims_url.startswith("https"):
+        r = sess.get(dims_url)
+        pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=checksum).dataset
+        for name in pyds.keys():
+            cache[name] = np.asarray(pyds[name].data)
     return cache
 
 
