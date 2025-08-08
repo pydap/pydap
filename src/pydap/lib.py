@@ -507,10 +507,10 @@ def fetch_consolidated_dimensions(var, cache, concat_dim=None, checksum=True):
         cpyds = pydap.handlers.dap.UNPACKDAP4DATA(r).dataset
         cache[concat_dim] = np.asarray(cpyds[concat_dim].data)
 
-    dims_url = sess.headers["consolidated"]
-    maps_url = sess.headers["Maps"]
+    dims_url = sess.headers.get("consolidated", None)
+    maps_url = sess.headers.get("Maps", None)
     for URL in [dims_url, maps_url]:
-        if URL.startswith("https"):
+        if URL and URL.startswith("https"):
             r = sess.get(URL)
             pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=checksum).dataset
             for name in pyds.keys():
