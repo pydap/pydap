@@ -1111,7 +1111,7 @@ class DatasetType(StructureType):
     def _resolve_batch(self, batch_promise):
         from pydap.handlers.dap import UNPACKDAP4DATA
 
-        # print(f"[Batch] Resolving promise: {id(batch_promise)}")
+        print(f"[Batch] Resolving promise: {id(batch_promise)}")
         variables = [
             var
             for var in self._batch_registry
@@ -1140,7 +1140,7 @@ class DatasetType(StructureType):
         ce_string = "?dap4.ce=" + ";".join(sorted(constraint_expressions))
         _dap_url = base_url + ".dap" + ce_string
         _dap_url += "&dap4.checksum=true"
-        # print("dap url:", _dap_url)
+        print("dap url:", _dap_url)
         r = GET(_dap_url, get_kwargs={"stream": True}, session=self._session)
 
         parsed_dataset = UNPACKDAP4DATA(r, checksum=True, user_charset="ascii").dataset
