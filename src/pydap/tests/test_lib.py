@@ -4,6 +4,7 @@ import unittest
 from sys import maxsize as MAXSIZE
 
 import numpy as np
+import pytest
 
 from pydap.exceptions import ConstraintExpressionError
 from pydap.lib import (
@@ -14,6 +15,7 @@ from pydap.lib import (
     fix_slice,
     get_var,
     hyperslab,
+    recover_missing_url,
     tree,
     walk,
 )
@@ -301,3 +303,76 @@ class TestGetVar(unittest.TestCase):
         dataset["b"]["c"] = BaseType("c")
 
         self.assertEqual(get_var(dataset, "b.c"), dataset["b"]["c"])
+
+
+url1 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
+url2 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc"
+
+
+@pytest.mark.parametrize(
+    "queries",
+    [
+        [
+            ".dap?dap4.ce="
+            + "COADSX%5B0%3A1%3A179%5D%3BCOADSY%5B0%3A1%3A89%5D&dap4.checksum=true",
+            ".dap?dap4.ce=" + "TIME%5B0%3A1%3A11%5D&dap4.checksum=true",
+            ".dmr",
+        ],
+    ],
+)
+@pytest.mark.parametrize("baseurl", [url1, url2])
+def test_recover_missing_url(queries, baseurl):
+    """
+    Test that can recover from the output from `consolidated_metadata` (cached urls),
+    the missing (dap) url that is associated with the same (dimension/coord) data,
+
+    Per url within a collection (dataset), pydap downloads:
+    * 1 dmr
+    * 1 dap (all non-concatenating dimensions)
+    * 1 dap (concatenating dimension)
+
+    This means, for a dataset / collection with N files, it typically downloads
+
+    N (dmr) + N dap (non-concat dims) + N dap (concat-dims)
+
+    i.e. 3N responses.
+
+    With `consolidated_metadata` now pydap can save some downloads
+
+    * 1 dmr
+    * 1 dap (concat dim)
+
+    and, for all urls it downloads all other dims. This is, in total for a dataset
+    /collection it can reuse dap data, resulting int
+
+    N (dmr) + N dap (concat-dim) + 1 (for all dims with repeated values)
+
+    This function tests that for a given arbitrary granule / file within the
+    dataset, pydap identifies the 1 dap url that has been cached, and reads data from
+    that url (as opposed to download data again).
+
+    """
+
+    url1 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
+    url2 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc"
+
+    # the following 4 urls are typically expected:
+    urls1 = [url1 + query for query in queries if not query.startswith("COADSX")]
+    urls2 = [url2 + query for query in queries if not query.startswith("COADSX")]
+    cached_urls = urls1 + urls2
+
+    # we add the dap url that is cached and test that we can recover ir from the
+    # baseurl that is not cached
+    if baseurl == url1:
+        # url2 is the one that is cached
+        cached_dap = [url2 + query for query in queries if query.startswith("COADSX")]
+    elif baseurl == url2:
+        # url1 is the one that is cached
+        cached_dap = [url1 + query for query in queries if query.startswith("COADSX")]
+
+    cached_urls += cached_dap
+
+    miss_url = recover_missing_url(cached_urls, baseurl)
+
+    # assert that simply from base url I can recored the correct cached dap url
+    assert miss_url == cached_dap

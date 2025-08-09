@@ -2,6 +2,7 @@
 
 import operator
 import threading
+from collections import Counter
 from functools import reduce
 from itertools import zip_longest
 from sys import maxsize as MAXSIZE
@@ -533,6 +534,42 @@ def resolve_batch_for_all_variables(dataset, parent, key, variables):
             dataset.register_for_batch(var)
 
     dataset._start_batch_timer()
+
+
+def recover_missing_url(cached_urls, baseurl):
+    """
+    given a list of opendap (dap4) urls, it reconstructs the missing dap url
+    along with its constraints, that matches the corresponding cached url that
+    fetches identical data
+    """
+    import pydap.client as client
+
+    dap_urls = [url for url in cached_urls if url.split("?")[0].endswith(".dap")]
+    common_prefix = client.compute_base_url_prefix(dap_urls)
+    # the following is a test on its own it len(dap_ulrs)=0 then there is something
+    # wrong (for example - some of the cached urls contain urls from different
+    # collection)
+    dap_urls = [
+        url
+        for url in dap_urls
+        if url.split("?")[0][: len(common_prefix)] == common_prefix
+    ]
+
+    base_urls = [url.split(".dap")[0] for url in dap_urls]
+    duplicate = [item for item, count in Counter(base_urls).items() if count > 1][0]
+    queries = [
+        url.split("?")[-1]
+        for url in dap_urls
+        if url.split("?")[0] == duplicate + ".dap"
+    ]
+
+    new_dap_urls = [baseurl + ".dap?" + query for query in queries]
+    missing_dap_urls = [url for url in new_dap_urls if url not in cached_urls]
+    paired_urls = [
+        duplicate + ".dap" + url.split(".dap")[1] for url in missing_dap_urls
+    ]
+
+    return paired_urls
 
 
 class BatchPromise:
