@@ -564,29 +564,12 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
 
     N_dmr_urls = len(urls)  # Since `safe_mode=False`, only 1 DMR is downloaded
 
-    # # the url to the dap dimensions a
-    # assert cached_session.headers["consolidated"].startswith("https")
-
     if not concat_dim:
-        # assert cached_session.headers.get("concat_dim") is None
-
-        # assert (
-        #     cached_session.headers["consolidated"].split("dap4.ce=")[1].split("&")[0]
-        #     == "COADSX%5B0:1:179%5D;COADSY%5B0:1:89%5D;TIME%5B0:1:11%5D"
-        # )
-
         # Without `concat_dim` set, only one dap response is downloaded per URL.
         assert (
             len(cached_session.cache.urls()) == N_dmr_urls + 1
         )  # all dims are batched together
     else:
-        # cached_session.headers.get("concat_dim") == "/" + concat_dim
-
-        # assert (
-        #     cached_session.headers["consolidated"].split("dap4.ce=")[1]
-        #     == "COADSX%5B0:1:179%5D;COADSY%5B0:1:89%5D&dap4.checksum=true"
-        # )
-
         # concat dim is set. Must download N dap responses for the concat_dim.
         N_concat_dims = len(urls)  # see below !
         N_non_concat_dims = 1  # all dims are downloaded once, together.
