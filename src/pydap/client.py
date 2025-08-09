@@ -86,7 +86,6 @@ def open_url(
     checksum=False,
     user_charset="ascii",
     protocol=None,
-    consolidated=False,
     batch=False,
     use_cache=False,
     session_kwargs=None,
@@ -122,8 +121,6 @@ def open_url(
         is 'dap4'. If the URL ends with '.dods', the protocol is 'dap2'. Another
         option to specify the protocol is to use replace the url scheme (http, https)
         with 'dap2' or 'dap4'.
-    consolidated:
-        Whether `pydap.client.consolidated_metadata` was ran before or not.
     batch: bool (Default: False)
         Flag that indicates download multiple arrays with single dap response. Only
         compatible with DAP4 protocol.
@@ -274,9 +271,6 @@ def consolidate_metadata(
     dims = set(list(results[0].dimensions))
     add_dims = set()
     if concat_dim is not None and set([concat_dim]).issubset(dims):
-        if not concat_dim.startswith("/"):
-            named_concat_dim = "/" + concat_dim
-            session.headers["concat_dim"] = named_concat_dim
         dims.remove(concat_dim)
         concat_dim_urls = [
             url.split("?")[0]
@@ -310,10 +304,8 @@ def consolidate_metadata(
             + "%3B".join(constrains_dims)
             + "&dap4.checksum=true"
         ]
-        # session.headers["consolidated"] = new_urls[0]
     else:
         new_urls = []
-        # session.headers["consolidated"] = "null"
     new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [
@@ -369,8 +361,6 @@ def consolidate_metadata(
                 ]
             )
             new_urls.extend(map_urls)
-        # else:
-        # session.headers["Maps"] = "null"
     if dims or concat_dim:
         print(
             "datacube has dimensions",
