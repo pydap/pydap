@@ -86,6 +86,7 @@ def open_url(
     checksum=False,
     user_charset="ascii",
     protocol=None,
+    consolidated=False,
     batch=False,
     use_cache=False,
     session_kwargs=None,
@@ -121,6 +122,8 @@ def open_url(
         is 'dap4'. If the URL ends with '.dods', the protocol is 'dap2'. Another
         option to specify the protocol is to use replace the url scheme (http, https)
         with 'dap2' or 'dap4'.
+    consolidated:
+        Whether `pydap.client.consolidated_metadata` was ran before or not.
     batch: bool (Default: False)
         Flag that indicates download multiple arrays with single dap response. Only
         compatible with DAP4 protocol.
@@ -296,7 +299,7 @@ def consolidate_metadata(
     dims = sorted(list(new_dims))
 
     constrains_dims = [
-        dim + "%5B0:1:" + str(results[0].dimensions[dim] - 1) + "%5D"
+        dim + "%5B0%3A1%3A" + str(results[0].dimensions[dim] - 1) + "%5D"
         for dim in dims
         if dim != concat_dim
     ]
@@ -304,13 +307,13 @@ def consolidate_metadata(
         new_urls = [
             base_url
             + ".dap?dap4.ce="
-            + ";".join(constrains_dims)
+            + "%3B".join(constrains_dims)
             + "&dap4.checksum=true"
         ]
-        session.headers["consolidated"] = new_urls[0]
+        # session.headers["consolidated"] = new_urls[0]
     else:
         new_urls = []
-        session.headers["consolidated"] = "null"
+        # session.headers["consolidated"] = "null"
     new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [
@@ -332,10 +335,28 @@ def consolidate_metadata(
                 if item.split("/")[-1] not in pyds.dimensions
             ]
         )
+        coords = set(
+            [
+                item
+                for var in pyds.variables()
+                if pyds[var].attributes.get("coordinates", None)
+                for item in pyds[var].attributes.get("coordinates", None).split(" ")
+            ]
+        )
+        coords = [
+            item
+            for item in coords
+            if item not in list(pyds.dimensions) and item in pyds.variables()
+        ]  # rename coords
+        maps.update(coords)
         if maps:
+            # may be 2 or 3D!
             map_urls = [
-                coord + "%5B0:1:" + str(len(pyds[coord]) - 1) + "%5D"
-                for coord in list(maps)
+                var
+                + "".join(
+                    ["%5B0:1:" + str(length - 1) + "%5D" for length in pyds[var].shape]
+                )
+                for var in sorted(maps)
             ]
             map_urls = [
                 base_url + ".dap?dap4.ce=" + ";".join(map_urls) + "&dap4.checksum=true"
@@ -348,8 +369,8 @@ def consolidate_metadata(
                 ]
             )
             new_urls.extend(map_urls)
-        else:
-            session.headers["Maps"] = "null"
+        # else:
+        # session.headers["Maps"] = "null"
     if dims or concat_dim:
         print(
             "datacube has dimensions",
