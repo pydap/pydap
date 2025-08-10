@@ -2,6 +2,7 @@
 
 import operator
 import threading
+import warnings
 from collections import Counter
 from functools import reduce
 from itertools import zip_longest
@@ -538,9 +539,13 @@ def resolve_batch_for_all_variables(dataset, parent, key, variables):
 
 def recover_missing_url(cached_urls, baseurl):
     """
-    given a list of opendap (dap4) urls, it reconstructs the missing dap url
+    given a list of opendap (dap4) urls, it reconstructs missing dap url
     along with its constraints, that matches the corresponding cached url that
-    fetches identical data
+    fetches identical data.
+
+    Returns:
+
+
     """
     import pydap.client as client
 
@@ -556,7 +561,22 @@ def recover_missing_url(cached_urls, baseurl):
     ]
 
     base_urls = [url.split(".dap")[0] for url in dap_urls]
-    duplicate = [item for item, count in Counter(base_urls).items() if count > 1][0]
+
+    # find all currently matching dap url that have been cached
+    current_dap_urls = [
+        url for url in cached_urls if url.split(".dap")[0] == baseurl.split(".dap")[0]
+    ]
+
+    duplicate = [item for item, count in Counter(base_urls).items() if count > 1]
+    if len(duplicate) == 1:
+        # assume there is only one repeated base url - produce of
+        # consolidate metadata with freshly created session object
+        duplicate = duplicate[0]
+    else:
+        warnings.warn(
+            "Could not figure out dap urls. Clear your session cache and start again"
+        )
+
     queries = [
         url.split("?")[-1]
         for url in dap_urls
@@ -569,7 +589,7 @@ def recover_missing_url(cached_urls, baseurl):
         duplicate + ".dap" + url.split(".dap")[1] for url in missing_dap_urls
     ]
 
-    return paired_urls
+    return paired_urls, current_dap_urls
 
 
 class BatchPromise:

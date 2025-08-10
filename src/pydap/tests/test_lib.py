@@ -323,33 +323,13 @@ url2 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc"
 @pytest.mark.parametrize("baseurl", [url1, url2])
 def test_recover_missing_url(queries, baseurl):
     """
-    Test that can recover from the output from `consolidated_metadata` (cached urls),
-    the missing (dap) url that is associated with the same (dimension/coord) data,
-
-    Per url within a collection (dataset), pydap downloads:
-    * 1 dmr
-    * 1 dap (all non-concatenating dimensions)
-    * 1 dap (concatenating dimension)
-
-    This means, for a dataset / collection with N files, it typically downloads
-
-    N (dmr) + N dap (non-concat dims) + N dap (concat-dims)
-
-    i.e. 3N responses.
-
-    With `consolidated_metadata` now pydap can save some downloads
-
-    * 1 dmr
-    * 1 dap (concat dim)
-
-    and, for all urls it downloads all other dims. This is, in total for a dataset
-    /collection it can reuse dap data, resulting int
-
-    N (dmr) + N dap (concat-dim) + 1 (for all dims with repeated values)
-
-    This function tests that for a given arbitrary granule / file within the
-    dataset, pydap identifies the 1 dap url that has been cached, and reads data from
-    that url (as opposed to download data again).
+    This test requires emulating the behavior of `consolidate_metadata` with
+    `concat_dim=TIME", for the present list composed of [url1, url2].
+    `consolidate_metadata` caches/creates a list of dap responses one per granule
+    of array `TIME`, but only downloads/caches the response of one of the url
+    for the rest of the dimensions. The function tested recovers the reused dap url
+    for any given `baseurl`, and returns both that reusable dap url, and any present
+    dap url that matches the `baseurl` (e.g. that of `TIME`).
 
     """
 
@@ -357,22 +337,30 @@ def test_recover_missing_url(queries, baseurl):
     url2 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc"
 
     # the following 4 urls are typically expected:
-    urls1 = [url1 + query for query in queries if not query.startswith("COADSX")]
-    urls2 = [url2 + query for query in queries if not query.startswith("COADSX")]
+    urls1 = [
+        url1 + query for query in queries if not query.startswith(".dap?dap4.ce=COADSX")
+    ]
+    urls2 = [
+        url2 + query for query in queries if not query.startswith(".dap?dap4.ce=COADSX")
+    ]
     cached_urls = urls1 + urls2
 
     # we add the dap url that is cached and test that we can recover ir from the
     # baseurl that is not cached
     if baseurl == url1:
-        # url2 is the one that is cached
-        cached_dap = [url2 + query for query in queries if query.startswith("COADSX")]
+        # add url2 to the cached list, with the correct query parameters
+        cached_dap = [
+            url2 + query for query in queries if query.startswith(".dap?dap4.ce=COADSX")
+        ]
     elif baseurl == url2:
-        # url1 is the one that is cached
-        cached_dap = [url1 + query for query in queries if query.startswith("COADSX")]
+        # add url1 to the cached list, with the correct query parameters
+        cached_dap = [
+            url1 + query for query in queries if query.startswith(".dap?dap4.ce=COADSX")
+        ]
 
     cached_urls += cached_dap
 
-    miss_url = recover_missing_url(cached_urls, baseurl)
+    miss_url, current_dap = recover_missing_url(cached_urls, baseurl)
 
     # assert that simply from base url I can recored the correct cached dap url
     assert miss_url == cached_dap
