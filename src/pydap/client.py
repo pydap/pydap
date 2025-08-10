@@ -241,7 +241,7 @@ def consolidate_metadata(
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
-
+    session.headers["consolidated"] = "True"
     if safe_mode:
         with session as Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
@@ -370,14 +370,14 @@ def consolidate_metadata(
         dim_ces.update(add_dims)
         if maps_ces:
             dim_ces.update(maps_ces)
-        if dim_ces:
-            patch_session_for_shared_dap_cache(
-                session,
-                shared_vars=dim_ces,
-                concat_dim=concat_dim,
-                known_url_list=URLs,
-                verbose=verbose,
-            )
+        # if dim_ces:
+        #     patch_session_for_shared_dap_cache(
+        #         session,
+        #         shared_vars=dim_ces,
+        #         concat_dim=concat_dim,
+        #         known_url_list=URLs,
+        #         verbose=verbose,
+        #     )
         with session as Session:
             _ = download_all_urls(Session, new_urls, ncores=ncores)
     return None

@@ -456,7 +456,7 @@ def fetch_batched_dimensions(ds, dims, concat_dim=None, cache=None):
     return cache
 
 
-def fetch_consolidated_dimensions(var, cache, concat_dim=None, checksum=True):
+def fetch_consolidated_dimensions(var, cache, checksum=True) -> {}:
     """
     Helper function that makes it easier to process previously download
     dap responses of dimension data, i.e. after `consolidated_metadata`
@@ -476,10 +476,6 @@ def fetch_consolidated_dimensions(var, cache, concat_dim=None, checksum=True):
             data so that `var.dataset` returs the parent dataset object.
         cache: dict
             Where dimension array data will be stored.
-        concat_dim: str | None
-            If not None, it defined the concatenated dimension, which is not batched
-            with the rest of the dimensions and therefore needs to be processed
-            differently
         checksum: bool (Default=True)
             whether the dap response was requested with checksum=true. If true,
             there is a checksum value inbetween each variable within the dap
@@ -489,34 +485,18 @@ def fetch_consolidated_dimensions(var, cache, concat_dim=None, checksum=True):
     Returns:
         cache: dict
             contains the dimension array data decoded into numpy arrays.
-
     """
 
     import pydap
 
     sess = var.dataset.session
-    if concat_dim:
-        if concat_dim[0] == "/":
-            concat_dim = concat_dim[1:]
-        all_urls = sess.cache.urls()
-        data_url = var.data.baseurl + ".dap"
-        cdim_url = [
-            url
-            for url in all_urls
-            if url.split("?")[0] == data_url and concat_dim in url.split("?dap4.ce=")[1]
-        ][0]
-        r = sess.get(cdim_url)
-        cpyds = pydap.handlers.dap.UNPACKDAP4DATA(r).dataset
-        cache[concat_dim] = np.asarray(cpyds[concat_dim].data)
-
-    dims_url = sess.headers.get("consolidated", None)
-    maps_url = sess.headers.get("Maps", None)
-    for URL in [dims_url, maps_url]:
-        if URL and URL.startswith("https"):
-            r = sess.get(URL)
-            pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=checksum).dataset
-            for name in pyds.keys():
-                cache[name] = np.asarray(pyds[name].data)
+    miss_url, curr_url = recover_missing_url(sess.cache.urls(), var.data.baseurl)
+    dap_urls = miss_url + curr_url
+    for URL in set(dap_urls):
+        r = sess.get(URL, stream=True)
+        pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=checksum).dataset
+        for name in pyds.keys():
+            cache[name] = np.asarray(pyds[name].data)
     return cache
 
 
