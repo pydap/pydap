@@ -370,7 +370,24 @@ def decode_np_strings(numpy_var):
         return numpy_var
 
 
-def register_all_for_batch(ds, dims, concat_dim=None):
+def get_batch_data(ds, cache={}):
+    """
+    ds a dataset or Group type (I think)
+    """
+    dimensions = sorted(ds.dimensions)
+    # check if data has been pre-downloaded
+    if "consolidated" in ds.dataset.session.headers:
+        # need to add a check that consolidated has
+        # been performed on that collection.
+        cache = fetch_consolidated_dimensions(ds, cache)
+    else:
+        register_all_for_batch(ds.dataset, dimensions)
+        cache = fetch_batched_dimensions(ds, dimensions, cache)
+
+    return cache
+
+
+def register_all_for_batch(ds, dims):
     """
     Used to register all dimension array when pydap
     dataset has been initialized with batch=True.
@@ -391,19 +408,19 @@ def register_all_for_batch(ds, dims, concat_dim=None):
             all arrays get `registered` to be downloaded together within
             single dap response
     """
-    promise = ds._current_batch_promise = BatchPromise()
+    # promise = ds._current_batch_promise = BatchPromise()
     for name in dims:
         if name in ds.keys():
             var = ds[name]
-            if not var._is_data_loaded() and var.id != concat_dim:
+            if not var._is_data_loaded():  # and var.id != concat_dim:
                 var._pending_batch_slice = slice(None)
                 ds.register_for_batch(var)
                 var._is_registered_for_batch = True
     ds._start_batch_timer()
-    return promise
+    # return promise
 
 
-def fetch_batched_dimensions(ds, dims, concat_dim=None, cache=None):
+def fetch_batched_dimensions(ds, dims, cache=None):
     """
 
     Helper function that fetched dimensions within a pydap dataset
@@ -434,29 +451,16 @@ def fetch_batched_dimensions(ds, dims, concat_dim=None, cache=None):
     promise = ds._current_batch_promise
     promise._event.wait()
 
-    if concat_dim is not None:
-        concat_dim = concat_dim.split("/")[-1]
-
     for name in dims:
-        if name in ds.keys() and name != concat_dim:
+        if name in ds.keys():  # and name != concat_dim:
             data = promise.wait_for_result(ds[name].id)
             cache[name] = np.asarray(data)
-
-    if concat_dim:
-        var = ds[concat_dim]
-        concat_promise = ds._current_batch_promise = BatchPromise()
-        var._pending_batch_slice = slice(None)
-        ds.register_for_batch(var)
-        ds._start_batch_timer()
-        concat_promise._event.wait()
-        data = concat_promise.wait_for_result(var.id)
-        cache[concat_dim] = np.asarray(data)
 
     ds._current_batch_promise = None
     return cache
 
 
-def fetch_consolidated_dimensions(var, cache, checksum=True) -> {}:
+def fetch_consolidated_dimensions(ds, cache, checksum=True) -> {}:
     """
     Helper function that makes it easier to process previously download
     dap responses of dimension data, i.e. after `consolidated_metadata`
@@ -471,13 +475,12 @@ def fetch_consolidated_dimensions(var, cache, checksum=True) -> {}:
 
     Parameters:
     ----------
-        var: BaseType (DAP4)
-            Must belong to a pydap dataset with batch=True, and pointing to remote
-            data so that `var.dataset` returs the parent dataset object.
+        ds: Dataset | GroupType (DAP4)
+            Must `batch=True` and point to remote data.
         cache: dict
             Where dimension array data will be stored.
         checksum: bool (Default=True)
-            whether the dap response was requested with checksum=true. If true,
+            Whether the dap response was requested with checksum=true. If true,
             there is a checksum value inbetween each variable within the dap
             response. when `checksum=False`, the dap response was created without the
             checksum per variable. Important info for decoding
@@ -489,13 +492,17 @@ def fetch_consolidated_dimensions(var, cache, checksum=True) -> {}:
 
     import pydap
 
-    sess = var.dataset.session
-    miss_url, curr_url = recover_missing_url(sess.cache.urls(), var.data.baseurl)
+    var_name = list(ds.variables())[0]
+    baseurl = ds[var_name].data.baseurl
+    session = ds.dataset.session
+    cache_urls = session.cache.urls()
+    miss_url, curr_url = recover_missing_url(cache_urls, baseurl)
     dap_urls = miss_url + curr_url
     for URL in set(dap_urls):
-        r = sess.get(URL, stream=True)
+        r = session.get(URL, stream=True)
         pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=checksum).dataset
         for name in pyds.keys():
+            # get fully qualifying name here?
             cache[name] = np.asarray(pyds[name].data)
     return cache
 
