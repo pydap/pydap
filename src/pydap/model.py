@@ -1171,8 +1171,6 @@ class DatasetType(StructureType):
         # Clean up
         self._batch_registry.clear()
         self._batch_timer = None
-        # print(f"Delayed batch promise {id(self._current_batch_promise)}\n")
-        # self._current_batch_promise = None
 
         return None
 
