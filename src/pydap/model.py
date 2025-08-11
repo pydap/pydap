@@ -1128,17 +1128,21 @@ class DatasetType(StructureType):
             if var.build_ce() is not None
         ]
 
-        if not constraint_expressions:
+        base_url = variables[0]._data.baseurl if variables[0]._data else None
+
+        if not constraint_expressions or not base_url:
             self._batch_registry.clear()
             self._batch_timer = None
             return
-
-        base_url = variables[0]._data.baseurl if variables[0]._data else None
 
         # Build the single dap4.ce query parameter
         ce_string = "?dap4.ce=" + ";".join(sorted(constraint_expressions))
         _dap_url = base_url + ".dap" + ce_string
         _dap_url += "&dap4.checksum=true"
+
+        if _dap_url.startswith("https://test.opendap.org"):
+            _dap_url = _dap_url.replace("https", "http")
+
         # print("dap url:", _dap_url)
 
         with self._session.cache_disabled():
