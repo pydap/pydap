@@ -270,6 +270,8 @@ class DapType(object):
         self.id = path or "/"  # <-- KEY LINE!
 
         if isinstance(self, BaseType):
+            if not self.parent:
+                self.parent = self.dataset
             if type(self._data).__name__ == "BaseProxyDap4" and not hasattr(
                 self, "_original_data_args"
             ):
