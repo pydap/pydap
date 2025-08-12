@@ -353,7 +353,6 @@ def consolidate_metadata(
             map_urls = [
                 base_url + ".dap?dap4.ce=" + ";".join(map_urls) + "&dap4.checksum=true"
             ]
-            session.headers["Maps"] = map_urls[0]  # only a single url
             maps_ces = set(
                 [
                     coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]"
@@ -370,14 +369,6 @@ def consolidate_metadata(
         dim_ces.update(add_dims)
         if maps_ces:
             dim_ces.update(maps_ces)
-        # if dim_ces:
-        #     patch_session_for_shared_dap_cache(
-        #         session,
-        #         shared_vars=dim_ces,
-        #         concat_dim=concat_dim,
-        #         known_url_list=URLs,
-        #         verbose=verbose,
-        #     )
         with session as Session:
             _ = download_all_urls(Session, new_urls, ncores=ncores)
     return None
