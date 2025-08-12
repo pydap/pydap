@@ -512,7 +512,6 @@ def resolve_batch_for_all_variables(parent, Variables, key=None):
         _slice = slice(None) if not key else key
         for name in Variables:
             var = parent[name]
-            print(name)
             if var.name not in parent.dimensions and not var._is_data_loaded():
                 var._pending_batch_slice = _slice
                 var._batch_promise = dataset._current_batch_promise
