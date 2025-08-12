@@ -1147,7 +1147,16 @@ class DatasetType(StructureType):
 
         # print("dap url:", _dap_url)
 
-        with self._session.cache_disabled():
+        if isinstance(self._session, requests_cache.CachedSession):
+            with self._session.cache_disabled():
+                r = self._session.get(
+                    _dap_url,
+                    timeout=512,
+                    verify=True,
+                    allow_redirects=True,
+                    stream=True,
+                )
+        else:
             r = self._session.get(
                 _dap_url,
                 timeout=512,
