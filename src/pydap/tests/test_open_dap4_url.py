@@ -35,7 +35,7 @@ def test_batch_mode_downloads():
     session.cache.clear()  # Clear cache before testing
 
     url = "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-    ds = open_url(url, session=session, protocol="dap4", checksum=False)
+    ds = open_url(url, session=session, protocol="dap4", checksum=True)
     ds.enable_batch_mode()
 
     # slash arrays to triger data download.
@@ -54,33 +54,33 @@ def test_batch_mode_downloads():
 
     # check that cached urls are correct
 
-    # Check that there are only 2 URL cached: 1) the DMR and 2) the DAP URL
-    assert len(session.cache.urls()) == 2
+    # Check that there is only 1 URL cached: the DMR. The DAP url us no longer cached
+    assert len(session.cache.urls()) == 1
 
-    # check dap url (assume it is the 0th one of the cached urls)
-    cached_dap_url_query = session.cache.urls()[0].split("?dap4.ce=")[1]
+    # # check dap url (assume it is the 0th one of the cached urls)
+    # cached_dap_url_query = session.cache.urls()[0].split("?dap4.ce=")[1]
 
-    # Checksum query parameter was set to False (default)
-    # but the currently always set to `checksum=true` when batching
-    # this will change later
+    # # Checksum query parameter was set to False (default)
+    # # but the currently always set to `checksum=true` when batching
+    # # this will change later
 
-    data_requests, checksum_query = cached_dap_url_query.split("&")
+    # data_requests, checksum_query = cached_dap_url_query.split("&")
 
-    assert checksum_query == "dap4.checksum=true"
+    # assert checksum_query == "dap4.checksum=true"
 
     # Now take the rest, and check that the two variable data requests are correct
 
-    # expected:
-    expected_CE_temp = (
-        "%2FSimpleGroup%2FTemperature%5B0%3A1%3A0%5D%5B0%3A1%3A39%5D%5B0%3A1%3A39%5D"
-    )
-    expected_CE_salt = (
-        "%2FSimpleGroup%2FSalinity%5B0%3A1%3A0%5D%5B0%3A1%3A39%5D%5B0%3A1%3A39%5D"
-    )
+    # # expected:
+    # expected_CE_temp = (
+    #     "%2FSimpleGroup%2FTemperature%5B0%3A1%3A0%5D%5B0%3A1%3A39%5D%5B0%3A1%3A39%5D"
+    # )
+    # expected_CE_salt = (
+    #     "%2FSimpleGroup%2FSalinity%5B0%3A1%3A0%5D%5B0%3A1%3A39%5D%5B0%3A1%3A39%5D"
+    # )
 
-    observed_CEs = data_requests.split("%3B")  # `;` scaped is %3B
+    # observed_CEs = data_requests.split("%3B")  # `;` scaped is %3B
 
-    assert set(observed_CEs) == set([expected_CE_temp, expected_CE_salt])
+    # assert set(observed_CEs) == set([expected_CE_temp, expected_CE_salt])
 
 
 if __name__ == "__main__":

@@ -181,7 +181,6 @@ import requests
 import requests_cache
 
 from pydap.lib import BatchPromise, _quote, decode_np_strings, tree, walk
-from pydap.net import GET
 
 __all__ = [
     "BaseType",
@@ -271,6 +270,8 @@ class DapType(object):
         self.id = path or "/"  # <-- KEY LINE!
 
         if isinstance(self, BaseType):
+            if not self.parent:
+                self.parent = self.dataset
             if type(self._data).__name__ == "BaseProxyDap4" and not hasattr(
                 self, "_original_data_args"
             ):
@@ -1129,19 +1130,40 @@ class DatasetType(StructureType):
             if var.build_ce() is not None
         ]
 
-        if not constraint_expressions:
+        base_url = variables[0]._data.baseurl if variables[0]._data else None
+
+        if not constraint_expressions or not base_url:
             self._batch_registry.clear()
             self._batch_timer = None
             return
-
-        base_url = variables[0]._data.baseurl if variables[0]._data else None
 
         # Build the single dap4.ce query parameter
         ce_string = "?dap4.ce=" + ";".join(sorted(constraint_expressions))
         _dap_url = base_url + ".dap" + ce_string
         _dap_url += "&dap4.checksum=true"
+
+        if _dap_url.startswith("https://test.opendap.org"):
+            _dap_url = _dap_url.replace("https", "http")
+
         # print("dap url:", _dap_url)
-        r = GET(_dap_url, get_kwargs={"stream": True}, session=self._session)
+
+        if isinstance(self._session, requests_cache.CachedSession):
+            with self._session.cache_disabled():
+                r = self._session.get(
+                    _dap_url,
+                    timeout=512,
+                    verify=True,
+                    allow_redirects=True,
+                    stream=True,
+                )
+        else:
+            r = self._session.get(
+                _dap_url,
+                timeout=512,
+                verify=True,
+                allow_redirects=True,
+                stream=True,
+            )
 
         parsed_dataset = UNPACKDAP4DATA(r, checksum=True, user_charset="ascii").dataset
 
@@ -1160,8 +1182,6 @@ class DatasetType(StructureType):
         # Clean up
         self._batch_registry.clear()
         self._batch_timer = None
-        # print(f"Delayed batch promise {id(self._current_batch_promise)}\n")
-        # self._current_batch_promise = None
 
         return None
 
