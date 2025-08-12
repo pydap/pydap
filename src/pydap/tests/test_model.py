@@ -753,15 +753,20 @@ def test_DatasetType_set_parent():
     `
     """
     ds = DatasetType("root")
+    ds.createVariable("root_var")
     ds.createGroup("Group1")
     ds.createGroup("Group2")
     ds.createGroup("Group1/subGroup2")
     ds.createVariable("Group1/subGroup2/var")
+    ds.assign_dataset_recursive(ds)
 
-    assert ds["Group1/subGroup2/var"].parent.id == "subGroup2"
-    assert ds["Group1/subGroup2/var"].parent.parent.id == "Group1"
-    assert ds["Group1"].parent.id == "root"
-    assert ds["Group2"].parent.id == "root"
+    assert ds["Group1/subGroup2/var"].parent.id == "/Group1/subGroup2"
+    assert ds["Group1/subGroup2/var"].parent == ds["Group1/subGroup2"]
+    assert ds["Group1/subGroup2/var"].parent.parent.id == ds["/Group1"].id
+    assert ds["Group1"].parent.id == "/"
+    assert ds["Group2"].parent.id == "/"
+    assert ds["root_var"].parent == ds
+    assert ds["Group1/subGroup2/var"].dataset == ds
 
 
 def test_set_dataset():
