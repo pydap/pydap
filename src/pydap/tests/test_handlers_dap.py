@@ -705,7 +705,7 @@ def test_decode_utf8_string_array(data, expected):
 def test_dap_handler_string_array():
     """Tests that the DAPHandler can handle a string array."""
     url = "dap4://test.opendap.org/opendap/data/nc/bears.nc"
-    pyds = DAPHandler(url).dataset
+    pyds = DAPHandler(url, checksums=False).dataset
 
     # this is what the data should be.
     actual_data = np.array(
