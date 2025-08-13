@@ -83,7 +83,7 @@ def open_url(
     output_grid=False,
     timeout=DEFAULT_TIMEOUT,
     verify=True,
-    checksum=False,
+    checksums=True,
     user_charset="ascii",
     protocol=None,
     batch=False,
@@ -153,7 +153,7 @@ def open_url(
         output_grid,
         timeout=timeout,
         verify=verify,
-        checksum=checksum,
+        checksums=checksums,
         user_charset=user_charset,
         protocol=protocol,
         get_kwargs=get_kwargs,
@@ -170,7 +170,13 @@ def open_url(
 
 
 def consolidate_metadata(
-    urls, session, concat_dim=None, safe_mode=True, set_maps=False, verbose=False
+    urls,
+    session,
+    concat_dim=None,
+    safe_mode=True,
+    set_maps=False,
+    verbose=False,
+    checksums=True,
 ):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
@@ -270,6 +276,13 @@ def consolidate_metadata(
     base_url = URLs[0].split("?")[0]
     dims = set(list(results[0].dimensions))
     add_dims = set()
+    if not checksums:
+        warnings.warn(
+            "Checksums are not optional yet, but will be in a future release."
+            " Setting `checksum=True`",
+            stacklevel=2,
+        )
+    _check = "&dap4.checksum=true"
     if concat_dim is not None and set([concat_dim]).issubset(dims):
         dims.remove(concat_dim)
         concat_dim_urls = [
@@ -279,7 +292,7 @@ def consolidate_metadata(
             + "%5B0:1:"
             + str(results[0].dimensions[concat_dim] - 1)
             + "%5D"
-            + "&dap4.checksum=true"
+            + _check
             for i, url in enumerate(URLs)
         ]
     else:
@@ -298,12 +311,7 @@ def consolidate_metadata(
         if dim != concat_dim
     ]
     if len(constrains_dims) > 0:
-        new_urls = [
-            base_url
-            + ".dap?dap4.ce="
-            + "%3B".join(constrains_dims)
-            + "&dap4.checksum=true"
-        ]
+        new_urls = [base_url + ".dap?dap4.ce=" + "%3B".join(constrains_dims) + _check]
     else:
         new_urls = []
     new_urls.extend(concat_dim_urls)
@@ -350,9 +358,7 @@ def consolidate_metadata(
                 )
                 for var in sorted(maps)
             ]
-            map_urls = [
-                base_url + ".dap?dap4.ce=" + ";".join(map_urls) + "&dap4.checksum=true"
-            ]
+            map_urls = [base_url + ".dap?dap4.ce=" + ";".join(map_urls) + _check]
             maps_ces = set(
                 [
                     coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]"

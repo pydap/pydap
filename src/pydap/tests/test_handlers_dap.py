@@ -723,7 +723,7 @@ def test_checksum(checksum):
     """Test that the checksum if applied correctly, when requests"""
     url = "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
     session = create_session()
-    pyds = DAPHandler(url, session=session, protocol="dap4", checksum=checksum).dataset
+    pyds = DAPHandler(url, session=session, protocol="dap4", checksums=checksum).dataset
     Y = pyds["SimpleGroup/Y"][:]
     if not checksum:
         assert not hasattr(Y, "_DAP4_Checksum_CRC32")
