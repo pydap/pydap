@@ -705,7 +705,7 @@ def test_decode_utf8_string_array(data, expected):
 def test_dap_handler_string_array():
     """Tests that the DAPHandler can handle a string array."""
     url = "dap4://test.opendap.org/opendap/data/nc/bears.nc"
-    pyds = DAPHandler(url).dataset
+    pyds = DAPHandler(url, checksums=False).dataset
 
     # this is what the data should be.
     actual_data = np.array(
@@ -723,7 +723,7 @@ def test_checksum(checksum):
     """Test that the checksum if applied correctly, when requests"""
     url = "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
     session = create_session()
-    pyds = DAPHandler(url, session=session, protocol="dap4", checksum=checksum).dataset
+    pyds = DAPHandler(url, session=session, protocol="dap4", checksums=checksum).dataset
     Y = pyds["SimpleGroup/Y"][:]
     if not checksum:
         assert not hasattr(Y, "_DAP4_Checksum_CRC32")

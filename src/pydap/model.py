@@ -285,7 +285,7 @@ class DapType(object):
                     self._data.session,
                     self._data.timeout,
                     self._data.verify,
-                    self._data.checksum,
+                    self._data.checksums,
                     self._data.user_charset,
                     self._data.get_kwargs,
                 )
@@ -520,9 +520,9 @@ class BaseType(DapType):
                 pass  # Leave as-is for types that don't support __array__
         out.data = data
         if type(self._data).__name__ == "BaseProxyDap4":
-            if self._data.checksum:
+            if self._data.checksums:
                 # updates it if defined
-                out.attributes["_DAP4_Checksum_CRC32"] = self._data.checksum
+                out.attributes["_DAP4_Checksum_CRC32"] = self._data.checksums
             out.attributes.update({"Maps": self.Maps})
         return out
 
@@ -1096,9 +1096,11 @@ class DatasetType(StructureType):
         self._batch_timer = None
         self._batch_results = {}
         self._dap_url = None
+        self._checksums = True
 
-    def register_for_batch(self, var):
+    def register_for_batch(self, var, checksums=True):
         """Register a key for batch processing."""
+        self._checksums = checksums
         self._batch_registry = {v for v in self._batch_registry if v.id != var.id}
         self._batch_registry.add(var)
         var._is_registered_for_batch = True
@@ -1140,6 +1142,12 @@ class DatasetType(StructureType):
         # Build the single dap4.ce query parameter
         ce_string = "?dap4.ce=" + ";".join(sorted(constraint_expressions))
         _dap_url = base_url + ".dap" + ce_string
+        if not self._checksums:
+            warnings.warn(
+                "Checksums are not optional in the current version, but will "
+                "be in the next version of pydap. Setting `checksums=True`",
+                stacklevel=2,
+            )
         _dap_url += "&dap4.checksum=true"
 
         if _dap_url.startswith("https://test.opendap.org"):
@@ -1168,7 +1176,7 @@ class DatasetType(StructureType):
                 stream=True,
             )
 
-        parsed_dataset = UNPACKDAP4DATA(r, checksum=True, user_charset="ascii").dataset
+        parsed_dataset = UNPACKDAP4DATA(r, checksums=True, user_charset="ascii").dataset
 
         # Collect results
         results_dict = {}
