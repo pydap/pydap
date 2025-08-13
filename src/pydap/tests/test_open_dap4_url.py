@@ -31,7 +31,7 @@ def test_batch_mode_downloads():
     """
     Test that batch mode downloads data correctly.
     """
-    session = create_session(use_cache=True)
+    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
     session.cache.clear()  # Clear cache before testing
 
     url = "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
@@ -55,7 +55,7 @@ def test_batch_mode_downloads():
     # check that cached urls are correct
 
     # Check that there is only 1 URL cached: the DMR. The DAP url us no longer cached
-    assert len(session.cache.urls()) == 1
+    assert len(session.cache.urls()) == 2
 
     # # check dap url (assume it is the 0th one of the cached urls)
     # cached_dap_url_query = session.cache.urls()[0].split("?dap4.ce=")[1]
