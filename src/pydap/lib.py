@@ -370,7 +370,7 @@ def decode_np_strings(numpy_var):
         return numpy_var
 
 
-def get_batch_data(ds, cache={}):
+def get_batch_data(ds, cache={}, checksums=True):
     """
     parent object - either a dataset or Group type (dap4)
     """
@@ -388,12 +388,12 @@ def get_batch_data(ds, cache={}):
         # been performed on that collection.
         cache = fetch_consolidated_dimensions(ds, cache)
     else:
-        register_all_for_batch(ds.dataset, dimensions)
+        register_all_for_batch(ds.dataset, dimensions, checksums=checksums)
         cache = fetch_batched_dimensions(ds.dataset, dimensions, cache)
     return cache
 
 
-def register_all_for_batch(ds, Variables) -> None:
+def register_all_for_batch(ds, Variables, checksums=True) -> None:
     """
     Used to register all dimension array when pydap
     dataset has been initialized with batch=True.
@@ -403,13 +403,14 @@ def register_all_for_batch(ds, Variables) -> None:
         ds: dataset (dap4)
         Variables: list
             List of dimensions in `ds` that will be processed
+        checksums: bool | True (default)
     """
 
     for name in Variables:
         var = ds[name]
         if not var._is_data_loaded():  # and var.id != concat_dim:
             var._pending_batch_slice = slice(None)
-            ds.register_for_batch(var)
+            ds.register_for_batch(var, checksums=checksums)
             var._is_registered_for_batch = True
     ds._start_batch_timer()
     # return promise
@@ -448,7 +449,7 @@ def fetch_batched_dimensions(ds, Variables, cache=None):
     return cache
 
 
-def fetch_consolidated_dimensions(ds, cache, checksum=True) -> {}:
+def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
     """
     Helper function that makes it easier to process previously download
     dap responses of dimension data, i.e. after `consolidated_metadata`
@@ -467,7 +468,7 @@ def fetch_consolidated_dimensions(ds, cache, checksum=True) -> {}:
             Must `batch=True` and point to remote data.
         cache: dict
             Where dimension array data will be stored.
-        checksum: bool (Default=True)
+        checksums: bool (Default=True)
             Whether the dap response was requested with checksum=true. If true,
             there is a checksum value inbetween each variable within the dap
             response. when `checksum=False`, the dap response was created without the
@@ -488,14 +489,14 @@ def fetch_consolidated_dimensions(ds, cache, checksum=True) -> {}:
     dap_urls = miss_url + curr_url
     for URL in set(dap_urls):
         r = session.get(URL, stream=True)
-        pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksum=checksum).dataset
+        pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksums=checksums).dataset
         for name in pyds.keys():
             # get fully qualifying name here?
             cache[pyds[name].id] = np.asarray(pyds[name].data)
     return cache
 
 
-def resolve_batch_for_all_variables(array, key=None):
+def resolve_batch_for_all_variables(array, key=None, checksums=True):
     """
     Resolves a batch promise for all non-dimension variables within the
     parent container.
@@ -518,7 +519,7 @@ def resolve_batch_for_all_variables(array, key=None):
             if not var._is_data_loaded():
                 var._pending_batch_slice = _slice
                 var._batch_promise = dataset._current_batch_promise
-                dataset.register_for_batch(var)
+                dataset.register_for_batch(var, checksums=checksums)
 
         dataset._start_batch_timer()
 
