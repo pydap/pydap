@@ -1147,7 +1147,10 @@ class DatasetType(StructureType):
 
         # print("dap url:", _dap_url)
 
-        if isinstance(self._session, requests_cache.CachedSession):
+        if (
+            isinstance(self._session, requests_cache.CachedSession)
+            and self._session.cache.cache_name != "debug"
+        ):
             with self._session.cache_disabled():
                 r = self._session.get(
                     _dap_url,
