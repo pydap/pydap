@@ -13,7 +13,8 @@ from requests_cache import CachedSession
 from urllib3 import Retry
 from webob.request import Request as webob_Request
 
-from pydap.lib import DEFAULT_TIMEOUT, _quote, __version__
+from pydap.lib import DEFAULT_TIMEOUT, __version__, _quote
+
 
 def GET(
     url,
@@ -261,9 +262,9 @@ def create_session(
     token = session_kwargs.pop("token", None)
     cache_kwargs = cache_kwargs or {}
     if isinstance(session, requests.Session):
-        token_auth=session.headers.get("Authorization", None)
+        token_auth = session.headers.get("Authorization", None)
     else:
-        token_auth=None
+        token_auth = None
 
     if use_cache:
         expire_after = cache_kwargs.pop("expire_after", None)
@@ -322,5 +323,5 @@ def create_session(
         session.headers.update({"Authorization": f"{token_auth}"})
     elif token:
         session.headers.update({"Authorization": f"Bearer {token}"})
-    session.headers.update({"User-Agent": 'pydap/'+f"{__version__}"})
+    session.headers.update({"User-Agent": "pydap/" + f"{__version__}"})
     return session
