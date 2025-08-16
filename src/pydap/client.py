@@ -1081,10 +1081,23 @@ def get_cmr_urls(
                 and item[i]["URL"].startswith("https")
                 and not item[i]["URL"].endswith(".iso.xml")
             ):
-                granule_2 = item[i]["URL"]
+                if (
+                    max(
+                        len(item[i]["URL"].split("thredds")),
+                        len(item[i]["URL"].split("opendap")),
+                    )
+                    > 1
+                ):
+                    granule_2 = item[i]["URL"]
         granule = granule_1 if granule_1 else granule_2
-        granules_urls.append(granule)
-
+        if granule:
+            granules_urls.append(granule)
+        else:
+            warnings.warn(
+                f"Failed to find opendap urls with {ccid}. Try again, and make sure "
+                "the parameters are correct. If you think this is an issue with pydap"
+                " or the cmr, consider opening an issue on the pydap github repository"
+            )
     return granules_urls
 
 
