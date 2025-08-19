@@ -1075,7 +1075,7 @@ def get_cmr_urls(
                 or item[i].get("Subtype") == "OPENDAP DATA"
             ):
                 granule_1 = item[i]["URL"]
-                break
+                # break
 
             if (
                 item[i].get("Type") == "VIEW RELATED INFORMATION"
@@ -1090,7 +1090,7 @@ def get_cmr_urls(
                     > 1
                 ):
                     granule_2 = item[i]["URL"]
-                    break
+                    # break
         granule = granule_1 if granule_1 else granule_2
         if granule:
             granules_urls.append(granule)
