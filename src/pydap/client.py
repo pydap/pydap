@@ -249,13 +249,13 @@ def consolidate_metadata(
     ]
     session.headers["consolidated"] = "True"
     if safe_mode:
-        with session as Session:  # Authenticate once
+        with session as _Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
                 results = list(
-                    executor.map(lambda url: open_dmr(url, session=Session), dmr_urls)
+                    executor.map(lambda url: open_dmr(url, session=_Session), dmr_urls)
                 )
-        _dim_check = results[0].dimensions
-        if not all(d == _dim_check for d in [ds.dimensions for ds in results]):
+        _dim_check = list(results[0].dimensions)
+        if not all(d == _dim_check for d in [list(ds.dimensions) for ds in results]):
             warnings.warn(
                 "The dimensions of the datasets are not identical across all remote "
                 "dataset. Please check the URLs and try again."
@@ -283,18 +283,21 @@ def consolidate_metadata(
             stacklevel=2,
         )
     _check = "&dap4.checksum=true"
-    if concat_dim is not None and set([concat_dim]).issubset(dims):
-        dims.remove(concat_dim)
-        concat_dim_urls = [
-            url.split("?")[0]
-            + ".dap?dap4.ce="
-            + concat_dim
-            + "%5B0:1:"
-            + str(results[0].dimensions[concat_dim] - 1)
-            + "%5D"
-            + _check
-            for i, url in enumerate(URLs)
-        ]
+    if concat_dim and isinstance(concat_dim, str):
+        concat_dim = [concat_dim]
+    if concat_dim is not None and set(concat_dim).issubset(dims):
+        dims = dims - set(list(concat_dim))
+        concat_dim_urls = []
+        for i, url in enumerate(URLs):
+            cdims_ce = ";".join(
+                [
+                    cdim + "%5B0:1:" + str(results[i].dimensions[cdim] - 1) + "%5D"
+                    for cdim in sorted(concat_dim)
+                ]
+            )
+            concat_dim_urls.append(
+                url.split("?")[0] + ".dap?dap4.ce=" + cdims_ce + _check
+            )
     else:
         concat_dim_urls = []
 
@@ -350,15 +353,34 @@ def consolidate_metadata(
         ]  # rename coords
         maps.update(coords)
         if maps:
-            # may be 2 or 3D!
-            map_urls = [
-                var
-                + "".join(
-                    ["%5B0:1:" + str(length - 1) + "%5D" for length in pyds[var].shape]
-                )
-                for var in sorted(maps)
-            ]
-            map_urls = [base_url + ".dap?dap4.ce=" + ";".join(map_urls) + _check]
+            if isinstance(maps, set):
+                if concat_dim:
+                    maps.intersection_update(set(concat_dim))
+                map_urls = []
+                for i, url in enumerate(URLs):
+                    pyds = open_url(dmr_urls[i], protocol="dap4")
+                    cmaps_ce = ";".join(
+                        [
+                            cmap + "%5B0:1:" + str(pyds[cmap].shape[0] - 1) + "%5D"
+                            for cmap in sorted(list(maps))
+                        ]
+                    )
+                    map_urls.append(
+                        url.split("?")[0] + ".dap?dap4.ce=" + cmaps_ce + _check
+                    )
+            else:
+                # may be 2 or 3D!
+                map_urls = [
+                    var
+                    + "".join(
+                        [
+                            "%5B0:1:" + str(length - 1) + "%5D"
+                            for length in pyds[var].shape
+                        ]
+                    )
+                    for var in sorted(maps)
+                ]
+                map_urls = [base_url + ".dap?dap4.ce=" + ";".join(map_urls) + _check]
             maps_ces = set(
                 [
                     coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]"
@@ -375,6 +397,7 @@ def consolidate_metadata(
         dim_ces.update(add_dims)
         if maps_ces:
             dim_ces.update(maps_ces)
+        print("download new urls", new_urls)
         with session as Session:
             _ = download_all_urls(Session, new_urls, ncores=ncores)
     return None
