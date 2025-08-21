@@ -375,7 +375,7 @@ class BaseType(DapType):
     ):
         super(BaseType, self).__init__(name, attributes, **kwargs)
         self.data = data
-        self.dims = [] if not dims else list(dims)
+        self.dims = [] if not dims else sorted(list(dims))
         # these are set when not data is present (eg, when parsing a DDS)
         self._dtype = None
         self._shape = ()
