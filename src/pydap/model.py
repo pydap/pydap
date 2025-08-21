@@ -407,7 +407,10 @@ class BaseType(DapType):
     @property
     def dtype(self):
         """Property that returns the data dtype."""
-        return self._data.dtype
+        if isinstance(self._data, SelfClearingArray):
+            return self._dtype
+        else:
+            return self._data.dtype
 
     @property
     def shape(self):
@@ -435,7 +438,7 @@ class BaseType(DapType):
 
     @property
     def ndim(self):
-        return len(self.shape)
+        return len(self.dims)
 
     @property
     def size(self):
@@ -572,8 +575,12 @@ class BaseType(DapType):
         return self._data
 
     def _set_data(self, data):
+        # print(data)
         if isinstance(data, DapDecodedArray):
-            self._data = SelfClearingArray(data.array)
+            _array = data.array
+            self._shape = tuple(_array.shape)
+            self._dtype = _array.dtype
+            self._data = SelfClearingArray(_array)
         else:
             self._data = data
             if np.isscalar(data):

@@ -863,7 +863,7 @@ def get_count(variable):
     return count
 
 
-def decode_variable(buffer, start, stop, variable, endian):
+def decode_variable(buffer, start, stop, variable, endian, remote=True):
     dtype = variable.dtype
     dtype = dtype.newbyteorder(endian)
     if dtype.kind == "S":
@@ -873,7 +873,10 @@ def decode_variable(buffer, start, stop, variable, endian):
     else:
         data = numpy.frombuffer(buffer[start:stop], dtype=dtype)
         data = data.reshape(variable.shape)
-        return DapDecodedArray(data)
+        if remote:
+            return DapDecodedArray(data)
+        else:
+            return data
 
 
 def decode_utf8_string_array(buffer):
@@ -958,10 +961,11 @@ class UNPACKDAP4DATA(object):
             See `pydap.net.get.open_dap_file`
     """
 
-    def __init__(self, r, checksums=True, user_charset="ascii"):
+    def __init__(self, r, checksums=True, user_charset="ascii", remote=True):
         self.user_charset = user_charset
         self.checksums = checksums
         self.r = r
+        self.remote = remote
         try:
             iterator = self.iter_body()
             CHUNK_SIZE = 1048576
@@ -1057,6 +1061,7 @@ class UNPACKDAP4DATA(object):
                 stop=stop,
                 variable=variable,
                 endian=self.endianness,
+                remote=self.remote,
             )
             variable._set_data(data)
 

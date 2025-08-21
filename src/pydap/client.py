@@ -176,6 +176,7 @@ def consolidate_metadata(
     safe_mode=True,
     set_maps=False,
     verbose=False,
+    shared_dimensions=False,
     checksums=True,
 ):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
@@ -211,6 +212,9 @@ def consolidate_metadata(
         coords in xarray) that exist in the first remote url dataset. Then
         downloads all these within a single url. The url address is then
         stored in the session's headers as `Maps`.
+    shared_dimensions: bool (False default)
+        Takes the dimensions, and downloads all data in each data url at once
+        as opendap native dap response.
     verbose: bool, optional (default=False)
         For debugging purposes. If `True`, prints various URLs, normalized
         cache-keys, and other information.
@@ -247,20 +251,19 @@ def consolidate_metadata(
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
-    session.headers["consolidated"] = "True"
     if safe_mode:
         with session as _Session:  # Authenticate once
             with ThreadPoolExecutor(max_workers=ncores) as executor:
                 results = list(
                     executor.map(lambda url: open_dmr(url, session=_Session), dmr_urls)
                 )
-        _dim_check = list(results[0].dimensions)
-        if not all(d == _dim_check for d in [list(ds.dimensions) for ds in results]):
-            warnings.warn(
-                "The dimensions of the datasets are not identical across all remote "
-                "dataset. Please check the URLs and try again."
-            )
-            return None
+        # _dim_check = list(results[0].dimensions)
+        # if not all(d == _dim_check for d in [list(ds.dimensions) for ds in results]):
+        #     warnings.warn(
+        #         "The dimensions of the datasets are not identical across all remote "
+        #         "dataset. Please check the URLs and try again."
+        #     )
+        #     return None
     else:
         #  Caches a single dmr and creates a cache key for all dmr urls
         #  to avoid downloading multiple dmr responses.
@@ -283,6 +286,33 @@ def consolidate_metadata(
             stacklevel=2,
         )
     _check = "&dap4.checksum=true"
+
+    if shared_dimensions:
+        shared_dimension_urls = []
+        for i, url in enumerate(URLs):
+            _ces = url.split("?dap4.ce=")[-1].split(";")
+            ndims = ["/" + dim for dim in sorted(list(dims))]
+            _updated = sorted(list(set(_ces) - set(ndims)))
+            _ces = "%3B".join([dim for dim in ndims + _updated])
+            cdims_ce = "%3B".join(
+                [
+                    "/"
+                    + cdim
+                    + "%3D%5B0:1:"
+                    + str(results[i].dimensions[cdim] - 1)
+                    + "%5D"
+                    for cdim in sorted(dims)
+                ]
+            )
+            shared_dimension_urls.append(
+                url.split("?")[0] + ".dap?dap4.ce=" + cdims_ce + ";" + _ces + _check
+            )
+        with session as Session:
+            _ = download_all_urls(Session, shared_dimension_urls, ncores=ncores)
+        return shared_dimension_urls
+
+    session.headers["consolidated"] = "True"
+
     if concat_dim and isinstance(concat_dim, str):
         concat_dim = [concat_dim]
     if concat_dim is not None and set(concat_dim).issubset(dims):
@@ -397,7 +427,7 @@ def consolidate_metadata(
         dim_ces.update(add_dims)
         if maps_ces:
             dim_ces.update(maps_ces)
-        print("download new urls", new_urls)
+        # print("download new urls", new_urls)
         with session as Session:
             _ = download_all_urls(Session, new_urls, ncores=ncores)
     return None
