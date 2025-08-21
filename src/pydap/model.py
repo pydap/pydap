@@ -572,6 +572,7 @@ class BaseType(DapType):
         return self._data
 
     def _set_data(self, data):
+        # print(data)
         if isinstance(data, DapDecodedArray):
             self._data = SelfClearingArray(data.array)
         else:

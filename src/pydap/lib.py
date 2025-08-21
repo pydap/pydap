@@ -443,10 +443,10 @@ def fetch_batched_dimensions(ds, Variables, cache=None):
 
     for name in Variables:
         data = promise.wait_for_result(ds[name].id)
-        cache[ds[name].id] = np.asarray(data)
+        ds[ds[name].id].data = np.asarray(data)
 
     ds.dataset._current_batch_promise = None
-    return cache
+    # return cache
 
 
 def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
