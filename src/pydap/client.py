@@ -257,13 +257,13 @@ def consolidate_metadata(
                 results = list(
                     executor.map(lambda url: open_dmr(url, session=_Session), dmr_urls)
                 )
-        # _dim_check = list(results[0].dimensions)
-        # if not all(d == _dim_check for d in [list(ds.dimensions) for ds in results]):
-        #     warnings.warn(
-        #         "The dimensions of the datasets are not identical across all remote "
-        #         "dataset. Please check the URLs and try again."
-        #     )
-        #     return None
+        _dim_check = list(results[0].dimensions)
+        if not all(d == _dim_check for d in [list(ds.dimensions) for ds in results]):
+            warnings.warn(
+                "The dimensions of the datasets are not identical across all remote "
+                "dataset. Please check the URLs and try again."
+            )
+            return None
     else:
         #  Caches a single dmr and creates a cache key for all dmr urls
         #  to avoid downloading multiple dmr responses.
@@ -383,34 +383,15 @@ def consolidate_metadata(
         ]  # rename coords
         maps.update(coords)
         if maps:
-            if isinstance(maps, set):
-                if concat_dim:
-                    maps.intersection_update(set(concat_dim))
-                map_urls = []
-                for i, url in enumerate(URLs):
-                    pyds = open_url(dmr_urls[i], protocol="dap4")
-                    cmaps_ce = ";".join(
-                        [
-                            cmap + "%5B0:1:" + str(pyds[cmap].shape[0] - 1) + "%5D"
-                            for cmap in sorted(list(maps))
-                        ]
-                    )
-                    map_urls.append(
-                        url.split("?")[0] + ".dap?dap4.ce=" + cmaps_ce + _check
-                    )
-            else:
-                # may be 2 or 3D!
-                map_urls = [
-                    var
-                    + "".join(
-                        [
-                            "%5B0:1:" + str(length - 1) + "%5D"
-                            for length in pyds[var].shape
-                        ]
-                    )
-                    for var in sorted(maps)
-                ]
-                map_urls = [base_url + ".dap?dap4.ce=" + ";".join(map_urls) + _check]
+            # may be 2 or 3D!
+            map_urls = [
+                var
+                + "".join(
+                    ["%5B0:1:" + str(length - 1) + "%5D" for length in pyds[var].shape]
+                )
+                for var in sorted(maps)
+            ]
+            map_urls = [base_url + ".dap?dap4.ce=" + ";".join(map_urls) + _check]
             maps_ces = set(
                 [
                     coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]"
