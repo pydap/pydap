@@ -11,6 +11,7 @@ from sys import maxsize as MAXSIZE
 import numpy as np
 from requests.utils import quote as quote_
 from requests.utils import unquote as unquote_
+from requests_cache import CachedSession
 
 from . import __version__
 from .exceptions import ConstraintExpressionError
@@ -386,7 +387,7 @@ def get_batch_data(ds, cache={}, checksums=True):
     if "consolidated" in ds.dataset.session.headers:
         # need to add a check that consolidated has
         # been performed on that collection.
-        cache = fetch_consolidated_dimensions(ds, cache)
+        fetch_consolidated(ds)
     else:
         register_all_for_batch(ds.dataset, dimensions, checksums=checksums)
         cache = fetch_batched_dimensions(ds.dataset, dimensions, cache)
@@ -443,13 +444,13 @@ def fetch_batched_dimensions(ds, Variables, cache=None):
 
     for name in Variables:
         data = promise.wait_for_result(ds[name].id)
-        ds[ds[name].id].data = np.asarray(data)
+        ds[ds[name].id].data = np.asarray(data)  # make sure this persists
 
     ds.dataset._current_batch_promise = None
     # return cache
 
 
-def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
+def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
     """
     Helper function that makes it easier to process previously download
     dap responses of dimension data, i.e. after `consolidated_metadata`
@@ -466,7 +467,7 @@ def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
     ----------
         ds: Dataset | GroupType (DAP4)
             Must `batch=True` and point to remote data.
-        cache: dict
+        cache_urls: dict
             Where dimension array data will be stored.
         checksums: bool (Default=True)
             Whether the dap response was requested with checksum=true. If true,
@@ -474,9 +475,6 @@ def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
             response. when `checksum=False`, the dap response was created without the
             checksum per variable. Important info for decoding
 
-    Returns:
-        cache: dict
-            contains the dimension array data decoded into numpy arrays.
     """
 
     import pydap
@@ -484,16 +482,20 @@ def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
     var_name = list(ds.variables())[0]
     baseurl = ds[var_name].data.baseurl
     session = ds.dataset.session
-    cache_urls = session.cache.urls()
+    if not cache_urls and isinstance(session, CachedSession):
+        # gets them from cache
+        cache_urls = session.cache.urls()
     miss_url, curr_url = recover_missing_url(cache_urls, baseurl)
     dap_urls = miss_url + curr_url
     for URL in set(dap_urls):
+        print("[pydap.lib.fetch_consolidated] Fetching:", URL)
         r = session.get(URL, stream=True)
+        # create temp dataset
         pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksums=checksums).dataset
-        for name in pyds.keys():
-            # get fully qualifying name here?
-            cache[pyds[name].id] = np.asarray(pyds[name].data)
-    return cache
+        for var in walk(pyds, pydap.model.BaseType):
+            print("[pydap.lib.fetch_consolidated] Fetching:", var.id)
+            ds[var.id].data = np.asarray(var.data)
+        del pyds
 
 
 def resolve_batch_for_all_variables(array, key=None, checksums=True):
