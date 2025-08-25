@@ -83,6 +83,13 @@ def test_open_url_dap4_shape():
     assert data.shape == (100,)
 
 
+def test_open_url_batch_dap2_raises():
+    url = "dap2://test.opendap.org/opendap/"
+    filename = "netcdf/examples/200803061600_HFRadar_USEGC_6km_rtv_SIO.nc"
+    with pytest.raises(RuntimeError):
+        open_url(url + filename, batch=True)
+
+
 def test_open_url_seqCE(remote_url):
     seq_url = remote_url + "ff/gsodock.dat"
     data_original = open_url(seq_url)

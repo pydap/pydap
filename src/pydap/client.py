@@ -160,9 +160,16 @@ def open_url(
     )
     dataset = handler.dataset
     dataset._session = session
-    if handler.protocol == "dap4" and application is None and batch:  # and batch
-        # always enable batch mode for dap4 datasets
+
+    if batch:
+        if handler.protocol == "dap2" or application:
+            raise RuntimeError(
+                "Multi-variable download within single response "
+                "is currently only supported in DAP4."
+            )
+
         dataset.enable_batch_mode()
+
     # attach server-side functions
     dataset.functions = Functions(url, application, session, timeout=timeout)
 
