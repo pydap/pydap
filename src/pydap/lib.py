@@ -371,27 +371,28 @@ def decode_np_strings(numpy_var):
         return numpy_var
 
 
-def get_batch_data(ds, cache={}, checksums=True):
+def get_batch_data(ds, cache_urls=None, checksums=True):
     """
     parent object - either a dataset or Group type (dap4)
     """
     import pydap
 
     # dimensions = sorted(ds.dimensions)
-    dimensions = [
-        var.id
-        for var in walk(ds.dataset, pydap.model.BaseType)
-        if var.name in var.parent.dimensions
-    ]
+    # at the parent level only?
     # check if data has been pre-downloaded
     if "consolidated" in ds.dataset.session.headers:
         # need to add a check that consolidated has
         # been performed on that collection.
-        fetch_consolidated(ds)
+        fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
     else:
+        dimensions = [
+            var.id
+            for var in walk(ds.dataset, pydap.model.BaseType)
+            if var.name in var.parent.dimensions
+        ]
+        # print("[pydap.lib get_batch_data] dimensions: ", dimensions)
         register_all_for_batch(ds.dataset, dimensions, checksums=checksums)
-        cache = fetch_batched_dimensions(ds.dataset, dimensions, cache)
-    return cache
+        fetch_batched(ds.dataset, dimensions)
 
 
 def register_all_for_batch(ds, Variables, checksums=True) -> None:
@@ -409,6 +410,7 @@ def register_all_for_batch(ds, Variables, checksums=True) -> None:
 
     for name in Variables:
         var = ds[name]
+        # print("[pydap.lib register_all_for_batch] Registering:", var.id)
         if not var._is_data_loaded():  # and var.id != concat_dim:
             var._pending_batch_slice = slice(None)
             ds.register_for_batch(var, checksums=checksums)
@@ -417,7 +419,7 @@ def register_all_for_batch(ds, Variables, checksums=True) -> None:
     # return promise
 
 
-def fetch_batched_dimensions(ds, Variables, cache=None):
+def fetch_batched(ds, Variables) -> None:
     """
     Helper function that fetched dimensions within a pydap dataset
     or Group, that have been registered for batched download. Only compatible
@@ -436,15 +438,13 @@ def fetch_batched_dimensions(ds, Variables, cache=None):
         dict:
             containing all dimension array data
     """
-    if cache is None:
-        cache = {}
-
     promise = ds._current_batch_promise
     promise._event.wait()
 
-    for name in Variables:
-        data = promise.wait_for_result(ds[name].id)
-        ds[ds[name].id].data = np.asarray(data)  # make sure this persists
+    for var in Variables:
+        var = ds[var]
+        data = promise.wait_for_result(var.id)
+        ds[var.id]._data = np.asarray(data) # make sure this persists
 
     ds.dataset._current_batch_promise = None
     # return cache
@@ -488,13 +488,13 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
     miss_url, curr_url = recover_missing_url(cache_urls, baseurl)
     dap_urls = miss_url + curr_url
     for URL in set(dap_urls):
-        print("[pydap.lib.fetch_consolidated] Fetching:", URL)
+        # print("[pydap.lib.fetch_consolidated] Fetching:", URL)
         r = session.get(URL, stream=True)
         # create temp dataset
         pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksums=checksums).dataset
         for var in walk(pyds, pydap.model.BaseType):
             print("[pydap.lib.fetch_consolidated] Fetching:", var.id)
-            ds[var.id].data = np.asarray(var.data)
+            ds.dataset[var.id].data = np.asarray(var.data)
         del pyds
 
 
