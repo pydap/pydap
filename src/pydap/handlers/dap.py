@@ -1065,7 +1065,8 @@ class UNPACKDAP4DATA(object):
                     buffer[stop : stop + 4], dtype=checksum_dtype
                 )
                 variable.attributes["_DAP4_Checksum_CRC32"] = checksum[0]
-
-            # Jump over the 4 byte chunk_header
-            start = stop + 4
+                # Jump over the 4 byte chunk_header
+                start = stop + 4
+            else:
+                start = stop
         return dataset
