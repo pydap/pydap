@@ -1148,7 +1148,6 @@ class DatasetType(StructureType):
         else:
             _dap_url += "&dap4.checksum=false"
 
-
         if _dap_url.startswith("https://test.opendap.org"):
             _dap_url = _dap_url.replace("https", "http")
 
@@ -1175,7 +1174,9 @@ class DatasetType(StructureType):
                 stream=True,
             )
 
-        parsed_dataset = UNPACKDAP4DATA(r, checksums=self._checksums, user_charset="ascii").dataset
+        parsed_dataset = UNPACKDAP4DATA(
+            r, checksums=self._checksums, user_charset="ascii"
+        ).dataset
 
         # Collect results
         results_dict = {}
