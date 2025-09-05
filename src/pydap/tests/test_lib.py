@@ -13,16 +13,19 @@ from pydap.lib import (
     _quote,
     combine_slices,
     encode,
+    fetch_batched,
     fetch_consolidated,
     fix_shorthand,
     fix_slice,
     get_var,
     hyperslab,
     recover_missing_url,
+    register_all_for_batch,
     tree,
     walk,
 )
 from pydap.model import BaseType, DatasetType, SequenceType, StructureType
+from pydap.net import create_session
 
 
 class TestQuote(unittest.TestCase):
@@ -390,3 +393,26 @@ def test_fetch_consolidated(url, session=session):
         assert hasattr(var, "ndim")
         assert hasattr(var, "dtype")
         assert isinstance(var.data, np.ndarray)
+
+
+@pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
+def test_fetched_batched(group):
+    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session.cache.clear()
+    pyds = open_url(url, session=session, batch=True)
+    session.cache.clear()
+
+    # batch dimensions with fully qualifying names
+    dims = [
+        pyds[group][name].id
+        for name in pyds[group].dimensions
+        if name in pyds[group].keys() and isinstance(pyds[group][name], BaseType)
+    ]
+    register_all_for_batch(pyds, dims)
+    # assign data to variables
+    fetch_batched(pyds, dims)
+    # checks
+    for var in dims:
+        assert isinstance(pyds[var].data, np.ndarray)
+    assert len(session.cache.urls()) == 1  # single dap url

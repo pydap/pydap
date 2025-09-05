@@ -386,8 +386,10 @@ def get_batch_data(ds, cache_urls=None, checksums=True):
         fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
     else:
         dimensions = [
-            ds[name].id for name in ds.dimensions if name in ds.keys() and isinstance(ds[name], pydap.model.BaseType)
-        ] # fully qualified names
+            ds[name].id
+            for name in ds.dimensions
+            if name in ds.keys() and isinstance(ds[name], pydap.model.BaseType)
+        ]  # fully qualified names
         register_all_for_batch(ds.dataset, dimensions, checksums=checksums)
         fetch_batched(ds.dataset, dimensions)
 
