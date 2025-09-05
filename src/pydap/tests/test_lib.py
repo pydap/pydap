@@ -5,12 +5,15 @@ from sys import maxsize as MAXSIZE
 
 import numpy as np
 import pytest
+from requests_cache import CachedSession
 
+from pydap.client import consolidate_metadata, open_url
 from pydap.exceptions import ConstraintExpressionError
 from pydap.lib import (
     _quote,
     combine_slices,
     encode,
+    fetch_consolidated,
     fix_shorthand,
     fix_slice,
     get_var,
@@ -364,3 +367,26 @@ def test_recover_missing_url(queries, baseurl):
 
     # assert that simply from base url I can recored the correct cached dap url
     assert miss_url == cached_dap
+
+
+# prep a consolidated session for the next test
+urls = [
+    "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+    "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+]
+session = CachedSession()
+session.cache.clear()
+consolidate_metadata(urls, session=session, concat_dim="TIME")
+
+
+@pytest.mark.parametrize("url", [urls[0], urls[1]])
+def test_fetch_consolidated(url, session=session):
+    """Test that fetch_consolidated works as expected."""
+    pyds = open_url(url, session=session)
+    fetch_consolidated(pyds)
+    for name in ["TIME", "COADSX", "COADSY"]:
+        var = pyds[name]
+        assert isinstance(var, BaseType)
+        assert hasattr(var, "ndim")
+        assert hasattr(var, "dtype")
+        assert isinstance(var.data, np.ndarray)
