@@ -386,11 +386,8 @@ def get_batch_data(ds, cache_urls=None, checksums=True):
         fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
     else:
         dimensions = [
-            var.id
-            for var in walk(ds.dataset, pydap.model.BaseType)
-            if var.name in var.parent.dimensions
-        ]
-        # print("[pydap.lib get_batch_data] dimensions: ", dimensions)
+            ds[name].id for name in ds.dimensions if name in ds.keys() and isinstance(ds[name], pydap.model.BaseType)
+        ] # fully qualified names
         register_all_for_batch(ds.dataset, dimensions, checksums=checksums)
         fetch_batched(ds.dataset, dimensions)
 
@@ -404,7 +401,7 @@ def register_all_for_batch(ds, Variables, checksums=True) -> None:
     ----------
         ds: dataset (dap4)
         Variables: list
-            List of dimensions in `ds` that will be processed
+            List of fully qualifying dimension names in `ds` that will be processed
         checksums: bool | True (default)
     """
 
@@ -428,15 +425,9 @@ def fetch_batched(ds, Variables) -> None:
 
     Parameters:
     ----------
-        ds: pydap dataset (dap4)
+        ds: pydap dataset | GroupType (dap4)
         Variables: list
             items within the ds or Group.
-        cache: bool (False is default)
-            dictionary that stores the name of the dimension and its value
-
-    Returns:
-        dict:
-            containing all dimension array data
     """
     promise = ds._current_batch_promise
     promise._event.wait()
@@ -444,7 +435,7 @@ def fetch_batched(ds, Variables) -> None:
     for var in Variables:
         var = ds[var]
         data = promise.wait_for_result(var.id)
-        ds[var.id]._data = np.asarray(data)  # make sure this persists
+        ds[var.id].data = np.asarray(data)  # make sure this persists
 
     ds.dataset._current_batch_promise = None
     # return cache
