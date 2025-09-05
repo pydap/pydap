@@ -444,7 +444,7 @@ def fetch_batched(ds, Variables) -> None:
     for var in Variables:
         var = ds[var]
         data = promise.wait_for_result(var.id)
-        ds[var.id]._data = np.asarray(data) # make sure this persists
+        ds[var.id]._data = np.asarray(data)  # make sure this persists
 
     ds.dataset._current_batch_promise = None
     # return cache
@@ -492,8 +492,10 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
         r = session.get(URL, stream=True)
         # create temp dataset
         pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksums=checksums).dataset
-        for var in walk(pyds, pydap.model.BaseType):
-            print("[pydap.lib.fetch_consolidated] Fetching:", var.id)
+        for name in [
+            name for name in pyds.keys() if isinstance(ds[name], pydap.model.BaseType)
+        ]:
+            var = pyds[name]
             ds.dataset[var.id].data = np.asarray(var.data)
         del pyds
 
