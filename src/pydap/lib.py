@@ -371,7 +371,7 @@ def decode_np_strings(numpy_var):
         return numpy_var
 
 
-def get_batch_data(ds, cache_urls=None, checksums=True, dims=True):
+def get_batch_data(ds, cache_urls=None, checksums=True, dims=True, key=None):
     """
     parent object - either a dataset or Group type (dap4)
     """
@@ -395,11 +395,11 @@ def get_batch_data(ds, cache_urls=None, checksums=True, dims=True):
                 if isinstance(ds[var_name], pydap.model.BaseType)
                 and var_name not in ds.dimensions
             ]
-        register_all_for_batch(ds.dataset, Variables, checksums=checksums)
+        register_all_for_batch(ds.dataset, Variables, checksums=checksums, key=key)
         fetch_batched(ds.dataset, Variables)
 
 
-def register_all_for_batch(ds, Variables, checksums=True) -> None:
+def register_all_for_batch(ds, Variables, checksums=True, key=None) -> None:
     """
     Used to register all dimension array when pydap
     dataset has been initialized with batch=True.
@@ -414,9 +414,10 @@ def register_all_for_batch(ds, Variables, checksums=True) -> None:
 
     for name in Variables:
         var = ds[name]
+        _slice = slice(None) if not key else key
         # print("[pydap.lib register_all_for_batch] Registering:", var.id)
         if not var._is_data_loaded():  # and var.id != concat_dim:
-            var._pending_batch_slice = slice(None)
+            var._pending_batch_slice = _slice
             ds.register_for_batch(var, checksums=checksums)
             var._is_registered_for_batch = True
     ds._start_batch_timer()
@@ -440,7 +441,7 @@ def fetch_batched(ds, Variables) -> None:
     promise._event.wait()
 
     for var in Variables:
-        print(var)
+        # print(var)
         var = ds[var]
         data = promise.wait_for_result(var.id)
         ds[var.id].data = np.asarray(data)  # make sure this persists
