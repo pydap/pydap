@@ -371,27 +371,32 @@ def decode_np_strings(numpy_var):
         return numpy_var
 
 
-def get_batch_data(ds, cache_urls=None, checksums=True):
+def get_batch_data(ds, cache_urls=None, checksums=True, dims=True):
     """
     parent object - either a dataset or Group type (dap4)
     """
     import pydap
 
-    # dimensions = sorted(ds.dimensions)
-    # at the parent level only?
-    # check if data has been pre-downloaded
-    if "consolidated" in ds.dataset.session.headers:
+    if "consolidated" in ds.dataset.session.headers and dims:
         # need to add a check that consolidated has
         # been performed on that collection.
         fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
     else:
-        dimensions = [
-            ds[name].id
-            for name in ds.dimensions
-            if name in ds.keys() and isinstance(ds[name], pydap.model.BaseType)
-        ]  # fully qualified names
-        register_all_for_batch(ds.dataset, dimensions, checksums=checksums)
-        fetch_batched(ds.dataset, dimensions)
+        if dims:
+            Variables = [
+                ds[name].id
+                for name in ds.dimensions
+                if name in ds.keys() and isinstance(ds[name], pydap.model.BaseType)
+            ]  # fully qualified names
+        if not dims:
+            Variables = [
+                ds[var_name].id
+                for var_name in ds.variables()
+                if isinstance(ds[var_name], pydap.model.BaseType)
+                and var_name not in ds.dimensions
+            ]
+        register_all_for_batch(ds.dataset, Variables, checksums=checksums)
+        fetch_batched(ds.dataset, Variables)
 
 
 def register_all_for_batch(ds, Variables, checksums=True) -> None:
@@ -435,6 +440,7 @@ def fetch_batched(ds, Variables) -> None:
     promise._event.wait()
 
     for var in Variables:
+        print(var)
         var = ds[var]
         data = promise.wait_for_result(var.id)
         ds[var.id].data = np.asarray(data)  # make sure this persists
