@@ -430,8 +430,15 @@ def test_get_batch_data(dims, group):
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
     session.cache.clear()
+    if dims:
+        var_name = list(pyds[group].dimensions)[0]
+    else:
+        variables = [
+            var for var in pyds[group].variables() if var not in pyds[group].dimensions
+        ]
+        var_name = variables[0]
 
-    get_batch_data(pyds[group], dims=dims, checksums=True)
+    get_batch_data(pyds[group][var_name], checksums=True)
     assert len(session.cache.urls()) == 1  # single dap url
 
     if dims:

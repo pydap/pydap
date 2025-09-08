@@ -371,11 +371,16 @@ def decode_np_strings(numpy_var):
         return numpy_var
 
 
-def get_batch_data(ds, cache_urls=None, checksums=True, dims=True, key=None):
+def get_batch_data(array, cache_urls=None, checksums=True, key=None):
     """
     parent object - either a dataset or Group type (dap4)
     """
     import pydap
+
+    ds = array.parent
+    dims = False
+    if array.name in ds.dimensions:
+        dims = True
 
     if "consolidated" in ds.dataset.session.headers and dims:
         # need to add a check that consolidated has
@@ -421,7 +426,6 @@ def register_all_for_batch(ds, Variables, checksums=True, key=None) -> None:
             ds.register_for_batch(var, checksums=checksums)
             var._is_registered_for_batch = True
     ds._start_batch_timer()
-    # return promise
 
 
 def fetch_batched(ds, Variables) -> None:
