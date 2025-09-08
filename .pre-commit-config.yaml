@@ -4,7 +4,7 @@ ci:
   autoupdate_commit_msg: 'Update pre-commit hooks'
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v5.0.0
+  rev: v6.0.0
   hooks:
   - id: trailing-whitespace
     exclude: src/pydap/tests/data/dmrs/MOD05_L2.A2019336.2315.061.2019337071952.hdf.dmr|src/pydap/tests/data/rainfall_time_malaysia.cdp.dods|src/pydap/wsgi/templates/base.html
