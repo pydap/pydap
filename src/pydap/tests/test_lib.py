@@ -17,6 +17,7 @@ from pydap.lib import (
     fetch_consolidated,
     fix_shorthand,
     fix_slice,
+    get_batch_data,
     get_var,
     hyperslab,
     recover_missing_url,
@@ -416,3 +417,30 @@ def test_fetched_batched(group):
     for var in dims:
         assert isinstance(pyds[var].data, np.ndarray)
     assert len(session.cache.urls()) == 1  # single dap url
+
+
+@pytest.mark.parametrize("dims", [True, False])
+@pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
+def test_get_batch_data(dims, group):
+    """
+    Test that `get_batch_data` works as expected.
+    """
+    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session.cache.clear()
+    pyds = open_url(url, session=session, batch=True)
+    session.cache.clear()
+
+    get_batch_data(pyds[group], dims=dims, checksums=True)
+    assert len(session.cache.urls()) == 1  # single dap url
+
+    if dims:
+        for name in pyds[group].dimensions:
+            if name in pyds[group].keys() and isinstance(pyds[group][name], BaseType):
+                assert pyds[group][name]._is_data_loaded()
+    else:
+        for name in pyds[group].variables():
+            if name not in pyds[group].dimensions and isinstance(
+                pyds[group][name], BaseType
+            ):
+                assert pyds[group][name]._is_data_loaded()
