@@ -5,21 +5,28 @@ from sys import maxsize as MAXSIZE
 
 import numpy as np
 import pytest
+from requests_cache import CachedSession
 
+from pydap.client import consolidate_metadata, open_url
 from pydap.exceptions import ConstraintExpressionError
 from pydap.lib import (
     _quote,
     combine_slices,
     encode,
+    fetch_batched,
+    fetch_consolidated,
     fix_shorthand,
     fix_slice,
+    get_batch_data,
     get_var,
     hyperslab,
     recover_missing_url,
+    register_all_for_batch,
     tree,
     walk,
 )
 from pydap.model import BaseType, DatasetType, SequenceType, StructureType
+from pydap.net import create_session
 
 
 class TestQuote(unittest.TestCase):
@@ -364,3 +371,76 @@ def test_recover_missing_url(queries, baseurl):
 
     # assert that simply from base url I can recored the correct cached dap url
     assert miss_url == cached_dap
+
+
+# prep a consolidated session for the next test
+urls = [
+    "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+    "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+]
+session = CachedSession()
+session.cache.clear()
+consolidate_metadata(urls, session=session, concat_dim="TIME")
+
+
+@pytest.mark.parametrize("url", [urls[0], urls[1]])
+def test_fetch_consolidated(url, session=session):
+    """Test that fetch_consolidated works as expected."""
+    pyds = open_url(url, session=session)
+    fetch_consolidated(pyds)
+    for name in ["TIME", "COADSX", "COADSY"]:
+        var = pyds[name]
+        assert isinstance(var, BaseType)
+        assert hasattr(var, "ndim")
+        assert hasattr(var, "dtype")
+        assert isinstance(var.data, np.ndarray)
+
+
+@pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
+def test_fetched_batched(group):
+    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session.cache.clear()
+    pyds = open_url(url, session=session, batch=True)
+    session.cache.clear()
+
+    # batch dimensions with fully qualifying names
+    dims = [
+        pyds[group][name].id
+        for name in pyds[group].dimensions
+        if name in pyds[group].keys() and isinstance(pyds[group][name], BaseType)
+    ]
+    register_all_for_batch(pyds, dims)
+    # assign data to variables
+    fetch_batched(pyds, dims)
+    # checks
+    for var in dims:
+        assert isinstance(pyds[var].data, np.ndarray)
+    assert len(session.cache.urls()) == 1  # single dap url
+
+
+@pytest.mark.parametrize("dims", [True, False])
+@pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
+def test_get_batch_data(dims, group):
+    """
+    Test that `get_batch_data` works as expected.
+    """
+    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session.cache.clear()
+    pyds = open_url(url, session=session, batch=True)
+    session.cache.clear()
+
+    get_batch_data(pyds[group], dims=dims, checksums=True)
+    assert len(session.cache.urls()) == 1  # single dap url
+
+    if dims:
+        for name in pyds[group].dimensions:
+            if name in pyds[group].keys() and isinstance(pyds[group][name], BaseType):
+                assert pyds[group][name]._is_data_loaded()
+    else:
+        for name in pyds[group].variables():
+            if name not in pyds[group].dimensions and isinstance(
+                pyds[group][name], BaseType
+            ):
+                assert pyds[group][name]._is_data_loaded()

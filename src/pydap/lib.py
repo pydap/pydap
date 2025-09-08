@@ -11,6 +11,7 @@ from sys import maxsize as MAXSIZE
 import numpy as np
 from requests.utils import quote as quote_
 from requests.utils import unquote as unquote_
+from requests_cache import CachedSession
 
 from . import __version__
 from .exceptions import ConstraintExpressionError
@@ -370,27 +371,32 @@ def decode_np_strings(numpy_var):
         return numpy_var
 
 
-def get_batch_data(ds, cache={}, checksums=True):
+def get_batch_data(ds, cache_urls=None, checksums=True, dims=True):
     """
     parent object - either a dataset or Group type (dap4)
     """
     import pydap
 
-    # dimensions = sorted(ds.dimensions)
-    dimensions = [
-        var.id
-        for var in walk(ds.dataset, pydap.model.BaseType)
-        if var.name in var.parent.dimensions
-    ]
-    # check if data has been pre-downloaded
-    if "consolidated" in ds.dataset.session.headers:
+    if "consolidated" in ds.dataset.session.headers and dims:
         # need to add a check that consolidated has
         # been performed on that collection.
-        cache = fetch_consolidated_dimensions(ds, cache)
+        fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
     else:
-        register_all_for_batch(ds.dataset, dimensions, checksums=checksums)
-        cache = fetch_batched_dimensions(ds.dataset, dimensions, cache)
-    return cache
+        if dims:
+            Variables = [
+                ds[name].id
+                for name in ds.dimensions
+                if name in ds.keys() and isinstance(ds[name], pydap.model.BaseType)
+            ]  # fully qualified names
+        if not dims:
+            Variables = [
+                ds[var_name].id
+                for var_name in ds.variables()
+                if isinstance(ds[var_name], pydap.model.BaseType)
+                and var_name not in ds.dimensions
+            ]
+        register_all_for_batch(ds.dataset, Variables, checksums=checksums)
+        fetch_batched(ds.dataset, Variables)
 
 
 def register_all_for_batch(ds, Variables, checksums=True) -> None:
@@ -402,12 +408,13 @@ def register_all_for_batch(ds, Variables, checksums=True) -> None:
     ----------
         ds: dataset (dap4)
         Variables: list
-            List of dimensions in `ds` that will be processed
+            List of fully qualifying dimension names in `ds` that will be processed
         checksums: bool | True (default)
     """
 
     for name in Variables:
         var = ds[name]
+        # print("[pydap.lib register_all_for_batch] Registering:", var.id)
         if not var._is_data_loaded():  # and var.id != concat_dim:
             var._pending_batch_slice = slice(None)
             ds.register_for_batch(var, checksums=checksums)
@@ -416,7 +423,7 @@ def register_all_for_batch(ds, Variables, checksums=True) -> None:
     # return promise
 
 
-def fetch_batched_dimensions(ds, Variables, cache=None):
+def fetch_batched(ds, Variables) -> None:
     """
     Helper function that fetched dimensions within a pydap dataset
     or Group, that have been registered for batched download. Only compatible
@@ -425,31 +432,24 @@ def fetch_batched_dimensions(ds, Variables, cache=None):
 
     Parameters:
     ----------
-        ds: pydap dataset (dap4)
+        ds: pydap dataset | GroupType (dap4)
         Variables: list
             items within the ds or Group.
-        cache: bool (False is default)
-            dictionary that stores the name of the dimension and its value
-
-    Returns:
-        dict:
-            containing all dimension array data
     """
-    if cache is None:
-        cache = {}
-
     promise = ds._current_batch_promise
     promise._event.wait()
 
-    for name in Variables:
-        data = promise.wait_for_result(ds[name].id)
-        ds[ds[name].id].data = np.asarray(data)
+    for var in Variables:
+        print(var)
+        var = ds[var]
+        data = promise.wait_for_result(var.id)
+        ds[var.id].data = np.asarray(data)  # make sure this persists
 
     ds.dataset._current_batch_promise = None
     # return cache
 
 
-def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
+def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
     """
     Helper function that makes it easier to process previously download
     dap responses of dimension data, i.e. after `consolidated_metadata`
@@ -466,7 +466,7 @@ def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
     ----------
         ds: Dataset | GroupType (DAP4)
             Must `batch=True` and point to remote data.
-        cache: dict
+        cache_urls: dict
             Where dimension array data will be stored.
         checksums: bool (Default=True)
             Whether the dap response was requested with checksum=true. If true,
@@ -474,9 +474,6 @@ def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
             response. when `checksum=False`, the dap response was created without the
             checksum per variable. Important info for decoding
 
-    Returns:
-        cache: dict
-            contains the dimension array data decoded into numpy arrays.
     """
 
     import pydap
@@ -484,16 +481,22 @@ def fetch_consolidated_dimensions(ds, cache, checksums=True) -> {}:
     var_name = list(ds.variables())[0]
     baseurl = ds[var_name].data.baseurl
     session = ds.dataset.session
-    cache_urls = session.cache.urls()
+    if not cache_urls and isinstance(session, CachedSession):
+        # gets them from cache
+        cache_urls = session.cache.urls()
     miss_url, curr_url = recover_missing_url(cache_urls, baseurl)
     dap_urls = miss_url + curr_url
     for URL in set(dap_urls):
+        # print("[pydap.lib.fetch_consolidated] Fetching:", URL)
         r = session.get(URL, stream=True)
+        # create temp dataset
         pyds = pydap.handlers.dap.UNPACKDAP4DATA(r, checksums=checksums).dataset
-        for name in pyds.keys():
-            # get fully qualifying name here?
-            cache[pyds[name].id] = np.asarray(pyds[name].data)
-    return cache
+        for name in [
+            name for name in pyds.keys() if isinstance(ds[name], pydap.model.BaseType)
+        ]:
+            var = pyds[name]
+            ds.dataset[var.id].data = np.asarray(var.data)
+        del pyds
 
 
 def resolve_batch_for_all_variables(array, key=None, checksums=True):
