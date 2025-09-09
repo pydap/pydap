@@ -956,4 +956,8 @@ def test_register_dim_slices(var, slice, expected):
 
     # reset registered slices and check
     pyds.register_dim_slices(pyds[var], key=None)
-    assert pyds._slices == {"/TIME": "[0:1:11]", "/COADSY": "[0:1:89]", "/COADSX": "[0:1:179]"}
+    assert pyds._slices == {
+        "/TIME": "[0:1:11]",
+        "/COADSY": "[0:1:89]",
+        "/COADSX": "[0:1:179]",
+    }
