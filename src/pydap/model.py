@@ -670,17 +670,6 @@ class StructureType(DapType, Mapping):
         """Assume that key is a string type"""
         try:
             child = self._dict[_quote(key)]
-            # if isinstance(child, BaseType):
-            #     if getattr(child, "dataset", None) and child.dataset.is_batch_mode():
-            #         out = type(child).__new__(type(child))
-            #         out.__dict__ = child.__dict__.copy()
-            #         out._pending_batch_slice = None
-            #         if hasattr(child, "_data") and child.is_remote_dapdata():
-            #             out._data = child._data
-            #         return out
-            #     else:
-            #         return child
-            # else:
             return child
         except KeyError:
             splitted = key.split(".")
@@ -1097,6 +1086,7 @@ class DatasetType(StructureType):
         self._batch_results = {}
         self._dap_url = None
         self._checksums = True
+        self._slice = None
 
     def register_for_batch(self, var, checksums=True):
         """Register a key for batch processing."""
