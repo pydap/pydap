@@ -1086,7 +1086,7 @@ class DatasetType(StructureType):
         self._batch_results = {}
         self._dap_url = None
         self._checksums = True
-        self._slice = None
+        self._slices = None
 
     def register_for_batch(self, var, checksums=True):
         """Register a key for batch processing."""
@@ -1202,6 +1202,23 @@ class DatasetType(StructureType):
         self._batch_registry = set()
         self._batch_timer = None
         self._batch_results = {}
+
+    def register_dim_slices(self, var, key=None) -> None:
+        """given a BaseType var, and an intended slice key (tuple) that matches its
+        dimension, register the slice for future re use.
+        Limitations:
+            - key is set by user, to match dimension of var. But no checks are done
+              to ensure this is correct.
+            - slice is stored/registered at dataset level, so any variable with same
+              dimension name will share the same slice.
+            - slices are not validated, so user must ensure they make sense.
+            - Intended only when in batch mode.
+        """
+        dims = [dim for dim in var.dims]
+        var._pending_batch_slice = slice(key) if not key else key
+        slice_elements = var.build_ce().split(var.name)[-1]
+        dim_slices = dict(zip(dims, [sli + "]" for sli in slice_elements.split("]")]))
+        self._slices = dim_slices
 
 
 class SequenceType(StructureType):
