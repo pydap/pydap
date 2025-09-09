@@ -486,10 +486,20 @@ class BaseProxyDap4(BaseProxyDap2):
         self.checksums = checksums
         self.user_charset = user_charset
         self.get_kwargs = get_kwargs or {}
+        self.ce = None
 
     def __repr__(self):
         return "Dap4BaseProxy(%s)" % ", ".join(
-            map(repr, [self.baseurl, self.id, self.dtype, self.shape, self.slice])
+            map(
+                repr,
+                [
+                    self.baseurl,
+                    self.id,
+                    self.dtype,
+                    self.shape,
+                    self.ce if self.ce is not None else self.slice,
+                ],
+            )
         )
 
     def __getitem__(self, index, build_only=False):
