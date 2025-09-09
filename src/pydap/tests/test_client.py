@@ -961,3 +961,6 @@ def test_register_dim_slices(var, slice, expected):
         "/COADSY": "[0:1:89]",
         "/COADSX": "[0:1:179]",
     }
+
+    pyds.clear_dim_slices()
+    assert pyds._slices is None

@@ -1220,6 +1220,10 @@ class DatasetType(StructureType):
         dim_slices = dict(zip(dims, [sli + "]" for sli in slice_elements.split("]")]))
         self._slices = dim_slices
 
+    def clear_dim_slices(self) -> None:
+        """Clear any registered dimension slices."""
+        self._slices = None
+
 
 class SequenceType(StructureType):
     """A container that stores data in a Numpy array.
