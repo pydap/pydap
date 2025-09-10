@@ -154,9 +154,26 @@ class TestFixSlice(unittest.TestCase):
 
     def test_non_zero_slicestart(self):
         x = np.arange(0, 100)
-        slice1 = slice(100, 200)
+        slice1 = slice(50, 100)
         slice2 = fix_slice(slice1, x.shape)
-        self.assertEqual(slice2, (slice(100, 200, 1),))
+        self.assertEqual(slice2, (slice(50, 100, 1),))
+
+    def test_non_zero_slicestart_projection(self):
+        """test fix_slice with projection=True. This is used when
+        CE includes projection (`[start:stop:step]) that results
+        in a slice whose stop element is greater than the dimension size.
+        """
+        x = np.arange(0, 100)
+        sub_x = x[:50]
+        slice1 = slice(50, 100)
+        slice2 = fix_slice(slice1, sub_x.shape, projection=True)
+        self.assertEqual(slice2, (slice(50, 100, 1),))
+
+    def test_last_index_slicestart(self):
+        x = np.arange(0, 100)
+        slice1 = slice(-1, None, None)
+        slice2 = fix_slice(slice1, x.shape)
+        self.assertEqual(slice2, (slice(99, 100, 1),))
 
 
 class TestCombineSlices(unittest.TestCase):

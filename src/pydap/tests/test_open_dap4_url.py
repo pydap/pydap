@@ -27,6 +27,23 @@ def test_maps():
     print(data.array[:].data)
 
 
+@pytest.mark.parametrize("protocol", ["dap4", "dap2"])
+def test_dap4_slices(protocol):
+    """Also tests dap2"""
+    url = "https://test.opendap.org/opendap/netcdf/examples/tos_O1_2001-2002.nc"
+
+    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    pyds = open_url(url, protocol=protocol, session=session)
+    session.cache.clear()  # Clear cache before testing
+    lon = np.asarray(pyds["lon"][-1:].data)
+    assert lon.shape == (1,)
+
+    query_string = (
+        session.cache.urls()[0].split("lon")[-1].split("%5B")[1].split("%5D")[0]
+    )
+    assert query_string.replace("%3A", ":") == "179:1:179"
+
+
 def test_batch_mode_downloads():
     """
     Test that batch mode downloads data correctly.

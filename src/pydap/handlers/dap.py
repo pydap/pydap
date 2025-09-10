@@ -269,7 +269,7 @@ class DAPHandler(BaseHandler):
                 token, index = var.pop(0)
                 target = target[token]
                 if isinstance(target, BaseType):
-                    target.data.slice = fix_slice(index, target.shape)
+                    target.data.slice = fix_slice(index, target.shape, projection=True)
 
     def add_dap2_proxies(self):
         # now add data proxies
@@ -305,9 +305,9 @@ class DAPHandler(BaseHandler):
                 token, index = var.pop(0)
                 target = target[token]
                 if isinstance(target, BaseType):
-                    target.data.slice = fix_slice(index, target.shape)
+                    target.data.slice = fix_slice(index, target.shape, projection=True)
                 elif isinstance(target, GridType):
-                    index = fix_slice(index, target.array.shape)
+                    index = fix_slice(index, target.array.shape, projection=True)
                     target.array.data.slice = index
                     for s, child in zip(index, target.maps):
                         target[child].data.slice = (s,)
