@@ -448,13 +448,11 @@ def fetch_batched(ds, Variables) -> None:
     promise._event.wait()
 
     for var in Variables:
-        # print(var)
         var = ds[var]
         data = promise.wait_for_result(var.id)
-        ds[var.id].data = np.asarray(data)  # make sure this persists
+        ds[var.id].data = np.asarray(data)
 
     ds.dataset._current_batch_promise = None
-    # return cache
 
 
 def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
