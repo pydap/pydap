@@ -425,11 +425,10 @@ def register_all_for_batch(ds, Variables, checksums=True) -> None:
     for name in Variables:
         var = ds[name]
         if not var._is_data_loaded():
+            # initialize a pending batch slice below with None
             var._pending_batch_slice = slice(None)
             ds.register_for_batch(var, checksums=checksums)
             var._is_registered_for_batch = True
-
-    # ds._start_batch_timer()
 
 
 def fetch_batched(ds, Variables) -> None:
