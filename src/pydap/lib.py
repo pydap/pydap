@@ -195,7 +195,7 @@ def encode(obj):
             return '"{0}"'.format(obj)
 
 
-def fix_slice(slice_, shape):
+def fix_slice(slice_, shape, projection=False):
     """Return a normalized slice.
 
     This function returns a slice so that it has the same length of `shape`,
@@ -220,7 +220,6 @@ def fix_slice(slice_, shape):
         else:
             out.append(s)
     slice_ = tuple(out) + (slice(None),) * expand
-
     out = []
     for s, N in zip(slice_, shape):
         if isinstance(s, int):
@@ -228,8 +227,8 @@ def fix_slice(slice_, shape):
                 s += N
             out.append(s)
         else:
-            k = s.step or 1
 
+            k = s.step or 1
             i = s.start
             if i is None:
                 i = 0
@@ -237,8 +236,11 @@ def fix_slice(slice_, shape):
                 i += N
 
             j = s.stop
-            if j is None or j >= (N + i):
-                j = N + i
+            if j is None or j >= N:
+                if projection:
+                    j = N + i
+                else:
+                    j = N
             elif j < 0:
                 j += N
 
