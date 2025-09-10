@@ -1116,11 +1116,7 @@ class DatasetType(StructureType):
             self._batch_timer = None
             return
 
-        constraint_expressions = [
-            _quote(var.build_ce().split("=")[-1])
-            for var in variables
-            if var.build_ce() is not None
-        ]
+        constraint_expressions = self.construct_shared_dim_ce(variables)
 
         base_url = variables[0]._data.baseurl if variables[0]._data else None
 
@@ -1130,7 +1126,7 @@ class DatasetType(StructureType):
             return
 
         # Build the single dap4.ce query parameter
-        ce_string = "?dap4.ce=" + ";".join(sorted(constraint_expressions))
+        ce_string = "?dap4.ce=" + constraint_expressions
         _dap_url = base_url + ".dap" + ce_string
         if not self._checksums:
             warnings.warn(
@@ -1218,11 +1214,35 @@ class DatasetType(StructureType):
         var._pending_batch_slice = slice(key) if not key else key
         slice_elements = var.build_ce().split(var.name)[-1]
         dim_slices = dict(zip(dims, [sli + "]" for sli in slice_elements.split("]")]))
-        self._slices = dim_slices
+        if key:
+            # only set the _slices if key is provided
+            self._slices = dim_slices
+        if not key:
+            self.clear_dim_slices()
 
     def clear_dim_slices(self) -> None:
         """Clear any registered dimension slices."""
         self._slices = None
+
+    def construct_shared_dim_ce(self, variables):
+        """Constructs the constraint expression for a set of variables
+        sharing multiple dimensions slices.
+        """
+        if not variables:
+            return None
+        if not self._slices:
+            ce_dims = [
+                _quote(var.build_ce().split("=")[-1])
+                for var in variables
+                if var.build_ce() is not None
+            ]
+            return ";".join(ce_dims)
+        else:
+            var_names = [var.id for var in variables]
+            ce_dims = ";".join(
+                [key + "=" + value for key, value in self._slices.items()]
+            )
+            return ce_dims + ";" + ";".join(var_names)
 
 
 class SequenceType(StructureType):

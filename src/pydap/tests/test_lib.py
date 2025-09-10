@@ -427,6 +427,8 @@ def test_fetched_batched(group):
         for name in pyds[group].dimensions
         if name in pyds[group].keys() and isinstance(pyds[group][name], BaseType)
     ]
+
+    pyds.register_dim_slices(pyds[dims[0]], key=None)
     register_all_for_batch(pyds, dims)
     # assign data to variables
     fetch_batched(pyds, dims)

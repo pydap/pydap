@@ -935,7 +935,7 @@ def test_get_cmr_urls(param, expected):
 @pytest.mark.parametrize(
     "slice, expected",
     [
-        (None, {"/TIME": "[0:1:11]", "/COADSY": "[0:1:89]", "/COADSX": "[0:1:179]"}),
+        (None, None),
         (
             (0, slice(None), slice(None)),
             {"/TIME": "[0:1:0]", "/COADSY": "[0:1:89]", "/COADSX": "[0:1:179]"},
@@ -956,11 +956,7 @@ def test_register_dim_slices(var, slice, expected):
 
     # reset registered slices and check
     pyds.register_dim_slices(pyds[var], key=None)
-    assert pyds._slices == {
-        "/TIME": "[0:1:11]",
-        "/COADSY": "[0:1:89]",
-        "/COADSX": "[0:1:179]",
-    }
+    assert pyds._slices is None
 
     pyds.clear_dim_slices()
     assert pyds._slices is None

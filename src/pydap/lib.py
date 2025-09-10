@@ -380,33 +380,36 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
     import pydap
 
     ds = array.parent
-    dims = False
     if array.name in ds.dimensions:
-        dims = True
+        set_dims = True
+    else:
+        set_dims = False
 
-    if "consolidated" in ds.dataset.session.headers and dims:
+    if "consolidated" in ds.dataset.session.headers and set_dims:
         # need to add a check that consolidated has
         # been performed on that collection.
         fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
     else:
-        if dims:
+        if set_dims:
             Variables = [
                 ds[name].id
                 for name in ds.dimensions
                 if name in ds.keys() and isinstance(ds[name], pydap.model.BaseType)
             ]  # fully qualified names
-        if not dims:
+        if not set_dims:
             Variables = [
                 ds[var_name].id
                 for var_name in ds.variables()
                 if isinstance(ds[var_name], pydap.model.BaseType)
                 and var_name not in ds.dimensions
             ]
-        register_all_for_batch(ds.dataset, Variables, checksums=checksums, key=key)
-        fetch_batched(ds.dataset, Variables)
+        dataset = ds.dataset
+        dataset.register_dim_slices(array, key=key)  # here slices are recorded
+        register_all_for_batch(dataset, Variables, checksums=checksums)
+        fetch_batched(dataset, Variables)
 
 
-def register_all_for_batch(ds, Variables, checksums=True, key=None) -> None:
+def register_all_for_batch(ds, Variables, checksums=True) -> None:
     """
     Used to register all dimension array when pydap
     dataset has been initialized with batch=True.
@@ -421,10 +424,9 @@ def register_all_for_batch(ds, Variables, checksums=True, key=None) -> None:
 
     for name in Variables:
         var = ds[name]
-        _slice = slice(None) if not key else key
         # print("[pydap.lib register_all_for_batch] Registering:", var.id)
-        if not var._is_data_loaded():  # and var.id != concat_dim:
-            var._pending_batch_slice = _slice
+        if not var._is_data_loaded():
+            var._pending_batch_slice = slice(None)
             ds.register_for_batch(var, checksums=checksums)
             var._is_registered_for_batch = True
     ds._start_batch_timer()
