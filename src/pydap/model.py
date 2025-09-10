@@ -1067,7 +1067,6 @@ class DatasetType(StructureType):
     def _start_batch_timer(self):
         if self._current_batch_promise is None:
             self._current_batch_promise = BatchPromise()
-            # print("[Batch] New promise created:", id(self._current_batch_promise))
 
         if not self._batch_timer:
             promise_for_this_batch = self._current_batch_promise
@@ -1077,7 +1076,7 @@ class DatasetType(StructureType):
             )
             self._batch_timer.start()
 
-    def enable_batch_mode(self, timeout=0.2):
+    def enable_batch_mode(self, timeout=0.25):
         """Turn on batching with specified timeout window in seconds."""
         self._batch_mode = True
         self._batch_timeout = timeout
@@ -1097,7 +1096,7 @@ class DatasetType(StructureType):
 
         if not self._batch_timer:
             # Start the timer if not already running
-            self._batch_timer = self._start_batch_timer()
+            self._start_batch_timer()
 
         var._batch_promise = self._current_batch_promise
 
@@ -1238,7 +1237,7 @@ class DatasetType(StructureType):
             ]
             return ";".join(ce_dims)
         else:
-            var_names = [var.id for var in variables]
+            var_names = sorted([var.id for var in variables])
             ce_dims = ";".join(
                 [key + "=" + value for key, value in self._slices.items()]
             )

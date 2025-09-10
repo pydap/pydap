@@ -424,12 +424,12 @@ def register_all_for_batch(ds, Variables, checksums=True) -> None:
 
     for name in Variables:
         var = ds[name]
-        # print("[pydap.lib register_all_for_batch] Registering:", var.id)
         if not var._is_data_loaded():
             var._pending_batch_slice = slice(None)
             ds.register_for_batch(var, checksums=checksums)
             var._is_registered_for_batch = True
-    ds._start_batch_timer()
+
+    # ds._start_batch_timer()
 
 
 def fetch_batched(ds, Variables) -> None:
