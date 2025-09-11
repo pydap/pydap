@@ -1088,7 +1088,7 @@ class DatasetType(StructureType):
             )
             self._batch_timer.start()
 
-    def enable_batch_mode(self, timeout=0.2):
+    def enable_batch_mode(self, timeout=0.2, checksums=True):
         """Turn on batching with specified timeout window in seconds."""
         self._batch_mode = True
         self._batch_timeout = timeout
@@ -1096,11 +1096,11 @@ class DatasetType(StructureType):
         self._batch_timer = None
         self._batch_results = {}
         self._dap_url = None
-        self._checksums = True
-
-    def register_for_batch(self, var, checksums=True):
-        """Register a key for batch processing."""
         self._checksums = checksums
+
+    def register_for_batch(self, var):
+        """Register a key for batch processing."""
+        # self._checksums = checksums
         self._batch_registry = {v for v in self._batch_registry if v.id != var.id}
         self._batch_registry.add(var)
         var._is_registered_for_batch = True
@@ -1142,13 +1142,10 @@ class DatasetType(StructureType):
         # Build the single dap4.ce query parameter
         ce_string = "?dap4.ce=" + ";".join(sorted(constraint_expressions))
         _dap_url = base_url + ".dap" + ce_string
-        if not self._checksums:
-            warnings.warn(
-                "Checksums are not optional in the current version, but will "
-                "be in the next version of pydap. Setting `checksums=True`",
-                stacklevel=2,
-            )
-        _dap_url += "&dap4.checksum=true"
+        if self._checksums:
+            _dap_url += "&dap4.checksum=true"
+        else:
+            _dap_url += "&dap4.checksum=false"
 
         if _dap_url.startswith("https://test.opendap.org"):
             _dap_url = _dap_url.replace("https", "http")
@@ -1176,7 +1173,9 @@ class DatasetType(StructureType):
                 stream=True,
             )
 
-        parsed_dataset = UNPACKDAP4DATA(r, checksums=True, user_charset="ascii").dataset
+        parsed_dataset = UNPACKDAP4DATA(
+            r, checksums=self._checksums, user_charset="ascii"
+        ).dataset
 
         # Collect results
         results_dict = {}

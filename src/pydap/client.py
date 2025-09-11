@@ -168,7 +168,7 @@ def open_url(
                 "is currently only supported in DAP4."
             )
 
-        dataset.enable_batch_mode()
+        dataset.enable_batch_mode(checksums=checksums)
 
     # attach server-side functions
     dataset.functions = Functions(url, application, session, timeout=timeout)
