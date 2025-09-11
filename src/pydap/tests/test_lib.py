@@ -427,6 +427,8 @@ def test_fetched_batched(group):
         for name in pyds[group].dimensions
         if name in pyds[group].keys() and isinstance(pyds[group][name], BaseType)
     ]
+
+    pyds.register_dim_slices(pyds[dims[0]], key=None)
     register_all_for_batch(pyds, dims)
     # assign data to variables
     fetch_batched(pyds, dims)
@@ -447,8 +449,15 @@ def test_get_batch_data(dims, group):
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
     session.cache.clear()
+    if dims:
+        var_name = list(pyds[group].dimensions)[0]
+    else:
+        variables = [
+            var for var in pyds[group].variables() if var not in pyds[group].dimensions
+        ]
+        var_name = variables[0]
 
-    get_batch_data(pyds[group], dims=dims, checksums=True)
+    get_batch_data(pyds[group][var_name], checksums=True)
     assert len(session.cache.urls()) == 1  # single dap url
 
     if dims:
@@ -461,3 +470,76 @@ def test_get_batch_data(dims, group):
                 pyds[group][name], BaseType
             ):
                 assert pyds[group][name]._is_data_loaded()
+
+
+url1 = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+url2 = "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
+url3 = (
+    "dap4://"
+    + "test.opendap.org/opendap/hyrax/NSIDC/ATL08_20181016124656_02730110_002_01.h5?"
+    + "dap4.ce=/gt1l/land_segments/delta_time;/gt1l/land_segments/delta_time;"
+    + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude"
+)
+
+
+@pytest.mark.parametrize(
+    "url, group, var, key, expected_ce, expected_shape",
+    [
+        (
+            url1,
+            "/",
+            "/Pressure",
+            slice(0, 500, None),
+            "/Z=[0:1:499];/Pressure;/time_bnds",
+            (500,),
+        ),
+        (
+            url2,
+            "/",
+            "/SST",
+            (0, slice(0, 10, None), slice(10, 20, 2)),
+            "/TIME=[0:1:0];/COADSY=[0:1:9];/COADSX=[10:2:19];/AIRT;/SST;/UWND;/VWND",
+            (1, 10, 5),
+        ),
+        (
+            url3,
+            "/gt1l/land_segments",
+            "/gt1l/land_segments/latitude",
+            slice(0, 50, None),
+            "/gt1l/land_segments/delta_time=[0:1:49];"
+            + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude",
+            (50,),
+        ),
+    ],
+)
+def test_get_batch_data_sliced_nondims(
+    url, group, var, key, expected_ce, expected_shape
+):
+    """
+    Test that when passing a slice to `get_batch_data`, the correct
+    CE is generated.
+    """
+    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session.cache.clear()
+    pyds = open_url(url, session=session, batch=True)
+    session.cache.clear()
+
+    # get all non-dim variables
+    variables = [
+        pyds[group][var].id
+        for var in pyds[group].variables()
+        if var not in pyds[group].dimensions
+    ]
+    assert var in variables
+    # register the slice for the variable
+    pyds.register_dim_slices(pyds[variables[0]], key=key)
+    register_all_for_batch(pyds, variables)
+    fetch_batched(pyds, variables)
+
+    assert pyds[var].shape == expected_shape
+
+    query = session.cache.urls()[-1].split("dap4.ce=")[1].split("&")[0]
+    query = query.replace("%3D", "=").replace("%3B", ";").replace("%2F", "/")
+    assert (
+        query.replace("%5B", "[").replace("%5D", "]").replace("%3A", ":") == expected_ce
+    )

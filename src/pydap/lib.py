@@ -373,32 +373,40 @@ def decode_np_strings(numpy_var):
         return numpy_var
 
 
-def get_batch_data(ds, cache_urls=None, checksums=True, dims=True):
+def get_batch_data(array, cache_urls=None, checksums=True, key=None):
     """
     parent object - either a dataset or Group type (dap4)
     """
     import pydap
 
-    if "consolidated" in ds.dataset.session.headers and dims:
+    ds = array.parent
+    if array.name in ds.dimensions:
+        set_dims = True
+    else:
+        set_dims = False
+
+    if "consolidated" in ds.dataset.session.headers and set_dims:
         # need to add a check that consolidated has
         # been performed on that collection.
         fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
     else:
-        if dims:
+        if set_dims:
             Variables = [
                 ds[name].id
                 for name in ds.dimensions
                 if name in ds.keys() and isinstance(ds[name], pydap.model.BaseType)
             ]  # fully qualified names
-        if not dims:
+        if not set_dims:
             Variables = [
                 ds[var_name].id
                 for var_name in ds.variables()
                 if isinstance(ds[var_name], pydap.model.BaseType)
                 and var_name not in ds.dimensions
             ]
-        register_all_for_batch(ds.dataset, Variables, checksums=checksums)
-        fetch_batched(ds.dataset, Variables)
+        dataset = ds.dataset
+        dataset.register_dim_slices(array, key=key)  # here slices are recorded
+        register_all_for_batch(dataset, Variables, checksums=checksums)
+        fetch_batched(dataset, Variables)
 
 
 def register_all_for_batch(ds, Variables, checksums=True) -> None:
@@ -415,14 +423,11 @@ def register_all_for_batch(ds, Variables, checksums=True) -> None:
     """
 
     for name in Variables:
-        var = ds[name]
-        # print("[pydap.lib register_all_for_batch] Registering:", var.id)
-        if not var._is_data_loaded():  # and var.id != concat_dim:
-            var._pending_batch_slice = slice(None)
-            ds.register_for_batch(var, checksums=checksums)
-            var._is_registered_for_batch = True
-    ds._start_batch_timer()
-    # return promise
+        if not ds[name]._is_data_loaded():
+            # initialize a pending batch slice below with None
+            ds[name]._pending_batch_slice = slice(None)
+            ds.register_for_batch(ds[name], checksums=checksums)
+            ds[name]._is_registered_for_batch = True
 
 
 def fetch_batched(ds, Variables) -> None:
@@ -442,13 +447,11 @@ def fetch_batched(ds, Variables) -> None:
     promise._event.wait()
 
     for var in Variables:
-        print(var)
         var = ds[var]
         data = promise.wait_for_result(var.id)
-        ds[var.id].data = np.asarray(data)  # make sure this persists
+        ds[var.id].data = np.asarray(data)
 
     ds.dataset._current_batch_promise = None
-    # return cache
 
 
 def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:

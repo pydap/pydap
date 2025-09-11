@@ -929,3 +929,34 @@ def test_get_cmr_urls(param, expected):
         # if page_size is not specified, it defaults to 50
         expected += "&page_size=50"
     assert set(expected.split("&")) == set(cached_urls.split("&"))
+
+
+@pytest.mark.parametrize("var", ["SST"])
+@pytest.mark.parametrize(
+    "slice, expected",
+    [
+        (None, None),
+        (
+            (0, slice(None), slice(None)),
+            {"/TIME": "[0:1:0]", "/COADSY": "[0:1:89]", "/COADSX": "[0:1:179]"},
+        ),
+        (
+            (2, slice(0, 10, None), slice(None)),
+            {"/TIME": "[2:1:2]", "/COADSY": "[0:1:9]", "/COADSX": "[0:1:179]"},
+        ),
+    ],
+)
+def test_register_dim_slices(var, slice, expected):
+    """Test that dim slices are registered correctly."""
+    url = "http://test.opendap.org/opendap/data/nc/coads_climatology.nc"
+    session = requests.Session()
+    pyds = open_url(url, session=session, protocol="dap4", batch=True)
+    pyds.register_dim_slices(pyds[var], key=slice)
+    assert pyds._slices == expected
+
+    # reset registered slices and check
+    pyds.register_dim_slices(pyds[var], key=None)
+    assert pyds._slices is None
+
+    pyds.clear_dim_slices()
+    assert pyds._slices is None
