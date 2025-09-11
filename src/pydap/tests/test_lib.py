@@ -474,6 +474,12 @@ def test_get_batch_data(dims, group):
 
 url1 = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
 url2 = "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
+url3 = (
+    "dap4://"
+    + "test.opendap.org/opendap/hyrax/NSIDC/ATL08_20181016124656_02730110_002_01.h5?"
+    + "dap4.ce=/gt1l/land_segments/delta_time;/gt1l/land_segments/delta_time;"
+    + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude"
+)
 
 
 @pytest.mark.parametrize(
@@ -495,15 +501,15 @@ url2 = "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
             "/TIME=[0:1:0];/COADSY=[0:1:9];/COADSX=[10:2:19];/AIRT;/SST;/UWND;/VWND",
             (1, 10, 5),
         ),
-        # (
-        #     url1,
-        #     "/SimpleGroup",
-        #     "/SimpleGroup/Temperature",
-        #     (0, slice(0, 10, None), slice(10, 20, None)),
-        #     "/time=[0:1:0];/SimpleGroup/Y=[0:1:9];/SimpleGroup/X=[10:1:19]"
-        #     + ";/SimpleGroup/Salinity;/SimpleGroup/Temperature",
-        #     (1, 10, 10),
-        # ),
+        (
+            url3,
+            "/gt1l/land_segments",
+            "/gt1l/land_segments/latitude",
+            slice(0, 50, None),
+            "/gt1l/land_segments/delta_time=[0:1:49];"
+            + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude",
+            (50,),
+        ),
     ],
 )
 def test_get_batch_data_sliced_nondims(
