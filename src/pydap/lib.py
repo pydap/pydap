@@ -399,7 +399,7 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
         if not set_dims:
             Variables = [
                 ds[var_name].id
-                for var_name in ds.variables()
+                for var_name in sorted(ds.variables())
                 if isinstance(ds[var_name], pydap.model.BaseType)
                 and var_name not in ds.dimensions
             ]

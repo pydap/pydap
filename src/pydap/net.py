@@ -166,6 +166,8 @@ def create_request(
         if "Authorization" in session.headers:
             get_kwargs["auth"] = None
         try:
+            if url.startswith("https://test.opendap.org"):
+                url = url.replace("https", "http")
             if isinstance(session, CachedSession):
                 skip = False
                 if cache_kwargs:

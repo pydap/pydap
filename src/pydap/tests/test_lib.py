@@ -472,10 +472,10 @@ def test_get_batch_data(dims, group):
                 assert pyds[group][name]._is_data_loaded()
 
 
-url1 = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-url2 = "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
+url1 = "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+url2 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
 url3 = (
-    "dap4://"
+    "http://"
     + "test.opendap.org/opendap/hyrax/NSIDC/ATL08_20181016124656_02730110_002_01.h5?"
     + "dap4.ce=/gt1l/land_segments/delta_time;/gt1l/land_segments/delta_time;"
     + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude"
@@ -510,6 +510,14 @@ url3 = (
             + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude",
             (50,),
         ),
+        (
+            url1 + "?dap4.ce=/time;/SimpleGroup/Y;/SimpleGroup/X;/SimpleGroup/Salinity",
+            "/SimpleGroup",
+            "/SimpleGroup/Salinity",
+            (0, slice(0, 10, None), slice(10, 20, None)),
+            "/SimpleGroup/Salinity[0:1:0][0:1:39][0:1:39]",
+            (1, 40, 40),  # <------- check this. I think there should be a warning.
+        ),
     ],
 )
 def test_get_batch_data_sliced_nondims(
@@ -521,14 +529,14 @@ def test_get_batch_data_sliced_nondims(
     """
     session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
     session.cache.clear()
-    pyds = open_url(url, session=session, batch=True)
+    pyds = open_url(url, protocol="dap4", session=session, batch=True)
     session.cache.clear()
 
     # get all non-dim variables
     variables = [
         pyds[group][var].id
-        for var in pyds[group].variables()
-        if var not in pyds[group].dimensions
+        for var in sorted(pyds[group].variables())
+        if var not in list(pyds[group].dimensions)
     ]
     assert var in variables
     # register the slice for the variable

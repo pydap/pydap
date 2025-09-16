@@ -960,3 +960,23 @@ def test_register_dim_slices(var, slice, expected):
 
     pyds.clear_dim_slices()
     assert pyds._slices is None
+
+
+@pytest.mark.parametrize("var", ["/SimpleGroup/Salinity"])
+@pytest.mark.parametrize(
+    "slice, expected",
+    [
+        (None, None),
+        ((0, slice(0, 10, None), slice(None)), None),
+    ],
+)
+def test_register_dim_slices_dimension_different_hierarchy(var, slice, expected):
+    """
+    Test for an edge case in which one of the dimension lies on a different hierarchy.
+    This makes sure the slice is handled properly.
+    """
+    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+    session = requests.Session()
+    pyds = open_url(url, session=session, batch=True)
+    pyds.register_dim_slices(pyds[var], key=slice)
+    assert pyds._slices == expected
