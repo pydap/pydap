@@ -130,7 +130,7 @@ def create_request(
         application: a WSGI application object | None
             When set, we are dealing with a local application, and a webob.response is
             returned. When None, a requests.Response object is returned.
-        timeout: int | None (default: 512)
+        timeout: int | None (default: 120)
             timeout in seconds.
         verify: bool (default: True)
             verify SSL certificates

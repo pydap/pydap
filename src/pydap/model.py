@@ -1152,21 +1152,9 @@ class DatasetType(StructureType):
         r = GET(
             _dap_url,
             session=self._session,
-            timeout=variables[0]._data.timeout,
-            verify=True,
-            get_kwargs=variables[0]._data.get_kwargs,
+            get_kwargs={"stream": True},
             cache_kwargs=cache_kwargs,
         )
-
-        # r = self._session.get(
-        #     _dap_url,
-        #     timeout=512,
-        #     verify=True,
-        #     allow_redirects=True,
-        #     stream=True,
-        #     cache_kwargs=cache_kwargs,
-        # )
-
         parsed_dataset = UNPACKDAP4DATA(r, checksums=True, user_charset="ascii").dataset
 
         # Collect results
