@@ -1200,7 +1200,7 @@ class DatasetType(StructureType):
             - slices are not validated, so user must ensure they make sense.
             - Intended only when in batch mode.
         """
-        dims = var.dims
+        dims = [var for var in var.dims if isinstance(self[var], BaseType)]
         var._pending_batch_slice = slice(key) if not key else key
         slice_elements = var.build_ce().split(var.name)[-1]
         dim_slices = dict(zip(dims, [sli + "]" for sli in slice_elements.split("]")]))
