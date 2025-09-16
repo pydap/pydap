@@ -377,6 +377,8 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
     """
     parent object - either a dataset or Group type (dap4)
     """
+    if array._is_data_loaded():
+        return
     import pydap
 
     ds = array.parent
