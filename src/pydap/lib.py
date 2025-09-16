@@ -377,6 +377,8 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
     """
     parent object - either a dataset or Group type (dap4)
     """
+    if array._is_data_loaded():
+        return
     import pydap
 
     ds = array.parent
@@ -399,8 +401,9 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
         if not set_dims:
             Variables = [
                 ds[var_name].id
-                for var_name in ds.variables()
+                for var_name in sorted(ds.variables())
                 if isinstance(ds[var_name], pydap.model.BaseType)
+                and not ds[var_name]._is_data_loaded()
                 and var_name not in ds.dimensions
             ]
         dataset = ds.dataset

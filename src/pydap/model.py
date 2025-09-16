@@ -181,6 +181,7 @@ import requests
 import requests_cache
 
 from pydap.lib import BatchPromise, _quote, decode_np_strings, tree, walk
+from pydap.net import GET
 
 __all__ = [
     "BaseType",
@@ -1135,32 +1136,22 @@ class DatasetType(StructureType):
             )
         _dap_url += "&dap4.checksum=true"
 
-        if _dap_url.startswith("https://test.opendap.org"):
-            _dap_url = _dap_url.replace("https", "http")
-
         # print("dap url:", _dap_url)
 
         if (
             isinstance(self._session, requests_cache.CachedSession)
             and self._session.cache.cache_name != "debug"
         ):
-            with self._session.cache_disabled():
-                r = self._session.get(
-                    _dap_url,
-                    timeout=512,
-                    verify=True,
-                    allow_redirects=True,
-                    stream=True,
-                )
+            cache_kwargs = {"skip": True}
         else:
-            r = self._session.get(
-                _dap_url,
-                timeout=512,
-                verify=True,
-                allow_redirects=True,
-                stream=True,
-            )
+            cache_kwargs = {}
 
+        r = GET(
+            _dap_url,
+            session=self._session,
+            get_kwargs={"stream": True},
+            cache_kwargs=cache_kwargs,
+        )
         parsed_dataset = UNPACKDAP4DATA(r, checksums=True, user_charset="ascii").dataset
 
         # Collect results
@@ -1209,15 +1200,20 @@ class DatasetType(StructureType):
             - slices are not validated, so user must ensure they make sense.
             - Intended only when in batch mode.
         """
-        dims = [dim for dim in var.dims]
+        dims = [var for var in var.dims if isinstance(self[var], BaseType)]
         var._pending_batch_slice = slice(key) if not key else key
         slice_elements = var.build_ce().split(var.name)[-1]
         dim_slices = dict(zip(dims, [sli + "]" for sli in slice_elements.split("]")]))
-        if key:
+
+        # the next check is to see if all dimensions lie within the variable hierarchy
+        uniformity_check = len(dims) * [True] == [
+            self[dims[i]].parent == var.parent for i in range(len(dims))
+        ]  # it is True only when all dims a share hierarchy with data
+        if not key or not uniformity_check:
+            self.clear_dim_slices()
+        else:
             # only set the _slices if key is provided
             self._slices = dim_slices
-        if not key:
-            self.clear_dim_slices()
 
     def clear_dim_slices(self) -> None:
         """Clear any registered dimension slices."""

@@ -23,6 +23,7 @@ from itertools import chain
 
 import numpy
 import requests
+import requests_cache
 from requests.utils import urlparse, urlunparse
 from webob.response import Response as webob_Response
 
@@ -522,6 +523,14 @@ class BaseProxyDap4(BaseProxyDap2):
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
 
+        if (
+            isinstance(self.session, requests_cache.CachedSession)
+            and self.session.cache.cache_name != "debug"
+        ):
+            cache_kwargs = {"skip": True}
+        else:
+            cache_kwargs = {}
+
         r = GET(
             url,
             self.application,
@@ -529,6 +538,7 @@ class BaseProxyDap4(BaseProxyDap2):
             timeout=self.timeout,
             verify=self.verify,
             get_kwargs=self.get_kwargs,
+            cache_kwargs=cache_kwargs,
         )
 
         dataset = UNPACKDAP4DATA(r, self.checksums, self.user_charset).dataset

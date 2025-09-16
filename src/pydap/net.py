@@ -130,7 +130,7 @@ def create_request(
         application: a WSGI application object | None
             When set, we are dealing with a local application, and a webob.response is
             returned. When None, a requests.Response object is returned.
-        timeout: int | None (default: 512)
+        timeout: int | None (default: 120)
             timeout in seconds.
         verify: bool (default: True)
             verify SSL certificates
@@ -166,8 +166,13 @@ def create_request(
         if "Authorization" in session.headers:
             get_kwargs["auth"] = None
         try:
+            if url.startswith("https://test.opendap.org"):
+                url = url.replace("https", "http")
             if isinstance(session, CachedSession):
-                if should_skip_cache(url, session):
+                skip = False
+                if cache_kwargs:
+                    skip = cache_kwargs.pop("skip", None)
+                if should_skip_cache(url, session) or skip:
                     with session.cache_disabled():
                         req = session.get(
                             url,

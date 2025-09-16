@@ -472,10 +472,10 @@ def test_get_batch_data(dims, group):
                 assert pyds[group][name]._is_data_loaded()
 
 
-url1 = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-url2 = "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
+url1 = "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+url2 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
 url3 = (
-    "dap4://"
+    "http://"
     + "test.opendap.org/opendap/hyrax/NSIDC/ATL08_20181016124656_02730110_002_01.h5?"
     + "dap4.ce=/gt1l/land_segments/delta_time;/gt1l/land_segments/delta_time;"
     + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude"
@@ -483,12 +483,13 @@ url3 = (
 
 
 @pytest.mark.parametrize(
-    "url, group, var, key, expected_ce, expected_shape",
+    "url, group, var, skip_var, key, expected_ce, expected_shape",
     [
         (
             url1,
             "/",
             "/Pressure",
+            "",
             slice(0, 500, None),
             "/Z=[0:1:499];/Pressure;/time_bnds",
             (500,),
@@ -497,6 +498,7 @@ url3 = (
             url2,
             "/",
             "/SST",
+            "",
             (0, slice(0, 10, None), slice(10, 20, 2)),
             "/TIME=[0:1:0];/COADSY=[0:1:9];/COADSX=[10:2:19];/AIRT;/SST;/UWND;/VWND",
             (1, 10, 5),
@@ -505,15 +507,25 @@ url3 = (
             url3,
             "/gt1l/land_segments",
             "/gt1l/land_segments/latitude",
+            "",
             slice(0, 50, None),
             "/gt1l/land_segments/delta_time=[0:1:49];"
             + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude",
             (50,),
         ),
+        (
+            url1,
+            "/SimpleGroup",
+            "/SimpleGroup/Salinity",
+            "Temperature",
+            (0, slice(0, 10, None), slice(10, 20, None)),
+            "/SimpleGroup/Salinity[0:1:0][0:1:39][0:1:39]",
+            (1, 40, 40),  # <------- check this. I think there should be a warning.
+        ),
     ],
 )
 def test_get_batch_data_sliced_nondims(
-    url, group, var, key, expected_ce, expected_shape
+    url, group, var, skip_var, key, expected_ce, expected_shape
 ):
     """
     Test that when passing a slice to `get_batch_data`, the correct
@@ -521,14 +533,14 @@ def test_get_batch_data_sliced_nondims(
     """
     session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
     session.cache.clear()
-    pyds = open_url(url, session=session, batch=True)
+    pyds = open_url(url, protocol="dap4", session=session, batch=True)
     session.cache.clear()
 
     # get all non-dim variables
     variables = [
         pyds[group][var].id
-        for var in pyds[group].variables()
-        if var not in pyds[group].dimensions
+        for var in sorted(pyds[group].variables())
+        if var not in list(pyds[group].dimensions) + [skip_var]
     ]
     assert var in variables
     # register the slice for the variable
