@@ -181,6 +181,7 @@ import requests
 import requests_cache
 
 from pydap.lib import BatchPromise, _quote, decode_np_strings, tree, walk
+from pydap.net import GET
 
 __all__ = [
     "BaseType",
@@ -1144,22 +1145,27 @@ class DatasetType(StructureType):
             isinstance(self._session, requests_cache.CachedSession)
             and self._session.cache.cache_name != "debug"
         ):
-            with self._session.cache_disabled():
-                r = self._session.get(
-                    _dap_url,
-                    timeout=512,
-                    verify=True,
-                    allow_redirects=True,
-                    stream=True,
-                )
+            cache_kwargs = {"skip": True}
         else:
-            r = self._session.get(
-                _dap_url,
-                timeout=512,
-                verify=True,
-                allow_redirects=True,
-                stream=True,
-            )
+            cache_kwargs = {}
+
+        r = GET(
+            _dap_url,
+            session=self._session,
+            timeout=variables[0]._data.timeout,
+            verify=True,
+            get_kwargs=variables[0]._data.get_kwargs,
+            cache_kwargs=cache_kwargs,
+        )
+
+        # r = self._session.get(
+        #     _dap_url,
+        #     timeout=512,
+        #     verify=True,
+        #     allow_redirects=True,
+        #     stream=True,
+        #     cache_kwargs=cache_kwargs,
+        # )
 
         parsed_dataset = UNPACKDAP4DATA(r, checksums=True, user_charset="ascii").dataset
 

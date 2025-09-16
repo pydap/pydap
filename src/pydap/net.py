@@ -167,7 +167,10 @@ def create_request(
             get_kwargs["auth"] = None
         try:
             if isinstance(session, CachedSession):
-                if should_skip_cache(url, session):
+                skip = False
+                if cache_kwargs:
+                    skip = cache_kwargs.pop("skip", None)
+                if should_skip_cache(url, session) or skip:
                     with session.cache_disabled():
                         req = session.get(
                             url,
