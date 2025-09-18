@@ -427,21 +427,24 @@ def data_check(_array: np.ndarray, key: tuple) -> np.ndarray:
             e.g. slice(None, 1, None), slice(10, 21, None), slice(10, 20, None)
 
     """
-
-    elements = [
-        (key[i].start or 0, key[i].stop, key[i].step or 1) for i in range(len(key))
-    ]
-    eshape = [
-        key[i].stop - (key[i].start or 0) // (key[i].step or 1) for i in range(len(key))
-    ]
-    idiffs = [
-        i for i, (e1, e2) in enumerate(zip(list(_array.shape), eshape)) if e1 != e2
-    ]
-    slices = _array.ndim * [slice(None)]
-    for i in idiffs:
-        slices[i] = slice(elements[i][0], elements[i][1], elements[i][2])
-
-    return _array[tuple(slices)]
+    if key == tuple(_array.ndim * [slice(None)]):
+        narray = _array
+    else:
+        elements = [
+            (key[i].start or 0, key[i].stop, key[i].step or 1) for i in range(len(key))
+        ]
+        eshape = [
+            key[i].stop - (key[i].start or 0) // (key[i].step or 1)
+            for i in range(len(key))
+        ]
+        idiffs = [
+            i for i, (e1, e2) in enumerate(zip(list(_array.shape), eshape)) if e1 != e2
+        ]
+        slices = _array.ndim * [slice(None)]
+        for i in idiffs:
+            slices[i] = slice(elements[i][0], elements[i][1], elements[i][2])
+        narray = _array[tuple(slices)]
+    return narray
 
 
 def register_all_for_batch(ds, Variables, checksums=True) -> None:
