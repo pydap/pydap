@@ -12,6 +12,7 @@ from pydap.exceptions import ConstraintExpressionError
 from pydap.lib import (
     _quote,
     combine_slices,
+    data_check,
     encode,
     fetch_batched,
     fetch_consolidated,
@@ -555,3 +556,57 @@ def test_get_batch_data_sliced_nondims(
     assert (
         query.replace("%5B", "[").replace("%5D", "]").replace("%3A", ":") == expected_ce
     )
+
+
+@pytest.mark.parametrize(
+    "var_batch, key_batch, var_name, var_key, expected_shape",
+    [
+        (
+            "Eta",
+            (slice(None, 1, None), slice(10, 20, None), slice(10, 20, None)),
+            "U",
+            (slice(None, 1, None), slice(10, 20, None), slice(10, 21, None)),
+            (1, 10, 11),
+        ),
+        (
+            "Eta",
+            (slice(None, 1, None), 2, slice(10, 20, None)),
+            "U",
+            (slice(None, 1, None), 2, slice(10, 21, None)),
+            (1, 11),
+        ),
+        (
+            "Eta",
+            (slice(None, 1, None), slice(10, 20, None), slice(10, 20, None)),
+            "V",
+            (slice(None, 1, None), slice(10, 21, None), slice(10, 20, None)),
+            (1, 11, 10),
+        ),
+        (
+            "Eta",
+            (0, slice(10, 20, None), 10),
+            "V",
+            (0, slice(10, 21, None), 10),
+            (11,),
+        ),
+    ],
+)
+def test_data_check(var_batch, key_batch, var_name, var_key, expected_shape):
+    """
+    Tests that
+    """
+    url = "dap4://test.opendap.org/opendap/dap4/StaggeredGrid.nc4"
+    pyds = open_url(url, batch=True)
+
+    # eagerly download data using a shared dimensions contraint expression
+    # the CE only makes use of dimensions in ``ETA``. Other variables
+    # with dimensions NOT shared with ETA are not sliced.
+    get_batch_data(pyds[var_batch], key=key_batch)
+
+    # check data needs to be sliced
+    assert pyds[var_name].shape != expected_shape
+
+    var = np.asarray(pyds[var_name].data)
+    data = data_check(var, var_key)
+
+    assert data.shape == expected_shape
