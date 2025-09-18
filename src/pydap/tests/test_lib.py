@@ -570,10 +570,24 @@ def test_get_batch_data_sliced_nondims(
         ),
         (
             "Eta",
+            (slice(None, 1, None), 2, slice(10, 20, None)),
+            "U",
+            (slice(None, 1, None), 2, slice(10, 21, None)),
+            (1, 11),
+        ),
+        (
+            "Eta",
             (slice(None, 1, None), slice(10, 20, None), slice(10, 20, None)),
             "V",
             (slice(None, 1, None), slice(10, 21, None), slice(10, 20, None)),
             (1, 11, 10),
+        ),
+        (
+            "Eta",
+            (0, slice(10, 20, None), 10),
+            "V",
+            (0, slice(10, 21, None), 10),
+            (11,),
         ),
     ],
 )
@@ -588,8 +602,6 @@ def test_data_check(var_batch, key_batch, var_name, var_key, expected_shape):
     # the CE only makes use of dimensions in ``ETA``. Other variables
     # with dimensions NOT shared with ETA are not sliced.
     get_batch_data(pyds[var_batch], key=key_batch)
-
-    assert pyds["Eta"].shape == (1, 10, 10)
 
     # check data needs to be sliced
     assert pyds[var_name].shape != expected_shape

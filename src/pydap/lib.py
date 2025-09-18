@@ -430,11 +430,25 @@ def data_check(_array: np.ndarray, key: tuple) -> np.ndarray:
     if key == tuple(_array.ndim * [slice(None)]):
         narray = _array
     else:
+        oshape = _array.shape
         elements = [
-            (key[i].start or 0, key[i].stop, key[i].step or 1) for i in range(len(key))
+            (
+                key[i]
+                if isinstance(key[i], int)
+                else (key[i].start or 0, key[i].stop, key[i].step or 1)
+            )
+            for i in range(len(key))
+        ]
+        int_indexes = [
+            index for index, element in enumerate(elements) if isinstance(element, int)
         ]
         eshape = [
-            key[i].stop - (key[i].start or 0) // (key[i].step or 1)
+            (
+                1
+                if isinstance(key[i], int)
+                else (key[i].stop or _array.shape[i])
+                - (key[i].start or 0) // (key[i].step or 1)
+            )
             for i in range(len(key))
         ]
         idiffs = [
@@ -442,8 +456,20 @@ def data_check(_array: np.ndarray, key: tuple) -> np.ndarray:
         ]
         slices = _array.ndim * [slice(None)]
         for i in idiffs:
-            slices[i] = slice(elements[i][0], elements[i][1], elements[i][2])
+            slices[i] = (
+                elements[i]
+                if isinstance(elements[i], int)
+                else slice(elements[i][0], elements[i][1], elements[i][2])
+            )
         narray = _array[tuple(slices)]
+        # when evaluating the slice above, if an element of slices is an integer
+        # it inmediately reduces the size of the array. Attempting to squeeze
+        # along this dimension will result in a ValueError. Squeezing must
+        # only happen when the array has more than one element along this
+        # dimension
+        if len(int_indexes) > 0:
+            axis = [int_ for int_ in int_indexes if oshape[int_] == 1]
+            narray = np.squeeze(narray, axis=tuple(axis))
     return narray
 
 
