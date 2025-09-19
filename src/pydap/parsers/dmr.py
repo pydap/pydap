@@ -182,18 +182,16 @@ def get_dim_names(element):
     """This is done at the variable level. `Dims` element
     in the xml document.
     """
-    dimension_elements = element.findall("Dim")
-    dimensions = []
-    for dimension_element in dimension_elements:
-        name = dimension_element.get("name")
-        if name is None:
-            # We might have unnamed dimensions
-            return dimensions
-        if name.find("/", 1) == -1:
-            # If this is a root Dimension, we remove the leading slash
-            name = name.replace("/", "")
-        dimensions.append(name)
-    return dimensions
+    # dimension_elements = element.findall("Dim")
+    dimensions = [
+        (
+            el.get("name").replace("/", "")
+            if el.get("name") is not None and el.get("name").find("/", 1) == -1
+            else el.get("name")
+        )
+        for el in element.findall("Dim")
+    ]
+    return [item for item in dimensions if item is not None]
 
 
 def get_dim_sizes(element):
