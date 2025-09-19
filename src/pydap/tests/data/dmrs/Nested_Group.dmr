@@ -1,0 +1,30 @@
+<Dataset xml:base="http://test.opendap.org/opendap/dap4/unaligned_simple_datatree2.nc4.h5" dapVersion="4.0" dmrVersion="1.0" name="unaligned_simple_datatree2.nc4.h5">
+    <Dimension name="lon" size="2"/>
+    <Dimension name="lat" size="1"/>
+    <Float64 name="root_variable">
+        <Dim name="/lat"/>
+        <Dim name="/lon"/>
+    </Float64>
+    <Group name="Group1">
+        <Dimension name="lat" size="1"/>
+        <Dimension name="lon" size="2"/>
+        <Float64 name="group_1_var">
+            <Dim name="/Group1/lat"/>
+            <Dim name="/Group1/lon"/>
+            <Attribute name="units" type="String">
+                <Value>K</Value>
+            </Attribute>
+            <Attribute name="long_name" type="String">
+                <Value>air_temperature</Value>
+            </Attribute>
+        </Float64>
+        <Group name="subgroup1">
+            <Dimension name="lat" size="2"/>
+            <Dimension name="lon" size="2"/>
+            <Float64 name="subgroup1_var">
+                <Dim name="/Group1/subgroup1/lat"/>
+                <Dim name="/Group1/subgroup1/lon"/>
+            </Float64>
+        </Group>
+    </Group>
+</Dataset>
