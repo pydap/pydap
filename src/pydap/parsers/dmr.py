@@ -269,13 +269,16 @@ def dmr_to_dataset(dmr):
         variable["maps"] = get_maps(variable["element"])
         variable["shape"] = get_dim_sizes(variable["element"])
 
-    # Add shape element to variables
-    for name, variable in variables.items():
-        for dim in variable["dims"]:
-            if dim in variables.items():
-                variable["shape"] += (variables[dim]["size"],)
-            else:
-                variable["shape"] += (named_dimensions[dim],)
+    try:
+        # Add shape element to variables
+        for name, variable in variables.items():
+            for dim in variable["dims"]:
+                if dim in variables.items():
+                    variable["shape"] += (variables[dim]["size"],)
+                else:
+                    variable["shape"] += (named_dimensions[dim],)
+    except KeyError:
+        print(variables)
     for name, variable in variables.items():
         var_name = variable["name"]
         path = None
