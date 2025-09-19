@@ -154,6 +154,18 @@ class TestDMRParser(unittest.TestCase):
         assert entry["path"] == "/"
         assert entry["Maps"] == ()
 
+    def test_nested_groups(self):
+        dmr_file = "data/dmrs/Nested_Group.dmr"
+        abs_path = os.path.join(os.path.dirname(__file__), dmr_file)
+        with open(abs_path, "r") as dmr_file:
+            dmr = dmr_file.read()
+        _dmr = re.sub(' xmlns="[^"]+"', "", dmr, count=1)
+        node = ET.fromstring(_dmr)
+        groups = get_groups(node)
+        assert list(groups.keys()) == ["/Group1", "/Group1/subgroup1"]
+        assert groups["/Group1"]["dimensions"] == {"lat": 1, "lon": 2}
+        assert groups["/Group1/subgroup1"]["dimensions"] == {"lat": 2, "lon": 2}
+
 
 class TestAttrsTypesDMRParser(unittest.TestCase):
     """Test parsing a DMR with all types"""
