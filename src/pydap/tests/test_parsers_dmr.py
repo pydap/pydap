@@ -18,6 +18,14 @@ def load_dmr_file(file_path):
     return open_dmr_file(abs_path)
 
 
+def read_dmr_file(file_path):
+    abs_path = os.path.join(os.path.dirname(__file__), file_path)
+    with open(abs_path, "r") as dmr_file:
+        dmr = dmr_file.read()
+    _dmr = re.sub(' xmlns="[^"]+"', "", dmr, count=1)
+    return ET.fromstring(_dmr)
+
+
 class TestDMRParser(unittest.TestCase):
     """Test parsing a DMR."""
 
@@ -140,11 +148,7 @@ class TestDMRParser(unittest.TestCase):
 
     def test_get_groups(self):
         dmr_file = "data/dmrs/SimpleGroup.dmr"
-        abs_path = os.path.join(os.path.dirname(__file__), dmr_file)
-        with open(abs_path, "r") as dmr_file:
-            dmr = dmr_file.read()
-        _dmr = re.sub(' xmlns="[^"]+"', "", dmr, count=1)
-        node = ET.fromstring(_dmr)
+        node = read_dmr_file(dmr_file)
         groups = get_groups(node)
         assert isinstance(groups, dict)
         assert list(groups.keys()) == ["/SimpleGroup"]
@@ -153,6 +157,14 @@ class TestDMRParser(unittest.TestCase):
         assert entry["dimensions"] == {"Y": 4, "X": 4}
         assert entry["path"] == "/"
         assert entry["Maps"] == ()
+
+    def test_nested_groups(self):
+        dmr_file = "data/dmrs/Nested_Group.dmr"
+        node = read_dmr_file(dmr_file)
+        groups = get_groups(node)
+        assert list(groups.keys()) == ["/Group1", "/Group1/subgroup1"]
+        assert groups["/Group1"]["dimensions"] == {"lat": 1, "lon": 2}
+        assert groups["/Group1/subgroup1"]["dimensions"] == {"lat": 2, "lon": 2}
 
 
 class TestAttrsTypesDMRParser(unittest.TestCase):

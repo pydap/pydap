@@ -44,6 +44,36 @@ def test_dap4_slices(protocol):
     assert query_string.replace("%3A", ":") == "179:1:179"
 
 
+def test_dap4_unaligned_check_dims():
+    """ """
+    url = "dap4://test.opendap.org/opendap/dap4/unaligned_simple_datatree.nc.h5"
+    pyds = open_url(url)
+    assert pyds.dimensions == {"lat": 1, "lon": 2}
+    assert pyds["Group1"].dimensions == {"lat": 1, "lon": 2}
+    assert pyds["Group1/subgroup1"].dimensions == {"lat": 2, "lon": 2}
+    assert pyds["root_variable"].dims == ["/lat", "/lon"]
+    assert pyds["/Group1/group_1_var"].dims == ["/lat", "/lon"]
+    assert pyds["/Group1/subgroup1/subgroup1_var"].dims == [
+        "/Group1/subgroup1/lat",
+        "/Group1/subgroup1/lon",
+    ]
+
+
+def test_dap4_unaligned2_check_dims():
+    """ """
+    url = "dap4://test.opendap.org/opendap/dap4/unaligned_simple_datatree2.nc4.h5"
+    pyds = open_url(url)
+    assert pyds.dimensions == {"lat": 1, "lon": 2}
+    assert pyds["Group1"].dimensions == {"lat": 1, "lon": 2}
+    assert pyds["Group1/subgroup1"].dimensions == {"lat": 2, "lon": 2}
+    assert pyds["root_variable"].dims == ["/lat", "/lon"]
+    assert pyds["/Group1/group_1_var"].dims == ["/Group1/lat", "/Group1/lon"]
+    assert pyds["/Group1/subgroup1/subgroup1_var"].dims == [
+        "/Group1/subgroup1/lat",
+        "/Group1/subgroup1/lon",
+    ]
+
+
 def test_batch_mode_downloads():
     """
     Test that batch mode downloads data correctly.
