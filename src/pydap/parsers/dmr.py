@@ -42,9 +42,9 @@ def dap4_to_numpy_typemap(type_string):
 
 def get_variables(node, prefix="") -> dict:
     variables = OrderedDict()
-    group_name = [
+    group_name = (
         pydap.lib._quote(node.get("name")) if node.get("name") is not None else None
-    ][0]
+    )
     if group_name is None:
         return variables
     if node.tag != "Dataset":
@@ -191,7 +191,7 @@ def get_dim_names(element):
         )
         for el in element.findall("Dim")
     ]
-    return [item for item in dimensions if item is not None]
+    return tuple([item for item in dimensions if item is not None])
 
 
 def get_dim_sizes(element):
