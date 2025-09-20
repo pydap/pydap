@@ -182,7 +182,6 @@ def get_dim_names(element):
     """This is done at the variable level. `Dims` element
     in the xml document.
     """
-    # dimension_elements = element.findall("Dim")
     dimensions = [
         (
             el.get("name").replace("/", "")
