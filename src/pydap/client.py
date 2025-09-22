@@ -146,6 +146,7 @@ def open_url(
             session_kwargs=session_kwargs,
             cache_kwargs=cache_kwargs,
         )
+
     handler = DAPHandler(
         url,
         application,

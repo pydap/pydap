@@ -330,10 +330,6 @@ class TestGetVar(unittest.TestCase):
         self.assertEqual(get_var(dataset, "b.c"), dataset["b"]["c"])
 
 
-url1 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
-url2 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc"
-
-
 @pytest.mark.parametrize(
     "queries",
     [
@@ -345,7 +341,13 @@ url2 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc"
         ],
     ],
 )
-@pytest.mark.parametrize("baseurl", [url1, url2])
+@pytest.mark.parametrize(
+    "baseurl",
+    [
+        "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+        "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+    ],
+)
 def test_recover_missing_url(queries, baseurl):
     """
     This test requires emulating the behavior of `consolidate_metadata` with
@@ -391,19 +393,27 @@ def test_recover_missing_url(queries, baseurl):
     assert miss_url == cached_dap
 
 
-# prep a consolidated session for the next test
-urls = [
-    "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
-    "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
-]
-session = CachedSession()
-session.cache.clear()
-consolidate_metadata(urls, session=session, concat_dim="TIME")
-
-
-@pytest.mark.parametrize("url", [urls[0], urls[1]])
-def test_fetch_consolidated(url, session=session):
+@pytest.mark.parametrize(
+    "urls",
+    [
+        [
+            "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+            "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+        ]
+    ],
+)
+@pytest.mark.parametrize(
+    "url",
+    [
+        "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+        "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+    ],
+)
+def test_fetch_consolidated(urls, url):
     """Test that fetch_consolidated works as expected."""
+    session = CachedSession()
+    session.cache.clear()
+    consolidate_metadata(urls, session=session, concat_dim="TIME")
     pyds = open_url(url, session=session)
     fetch_consolidated(pyds)
     for name in ["TIME", "COADSX", "COADSY"]:
@@ -412,6 +422,7 @@ def test_fetch_consolidated(url, session=session):
         assert hasattr(var, "ndim")
         assert hasattr(var, "dtype")
         assert isinstance(var.data, np.ndarray)
+    session.cache.clear()
 
 
 @pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
@@ -437,6 +448,7 @@ def test_fetched_batched(group):
     for var in dims:
         assert isinstance(pyds[var].data, np.ndarray)
     assert len(session.cache.urls()) == 1  # single dap url
+    session.cache.clear()
 
 
 @pytest.mark.parametrize("dims", [True, False])
@@ -446,7 +458,9 @@ def test_get_batch_data(dims, group):
     Test that `get_batch_data` works as expected.
     """
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session = create_session(
+        use_cache=True, cache_kwargs={"cache_name": "debug", "backend": "memory"}
+    )
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
     session.cache.clear()
@@ -471,23 +485,14 @@ def test_get_batch_data(dims, group):
                 pyds[group][name], BaseType
             ):
                 assert pyds[group][name]._is_data_loaded()
-
-
-url1 = "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-url2 = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
-url3 = (
-    "http://"
-    + "test.opendap.org/opendap/hyrax/NSIDC/ATL08_20181016124656_02730110_002_01.h5?"
-    + "dap4.ce=/gt1l/land_segments/delta_time;/gt1l/land_segments/delta_time;"
-    + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude"
-)
+    session.cache.clear()
 
 
 @pytest.mark.parametrize(
     "url, group, var, skip_var, key, expected_ce, expected_shape",
     [
         (
-            url1,
+            "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5",
             "/",
             "/Pressure",
             "",
@@ -496,7 +501,7 @@ url3 = (
             (500,),
         ),
         (
-            url2,
+            "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
             "/",
             "/SST",
             "",
@@ -505,7 +510,12 @@ url3 = (
             (1, 10, 5),
         ),
         (
-            url3,
+            (
+                "http://test.opendap.org/opendap/hyrax/"
+                + "NSIDC/ATL08_20181016124656_02730110_002_01.h5?dap4.ce="
+                + "/gt1l/land_segments/delta_time;/gt1l/land_segments/delta_time;"
+                + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude"
+            ),
             "/gt1l/land_segments",
             "/gt1l/land_segments/latitude",
             "",
@@ -515,7 +525,7 @@ url3 = (
             (50,),
         ),
         (
-            url1,
+            "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5",
             "/SimpleGroup",
             "/SimpleGroup/Salinity",
             "Temperature",
@@ -556,6 +566,7 @@ def test_get_batch_data_sliced_nondims(
     assert (
         query.replace("%5B", "[").replace("%5D", "]").replace("%3A", ":") == expected_ce
     )
+    session.cache.clear()
 
 
 @pytest.mark.parametrize(

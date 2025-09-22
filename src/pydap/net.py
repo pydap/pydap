@@ -289,6 +289,7 @@ def create_session(
             }
             # Create a new session with cache
         session = CachedSession(**{**session_kwargs, **cache_kwargs})
+        session.cache.clear()  # removes any previous data associated with cache_name
     else:
         if len(cache_kwargs) > 0:
             warnings.warn(

@@ -1200,14 +1200,15 @@ class DatasetType(StructureType):
             - slices are not validated, so user must ensure they make sense.
             - Intended only when in batch mode.
         """
-        dims = [var for var in var.dims if isinstance(self[var], BaseType)]
+        dataset = var.dataset
+        dims = [vdim for vdim in var.dims if isinstance(dataset[var.id], BaseType)]
         var._pending_batch_slice = slice(key) if not key else key
         slice_elements = var.build_ce().split(var.name)[-1]
         dim_slices = dict(zip(dims, [sli + "]" for sli in slice_elements.split("]")]))
 
         # the next check is to see if all dimensions lie within the variable hierarchy
         uniformity_check = len(dims) * [True] == [
-            self[dims[i]].parent == var.parent for i in range(len(dims))
+            dataset[dims[i]].parent == var.parent for i in range(len(dims))
         ]  # it is True only when all dims a share hierarchy with data
         if not key or not uniformity_check:
             self.clear_dim_slices()
