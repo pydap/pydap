@@ -984,4 +984,5 @@ def test_register_dim_slices_dimension_different_hierarchy(var, slice_, expected
     session = requests.Session()
     pyds = open_url(url, session=session, batch=True)
     pyds.register_dim_slices(pyds[var], key=slice_)
-    assert pyds._slices == expected
+    slices = pyds._slices
+    assert slices == expected
