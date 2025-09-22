@@ -493,6 +493,7 @@ def test_cached_consolidate_metadata_matching_dims(urls, safe_mode):
     ce_dims = cached_session.cache.urls()[0].split("=")[1].split("&")[0].split("%3B")
 
     assert [item.split("%5B")[0] for item in ce_dims] == dims
+    cached_session.cache.clear()
 
 
 ce1 = "?dap4.ce=/i;/j;/bears"
@@ -535,6 +536,7 @@ def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
         # caches all DMRs and caches the dap responses of the dimensions
         # of the first URL
         assert len(cached_session.cache.urls()) == len(urls) + len(dims)
+    cached_session.cache.clear()
 
 
 # @pytest.mark.skipif(
@@ -584,6 +586,7 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
             len(cached_session.cache.urls())
             == N_dmr_urls + N_concat_dims + N_non_concat_dims
         )
+    cached_session.cache.clear()
 
 
 @pytest.mark.parametrize(
@@ -911,6 +914,7 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
 def test_get_cmr_urls(param, expected):
     """Test that get_cmr_urls returns the correct urls."""
     session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    session.cache.clear()
     cmr_urls = get_cmr_urls(**param, session=session)
     assert isinstance(cmr_urls, list)
     assert len(cmr_urls) > 0
@@ -929,6 +933,7 @@ def test_get_cmr_urls(param, expected):
         # if page_size is not specified, it defaults to 50
         expected += "&page_size=50"
     assert set(expected.split("&")) == set(cached_urls.split("&"))
+    cached_session.cache.clear()
 
 
 @pytest.mark.parametrize("var", ["SST"])
