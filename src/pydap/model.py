@@ -1208,7 +1208,7 @@ class DatasetType(StructureType):
 
         # the next check is to see if all dimensions lie within the variable hierarchy
         uniformity_check = len(dims) * [True] == [
-            self[dims[i]].parent == var.parent for i in range(len(dims))
+            dataset[dims[i]].parent == var.parent for i in range(len(dims))
         ]  # it is True only when all dims a share hierarchy with data
         if not key or not uniformity_check:
             self.clear_dim_slices()
