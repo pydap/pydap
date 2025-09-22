@@ -448,6 +448,7 @@ def test_fetched_batched(group):
     for var in dims:
         assert isinstance(pyds[var].data, np.ndarray)
     assert len(session.cache.urls()) == 1  # single dap url
+    session.cache.clear()
 
 
 @pytest.mark.parametrize("dims", [True, False])
@@ -482,6 +483,7 @@ def test_get_batch_data(dims, group):
                 pyds[group][name], BaseType
             ):
                 assert pyds[group][name]._is_data_loaded()
+    session.cache.clear()
 
 
 @pytest.mark.parametrize(
@@ -562,6 +564,7 @@ def test_get_batch_data_sliced_nondims(
     assert (
         query.replace("%5B", "[").replace("%5D", "]").replace("%3A", ":") == expected_ce
     )
+    session.cache.clear()
 
 
 @pytest.mark.parametrize(
