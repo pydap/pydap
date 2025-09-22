@@ -155,6 +155,8 @@ def create_request(
         return req
     else:
         get_kwargs = get_kwargs or {}
+        if url.startswith("https://test.opendap.org"):
+            url = url.replace("https", "http")
         # remote dataset, requests request.
         if session is None:
             args = {
@@ -166,8 +168,7 @@ def create_request(
         if "Authorization" in session.headers:
             get_kwargs["auth"] = None
         try:
-            if url.startswith("https://test.opendap.org"):
-                url = url.replace("https", "http")
+
             if isinstance(session, CachedSession):
                 skip = False
                 if cache_kwargs:
