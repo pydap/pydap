@@ -411,7 +411,7 @@ def test_recover_missing_url(queries, baseurl):
 )
 def test_fetch_consolidated(urls, url):
     """Test that fetch_consolidated works as expected."""
-    session = CachedSession()
+    session = CachedSession(name="debug_fetch_consolidated")
     session.cache.clear()
     consolidate_metadata(urls, session=session, concat_dim="TIME")
     pyds = open_url(url, session=session)
@@ -428,7 +428,9 @@ def test_fetch_consolidated(urls, url):
 @pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
 def test_fetched_batched(group):
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session = create_session(
+        use_cache=True, cache_kwargs={"cache_name": "debug_fetched_batched"}
+    )
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
     session.cache.clear()
@@ -458,7 +460,9 @@ def test_get_batch_data(dims, group):
     Test that `get_batch_data` works as expected.
     """
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session = create_session(
+        use_cache=True, cache_kwargs={"cache_name": "debug_get_batch_data"}
+    )
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
     session.cache.clear()
@@ -540,7 +544,10 @@ def test_get_batch_data_sliced_nondims(
     Test that when passing a slice to `get_batch_data`, the correct
     CE is generated.
     """
-    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session = create_session(
+        use_cache=True,
+        cache_kwargs={"cache_name": "debug_get_batch_data_sliced_nondims"},
+    )
     session.cache.clear()
     pyds = open_url(url, protocol="dap4", session=session, batch=True)
     session.cache.clear()
@@ -549,7 +556,8 @@ def test_get_batch_data_sliced_nondims(
     variables = [
         pyds[group][var].id
         for var in sorted(pyds[group].variables())
-        if var not in list(pyds[group].dimensions) + [skip_var]
+        if isinstance(pyds[group][var], BaseType)
+        and var not in list(pyds[group].dimensions) + [skip_var]
     ]
     assert var in variables
     # register the slice for the variable

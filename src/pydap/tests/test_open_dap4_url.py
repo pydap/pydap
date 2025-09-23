@@ -34,7 +34,7 @@ def test_dap4_slices(protocol):
 
     session = create_session(
         use_cache=True,
-        cache_kwargs={"cache_name": "debug"},
+        cache_kwargs={"cache_name": "debug_dap4_slices"},
     )
     pyds = open_url(url, protocol=protocol, session=session)
     session.cache.clear()  # Clear cache before testing
@@ -87,7 +87,7 @@ def test_batch_mode_downloads():
     """
     session = create_session(
         use_cache=True,
-        cache_kwargs={"cache_name": "debug"},
+        cache_kwargs={"cache_name": "debug_test_batch_mode_downloads"},
     )
     session.cache.clear()  # Clear cache before testing
 
