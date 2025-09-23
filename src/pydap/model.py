@@ -1142,6 +1142,9 @@ class DatasetType(StructureType):
             isinstance(self._session, requests_cache.CachedSession)
             and self._session.cache.cache_name != "debug"
         ):
+            print(
+                "[pydapp.model], cache-name not debug", self._session.cache.cache_name
+            )
             cache_kwargs = {"skip": True}
         else:
             cache_kwargs = {}

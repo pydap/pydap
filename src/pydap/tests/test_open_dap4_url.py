@@ -33,7 +33,8 @@ def test_dap4_slices(protocol):
     url = "https://test.opendap.org/opendap/netcdf/examples/tos_O1_2001-2002.nc"
 
     session = create_session(
-        use_cache=True, cache_kwargs={"cache_name": "debug", "backend": "memory"}
+        use_cache=True,
+        cache_kwargs={"cache_name": "debug"},
     )
     pyds = open_url(url, protocol=protocol, session=session)
     session.cache.clear()  # Clear cache before testing
@@ -85,7 +86,8 @@ def test_batch_mode_downloads():
     Test that batch mode downloads data correctly.
     """
     session = create_session(
-        use_cache=True, cache_kwargs={"cache_name": "debug", "backend": "memory"}
+        use_cache=True,
+        cache_kwargs={"cache_name": "debug"},
     )
     session.cache.clear()  # Clear cache before testing
 

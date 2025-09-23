@@ -1,5 +1,9 @@
+from __future__ import annotations
+
+import re
 import ssl
 import warnings
+from typing import Any, Dict, Literal, Optional, Tuple, Union
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -8,12 +12,17 @@ from requests.exceptions import (
     HTTPError,
     SSLError,
 )
+from requests.structures import CaseInsensitiveDict
 from requests.utils import urlparse, urlunparse
-from requests_cache import CachedSession
+from requests_cache import BaseCache, CachedSession
 from urllib3 import Retry
 from webob.request import Request as webob_Request
 
 from pydap.lib import DEFAULT_TIMEOUT, __version__, _quote
+
+_BEARER_RE = re.compile(r"^\s*Bearer\s+.+", re.IGNORECASE)
+
+Backend = Literal["sqlite", "filesystem", "memory"]
 
 
 def GET(
@@ -64,7 +73,6 @@ def GET(
         session=session,
         timeout=timeout,
         verify=verify,
-        use_cache=use_cache,
         session_kwargs=session_kwargs,
         cache_kwargs=cache_kwargs,
         get_kwargs=get_kwargs,
@@ -113,7 +121,6 @@ def create_request(
     timeout=DEFAULT_TIMEOUT,
     verify=True,
     session=None,
-    use_cache=False,
     session_kwargs=None,
     cache_kwargs=None,
     get_kwargs=None,
@@ -155,64 +162,21 @@ def create_request(
         return req
     else:
         get_kwargs = get_kwargs or {}
-        if url.startswith("https://test.opendap.org"):
-            url = url.replace("https", "http")
-        # remote dataset, requests request.
-        if session is None:
-            args = {
-                "use_cache": use_cache,
-                "session_kwargs": session_kwargs,
-                "cache_kwargs": cache_kwargs,
-            }
-            session = create_session(**args)
-        if "Authorization" in session.headers:
-            get_kwargs["auth"] = None
+        cache_kwargs = cache_kwargs or {}
+        session_kwargs = session_kwargs or {}
         try:
-
-            if isinstance(session, CachedSession):
-                skip = False
-                if cache_kwargs:
-                    skip = cache_kwargs.pop("skip", None)
-                if should_skip_cache(url, session) or skip:
-                    with session.cache_disabled():
-                        req = session.get(
-                            url,
-                            timeout=timeout,
-                            verify=verify,
-                            allow_redirects=True,
-                            **get_kwargs,
-                        )
-                else:
-                    req = session.get(
-                        url,
-                        timeout=timeout,
-                        verify=verify,
-                        allow_redirects=True,
-                        **get_kwargs,
-                    )
-            else:
-                req = session.get(
-                    url,
-                    timeout=timeout,
-                    verify=verify,
-                    allow_redirects=True,
-                    **get_kwargs,
-                )
-        except (ConnectionError, SSLError) as e:
-            # some opendap servers do not support https, but they do support http.
-            parsed = urlparse(url)
-            if parsed.scheme == "https":
-                http_url = urlunparse(parsed._replace(scheme="http"))
-                req = session.get(
-                    http_url,
-                    timeout=timeout,
-                    verify=verify,
-                    allow_redirects=True,
-                    **get_kwargs,
-                )
-            else:
-                raise e
-        try:
+            req = new_create_request(
+                url,
+                base_session=session,
+                timeout=timeout,
+                verify=verify,
+                get_kwargs=get_kwargs,
+                backend=cache_kwargs.pop("backend", None),
+                cache_name=cache_kwargs.pop("http-cache", None),
+                backend_options=cache_kwargs.pop("backend_options", None),
+                cache_kwargs=cache_kwargs,
+                session_kwargs=session_kwargs,
+            )
             req.raise_for_status()
             return req
         except HTTPError as http_err:
@@ -332,3 +296,168 @@ def create_session(
         session.headers.update({"Authorization": f"Bearer {token}"})
     session.headers.update({"User-Agent": "pydap/" + f"{__version__}"})
     return session
+
+
+def new_create_request(
+    url: str,
+    *,
+    base_session: Optional[requests.Session] = None,
+    timeout: float | None = None,
+    verify: bool | str = True,
+    get_kwargs: Dict[str, Any] | None = None,
+    # Optional explicit cache config if not inheriting from a base CachedSession
+    backend: str = "sqlite",
+    cache_name: str = "http-cache",
+    backend_options: Dict[str, Any] | None = None,
+    cache_kwargs: Dict[str, Any] | None = None,
+    session_kwargs: Dict[str, Any] | None = None,
+) -> requests.Response:
+    s = build_session(
+        base_session=base_session,
+        backend_options=backend_options,
+        cache_kwargs=cache_kwargs,
+        session_kwargs=session_kwargs,
+    )
+    try:
+        if isinstance(s, CachedSession):
+            skip = False
+            if cache_kwargs:
+                skip = cache_kwargs.pop("skip", None)
+            if should_skip_cache(url, s) or skip:
+                with s.cache_disabled():
+                    req = s.get(
+                        url,
+                        timeout=timeout,
+                        verify=verify,
+                        allow_redirects=True,
+                        **(get_kwargs or {}),
+                    )
+            else:
+                req = s.get(
+                    url,
+                    timeout=timeout,
+                    verify=verify,
+                    allow_redirects=True,
+                    **(get_kwargs or {}),
+                )
+        else:
+            req = s.get(
+                url,
+                timeout=timeout,
+                verify=verify,
+                allow_redirects=True,
+                **(get_kwargs or {}),
+            )
+    except (ConnectionError, SSLError) as e:
+        # some opendap servers do not support https, but they do support http.
+        parsed = urlparse(url)
+        if parsed.scheme == "https":
+            http_url = urlunparse(parsed._replace(scheme="http"))
+            req = s.get(
+                http_url,
+                timeout=timeout,
+                verify=verify,
+                allow_redirects=True,
+                **(get_kwargs or {}),
+            )
+        else:
+            raise e
+    return req
+
+
+def new_session_with_same_store(base: CachedSession, **cache_kwargs) -> CachedSession:
+    """
+    Create a NEW CachedSession that points to the same underlying store as `base`
+    """
+    backend, cache_name = cache_store_id(base)
+    if backend == "custom":
+        # Unknown backend: reuse the object explicitly (Option 1 behavior)
+        return CachedSession(backend=cache_name, **cache_kwargs)
+    return CachedSession(
+        backend=backend,
+        cache_name=cache_name,
+        **cache_kwargs,
+    )
+
+
+def inherit_bearer_header(target: requests.Session, base: requests.Session) -> None:
+    src: CaseInsensitiveDict = getattr(base, "headers", CaseInsensitiveDict())
+    val = src.get("Authorization")
+    if val and _BEARER_RE.match(val):
+        target.headers["Authorization"] = val.strip()
+
+
+def build_session(
+    *,
+    base_session: Optional[requests.Session],  # may be CachedSession or plain Session
+    backend_options: Dict[str, Any] | None = None,
+    cache_kwargs: Dict[str, Any] | None = None,
+    session_kwargs: Dict[str, Any] | None = None,
+) -> requests.Session:
+    backend_options = backend_options or {}
+    cache_kwargs = cache_kwargs or {}
+    session_kwargs = session_kwargs or {}
+
+    if isinstance(base_session, CachedSession):
+
+        s: requests.Session = new_session_with_same_store(base_session, **cache_kwargs)
+    else:
+        s = requests.Session(**session_kwargs)
+
+    # Copy only the Bearer token header (if present)
+    if base_session is not None:
+        inherit_bearer_header(s, base_session)
+
+    # Handle retry arguments separately
+    retry_args = session_kwargs.pop("retry_args", {})
+    if "total" not in retry_args:
+        retry_args.setdefault("total", 5)
+    if "status" not in retry_args:
+        retry_args.setdefault("status", 2)
+    if "connect" not in retry_args:
+        retry_args.setdefault("connect", 1)
+    if "status_forcelist" not in retry_args:
+        retry_args.setdefault("status_forcelist", [500, 502, 503, 504])
+    if "backoff_factor" not in retry_args:
+        retry_args.setdefault("backoff_factor", 0.1)
+    if "allowed_methods" not in retry_args:
+        retry_args.setdefault("allowed_methods", ["GET"])
+
+    retries = Retry(**retry_args)
+    adapter = HTTPAdapter(max_retries=retries)
+
+    # Mount the adapter to the session
+    s.mount("http://", adapter)
+    s.mount("https://", adapter)
+
+    return s
+
+
+def _as_cache(obj: Union[CachedSession, BaseCache]) -> BaseCache:
+    return obj.cache if hasattr(obj, "cache") else obj
+
+
+def detect_backend(obj: Union[CachedSession, BaseCache]) -> Backend:
+    cache = _as_cache(obj)
+    module = type(cache).__module__.lower()
+
+    # Positive attribute checks first
+    if hasattr(cache, "db_path"):
+        return "sqlite"
+    if hasattr(cache, "cache_dir"):
+        return "filesystem"
+
+    if module.endswith("requests_cache.backends.base"):
+        # fallback to memory as backend
+        return "memory"
+
+
+def cache_store_id(obj: Union[CachedSession, BaseCache]) -> Tuple[Backend, str]:
+    cache = _as_cache(obj)
+    kind = detect_backend(cache)
+    if kind == "sqlite":
+        return kind, str(getattr(cache, "db_path"))
+    if kind == "filesystem":
+        return kind, str(getattr(cache, "cache_dir"))
+    if kind == "memory":
+        return kind, getattr(cache, "cache_name", type(cache).__name__)

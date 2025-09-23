@@ -458,9 +458,7 @@ def test_get_batch_data(dims, group):
     Test that `get_batch_data` works as expected.
     """
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-    session = create_session(
-        use_cache=True, cache_kwargs={"cache_name": "debug", "backend": "memory"}
-    )
+    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
     session.cache.clear()
