@@ -446,10 +446,6 @@ def test_warning_nondap4urls_consolidate_metadata(urls, cached_session):
         consolidate_metadata(urls, cached_session)
 
 
-ce1 = "?dap4.ce=/i;/j;/l;/bears"
-ce2 = "?dap4.ce=/i;/j;/l;/order"
-
-
 # @pytest.mark.skipif(
 #     os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
 # )
@@ -458,8 +454,10 @@ ce2 = "?dap4.ce=/i;/j;/l;/order"
     [
         [
             "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
-            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce1,
-            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce2,
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc"
+            + "?dap4.ce=/i;/j;/l;/bears",
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc"
+            + "?dap4.ce=/i;/j;/l;/order",
         ],
     ],
 )
@@ -496,17 +494,15 @@ def test_cached_consolidate_metadata_matching_dims(urls, safe_mode):
     cached_session.cache.clear()
 
 
-ce1 = "?dap4.ce=/i;/j;/bears"
-ce2 = "?dap4.ce=/i;/j;/order"
-
-
 @pytest.mark.parametrize(
     "urls",
     [
         [
             "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
-            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce1,
-            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce2,
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc"
+            + "?dap4.ce=/i;/j;/bears",
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc"
+            + "?dap4.ce=/i;/j;/order",
         ],
     ],
 )
@@ -684,40 +680,44 @@ def test_open_dmr(url, expected):
         ],
     ],
 )
-def test_patch_session_for_shared_dap_cache(urls, cached_session):
+def test_patch_session_for_shared_dap_cache(urls):
     """Test that the session is patched correctly for shared dap cache."""
     # Clear any existing cache
-    cached_session.cache.clear()
+    my_session = create_session(
+        use_cache=True, cache_kwargs={"cache_name": "test_debug", "backend": "memory"}
+    )
+    my_session.cache.clear()
+    my_session.cache.clear()
     # Create custom cache key for each of the dimensions
     dimensions = ["i[0:1:1]", "j[0:1:2]", "l[0:1:2]"]
 
     patch_session_for_shared_dap_cache(
-        cached_session, shared_vars=dimensions, concat_dim=None, known_url_list=urls
+        my_session, shared_vars=dimensions, concat_dim=None, known_url_list=urls
     )
-    assert len(cached_session.cache.urls()) == 0
+    assert len(my_session.cache.urls()) == 0
 
     # construct urls to create cache keys
     test_urls = [urls[0] + ".dap?dap4.ce=" + dim for dim in dimensions]
     # create cache keys for the urls - discard the list
-    _ = [cached_session.get(url) for url in test_urls]
+    _ = [my_session.get(url) for url in test_urls]
 
     # make sure that the urls are cached for each dimension
-    assert len(cached_session.cache.urls()) == len(dimensions)
+    assert len(my_session.cache.urls()) == len(dimensions)
 
     for dim in dimensions:
         test_url2 = urls[1] + ".dap?dap4.ce=" + dim
         test_url3 = urls[2] + ".dap?dap4.ce=" + dim
 
         # test that the urls are being cached
-        r2 = cached_session.get(test_url2)
-        r3 = cached_session.get(test_url3)
+        r2 = my_session.get(test_url2)
+        r3 = my_session.get(test_url3)
 
         # assert that data was cached - otherwise 404 (Non-existent URLS!)
         assert r2.from_cache
         assert r3.from_cache
 
     # assert that there is no new cached key
-    assert len(cached_session.cache.urls()) == len(dimensions)
+    assert len(my_session.cache.urls()) == len(dimensions)
 
 
 ccid = "concept_id=C2076114664-LPCLOUD"
