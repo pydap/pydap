@@ -411,7 +411,7 @@ def test_recover_missing_url(queries, baseurl):
 )
 def test_fetch_consolidated(urls, url):
     """Test that fetch_consolidated works as expected."""
-    session = CachedSession(name="debug_fetch_consolidated")
+    session = CachedSession(cache_name="debug_fetch_consolidated")
     session.cache.clear()
     consolidate_metadata(urls, session=session, concat_dim="TIME")
     pyds = open_url(url, session=session)
