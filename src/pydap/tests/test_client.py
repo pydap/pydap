@@ -621,30 +621,31 @@ def test_ValueErrors_compute_base_url_prefix(urls):
         compute_base_url_prefix(urls)
 
 
-cloud_common = "/providers/POCLOUD/collections/granules"
-cloud_urls = "https://opendap.earthdata.nasa.gov"
-posix_urls = "http://localhost:8001"
-posix_common = "/common/path"
-
-
 @pytest.mark.parametrize(
     "urls, common_path",
     [
         (
             [
-                posix_urls + posix_common + "/data.nc",
-                posix_urls + posix_common + "/data.nc",
-                posix_urls + posix_common + "/data.nc",
+                "http://localhost:8001/common/path/data.nc",
+                "http://localhost:8001/common/path/data.nc",
+                "http://localhost:8001/common/path/data.nc",
             ],
-            posix_urls + posix_common,
+            "http://localhost:8001/common/path",
         ),
         (
             [
-                cloud_urls + cloud_common + "/fileA.nc",
-                cloud_urls + cloud_common + "/fileC.nc",
-                cloud_urls + cloud_common + "/fileB.nc",
+                "https://opendap.earthdata.nasa.gov"
+                + "/providers/POCLOUD/collections/granules"
+                + "/fileA.nc",
+                "https://opendap.earthdata.nasa.gov"
+                + "/providers/POCLOUD/collections/granules"
+                + "/fileC.nc",
+                "https://opendap.earthdata.nasa.gov"
+                + "/providers/POCLOUD/collections/granules"
+                + "/fileB.nc",
             ],
-            cloud_urls + cloud_common,
+            "https://opendap.earthdata.nasa.gov"
+            + "/providers/POCLOUD/collections/granules",
         ),
     ],
 )
