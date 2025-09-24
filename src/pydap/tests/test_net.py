@@ -15,6 +15,7 @@ from pydap.net import (
     create_session,
     detect_backend,
     get_response,
+    inherit_bearer_header,
 )
 from pydap.tests.datasets import SimpleGroup
 
@@ -107,3 +108,11 @@ def test_detect_backend(backend):
         use_cache=True, cache_kwargs={"name": "test", "backend": backend}
     )
     assert backend == detect_backend(session)
+
+
+def test_inherit_bearer_header():
+    session = requests.Session()
+    session.headers["Authorization"] = "Bearer 12345"
+    session_no_header = requests.Session()
+    inherit_bearer_header(session_no_header, session)
+    assert session_no_header.headers == session.headers
