@@ -470,7 +470,10 @@ def test_get_batch_data(dims, group):
         var_name = list(pyds[group].dimensions)[0]
     else:
         variables = [
-            var for var in pyds[group].variables() if var not in pyds[group].dimensions
+            var
+            for var in pyds[group].variables()
+            if isinstance(pyds[group][var], BaseType)
+            and var not in pyds[group].dimensions
         ]
         var_name = variables[0]
 
