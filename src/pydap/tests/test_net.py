@@ -9,7 +9,13 @@ from webob.request import Request as webob_Request
 from webob.response import Response as webob_Response
 
 from pydap.handlers.lib import BaseHandler
-from pydap.net import GET, create_request, get_response
+from pydap.net import (
+    GET,
+    create_request,
+    create_session,
+    detect_backend,
+    get_response,
+)
 from pydap.tests.datasets import SimpleGroup
 
 
@@ -93,3 +99,11 @@ def test_create_request_application(appGroup):
     resp = get_response(req, application=appGroup, verify=True)
     assert isinstance(resp, webob_Response)
     assert resp.status_code == 200
+
+
+@pytest.mark.parametrize("backend", ["memory", "sqlite"])
+def test_detect_backend(backend):
+    session = create_session(
+        use_cache=True, cache_kwargs={"name": "test", "backend": backend}
+    )
+    assert backend == detect_backend(session)
