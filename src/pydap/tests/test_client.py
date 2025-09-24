@@ -386,23 +386,19 @@ def test_cache(use_cache):
         assert isinstance(ds, DatasetType)
 
 
-@pytest.fixture
-def cached_session():
-    """Fixture to create a cached session."""
-    return create_session(use_cache=True)
-
-
 @pytest.mark.parametrize(
     "urls",
     ["not a list", ["A", "B", "C", 1], ["http://localhost:8001/"]],
 )
-def test_typerror_consolidate_metadata(urls, cached_session):
+def test_typerror_consolidate_metadata(urls):
     """Test that TypeError is raised when `consolidate_metadata` takes an argument that
     is not a list, or a list of a single element.
     """
+    cached_session = create_session(use_cache=True, cache_kwargs={"cache_name": "test"})
     cached_session.cache.clear()  # clears any existing cache
     with pytest.raises(TypeError):
         consolidate_metadata(urls, cached_session)
+    cached_session.cache.clear()
 
 
 def test_warning_consolidate_metadata():
@@ -421,13 +417,17 @@ def test_warning_consolidate_metadata():
         ["dap2://localhost:8001/", "dap4://localhost:8001/"],
     ],
 )
-def test_valueerror_consolidate_metadata(urls, cached_session):
+def test_valueerror_consolidate_metadata(urls):
     """Test that ValueError is raised when `consolidate_metadata` takes a list of
     urls that are not all the same type.
     """
+    cached_session = create_session(
+        use_cache=True, cache_kwargs={"cache_name": "test2"}
+    )
     cached_session.cache.clear()
     with pytest.raises(ValueError):
         consolidate_metadata(urls, cached_session)
+    cached_session.cache.clear()
 
 
 @pytest.mark.parametrize(
@@ -437,13 +437,17 @@ def test_valueerror_consolidate_metadata(urls, cached_session):
         ["dap2://localhost:8001/", "dap2://localhost:8002/", "dap2://localhost:8003/"],
     ],
 )
-def test_warning_nondap4urls_consolidate_metadata(urls, cached_session):
+def test_warning_nondap4urls_consolidate_metadata(urls):
     """Test that a warning is raised when `consolidate_metadata` takes a list of urls
     that are do not have `dap4` as their scheme.
     """
+    cached_session = create_session(
+        use_cache=True, cache_kwargs={"cache_name": "test3"}
+    )
     cached_session.cache.clear()
     with pytest.warns(UserWarning):
         consolidate_metadata(urls, cached_session)
+    cached_session.cache.clear()
 
 
 # @pytest.mark.skipif(
@@ -473,7 +477,9 @@ def test_cached_consolidate_metadata_matching_dims(urls, safe_mode):
 
     In both scenarios, the dap urls of the dimensions are cached
     """
-    cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    cached_session = create_session(
+        use_cache=True, cache_kwargs={"backend": "memory", "cache_name": "test3"}
+    )
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = sorted(list(pyds.dimensions))  # dimensions of full dataset
@@ -518,7 +524,9 @@ def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
 
     In both scenarios, the dap urls of the dimensions are cached
     """
-    cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    cached_session = create_session(
+        use_cache=True, cache_kwargs={"backend": "memory", "cache_name": "test4"}
+    )
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)  # here there are 3 dimensions
@@ -560,7 +568,9 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
     None.
 
     """
-    cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    cached_session = create_session(
+        use_cache=True, cache_kwargs={"backend": "memory", "cache_name": "test5"}
+    )
     cached_session.cache.clear()
     # download all dmr for testing - not most performant
     consolidate_metadata(
@@ -686,7 +696,6 @@ def test_patch_session_for_shared_dap_cache(urls):
     my_session = create_session(
         use_cache=True, cache_kwargs={"cache_name": "test_debug", "backend": "memory"}
     )
-    my_session.cache.clear()
     my_session.cache.clear()
     # Create custom cache key for each of the dimensions
     dimensions = ["i[0:1:1]", "j[0:1:2]", "l[0:1:2]"]
@@ -933,7 +942,7 @@ def test_get_cmr_urls(param, expected):
         # if page_size is not specified, it defaults to 50
         expected += "&page_size=50"
     assert set(expected.split("&")) == set(cached_urls.split("&"))
-    cached_session.cache.clear()
+    session.cache.clear()
 
 
 @pytest.mark.parametrize("var", ["SST"])
