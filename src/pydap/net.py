@@ -165,7 +165,7 @@ def create_request(
         cache_kwargs = cache_kwargs or {}
         session_kwargs = session_kwargs or {}
         try:
-            req = new_create_request(
+            req = get_request(
                 url,
                 base_session=session,
                 timeout=timeout,
@@ -298,7 +298,7 @@ def create_session(
     return session
 
 
-def new_create_request(
+def get_request(
     url: str,
     *,
     base_session: Optional[requests.Session] = None,
