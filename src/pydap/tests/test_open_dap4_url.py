@@ -28,13 +28,13 @@ def test_maps():
 
 
 @pytest.mark.parametrize("protocol", ["dap4", "dap2"])
-def test_dap4_slices(protocol):
+def test_dap4_slices(cache_tmp_dir, protocol):
     """Also tests dap2"""
     url = "https://test.opendap.org/opendap/netcdf/examples/tos_O1_2001-2002.nc"
-
+    cache_name = cache_tmp_dir / "debug_dap4_slices"
     session = create_session(
         use_cache=True,
-        cache_kwargs={"cache_name": "debug_dap4_slices"},
+        cache_kwargs={"cache_name": cache_name},
     )
     pyds = open_url(url, protocol=protocol, session=session)
     session.cache.clear()  # Clear cache before testing
@@ -81,13 +81,14 @@ def test_dap4_unaligned2_check_dims():
     ]
 
 
-def test_batch_mode_downloads():
+def test_batch_mode_downloads(cache_tmp_dir):
     """
     Test that batch mode downloads data correctly.
     """
+    cache_name = cache_tmp_dir / "debug_batch_mode_downloads"
     session = create_session(
         use_cache=True,
-        cache_kwargs={"cache_name": "debug_test_batch_mode_downloads"},
+        cache_kwargs={"cache_name": cache_name},
     )
     session.cache.clear()  # Clear cache before testing
 
