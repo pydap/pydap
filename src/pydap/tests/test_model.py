@@ -711,7 +711,7 @@ def test_GridType_dimensions(gridtype_example):
     "session",
     [None, requests.Session(), requests_cache.CachedSession(), "session"],
 )
-def test_error_session(session):
+def test_error_session(cache_tmp_dir, session):
     """test that trying to set a session with other than a `None`,
     a `requests.Session` or a `requests_cached.CachedSession()` object
     returns a TypeError
@@ -720,8 +720,8 @@ def test_error_session(session):
         # is session is None (default) then session can be changed later
         pyds = DatasetType("name")
         assert pyds.session == session  # asserts default
-        pyds.session = (
-            requests_cache.CachedSession()
+        pyds.session = requests_cache.CachedSession(
+            cache_name=cache_tmp_dir / "tmp_session"
         )  # sets the session to a new cached session
         assert isinstance(pyds.session, requests_cache.CachedSession)
     elif isinstance(session, (requests.Session, requests_cache.CachedSession)):

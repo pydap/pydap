@@ -409,9 +409,10 @@ def test_recover_missing_url(queries, baseurl):
         "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
     ],
 )
-def test_fetch_consolidated(urls, url):
+def test_fetch_consolidated(cache_tmp_dir, urls, url):
     """Test that fetch_consolidated works as expected."""
-    session = CachedSession(cache_name="debug_fetch_consolidated")
+    cache_name = cache_tmp_dir / "debug_fetch_consolidated"
+    session = CachedSession(cache_name=cache_name)
     session.cache.clear()
     consolidate_metadata(urls, session=session, concat_dim="TIME")
     pyds = open_url(url, session=session)
@@ -426,10 +427,11 @@ def test_fetch_consolidated(urls, url):
 
 
 @pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
-def test_fetched_batched(group):
+def test_fetched_batched(cache_tmp_dir, group):
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
     session = create_session(
-        use_cache=True, cache_kwargs={"cache_name": "debug_fetched_batched"}
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_tmp_dir / "debug_fetched_batched"},
     )
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
@@ -455,13 +457,14 @@ def test_fetched_batched(group):
 
 @pytest.mark.parametrize("dims", [True, False])
 @pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
-def test_get_batch_data(dims, group):
+def test_get_batch_data(cache_tmp_dir, dims, group):
     """
     Test that `get_batch_data` works as expected.
     """
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
     session = create_session(
-        use_cache=True, cache_kwargs={"cache_name": "debug_get_batch_data"}
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_tmp_dir / "debug_get_batch_data"},
     )
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
@@ -541,7 +544,7 @@ def test_get_batch_data(dims, group):
     ],
 )
 def test_get_batch_data_sliced_nondims(
-    url, group, var, skip_var, key, expected_ce, expected_shape
+    cache_tmp_dir, url, group, var, skip_var, key, expected_ce, expected_shape
 ):
     """
     Test that when passing a slice to `get_batch_data`, the correct
@@ -549,7 +552,9 @@ def test_get_batch_data_sliced_nondims(
     """
     session = create_session(
         use_cache=True,
-        cache_kwargs={"cache_name": "debug_get_batch_data_sliced_nondims"},
+        cache_kwargs={
+            "cache_name": cache_tmp_dir / "debug_get_batch_data_sliced_nondims"
+        },
     )
     session.cache.clear()
     pyds = open_url(url, protocol="dap4", session=session, batch=True)

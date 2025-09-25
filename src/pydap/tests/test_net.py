@@ -103,9 +103,10 @@ def test_create_request_application(appGroup):
 
 
 @pytest.mark.parametrize("backend", ["memory", "sqlite"])
-def test_detect_backend(backend):
+def test_detect_backend(cache_tmp_dir, backend):
     session = create_session(
-        use_cache=True, cache_kwargs={"name": "test", "backend": backend}
+        use_cache=True,
+        cache_kwargs={"name": cache_tmp_dir / "test11", "backend": backend},
     )
     assert backend == detect_backend(session)
 
