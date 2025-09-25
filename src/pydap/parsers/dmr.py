@@ -375,11 +375,9 @@ class DMRParser(object):
         else:
             split_by = None
 
-        named_dimensions = get_named_dimensions(self.node)
-
         # get Global dimensions at root level
         global_dimensions = []
-        for name, size in named_dimensions.items():
+        for name, size in get_named_dimensions(self.node).items():
             if len(name.split(split_by)) == 1:
                 global_dimensions.append([name, size])
 
