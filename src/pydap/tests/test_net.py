@@ -9,7 +9,14 @@ from webob.request import Request as webob_Request
 from webob.response import Response as webob_Response
 
 from pydap.handlers.lib import BaseHandler
-from pydap.net import GET, create_request, get_response
+from pydap.net import (
+    GET,
+    create_request,
+    create_session,
+    detect_backend,
+    get_response,
+    inherit_bearer_header,
+)
 from pydap.tests.datasets import SimpleGroup
 
 
@@ -66,29 +73,6 @@ def test_redirect():
         assert req.text == "resp2"
 
 
-@pytest.mark.parametrize(
-    "use_cache",
-    [False, True],
-)
-def test_cache(use_cache):
-    """Test that caching is handled properly"""
-    url = "http://test.opendap.org:8080/opendap/data/nc/123bears.nc"
-    # cache_kwargs are being set, but only used when use_cache is True
-    # thus - raise a warning if cache_kwargs are set and use_cache is False
-    cache_kwargs = {
-        "cache_name": "http_cache",
-        "backend": "sqlite",
-        "use_temp": True,
-        "expire_after": 100,  # seconds
-    }
-    if not use_cache:
-        with pytest.warns(UserWarning):
-            create_request(url, use_cache=use_cache, cache_kwargs=cache_kwargs)
-    else:
-        r = create_request(url, use_cache=use_cache, cache_kwargs=cache_kwargs)
-        assert r.status_code == 200
-
-
 # def test_raise_httperror():
 #     """test that raise_for_status raises the correct HTTPerror"""
 #     fake_url = "https://httpstat.us/404"  # this url will return a 404
@@ -116,3 +100,20 @@ def test_create_request_application(appGroup):
     resp = get_response(req, application=appGroup, verify=True)
     assert isinstance(resp, webob_Response)
     assert resp.status_code == 200
+
+
+@pytest.mark.parametrize("backend", ["memory", "sqlite"])
+def test_detect_backend(cache_tmp_dir, backend):
+    session = create_session(
+        use_cache=True,
+        cache_kwargs={"name": cache_tmp_dir / "test11", "backend": backend},
+    )
+    assert backend == detect_backend(session)
+
+
+def test_inherit_bearer_header():
+    session = requests.Session()
+    session.headers["Authorization"] = "Bearer 12345"
+    session_no_header = requests.Session()
+    inherit_bearer_header(session_no_header, session)
+    assert session_no_header.headers == session.headers

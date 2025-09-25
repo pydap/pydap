@@ -409,9 +409,10 @@ def test_recover_missing_url(queries, baseurl):
         "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
     ],
 )
-def test_fetch_consolidated(urls, url):
+def test_fetch_consolidated(cache_tmp_dir, urls, url):
     """Test that fetch_consolidated works as expected."""
-    session = CachedSession()
+    cache_name = cache_tmp_dir / "debug_fetch_consolidated"
+    session = CachedSession(cache_name=cache_name)
     session.cache.clear()
     consolidate_metadata(urls, session=session, concat_dim="TIME")
     pyds = open_url(url, session=session)
@@ -426,9 +427,12 @@ def test_fetch_consolidated(urls, url):
 
 
 @pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
-def test_fetched_batched(group):
+def test_fetched_batched(cache_tmp_dir, group):
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
-    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session = create_session(
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_tmp_dir / "debug_fetched_batched"},
+    )
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
     session.cache.clear()
@@ -453,13 +457,14 @@ def test_fetched_batched(group):
 
 @pytest.mark.parametrize("dims", [True, False])
 @pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
-def test_get_batch_data(dims, group):
+def test_get_batch_data(cache_tmp_dir, dims, group):
     """
     Test that `get_batch_data` works as expected.
     """
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
     session = create_session(
-        use_cache=True, cache_kwargs={"cache_name": "debug", "backend": "memory"}
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_tmp_dir / "debug_get_batch_data"},
     )
     session.cache.clear()
     pyds = open_url(url, session=session, batch=True)
@@ -468,7 +473,10 @@ def test_get_batch_data(dims, group):
         var_name = list(pyds[group].dimensions)[0]
     else:
         variables = [
-            var for var in pyds[group].variables() if var not in pyds[group].dimensions
+            var
+            for var in pyds[group].variables()
+            if isinstance(pyds[group][var], BaseType)
+            and var not in pyds[group].dimensions
         ]
         var_name = variables[0]
 
@@ -536,13 +544,18 @@ def test_get_batch_data(dims, group):
     ],
 )
 def test_get_batch_data_sliced_nondims(
-    url, group, var, skip_var, key, expected_ce, expected_shape
+    cache_tmp_dir, url, group, var, skip_var, key, expected_ce, expected_shape
 ):
     """
     Test that when passing a slice to `get_batch_data`, the correct
     CE is generated.
     """
-    session = create_session(use_cache=True, cache_kwargs={"cache_name": "debug"})
+    session = create_session(
+        use_cache=True,
+        cache_kwargs={
+            "cache_name": cache_tmp_dir / "debug_get_batch_data_sliced_nondims"
+        },
+    )
     session.cache.clear()
     pyds = open_url(url, protocol="dap4", session=session, batch=True)
     session.cache.clear()
@@ -551,7 +564,8 @@ def test_get_batch_data_sliced_nondims(
     variables = [
         pyds[group][var].id
         for var in sorted(pyds[group].variables())
-        if var not in list(pyds[group].dimensions) + [skip_var]
+        if isinstance(pyds[group][var], BaseType)
+        and var not in list(pyds[group].dimensions) + [skip_var]
     ]
     assert var in variables
     # register the slice for the variable

@@ -268,7 +268,7 @@ def dmr_to_dataset(dmr):
 
     for name, variable in variables.items():
         for dim in variable["dims"]:
-            if dim in variables.items():
+            if dim in variables:
                 variable["shape"] += (variables[dim]["size"],)
             else:
                 variable["shape"] += (named_dimensions[dim],)
@@ -333,6 +333,8 @@ def dmr_to_dataset(dmr):
             dataset.createVariable(**var_kwargs)
         # assign root to each variable
         dataset.assign_dataset_recursive(dataset)
+
+    del variables, variable
 
     return dataset
 
