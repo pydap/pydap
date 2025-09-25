@@ -136,13 +136,13 @@ def test_output_grid(output_grid, remote_url):
     "session",
     [None, requests.session()],
 )
-def test_session_client(session):
+def test_session_client(cache_tmp_dir, session):
     """Test that session is passed correctly from user and no changes are made
     to it.
     """
     url = "http://test.opendap.org:8080/opendap/data/nc/123bears.nc"
     cache_kwargs = {
-        "cache_name": "http_cache",
+        "cache_name": cache_tmp_dir / "http_cache",
         "backend": "sqlite",
         "use_temp": True,
         "expire_after": 100,  # seconds
@@ -363,13 +363,13 @@ def test_uint16(structure_app):
     "use_cache",
     [False, True],
 )
-def test_cache(use_cache):
+def test_cache(cache_tmp_dir, use_cache):
     """Test that caching is passed from user correctly"""
     url = "http://test.opendap.org:8080/opendap/data/nc/123bears.nc"
     # cache_kwargs are being set, but only used when use_cache is True
     # thus - raise a warning if cache_kwargs are set and use_cache is False
     cache_kwargs = {
-        "cache_name": "http_cache",
+        "cache_name": cache_tmp_dir / "http_cache",
         "backend": "sqlite",
         "use_temp": True,
         "expire_after": 100,  # seconds
@@ -386,23 +386,21 @@ def test_cache(use_cache):
         assert isinstance(ds, DatasetType)
 
 
-@pytest.fixture
-def cached_session():
-    """Fixture to create a cached session."""
-    return create_session(use_cache=True)
-
-
 @pytest.mark.parametrize(
     "urls",
     ["not a list", ["A", "B", "C", 1], ["http://localhost:8001/"]],
 )
-def test_typerror_consolidate_metadata(urls, cached_session):
+def test_typerror_consolidate_metadata(cache_tmp_dir, urls):
     """Test that TypeError is raised when `consolidate_metadata` takes an argument that
     is not a list, or a list of a single element.
     """
+    cached_session = create_session(
+        use_cache=True, cache_kwargs={"cache_name": cache_tmp_dir / "test"}
+    )
     cached_session.cache.clear()  # clears any existing cache
     with pytest.raises(TypeError):
         consolidate_metadata(urls, cached_session)
+    cached_session.cache.clear()
 
 
 def test_warning_consolidate_metadata():
@@ -421,13 +419,17 @@ def test_warning_consolidate_metadata():
         ["dap2://localhost:8001/", "dap4://localhost:8001/"],
     ],
 )
-def test_valueerror_consolidate_metadata(urls, cached_session):
+def test_valueerror_consolidate_metadata(cache_tmp_dir, urls):
     """Test that ValueError is raised when `consolidate_metadata` takes a list of
     urls that are not all the same type.
     """
+    cached_session = create_session(
+        use_cache=True, cache_kwargs={"cache_name": cache_tmp_dir / "test2"}
+    )
     cached_session.cache.clear()
     with pytest.raises(ValueError):
         consolidate_metadata(urls, cached_session)
+    cached_session.cache.clear()
 
 
 @pytest.mark.parametrize(
@@ -437,17 +439,17 @@ def test_valueerror_consolidate_metadata(urls, cached_session):
         ["dap2://localhost:8001/", "dap2://localhost:8002/", "dap2://localhost:8003/"],
     ],
 )
-def test_warning_nondap4urls_consolidate_metadata(urls, cached_session):
+def test_warning_nondap4urls_consolidate_metadata(cache_tmp_dir, urls):
     """Test that a warning is raised when `consolidate_metadata` takes a list of urls
     that are do not have `dap4` as their scheme.
     """
+    cached_session = create_session(
+        use_cache=True, cache_kwargs={"cache_name": cache_tmp_dir / "test3"}
+    )
     cached_session.cache.clear()
     with pytest.warns(UserWarning):
         consolidate_metadata(urls, cached_session)
-
-
-ce1 = "?dap4.ce=/i;/j;/l;/bears"
-ce2 = "?dap4.ce=/i;/j;/l;/order"
+    cached_session.cache.clear()
 
 
 # @pytest.mark.skipif(
@@ -458,13 +460,15 @@ ce2 = "?dap4.ce=/i;/j;/l;/order"
     [
         [
             "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
-            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce1,
-            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce2,
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc"
+            + "?dap4.ce=/i;/j;/l;/bears",
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc"
+            + "?dap4.ce=/i;/j;/l;/order",
         ],
     ],
 )
 @pytest.mark.parametrize("safe_mode", [True])
-def test_cached_consolidate_metadata_matching_dims(urls, safe_mode):
+def test_cached_consolidate_metadata_matching_dims(cache_tmp_dir, urls, safe_mode):
     """Test the behavior of the chaching implemented in `consolidate_metadata`.
     the `safe_mode` parameter means that all dmr urls are cached, and
     the dimensions of each dmr_url are checked for consistency.
@@ -475,7 +479,10 @@ def test_cached_consolidate_metadata_matching_dims(urls, safe_mode):
 
     In both scenarios, the dap urls of the dimensions are cached
     """
-    cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    cached_session = create_session(
+        use_cache=True,
+        cache_kwargs={"backend": "memory", "cache_name": cache_tmp_dir / "test3"},
+    )
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = sorted(list(pyds.dimensions))  # dimensions of full dataset
@@ -496,22 +503,20 @@ def test_cached_consolidate_metadata_matching_dims(urls, safe_mode):
     cached_session.cache.clear()
 
 
-ce1 = "?dap4.ce=/i;/j;/bears"
-ce2 = "?dap4.ce=/i;/j;/order"
-
-
 @pytest.mark.parametrize(
     "urls",
     [
         [
             "dap4://test.opendap.org/opendap/data/nc/123bears.nc",
-            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce1,
-            "dap4://test.opendap.org/opendap/data/nc/123bears.nc" + ce2,
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc"
+            + "?dap4.ce=/i;/j;/bears",
+            "dap4://test.opendap.org/opendap/data/nc/123bears.nc"
+            + "?dap4.ce=/i;/j;/order",
         ],
     ],
 )
 @pytest.mark.parametrize("safe_mode", [True])
-def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
+def test_cached_consolidate_metadata_inconsistent_dims(cache_tmp_dir, urls, safe_mode):
     """Test the behavior of the chaching implemented in `consolidate_metadata`.
     the `safe_mode` parameter means that all dmr urls are cached, and
     the dimensions of each dmr_url are checked for consistency.
@@ -522,7 +527,10 @@ def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
 
     In both scenarios, the dap urls of the dimensions are cached
     """
-    cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    cached_session = create_session(
+        use_cache=True,
+        cache_kwargs={"backend": "memory", "cache_name": cache_tmp_dir / "test4"},
+    )
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = list(pyds.dimensions)  # here there are 3 dimensions
@@ -552,7 +560,7 @@ def test_cached_consolidate_metadata_inconsistent_dims(urls, safe_mode):
     ],
 )
 @pytest.mark.parametrize("concat_dim", [None, "TIME"])
-def test_consolidate_metadata_concat_dim(urls, concat_dim):
+def test_consolidate_metadata_concat_dim(cache_tmp_dir, urls, concat_dim):
     """Test the behavior of the chaching implemented in `consolidate_metadata`
     when there is a concat dimension, and (extra) this concat_dim may be an array
     of length >= 1.
@@ -564,7 +572,10 @@ def test_consolidate_metadata_concat_dim(urls, concat_dim):
     None.
 
     """
-    cached_session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    cached_session = create_session(
+        use_cache=True,
+        cache_kwargs={"backend": "memory", "cache_name": cache_tmp_dir / "test5"},
+    )
     cached_session.cache.clear()
     # download all dmr for testing - not most performant
     consolidate_metadata(
@@ -615,30 +626,31 @@ def test_ValueErrors_compute_base_url_prefix(urls):
         compute_base_url_prefix(urls)
 
 
-cloud_common = "/providers/POCLOUD/collections/granules"
-cloud_urls = "https://opendap.earthdata.nasa.gov"
-posix_urls = "http://localhost:8001"
-posix_common = "/common/path"
-
-
 @pytest.mark.parametrize(
     "urls, common_path",
     [
         (
             [
-                posix_urls + posix_common + "/data.nc",
-                posix_urls + posix_common + "/data.nc",
-                posix_urls + posix_common + "/data.nc",
+                "http://localhost:8001/common/path/data.nc",
+                "http://localhost:8001/common/path/data.nc",
+                "http://localhost:8001/common/path/data.nc",
             ],
-            posix_urls + posix_common,
+            "http://localhost:8001/common/path",
         ),
         (
             [
-                cloud_urls + cloud_common + "/fileA.nc",
-                cloud_urls + cloud_common + "/fileC.nc",
-                cloud_urls + cloud_common + "/fileB.nc",
+                "https://opendap.earthdata.nasa.gov"
+                + "/providers/POCLOUD/collections/granules"
+                + "/fileA.nc",
+                "https://opendap.earthdata.nasa.gov"
+                + "/providers/POCLOUD/collections/granules"
+                + "/fileC.nc",
+                "https://opendap.earthdata.nasa.gov"
+                + "/providers/POCLOUD/collections/granules"
+                + "/fileB.nc",
             ],
-            cloud_urls + cloud_common,
+            "https://opendap.earthdata.nasa.gov"
+            + "/providers/POCLOUD/collections/granules",
         ),
     ],
 )
@@ -684,40 +696,44 @@ def test_open_dmr(url, expected):
         ],
     ],
 )
-def test_patch_session_for_shared_dap_cache(urls, cached_session):
+def test_patch_session_for_shared_dap_cache(cache_tmp_dir, urls):
     """Test that the session is patched correctly for shared dap cache."""
     # Clear any existing cache
-    cached_session.cache.clear()
+    my_session = create_session(
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_tmp_dir / "test_debug", "backend": "memory"},
+    )
+    my_session.cache.clear()
     # Create custom cache key for each of the dimensions
     dimensions = ["i[0:1:1]", "j[0:1:2]", "l[0:1:2]"]
 
     patch_session_for_shared_dap_cache(
-        cached_session, shared_vars=dimensions, concat_dim=None, known_url_list=urls
+        my_session, shared_vars=dimensions, concat_dim=None, known_url_list=urls
     )
-    assert len(cached_session.cache.urls()) == 0
+    assert len(my_session.cache.urls()) == 0
 
     # construct urls to create cache keys
     test_urls = [urls[0] + ".dap?dap4.ce=" + dim for dim in dimensions]
     # create cache keys for the urls - discard the list
-    _ = [cached_session.get(url) for url in test_urls]
+    _ = [my_session.get(url) for url in test_urls]
 
     # make sure that the urls are cached for each dimension
-    assert len(cached_session.cache.urls()) == len(dimensions)
+    assert len(my_session.cache.urls()) == len(dimensions)
 
     for dim in dimensions:
         test_url2 = urls[1] + ".dap?dap4.ce=" + dim
         test_url3 = urls[2] + ".dap?dap4.ce=" + dim
 
         # test that the urls are being cached
-        r2 = cached_session.get(test_url2)
-        r3 = cached_session.get(test_url3)
+        r2 = my_session.get(test_url2)
+        r3 = my_session.get(test_url3)
 
         # assert that data was cached - otherwise 404 (Non-existent URLS!)
         assert r2.from_cache
         assert r3.from_cache
 
     # assert that there is no new cached key
-    assert len(cached_session.cache.urls()) == len(dimensions)
+    assert len(my_session.cache.urls()) == len(dimensions)
 
 
 ccid = "concept_id=C2076114664-LPCLOUD"
@@ -911,9 +927,11 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
         ],
     ],
 )
-def test_get_cmr_urls(param, expected):
+def test_get_cmr_urls(cache_tmp_dir, param, expected):
     """Test that get_cmr_urls returns the correct urls."""
-    session = create_session(use_cache=True, cache_kwargs={"backend": "memory"})
+    session = create_session(
+        use_cache=True, cache_kwargs={"backend": cache_tmp_dir / "memory"}
+    )
     session.cache.clear()
     cmr_urls = get_cmr_urls(**param, session=session)
     assert isinstance(cmr_urls, list)
@@ -933,7 +951,7 @@ def test_get_cmr_urls(param, expected):
         # if page_size is not specified, it defaults to 50
         expected += "&page_size=50"
     assert set(expected.split("&")) == set(cached_urls.split("&"))
-    cached_session.cache.clear()
+    session.cache.clear()
 
 
 @pytest.mark.parametrize("var", ["SST"])
