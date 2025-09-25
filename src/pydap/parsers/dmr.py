@@ -249,12 +249,14 @@ def dmr_to_dataset(dmr):
     dataset = DMRParser(dmr).init_dataset()
 
     variables = get_variables(dom_et)
-    named_dimensions = get_named_dimensions(dom_et, depth=True)
 
     # Add size entry for dimension variables
-    for name, size in named_dimensions.items():
+    named = {}
+    for name, size in get_named_dimensions(dom_et, depth=True).items():
         if name in variables:
             variables[name]["size"] = size
+        else:
+            named.update({name: size})
 
     # Bootstrap variables
     for name, variable in variables.items():
@@ -270,7 +272,7 @@ def dmr_to_dataset(dmr):
             if dim in variables:
                 variable["shape"] += (variables[dim]["size"],)
             else:
-                variable["shape"] += (named_dimensions[dim],)
+                variable["shape"] += (named[dim],)
 
     for name, variable in variables.items():
         var_name = variable["name"]
