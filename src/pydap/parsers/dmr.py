@@ -216,9 +216,8 @@ def get_groups(node, prefix="/") -> dict:
     out = {}
     for group in groups:
         fqname = prefix + group.attrib["name"]
-        named_dimensions = get_named_dimensions(group)
         global_dimensions = OrderedDict()
-        for name, size in named_dimensions.items():
+        for name, size in get_named_dimensions(group).items():
             global_dimensions[name.split("/")[-1]] = size
         out.update(
             {
