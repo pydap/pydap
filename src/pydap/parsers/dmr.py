@@ -1,6 +1,7 @@
 """A DMR parser."""
 
 import ast
+import copy
 import re
 from collections import OrderedDict
 from xml.etree import ElementTree as ET
@@ -64,10 +65,10 @@ def get_named_dimensions(node, prefix="", depth=False) -> dict:
     define dimensions at the container (root or group)
     level
     """
-    dimensions = OrderedDict()  # order matters
+    _dimensions = OrderedDict()  # order matters
     group_name = node.get("name")
     if group_name is None:
-        return dimensions
+        return _dimensions
     if node.tag != "Dataset":
         prefix = prefix + "/" + group_name
     for subnode in node:
@@ -75,10 +76,10 @@ def get_named_dimensions(node, prefix="", depth=False) -> dict:
             name = subnode.get("name")
             if prefix != "":
                 name = prefix + "/" + name
-            dimensions[name] = int(subnode.attrib["size"])
+            _dimensions[name] = int(subnode.attrib["size"])
         if depth:
-            dimensions.update(get_named_dimensions(subnode, prefix, depth))
-    return dimensions
+            _dimensions.update(get_named_dimensions(subnode, prefix, depth))
+    return _dimensions
 
 
 def get_dtype(element):
@@ -259,20 +260,26 @@ def dmr_to_dataset(dmr):
             named.update({name: size})
 
     # Bootstrap variables
-    for name, variable in variables.items():
-        variable["name"] = name
-        variable["attributes"] = get_attributes(variable["element"], {})
-        variable["dtype"] = get_dtype(variable["element"])
-        variable["dims"] = get_dim_names(variable["element"])
-        variable["maps"] = get_maps(variable["element"])
-        variable["shape"] = get_dim_sizes(variable["element"])
+    for name in variables:
+        print(name)
+        element = copy.deepcopy(variables[name]["element"])
+        variables[name]["name"] = name
+        variables[name]["attributes"] = get_attributes(element, {})
+        variables[name]["dtype"] = get_dtype(element)
+        variables[name]["dims"] = get_dim_names(element)
+        variables[name]["maps"] = get_maps(element)
+        variables[name]["shape"] = get_dim_sizes(element)
 
-    for name, variable in variables.items():
-        for dim in variable["dims"]:
+    for name in variables:
+        for dim in variables[name]["dims"]:
             if dim in variables:
-                variable["shape"] += (variables[dim]["size"],)
+                variables[name]["shape"] += (variables[dim]["size"],)
             else:
-                variable["shape"] += (named[dim],)
+                try:
+                    variables[name]["shape"] += (named[dim],)
+                except KeyError as e:
+                    print(list(variables), dim, variables[name]["dims"])
+                    raise e
 
     for name, variable in variables.items():
         var_name = variable["name"]
