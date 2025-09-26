@@ -1,7 +1,6 @@
 """A DMR parser."""
 
 import ast
-import copy
 import re
 from collections import OrderedDict
 from xml.etree import ElementTree as ET
@@ -55,7 +54,15 @@ def get_variables(node, prefix="") -> dict:
             name = subnode.get("name")
             if prefix != "":
                 name = prefix + "/" + name
-            variables[name] = {"element": subnode, "parent": node.tag}
+            variables[name] = {
+                "name": name,
+                "parent": node.tag,
+                "dims": get_dim_names(subnode),
+                "attributes": get_attributes(subnode, {}),
+                "dtype": get_dtype(subnode),
+                "maps": get_maps(subnode),
+                "shape": get_dim_sizes(subnode),
+            }
         variables.update(get_variables(subnode, prefix))
     return variables
 
@@ -260,17 +267,6 @@ def dmr_to_dataset(dmr):
         else:
             named.update({name: size})
 
-    # Bootstrap variables
-    for name in variables:
-        print(name)
-        element = copy.deepcopy(variables[name]["element"])
-        variables[name]["name"] = name
-        variables[name]["attributes"] = get_attributes(element, {})
-        variables[name]["dtype"] = get_dtype(element)
-        variables[name]["dims"] = get_dim_names(element)
-        variables[name]["maps"] = get_maps(element)
-        variables[name]["shape"] = get_dim_sizes(element)
-
     for name in variables:
         for dim in variables[name]["dims"]:
             if dim in variables:
@@ -279,9 +275,7 @@ def dmr_to_dataset(dmr):
                 try:
                     variables[name]["shape"] += (named[dim],)
                 except KeyError as e:
-                    print(
-                        list(variables), dim, get_dim_names(variables[name]["element"])
-                    )
+                    print(list(variables), variables[name]["dims"])
                     raise e
 
     for name, variable in variables.items():
