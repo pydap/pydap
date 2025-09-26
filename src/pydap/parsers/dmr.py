@@ -1,6 +1,7 @@
 """A DMR parser."""
 
 import ast
+import copy
 import re
 from collections import OrderedDict
 from xml.etree import ElementTree as ET
@@ -42,6 +43,7 @@ def dap4_to_numpy_typemap(type_string):
 
 def get_variables(node, prefix="") -> dict:
     variables = OrderedDict()
+    all_dims = get_named_dimensions(copy.deepcopy(node), depth=True)
     group_name = (
         pydap.lib._quote(node.get("name")) if node.get("name") is not None else None
     )
@@ -49,15 +51,18 @@ def get_variables(node, prefix="") -> dict:
         return variables
     if node.tag != "Dataset":
         prefix = prefix + "/" + group_name
-    for subnode in node:
+    for subnode in copy.deepcopy(node):
         if subnode.tag in dmr_atomic_types + ("String",):
             name = subnode.get("name")
             if prefix != "":
                 name = prefix + "/" + name
+            _dims = get_dim_names(copy.deepcopy(subnode))
+            if not all([dim in all_dims for dim in _dims]):
+                _dims = get_dim_names(copy.deepcopy(subnode))
             variables[name] = {
                 "name": name,
                 "parent": node.tag,
-                "dims": get_dim_names(subnode),
+                "dims": _dims,
                 "attributes": get_attributes(subnode, {}),
                 "dtype": get_dtype(subnode),
                 "maps": get_maps(subnode),
