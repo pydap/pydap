@@ -183,6 +183,7 @@ def get_dim_names(element):
     """This is done at the variable level. `Dims` element
     in the xml document.
     """
+
     dimensions = [
         (
             el.get("name").replace("/", "")
@@ -248,7 +249,7 @@ def dmr_to_dataset(dmr):
         split_by = None
 
     dataset = DMRParser(dmr).init_dataset()
-
+    variables = {}
     variables = get_variables(dom_et)
 
     # Add size entry for dimension variables
@@ -278,7 +279,9 @@ def dmr_to_dataset(dmr):
                 try:
                     variables[name]["shape"] += (named[dim],)
                 except KeyError as e:
-                    print(list(variables), dim, variables[name]["dims"])
+                    print(
+                        list(variables), dim, get_dim_names(variables[name]["element"])
+                    )
                     raise e
 
     for name, variable in variables.items():
