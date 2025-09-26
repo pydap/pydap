@@ -192,8 +192,7 @@ def get_dim_names(element):
     """This is done at the variable level. `Dims` element
     in the xml document.
     """
-
-    dimensions = [
+    _dimensions = [
         (
             el.get("name").replace("/", "")
             if el.get("name") is not None and el.get("name").find("/", 1) == -1
@@ -201,7 +200,7 @@ def get_dim_names(element):
         )
         for el in element.findall("Dim")
     ]
-    return tuple([item for item in dimensions if item is not None])
+    return tuple([item for item in _dimensions if item is not None])
 
 
 def get_dim_sizes(element):
@@ -258,11 +257,12 @@ def dmr_to_dataset(dmr):
         split_by = None
 
     dataset = DMRParser(dmr).init_dataset()
-    variables = {}
+
+    variables: OrderedDict[str, dict] = OrderedDict()
+    named: dict[str, int] = {}
     variables = get_variables(dom_et)
 
     # Add size entry for dimension variables
-    named = {}
     for name, size in get_named_dimensions(dom_et, depth=True).items():
         if name in variables:
             variables[name]["size"] = size
