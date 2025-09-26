@@ -297,7 +297,7 @@ def dmr_to_dataset(dmr):
                 Dims.append("/" + dim)
             else:  # there is a group
                 Dims.append(dim)
-            if len(parts) == len(variable["name"].split(split_by)):
+            if len(parts) == len(name.split(split_by)):
                 # if path to dim is identical to path to variable
                 dim_name = parts[-1]  # only keep the local dim name
                 nqfDims.append(dim_name)
