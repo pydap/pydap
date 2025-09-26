@@ -275,7 +275,7 @@ def dmr_to_dataset(dmr):
                 try:
                     variables[name]["shape"] += (named[dim],)
                 except KeyError as e:
-                    print(list(variables), variables[name]["dims"])
+                    print(name, variables[name]["dims"])
                     raise e
 
     for name, variable in variables.items():
