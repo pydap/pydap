@@ -43,7 +43,6 @@ def dap4_to_numpy_typemap(type_string):
 
 def get_variables(node, prefix="") -> dict:
     variables = OrderedDict()
-    all_dims = get_named_dimensions(copy.deepcopy(node), depth=True)
     group_name = (
         pydap.lib._quote(node.get("name")) if node.get("name") is not None else None
     )
@@ -57,8 +56,6 @@ def get_variables(node, prefix="") -> dict:
             if prefix != "":
                 name = prefix + "/" + name
             _dims = get_dim_names(copy.deepcopy(subnode))
-            if not all([dim in all_dims for dim in _dims]):
-                _dims = get_dim_names(copy.deepcopy(subnode))
             variables[name] = {
                 "name": name,
                 "parent": node.tag,
