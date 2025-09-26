@@ -180,7 +180,7 @@ import numpy as np
 import requests
 import requests_cache
 
-from pydap.lib import BatchPromise, _quote, decode_np_strings, tree, walk
+from pydap.lib import _quote, decode_np_strings, tree, walk
 from pydap.net import GET
 
 __all__ = [
@@ -293,6 +293,23 @@ class DapType(object):
         for child in self.children():
             child_path = f"{path}/{child.name}" if path else f"/{child.name}"
             child.assign_dataset_recursive(dataset, child_path)
+
+
+class BatchPromise:
+    def __init__(self):
+        self._event = threading.Event()
+        self._results = {}
+
+    def set_results(self, results):
+        self._results = results
+        self._event.set()
+
+    def wait_for_result(self, var_id):
+        self._event.wait()
+        return self._results[var_id]
+
+    def is_resolved(self):
+        return self._event.is_set()
 
 
 class SelfClearingArray:

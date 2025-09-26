@@ -66,18 +66,36 @@ def test_dap4_unaligned_check_dims():
 
 def test_dap4_unaligned2_check_dims():
     """ """
-    url = "dap4://test.opendap.org/opendap/dap4/unaligned_simple_datatree2.nc4.h5"
+    url = "dap4://test.opendap.org/opendap/dap4/unaligned_simple_datatree2.nc.h5"
     session = create_session()
     pyds = open_url(url, session=session)
 
-    assert pyds.dimensions == {"lat": 1, "lon": 2}
+    assert pyds.dimensions == {"lat": 1, "lon": 1}
     assert pyds["Group1"].dimensions == {"lat": 1, "lon": 2}
-    assert pyds["Group1/subgroup1"].dimensions == {"lat": 2, "lon": 2}
+    assert pyds["Group1/SubGroup1"].dimensions == {"lat": 2, "lon": 2}
+    assert pyds["Group1/SubGroup2"].dimensions == {"lat": 3, "lon": 3}
+    assert pyds["Group2"].dimensions == {"lat": 2, "lon": 2}
+    assert pyds["Group2/SubGroup3"].dimensions == {"X": 1, "Y": 1}
+    assert pyds["Group2/SubGroup4"].dimensions == {"X": 2, "Y": 2}
+
     assert pyds["root_variable"].dims == ["/lat", "/lon"]
     assert pyds["/Group1/group_1_var"].dims == ["/Group1/lat", "/Group1/lon"]
-    assert pyds["/Group1/subgroup1/subgroup1_var"].dims == [
-        "/Group1/subgroup1/lat",
-        "/Group1/subgroup1/lon",
+    assert pyds["/Group1/SubGroup1/subgroup1_var"].dims == [
+        "/Group1/SubGroup1/lat",
+        "/Group1/SubGroup1/lon",
+    ]
+    assert pyds["/Group1/SubGroup2/subgroup2_var"].dims == [
+        "/Group1/SubGroup2/lat",
+        "/Group1/SubGroup2/lon",
+    ]
+    assert pyds["/Group2/group_2_var"].dims == ["/Group2/lat", "/Group2/lon"]
+    assert pyds["/Group2/SubGroup3/subgroup3_var"].dims == [
+        "/Group2/SubGroup3/Y",
+        "/Group2/SubGroup3/X",
+    ]
+    assert pyds["/Group2/SubGroup4/subgroup4_var"].dims == [
+        "/Group2/SubGroup4/Y",
+        "/Group2/SubGroup4/X",
     ]
 
 
