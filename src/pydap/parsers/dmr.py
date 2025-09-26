@@ -249,7 +249,7 @@ def dmr_to_dataset(dmr):
     """Return a dataset object from a DMR representation."""
 
     # Parse the DMR. First dropping the namespace
-    dom_et = DMRParser(dmr).node
+    dom_et = copy.deepcopy(DMRParser(dmr).node)
     # emtpy dataset
     if DMRParser(dmr).Groups:
         split_by = "/"
