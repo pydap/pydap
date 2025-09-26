@@ -84,6 +84,19 @@ def test_dap4_unaligned2_check_dims():
         "/Group1/SubGroup1/lat",
         "/Group1/SubGroup1/lon",
     ]
+    assert pyds["/Group1/SubGroup2/subgroup2_var"].dims == [
+        "/Group1/SubGroup2/lat",
+        "/Group1/SubGroup2/lon",
+    ]
+    assert pyds["/Group2/group_2_var"].dims == ["/Group2/lat", "/Group2/lon"]
+    assert pyds["/Group2/SubGroup3/subgroup3_var"].dims == [
+        "/Group2/SubGroup3/Y",
+        "/Group2/SubGroup3/X",
+    ]
+    assert pyds["/Group2/SubGroup4/subgroup4_var"].dims == [
+        "/Group2/SubGroup4/Y",
+        "/Group2/SubGroup4/X",
+    ]
 
 
 def test_batch_mode_downloads(cache_tmp_dir):
