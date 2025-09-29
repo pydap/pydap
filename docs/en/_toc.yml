@@ -16,10 +16,12 @@ parts:
   - file: notebooks/Authentication
     sections:
     - file: notebooks/netrc
+  - file: notebooks/GetCMRURLS
   - file: notebooks/ECCO
   - file: notebooks/PACE
   - file: notebooks/SWOT
   - file: notebooks/CMIP6
+  - file: notebooks/MERRA2
 - caption: Frequently Asked Questions
   chapters:
   - file: faqs/faqs
