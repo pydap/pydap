@@ -16,7 +16,7 @@ parts:
   - file: notebooks/Authentication
     sections:
     - file: notebooks/netrc
-    - file: notebook/earthaccess
+    - file: notebooks/earthaccess
   - file: notebooks/GetCMRURLS
   - file: notebooks/ECCO
   - file: notebooks/PACE
