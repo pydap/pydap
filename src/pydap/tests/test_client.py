@@ -33,6 +33,7 @@ from .datasets import SimpleGrid, SimpleSequence, SimpleStructure
 DODS = os.path.join(os.path.dirname(__file__), "data/test.01.dods")
 DAS = os.path.join(os.path.dirname(__file__), "data/test.01.das")
 SimpleGroupdmr = os.path.join(os.path.dirname(__file__), "data/dmrs/SimpleGroup.dmr")
+sqlite_db = os.path.join(os.path.dirname(__file__), "data/climatology_test")
 
 
 @pytest.fixture
@@ -1077,28 +1078,17 @@ def test_recover_missing_url(queries, baseurl):
 
 
 @pytest.mark.parametrize(
-    "urls",
-    [
-        [
-            "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
-            "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
-        ]
-    ],
-)
-@pytest.mark.parametrize(
     "url",
     [
         "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
         "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
     ],
 )
-def test_fetch_consolidated(cache_tmp_dir, urls, url):
+def test_fetch_consolidated(url):
     """Test that fetch_consolidated works as expected."""
-    cache_name = cache_tmp_dir / "debug_fetch_consolidated"
-    session = CachedSession(cache_name=cache_name)
-    session.cache.clear()
-    consolidate_metadata(urls, session=session, concat_dim="TIME")
-    pyds = open_url(url, session=session)
+    db_session = CachedSession(cache_name=sqlite_db)
+    assert len(db_session.cache.urls()) == 5
+    pyds = open_url(url, session=db_session)
     fetch_consolidated(pyds)
     for name in ["TIME", "COADSX", "COADSY"]:
         var = pyds[name]
@@ -1106,7 +1096,6 @@ def test_fetch_consolidated(cache_tmp_dir, urls, url):
         assert hasattr(var, "ndim")
         assert hasattr(var, "dtype")
         assert isinstance(var.data, np.ndarray)
-    session.cache.clear()
 
 
 @pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
