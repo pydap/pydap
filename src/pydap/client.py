@@ -348,21 +348,35 @@ def consolidate_metadata(
         concat_dim_urls = []
 
     # check for named dimensions
-    pyds = open_url(dmr_urls[0], session=session, protocol="dap4", batch=False)
+    pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
     var_names = list(pyds.variables())
     new_dims = set.intersection(dims, var_names)
     named_dims = set.difference(dims, new_dims)
     dims = sorted(list(new_dims))
 
-    constrains_dims = [
-        dim + "%5B0%3A1%3A" + str(results[0].dimensions[dim] - 1) + "%5D"
-        for dim in dims
-        if dim != concat_dim
-    ]
-    if len(constrains_dims) > 0:
-        new_urls = [base_url + ".dap?dap4.ce=" + "%3B".join(constrains_dims) + _check]
+    if batch:
+        constrains_dims = [
+            dim + "%5B0%3A1%3A" + str(results[0].dimensions[dim] - 1) + "%5D"
+            for dim in dims
+            if dim != concat_dim
+        ]
+        if len(constrains_dims) > 0:
+            new_urls = [
+                base_url + ".dap?dap4.ce=" + "%3B".join(constrains_dims) + _check
+            ]
+        else:
+            new_urls = []
     else:
-        new_urls = []
+        new_urls = [
+            base_url
+            + ".dap?dap4.ce="
+            + dim
+            + "%5B0%3A1%3A"
+            + str(results[0].dimensions[dim] - 1)
+            + "%5D"
+            + _check
+            for dim in dims
+        ]
     new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [
