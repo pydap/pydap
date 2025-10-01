@@ -262,11 +262,10 @@ def consolidate_metadata(
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
     if safe_mode:
-        with session as _Session:  # Authenticate once
-            with ThreadPoolExecutor(max_workers=ncores) as executor:
-                results = list(
-                    executor.map(lambda url: open_dmr(url, session=_Session), dmr_urls)
-                )
+        with ThreadPoolExecutor(max_workers=ncores) as executor:
+            results = list(
+                executor.map(lambda url: open_dmr(url, session=session), dmr_urls)
+            )
         _dim_check = list(results[0].dimensions)
         if not all(d == _dim_check for d in [list(ds.dimensions) for ds in results]):
             warnings.warn(
@@ -483,7 +482,7 @@ def open_dmr(path, session=None):
         if session is None:
             session = create_session()
         try:
-            r = session.get(path)
+            r = GET(path, session=session)
         except (ConnectionError, SSLError) as e:
             parsed = urlparse(path)
             if parsed.scheme == "https":
