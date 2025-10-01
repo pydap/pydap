@@ -45,6 +45,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 """
 
 import datetime as dt
+import hashlib
 import os
 import re
 import warnings
@@ -52,7 +53,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
-from urllib.parse import parse_qs, unquote, urlencode
+from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 
 import numpy as np
 import requests
@@ -76,6 +77,9 @@ from pydap.net import GET, create_session
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
+
+# Replace '/granules/<anything>.dap' with '/granules/ANY.dap'
+GRANULE_PATH_RE = re.compile(r"(/granules/)[^/]+\.dap$", re.IGNORECASE)
 
 
 def open_url(
@@ -371,9 +375,9 @@ def consolidate_metadata(
             base_url
             + ".dap?dap4.ce="
             + dim
-            + "%5B0%3A1%3A"
+            + "[0:1:"
             + str(results[0].dimensions[dim] - 1)
-            + "%5D"
+            + "]"
             + _check
             for dim in dims
         ]
@@ -1441,6 +1445,86 @@ def recover_missing_url(cached_urls, baseurl):
     ]
 
     return paired_urls, current_dap_urls
+
+
+def _normalize_ce(value: str, collapse_vars: set[str]) -> str:
+    """
+    In a dap4.ce value, collapse any 'var[...slice...]' to just 'var'
+    for vars in collapse_vars. Works even if multiple vars appear.
+    """
+    if not value:
+        return value
+    for var in collapse_vars:
+        # match 'var[anything]' with optional whitespace before brackets
+        pat = re.compile(rf"\b{re.escape(var)}\s*\[[^\]]*\]")
+        value = pat.sub(var, value)
+    return value
+
+
+def create_key(
+    request: requests.PreparedRequest,
+    *,
+    ignored_parameters: list[str] = None,
+    collapse_vars: list[str] = None,
+    **kwargs,
+) -> str:
+    """
+    Build a cache key that:
+      - Collapses any granule filename to a fixed placeholder
+      - Normalizes dap4.ce so any '{var}[...]' becomes simply '{var}'
+        for all vars in collapse_vars (e.g., {'i','j','tile'})
+      - Drops dap4.checksum and any other ignored_parameters
+      - Sorts query params for stability
+      - EXCLUDES HEADERS from the key (always)
+    """
+    ignored_parameters = set((ignored_parameters or [])) | {"dap4.checksum"}
+    collapse_vars = set(collapse_vars or {"i", "j", "tile"})
+
+    # 1) Parse URL
+    parts = urlsplit(request.url)
+    scheme, netloc, path, query, _ = parts
+
+    # 2) Normalize the path
+    norm_path = GRANULE_PATH_RE.sub(r"\1ANY.dap", path)
+
+    # 3) Normalize query params
+    raw_params = parse_qsl(query, keep_blank_values=True)
+    norm_params = []
+
+    for k, v in raw_params:
+        lk = k.lower()
+
+        # Drop unwanted params
+        if lk in ignored_parameters:
+            continue
+
+        if lk == "dap4.ce":
+            # Collapse slices for specified variables
+            v = _normalize_ce(v, collapse_vars)
+
+        norm_params.append((k, v))
+
+    # Sort for deterministic ordering
+    norm_params.sort(key=lambda kv: (kv[0].lower(), kv[1]))
+
+    norm_query = urlencode(norm_params, doseq=True)
+    norm_url = urlunsplit((scheme, netloc, norm_path, norm_query, ""))
+
+    # 4) Method + body only (headers intentionally excluded)
+    method = (request.method or "GET").upper()
+    body = request.body or b""
+    if isinstance(body, str):
+        body = body.encode("utf-8")
+
+    key_material = repr(
+        {
+            "method": method,
+            "url": norm_url,
+            "body_sha256": hashlib.sha256(body).hexdigest(),
+        }
+    ).encode("utf-8")
+
+    return hashlib.sha256(key_material).hexdigest()
 
 
 if __name__ == "__main__":
