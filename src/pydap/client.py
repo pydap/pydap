@@ -188,6 +188,7 @@ def consolidate_metadata(
     verbose=False,
     shared_dimensions=False,
     checksums=True,
+    batch=False,
 ):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
@@ -228,7 +229,13 @@ def consolidate_metadata(
     verbose: bool, optional (default=False)
         For debugging purposes. If `True`, prints various URLs, normalized
         cache-keys, and other information.
-
+    checksums: bool, optional (default=True)
+        Whether to request checksums in the DAP4 request. This is currently
+        required for ALL NASA datasets, but will be optional in a future release.
+    batch: bool (default: False)
+        Whether to enable batch mode when downloading the dap responses. When False,
+        each dimension of a granule is downloaded with a separate dap response. When
+        True, all dimensions are downloaded with a single dap response.
     """
 
     if not isinstance(session, CachedSession):
