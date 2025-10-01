@@ -489,7 +489,7 @@ def test_cached_consolidate_metadata_matching_dims(cache_tmp_dir, urls, safe_mod
     """
     cached_session = create_session(
         use_cache=True,
-        cache_kwargs={"backend": "memory", "cache_name": cache_tmp_dir / "test3"},
+        cache_kwargs={"cache_name": cache_tmp_dir / "test3"},
     )
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
@@ -537,7 +537,7 @@ def test_cached_consolidate_metadata_inconsistent_dims(cache_tmp_dir, urls, safe
     """
     cached_session = create_session(
         use_cache=True,
-        cache_kwargs={"backend": "memory", "cache_name": cache_tmp_dir / "test4"},
+        cache_kwargs={"cache_name": cache_tmp_dir / "test4"},
     )
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
@@ -582,7 +582,7 @@ def test_consolidate_metadata_concat_dim(cache_tmp_dir, urls, concat_dim):
     """
     cached_session = create_session(
         use_cache=True,
-        cache_kwargs={"backend": "memory", "cache_name": cache_tmp_dir / "test5"},
+        cache_kwargs={"cache_name": cache_tmp_dir / "test5"},
     )
     cached_session.cache.clear()
     # download all dmr for testing - not most performant
@@ -709,7 +709,7 @@ def test_patch_session_for_shared_dap_cache(cache_tmp_dir, urls):
     # Clear any existing cache
     my_session = create_session(
         use_cache=True,
-        cache_kwargs={"cache_name": cache_tmp_dir / "test_debug", "backend": "memory"},
+        cache_kwargs={"cache_name": cache_tmp_dir / "test_debug"},
     )
     my_session.cache.clear()
     # Create custom cache key for each of the dimensions
@@ -938,7 +938,8 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
 def test_get_cmr_urls(cache_tmp_dir, param, expected):
     """Test that get_cmr_urls returns the correct urls."""
     session = create_session(
-        use_cache=True, cache_kwargs={"backend": cache_tmp_dir / "memory"}
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_tmp_dir / "debug_get_cmr_urls"},
     )
     session.cache.clear()
     cmr_urls = get_cmr_urls(**param, session=session)
