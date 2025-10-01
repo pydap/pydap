@@ -525,7 +525,7 @@ class BaseProxyDap4(BaseProxyDap2):
 
         if (
             isinstance(self.session, requests_cache.CachedSession)
-            and self.session.cache.cache_name != "debug"
+            and "debug" not in self.session.cache.cache_name
         ):
             cache_kwargs = {"skip": True}
         else:
