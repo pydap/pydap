@@ -53,6 +53,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
+from typing import Iterable, Optional, Set
 from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 
 import numpy as np
@@ -80,6 +81,7 @@ from pydap.parsers.dmr import DMRParser, dmr_to_dataset
 
 # Replace '/granules/<anything>.dap' with '/granules/ANY.dap'
 GRANULE_PATH_RE = re.compile(r"(/granules/)[^/]+\.dap$", re.IGNORECASE)
+VARPATH_RE = re.compile(r"^\s*/([^[]+)\s*\[")
 
 
 def open_url(
@@ -330,8 +332,8 @@ def consolidate_metadata(
         with session as Session:
             _ = download_all_urls(Session, shared_dimension_urls, ncores=ncores)
         return shared_dimension_urls
-
-    session.headers["consolidated"] = "True"
+    if concat_dim:
+        session.headers["consolidated"] = "True"
 
     if concat_dim and isinstance(concat_dim, str):
         concat_dim = [concat_dim]
@@ -346,7 +348,7 @@ def consolidate_metadata(
                 ]
             )
             concat_dim_urls.append(
-                url.split("?")[0] + ".dap?dap4.ce=" + cdims_ce + _check
+                url.split("?")[0] + ".dap?dap4.ce=/" + cdims_ce + _check
             )
     else:
         concat_dim_urls = []
@@ -373,7 +375,7 @@ def consolidate_metadata(
     else:
         new_urls = [
             base_url
-            + ".dap?dap4.ce="
+            + ".dap?dap4.ce=/"
             + dim
             + "[0:1:"
             + str(results[0].dimensions[dim] - 1)
@@ -418,33 +420,41 @@ def consolidate_metadata(
         maps.update(coords)
         if maps:
             # may be 2 or 3D!
-            map_urls = [
-                var
+            _maps = [
+                "/"
+                + var
                 + "".join(
                     ["%5B0:1:" + str(length - 1) + "%5D" for length in pyds[var].shape]
                 )
                 for var in sorted(maps)
             ]
-            map_urls = [base_url + ".dap?dap4.ce=" + ";".join(map_urls) + _check]
-            maps_ces = set(
-                [
-                    coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]"
-                    for coord in list(maps)
-                ]
-            )
+            if batch:
+                map_urls = [base_url + ".dap?dap4.ce=" + ";".join(_maps) + _check]
+            else:
+                map_urls = [base_url + ".dap?dap4.ce=" + coord for coord in _maps]
+            maps_ces = set([_map.split("%5B")[0] for _map in _maps])
             new_urls.extend(map_urls)
     if dims or concat_dim:
+        dim_ces.update(add_dims)
         print(
             "datacube has dimensions",
             list(dim_ces)[0].split(";"),
             f", and concat dim: `{concat_dim}`",
         )
-        dim_ces.update(add_dims)
-        if maps_ces:
-            dim_ces.update(maps_ces)
-        # print("download new urls", new_urls)
-        with session as Session:
-            _ = download_all_urls(Session, new_urls, ncores=ncores)
+        if not batch:
+            if maps_ces:
+                dim_ces = [
+                    ";".join(list(dim_ces) + [_map.split("/")[-1] for _map in maps_ces])
+                ]
+            collapse_vars = set(
+                [var.split("[")[0] for var in list(dim_ces)[0].split(";")]
+            )
+            key_fn = make_key_fn(
+                collapse_vars=collapse_vars,
+                concat_dim=concat_dim,
+            )
+            session.settings.key_fn = key_fn
+        _ = download_all_urls(session, new_urls, ncores=ncores)
     return None
 
 
@@ -1447,70 +1457,136 @@ def recover_missing_url(cached_urls, baseurl):
     return paired_urls, current_dap_urls
 
 
-def _normalize_ce(value: str, collapse_vars: set[str]) -> str:
-    """
-    In a dap4.ce value, collapse any 'var[...slice...]' to just 'var'
-    for vars in collapse_vars. Works even if multiple vars appear.
-    """
+def _extract_ce_varpath_single(value: Optional[str]) -> Optional[str]:
+    """'/THETA[... ]' -> 'THETA', '/Group1/var[... ]' -> 'Group1/var'."""
     if not value:
-        return value
-    for var in collapse_vars:
-        # match 'var[anything]' with optional whitespace before brackets
-        pat = re.compile(rf"\b{re.escape(var)}\s*\[[^\]]*\]")
-        value = pat.sub(var, value)
+        return None
+    m = VARPATH_RE.match(value)
+    return m.group(1) if m else None
+
+
+def _normalize_ce_single(value: str, var_path: str, collapse_vars: Set[str]) -> str:
+    """
+    If the base name of var_path is in collapse_vars, strip the slice:
+      '/i[0:1:89]' -> '/i'
+      '/tile[...]' -> '/tile'
+    Otherwise, leave CE as-is.
+    """
+    base = var_path.split("/")[-1]
+    if base in collapse_vars:
+        # replace exactly the '/<var_path>[...]' occurrence
+        return re.sub(
+            rf"(\s*/){re.escape(var_path)}\s*\[[^\]]*\]", rf"\1{base}", value, count=1
+        )
     return value
+
+
+def _normalize_granule_path(path: str) -> str:
+    """
+    Collapse the segment after '/granules/' -> 'ANY' (preserving .dap if present).
+    """
+    parts = path.split("/")
+    try:
+        i = parts.index("granules")
+        if i + 1 < len(parts):
+            seg = parts[i + 1]
+            ext = ".dap" if seg.lower().endswith(".dap") else ""
+            parts[i + 1] = "ANY" + ext
+            return "/".join(parts)
+    except ValueError:
+        pass
+    return path
+
+
+def make_key_fn(
+    *,
+    collapse_vars: Iterable[str] = ("i", "j", "k", "tile"),
+    ignored_parameters: Iterable[str] = (),
+    concat_dim: Optional[str] = None,  # <- single string or None
+):
+    collapse_vars = set(collapse_vars or ())
+    ignored_parameters = list(ignored_parameters or ())
+
+    def key_fn(request, **_):
+        return create_key(
+            request,
+            collapse_vars=collapse_vars,
+            ignored_parameters=ignored_parameters,
+            concat_dim=concat_dim,  # pass the single string straight through
+        )
+
+    # Introspectable metadata
+    key_fn._collapse_vars = collapse_vars
+    key_fn._ignored_parameters = set(ignored_parameters)
+    key_fn._concat_dim = concat_dim  # e.g., "time" or "Group1/time" (or None)
+    return key_fn
 
 
 def create_key(
     request: requests.PreparedRequest,
     *,
-    ignored_parameters: list[str] = None,
-    collapse_vars: list[str] = None,
+    ignored_parameters: Iterable[str] = (),
+    collapse_vars: Iterable[str] = ("i", "j", "k", "tile"),
+    concat_dim: Optional[str] = None,  # <- single string or None
     **kwargs,
 ) -> str:
     """
-    Build a cache key that:
-      - Collapses any granule filename to a fixed placeholder
-      - Normalizes dap4.ce so any '{var}[...]' becomes simply '{var}'
-        for all vars in collapse_vars (e.g., {'i','j','tile'})
-      - Drops dap4.checksum and any other ignored_parameters
-      - Sorts query params for stability
-      - EXCLUDES HEADERS from the key (always)
-    """
-    ignored_parameters = set((ignored_parameters or [])) | {"dap4.checksum"}
-    collapse_vars = set(collapse_vars or {"i", "j", "tile"})
+    Single-var CE policy:
 
-    # 1) Parse URL
+    - If CE variable matches `concat_dim` (full path or base name), keep URL as-is.
+    - Else if CE variable's base is in `collapse_vars`:
+        * drop ignored params (including dap4.checksum),
+        * normalize CE to '/<base>',
+        * collapse granule filename to 'ANY(.dap)',
+        * sort params.
+    - Else (normal data vars like THETA/SALT):
+        * drop ignored params,
+        * keep CE as-is,
+        * DO NOT collapse granule path.
+    """
+    collapse_vars = set(collapse_vars or ())
+    ignored_parameters = set(ignored_parameters or ())
+    ignored_parameters.add("dap4.checksum")
+
     parts = urlsplit(request.url)
     scheme, netloc, path, query, _ = parts
 
-    # 2) Normalize the path
-    norm_path = GRANULE_PATH_RE.sub(r"\1ANY.dap", path)
-
-    # 3) Normalize query params
+    # Parse query / CE
     raw_params = parse_qsl(query, keep_blank_values=True)
-    norm_params = []
+    ce_value = next((v for (k, v) in raw_params if k.lower() == "dap4.ce"), None)
+    var_path = _extract_ce_varpath_single(ce_value)  # e.g., 'THETA' or 'Group1/var'
+    var_base = var_path.split("/")[-1] if var_path else None
 
-    for k, v in raw_params:
-        lk = k.lower()
+    # concat_dim short-circuit
+    concat_match = (
+        concat_dim is not None
+        and var_path is not None
+        and (var_path == concat_dim or var_base == concat_dim)
+    )
+    if concat_match:
+        norm_url = request.url  # preserve completely
+    else:
+        # normalize params
+        norm_params = []
+        for k, v in raw_params:
+            lk = k.lower()
+            if lk in ignored_parameters:
+                continue
+            if lk == "dap4.ce" and var_path:
+                v = _normalize_ce_single(v, var_path, collapse_vars)
+            norm_params.append((k, v))
+        norm_params.sort(key=lambda kv: (kv[0].lower(), kv[1]))
+        norm_query = urlencode(norm_params, doseq=True)
 
-        # Drop unwanted params
-        if lk in ignored_parameters:
-            continue
+        # collapse path only for collapse-vars
+        if var_base and var_base in collapse_vars:
+            norm_path = _normalize_granule_path(path)
+        else:
+            norm_path = path
 
-        if lk == "dap4.ce":
-            # Collapse slices for specified variables
-            v = _normalize_ce(v, collapse_vars)
+        norm_url = urlunsplit((scheme, netloc, norm_path, norm_query, ""))
 
-        norm_params.append((k, v))
-
-    # Sort for deterministic ordering
-    norm_params.sort(key=lambda kv: (kv[0].lower(), kv[1]))
-
-    norm_query = urlencode(norm_params, doseq=True)
-    norm_url = urlunsplit((scheme, netloc, norm_path, norm_query, ""))
-
-    # 4) Method + body only (headers intentionally excluded)
+    # method + body (headers excluded)
     method = (request.method or "GET").upper()
     body = request.body or b""
     if isinstance(body, str):
