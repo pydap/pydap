@@ -45,6 +45,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 """
 
 import datetime as dt
+import hashlib
 import os
 import re
 import warnings
@@ -52,7 +53,8 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
-from urllib.parse import parse_qs, unquote, urlencode
+from typing import Iterable, List, Optional, Set
+from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 
 import numpy as np
 import requests
@@ -76,6 +78,8 @@ from pydap.net import GET, create_session
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
+
+VARPATH_RE = re.compile(r"^\s*/([^[]+)\s*\[")
 
 
 def open_url(
@@ -188,6 +192,7 @@ def consolidate_metadata(
     verbose=False,
     shared_dimensions=False,
     checksums=True,
+    batch=False,
 ):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
@@ -228,7 +233,13 @@ def consolidate_metadata(
     verbose: bool, optional (default=False)
         For debugging purposes. If `True`, prints various URLs, normalized
         cache-keys, and other information.
-
+    checksums: bool, optional (default=True)
+        Whether to request checksums in the DAP4 request. This is currently
+        required for ALL NASA datasets, but will be optional in a future release.
+    batch: bool (default: False)
+        Whether to enable batch mode when downloading the dap responses. When False,
+        each dimension of a granule is downloaded with a separate dap response. When
+        True, all dimensions are downloaded with a single dap response.
     """
 
     if not isinstance(session, CachedSession):
@@ -266,11 +277,14 @@ def consolidate_metadata(
             results = list(
                 executor.map(lambda url: open_dmr(url, session=session), dmr_urls)
             )
-        _dim_check = list(results[0].dimensions)
-        if not all(d == _dim_check for d in [list(ds.dimensions) for ds in results]):
+        _dim_check = {k: v for k, v in results[0].dimensions.items() if k != concat_dim}
+        if not all(
+            {k: v for k, v in d.dimensions.items() if k != concat_dim} == _dim_check
+            for d in results
+        ):
             warnings.warn(
-                "The dimensions of the datasets are not identical across all remote "
-                "dataset. Please check the URLs and try again."
+                "The dimensions of the datasets are not identical across all datasets"
+                ". Please check the URLs and try again."
             )
             return None
     else:
@@ -335,27 +349,41 @@ def consolidate_metadata(
                 ]
             )
             concat_dim_urls.append(
-                url.split("?")[0] + ".dap?dap4.ce=" + cdims_ce + _check
+                url.split("?")[0] + ".dap?dap4.ce=/" + cdims_ce + _check
             )
     else:
         concat_dim_urls = []
 
     # check for named dimensions
-    pyds = open_url(dmr_urls[0], session=session, protocol="dap4", batch=False)
+    pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
     var_names = list(pyds.variables())
     new_dims = set.intersection(dims, var_names)
     named_dims = set.difference(dims, new_dims)
     dims = sorted(list(new_dims))
 
-    constrains_dims = [
-        dim + "%5B0%3A1%3A" + str(results[0].dimensions[dim] - 1) + "%5D"
-        for dim in dims
-        if dim != concat_dim
-    ]
-    if len(constrains_dims) > 0:
-        new_urls = [base_url + ".dap?dap4.ce=" + "%3B".join(constrains_dims) + _check]
+    if batch:
+        constrains_dims = [
+            dim + "%5B0%3A1%3A" + str(results[0].dimensions[dim] - 1) + "%5D"
+            for dim in dims
+            if dim != concat_dim
+        ]
+        if len(constrains_dims) > 0:
+            new_urls = [
+                base_url + ".dap?dap4.ce=" + "%3B".join(constrains_dims) + _check
+            ]
+        else:
+            new_urls = []
     else:
-        new_urls = []
+        new_urls = [
+            base_url
+            + ".dap?dap4.ce=/"
+            + dim
+            + "[0:1:"
+            + str(results[0].dimensions[dim] - 1)
+            + "]"
+            + _check
+            for dim in dims
+        ]
     new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [
@@ -393,33 +421,65 @@ def consolidate_metadata(
         maps.update(coords)
         if maps:
             # may be 2 or 3D!
-            map_urls = [
-                var
+            _maps = [
+                "/"
+                + var
                 + "".join(
                     ["%5B0:1:" + str(length - 1) + "%5D" for length in pyds[var].shape]
                 )
                 for var in sorted(maps)
             ]
-            map_urls = [base_url + ".dap?dap4.ce=" + ";".join(map_urls) + _check]
-            maps_ces = set(
-                [
-                    coord + "[0:1:" + str(len(pyds[coord]) - 1) + "]"
-                    for coord in list(maps)
-                ]
-            )
+            if batch:
+                map_urls = [base_url + ".dap?dap4.ce=" + ";".join(_maps) + _check]
+            else:
+                map_urls = [base_url + ".dap?dap4.ce=" + coord for coord in _maps]
+            maps_ces = set([_map.split("%5B")[0] for _map in _maps])
             new_urls.extend(map_urls)
     if dims or concat_dim:
+        dim_ces.update(add_dims)
         print(
             "datacube has dimensions",
             list(dim_ces)[0].split(";"),
             f", and concat dim: `{concat_dim}`",
         )
-        dim_ces.update(add_dims)
-        if maps_ces:
-            dim_ces.update(maps_ces)
-        # print("download new urls", new_urls)
-        with session as Session:
-            _ = download_all_urls(Session, new_urls, ncores=ncores)
+        if not batch:
+            if maps_ces:
+                dim_ces = [
+                    ";".join(list(dim_ces) + [_map.split("/")[-1] for _map in maps_ces])
+                ]
+            collapse_vars = set(
+                [var.split("[")[0] for var in list(dim_ces)[0].split(";")]
+            )
+            key_fn = make_key_fn(
+                collapse_vars=collapse_vars,
+                concat_dim=concat_dim,
+                url_list=URLs,
+            )
+            if concat_dim and results[0].dimensions[concat_dim[0]] > 1:
+                size = results[0].dimensions[concat_dim[0]] - 1
+                add_urls = [
+                    url.split("?")[0]
+                    + ".dap?dap4.ce=/"
+                    + concat_dim[0]
+                    + "%5B0:1:0%5D"
+                    + _check
+                    for url in URLs
+                ]
+                add_urls += [
+                    url.split("?")[0]
+                    + ".dap?dap4.ce=/"
+                    + concat_dim[0]
+                    + "%5B"
+                    + str(size)
+                    + ":1:"
+                    + str(size)
+                    + "%5D"
+                    + _check
+                    for url in URLs
+                ]
+                new_urls += add_urls
+            session.settings.key_fn = key_fn
+        _ = download_all_urls(session, new_urls, ncores=ncores)
     return None
 
 
@@ -1420,6 +1480,157 @@ def recover_missing_url(cached_urls, baseurl):
     ]
 
     return paired_urls, current_dap_urls
+
+
+def _extract_ce_varpath_single(value: Optional[str]) -> Optional[str]:
+    """'/THETA[... ]' -> 'THETA', '/Group1/var[... ]' -> 'Group1/var'."""
+    if not value:
+        return None
+    m = VARPATH_RE.match(value)
+    return m.group(1) if m else None
+
+
+def _normalize_ce_single(value: str, var_path: str, collapse_vars: Set[str]) -> str:
+    """
+    If the base name of var_path is in collapse_vars, strip the slice:
+      '/i[0:1:89]' -> '/i'
+      '/tile[...]' -> '/tile'
+    Otherwise, leave CE as-is.
+    """
+    base = var_path.split("/")[-1]
+    if base in collapse_vars:
+        # replace exactly the '/<var_path>[...]' occurrence
+        return re.sub(
+            rf"(\s*/){re.escape(var_path)}\s*\[[^\]]*\]", rf"\1{base}", value, count=1
+        )
+    return value
+
+
+def _normalize_granule_path(path: str, common_path: str) -> str:
+    """
+    Collapse the segment after '/granules/' -> 'ANY' (preserving .dap if present).
+    """
+    _, _, new_path, _, _ = urlsplit(common_path)
+    if not path.startswith(new_path):
+        raise ValueError(
+            f"Path '{path}' does not start with common prefix '{new_path}'"
+        )
+    else:
+        path = new_path
+    parts = path.split("/")[:-1]
+    ext = ".dap"
+    path = "/".join(parts + ["ANY" + ext])
+    return path
+
+
+def make_key_fn(
+    *,
+    collapse_vars: Iterable[str] = ("i", "j", "k", "tile"),
+    ignored_parameters: Iterable[str] = (),
+    concat_dim: Optional[str] = None,  # <- single string or None
+    url_list: Optional[List[str]] = None,
+):
+    collapse_vars = set(collapse_vars or ())
+    ignored_parameters = list(ignored_parameters or ())
+
+    def key_fn(request, **_):
+        return create_key(
+            request,
+            collapse_vars=collapse_vars,
+            ignored_parameters=ignored_parameters,
+            concat_dim=concat_dim,  # pass the single string straight through
+            url_list=url_list,
+        )
+
+    # Introspectable metadata
+    key_fn._collapse_vars = collapse_vars
+    key_fn._ignored_parameters = set(ignored_parameters)
+    key_fn._concat_dim = concat_dim  # e.g., "time" or "Group1/time" (or None)
+    return key_fn
+
+
+def create_key(
+    request: requests.PreparedRequest,
+    *,
+    ignored_parameters: Iterable[str] = (),
+    collapse_vars: Iterable[str] = ("i", "j", "k", "tile"),
+    concat_dim: Optional[str] = None,  # <- single string or None
+    url_list: Optional[List[str]] = None,
+    **kwargs,
+) -> str:
+    """
+    Single-var CE policy:
+
+    - If CE variable matches `concat_dim` (full path or base name), keep URL as-is.
+    - Else if CE variable's base is in `collapse_vars`:
+        * drop ignored params (including dap4.checksum),
+        * normalize CE to '/<base>',
+        * collapse granule filename to 'ANY(.dap)',
+        * sort params.
+    - Else (normal data vars like THETA/SALT):
+        * drop ignored params,
+        * keep CE as-is,
+        * DO NOT collapse granule path.
+    """
+    collapse_vars = set(collapse_vars or ())
+    ignored_parameters = set(ignored_parameters or ())
+    ignored_parameters.add("dap4.checksum")
+
+    common_path = compute_base_url_prefix(url_list)
+
+    parts = urlsplit(request.url)
+    scheme, netloc, path, query, _ = parts
+
+    # Parse query / CE
+    raw_params = parse_qsl(query, keep_blank_values=True)
+    ce_value = next((v for (k, v) in raw_params if k.lower() == "dap4.ce"), None)
+    var_path = _extract_ce_varpath_single(ce_value)  # e.g., 'THETA' or 'Group1/var'
+    var_base = var_path.split("/")[-1] if var_path else None
+
+    # concat_dim short-circuit
+    concat_match = (
+        concat_dim is not None
+        and var_path is not None
+        and (var_path == concat_dim or var_base == concat_dim)
+    )
+    if concat_match:
+        norm_url = request.url  # preserve completely
+    else:
+        # normalize params
+        norm_params = []
+        for k, v in raw_params:
+            lk = k.lower()
+            if lk in ignored_parameters:
+                continue
+            if lk == "dap4.ce" and var_path:
+                v = _normalize_ce_single(v, var_path, collapse_vars)
+            norm_params.append((k, v))
+        norm_params.sort(key=lambda kv: (kv[0].lower(), kv[1]))
+        norm_query = urlencode(norm_params, doseq=True)
+
+        # collapse path only for collapse-vars
+        if var_base and var_base in collapse_vars:
+            norm_path = _normalize_granule_path(path, common_path)
+        else:
+            norm_path = path
+
+        norm_url = urlunsplit((scheme, netloc, norm_path, norm_query, ""))
+
+    # method + body (headers excluded)
+    method = (request.method or "GET").upper()
+    body = request.body or b""
+    if isinstance(body, str):
+        body = body.encode("utf-8")
+
+    key_material = repr(
+        {
+            "method": method,
+            "url": norm_url,
+            "body_sha256": hashlib.sha256(body).hexdigest(),
+        }
+    ).encode("utf-8")
+
+    return hashlib.sha256(key_material).hexdigest()
 
 
 if __name__ == "__main__":

@@ -463,6 +463,7 @@ def test_warning_nondap4urls_consolidate_metadata(cache_tmp_dir, urls):
 # @pytest.mark.skipif(
 #     os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
 # )
+@pytest.mark.parametrize("batch", [True])
 @pytest.mark.parametrize(
     "urls",
     [
@@ -476,7 +477,9 @@ def test_warning_nondap4urls_consolidate_metadata(cache_tmp_dir, urls):
     ],
 )
 @pytest.mark.parametrize("safe_mode", [True])
-def test_cached_consolidate_metadata_matching_dims(cache_tmp_dir, urls, safe_mode):
+def test_cached_consolidate_metadata_matching_dims(
+    cache_tmp_dir, urls, safe_mode, batch
+):
     """Test the behavior of the chaching implemented in `consolidate_metadata`.
     the `safe_mode` parameter means that all dmr urls are cached, and
     the dimensions of each dmr_url are checked for consistency.
@@ -494,7 +497,7 @@ def test_cached_consolidate_metadata_matching_dims(cache_tmp_dir, urls, safe_mod
     cached_session.cache.clear()
     pyds = open_dmr(urls[0].replace("dap4", "http") + ".dmr")
     dims = sorted(list(pyds.dimensions))  # dimensions of full dataset
-    consolidate_metadata(urls, session=cached_session, safe_mode=safe_mode)
+    consolidate_metadata(urls, session=cached_session, safe_mode=safe_mode, batch=batch)
 
     # check that the cached session has all the dmr urls and
     # caches the dap response of the dimensions only once
@@ -511,6 +514,7 @@ def test_cached_consolidate_metadata_matching_dims(cache_tmp_dir, urls, safe_mod
     cached_session.cache.clear()
 
 
+@pytest.mark.parametrize("batch", [True])
 @pytest.mark.parametrize(
     "urls",
     [
@@ -524,7 +528,9 @@ def test_cached_consolidate_metadata_matching_dims(cache_tmp_dir, urls, safe_mod
     ],
 )
 @pytest.mark.parametrize("safe_mode", [True])
-def test_cached_consolidate_metadata_inconsistent_dims(cache_tmp_dir, urls, safe_mode):
+def test_cached_consolidate_metadata_inconsistent_dims(
+    cache_tmp_dir, urls, safe_mode, batch
+):
     """Test the behavior of the chaching implemented in `consolidate_metadata`.
     the `safe_mode` parameter means that all dmr urls are cached, and
     the dimensions of each dmr_url are checked for consistency.
@@ -544,11 +550,15 @@ def test_cached_consolidate_metadata_inconsistent_dims(cache_tmp_dir, urls, safe
     dims = list(pyds.dimensions)  # here there are 3 dimensions
     if safe_mode:
         with pytest.warns(UserWarning):
-            consolidate_metadata(urls, session=cached_session, safe_mode=safe_mode)
+            consolidate_metadata(
+                urls, session=cached_session, safe_mode=safe_mode, batch=batch
+            )
         assert len(cached_session.cache.urls()) == len(urls)
         # dmrs where cached, but not the dimensions
     else:
-        consolidate_metadata(urls, session=cached_session, safe_mode=safe_mode)
+        consolidate_metadata(
+            urls, session=cached_session, safe_mode=safe_mode, batch=batch
+        )
         # caches all DMRs and caches the dap responses of the dimensions
         # of the first URL
         assert len(cached_session.cache.urls()) == len(urls) + len(dims)
@@ -558,6 +568,7 @@ def test_cached_consolidate_metadata_inconsistent_dims(cache_tmp_dir, urls, safe
 # @pytest.mark.skipif(
 #     os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
 # )
+@pytest.mark.parametrize("batch", [True])
 @pytest.mark.parametrize(
     "urls",
     [
@@ -568,7 +579,7 @@ def test_cached_consolidate_metadata_inconsistent_dims(cache_tmp_dir, urls, safe
     ],
 )
 @pytest.mark.parametrize("concat_dim", [None, "TIME"])
-def test_consolidate_metadata_concat_dim(cache_tmp_dir, urls, concat_dim):
+def test_consolidate_metadata_concat_dim(cache_tmp_dir, urls, concat_dim, batch):
     """Test the behavior of the chaching implemented in `consolidate_metadata`
     when there is a concat dimension, and (extra) this concat_dim may be an array
     of length >= 1.
@@ -587,7 +598,11 @@ def test_consolidate_metadata_concat_dim(cache_tmp_dir, urls, concat_dim):
     cached_session.cache.clear()
     # download all dmr for testing - not most performant
     consolidate_metadata(
-        urls, session=cached_session, safe_mode=True, concat_dim=concat_dim
+        urls,
+        session=cached_session,
+        safe_mode=True,
+        concat_dim=concat_dim,
+        batch=batch,
     )
 
     N_dmr_urls = len(urls)  # Since `safe_mode=False`, only 1 DMR is downloaded
@@ -1308,3 +1323,75 @@ def test_data_check(var_batch, key_batch, var_name, var_key, expected_shape):
     data = data_check(var, var_key)
 
     assert data.shape == expected_shape
+
+
+def test_consolidate_metadata_non_batch(cache_tmp_dir):
+    """Test that consolidate_metadata raises an error when batch=False"""
+    urls = [
+        "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+        "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+    ]
+    cache_name = cache_tmp_dir / "test_consolidate_metadata_non_batch"
+    cached_session = create_session(
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_name},
+    )
+    cached_session.cache.clear()
+    consolidate_metadata(
+        urls,
+        session=cached_session,
+        concat_dim="TIME",
+        batch=False,
+    )
+
+    assert cached_session.settings.key_fn._concat_dim == ["TIME"]
+    assert cached_session.settings.key_fn._collapse_vars == {"COADSX", "COADSY"}
+
+    N = len(urls)  # N of DMRS
+    N_non_concat_dims = 2  # COADSX, COADSY
+    N_concat_dims = 3 * len(urls)  # TIME
+    assert len(cached_session.cache.urls()) == N + N_non_concat_dims + N_concat_dims
+
+    # check that all URLS from COADSX and COADSY are cached, even when only 1 of each
+    # was downloaded
+    map1 = _quote("/COADSX[0:1:179]").replace("/", "%2F")
+    map2 = _quote("/COADSY[0:1:89]").replace("/", "%2F")
+
+    dap_urls = [
+        url.replace("dap4", "http") + ".dap?dap4.ce=" + map1 + "&dap4.checksum=true"
+        for url in urls
+    ]
+    dap_urls += [
+        url.replace("dap4", "http") + ".dap?dap4.ce=" + map2 + "&dap4.checksum=true"
+        for url in urls
+    ]
+
+    for url in dap_urls:
+        if url not in cached_session.cache.urls():
+            r = cached_session.get(url)
+            assert r.from_cache
+
+
+def test_consolidate_non_matching_dims(cache_tmp_dir):
+    """Test that consolidate warns when dmrs have non matching dimensions"""
+    urls = [
+        "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+        "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5",
+    ]
+    cache_name = cache_tmp_dir / "test_consolidate_non_matching_dims"
+    cached_session = create_session(
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_name},
+    )
+    cached_session.cache.clear()
+    with pytest.warns(
+        UserWarning,
+        match="The dimensions of the datasets are not identical across all datasets",
+    ):
+        consolidate_metadata(
+            urls,
+            session=cached_session,
+            concat_dim="TIME",
+        )
+    assert "consolidated" not in cached_session.headers
+    cached_session.cache.clear()
