@@ -332,8 +332,8 @@ def consolidate_metadata(
         with session as Session:
             _ = download_all_urls(Session, shared_dimension_urls, ncores=ncores)
         return shared_dimension_urls
-    if concat_dim:
-        session.headers["consolidated"] = "True"
+
+    session.headers["consolidated"] = "True"
 
     if concat_dim and isinstance(concat_dim, str):
         concat_dim = [concat_dim]
