@@ -1352,22 +1352,21 @@ def test_consolidate_metadata_non_batch(cache_tmp_dir):
     N_concat_dims = len(urls)  # TIME
     assert len(cached_session.cache.urls()) == N + N_non_concat_dims + N_concat_dims
 
-    # ============ ONLY WORKS FOR CLOUD OPENDAP URLS - SKIPPED FOR NOW
-    # # check that all URLS from COADSX and COADSY are cached, even when only 1 of each
-    # # was downloaded
-    # map1 = _quote("/COADSX[0:1:179]").replace("/", "%2F")
-    # map2 = _quote("/COADSY[0:1:89]").replace("/", "%2F")
+    # check that all URLS from COADSX and COADSY are cached, even when only 1 of each
+    # was downloaded
+    map1 = _quote("/COADSX[0:1:179]").replace("/", "%2F")
+    map2 = _quote("/COADSY[0:1:89]").replace("/", "%2F")
 
-    # dap_urls = [
-    #     url.replace("dap4", "https") + ".dap?dap4.ce=" + map1 + "&dap4.checksum=true"
-    #     for url in urls
-    # ]
-    # dap_urls += [
-    #     url.replace("dap4", "https") + ".dap?dap4.ce=" + map2 + "&dap4.checksum=true"
-    #     for url in urls
-    # ]
+    dap_urls = [
+        url.replace("dap4", "http") + ".dap?dap4.ce=" + map1 + "&dap4.checksum=true"
+        for url in urls
+    ]
+    dap_urls += [
+        url.replace("dap4", "http") + ".dap?dap4.ce=" + map2 + "&dap4.checksum=true"
+        for url in urls
+    ]
 
-    # for url in dap_urls:
-    #     if url not in cached_session.cache.urls():
-    #         r = cached_session.get(url)
-    #         assert r.from_cache
+    for url in dap_urls:
+        if url not in cached_session.cache.urls():
+            r = cached_session.get(url)
+            assert r.from_cache

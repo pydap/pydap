@@ -53,7 +53,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
-from typing import Iterable, Optional, Set
+from typing import Iterable, List, Optional, Set
 from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 
 import numpy as np
@@ -79,8 +79,6 @@ from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
 
-# Replace '/granules/<anything>.dap' with '/granules/ANY.dap'
-GRANULE_PATH_RE = re.compile(r"(/granules/)[^/]+\.dap$", re.IGNORECASE)
 VARPATH_RE = re.compile(r"^\s*/([^[]+)\s*\[")
 
 
@@ -452,6 +450,7 @@ def consolidate_metadata(
             key_fn = make_key_fn(
                 collapse_vars=collapse_vars,
                 concat_dim=concat_dim,
+                url_list=URLs,
             )
             session.settings.key_fn = key_fn
         _ = download_all_urls(session, new_urls, ncores=ncores)
@@ -1481,20 +1480,20 @@ def _normalize_ce_single(value: str, var_path: str, collapse_vars: Set[str]) -> 
     return value
 
 
-def _normalize_granule_path(path: str) -> str:
+def _normalize_granule_path(path: str, common_path: str) -> str:
     """
     Collapse the segment after '/granules/' -> 'ANY' (preserving .dap if present).
     """
-    parts = path.split("/")
-    try:
-        i = parts.index("granules")
-        if i + 1 < len(parts):
-            seg = parts[i + 1]
-            ext = ".dap" if seg.lower().endswith(".dap") else ""
-            parts[i + 1] = "ANY" + ext
-            return "/".join(parts)
-    except ValueError:
-        pass
+    _, _, new_path, _, _ = urlsplit(common_path)
+    if not path.startswith(new_path):
+        raise ValueError(
+            f"Path '{path}' does not start with common prefix '{new_path}'"
+        )
+    else:
+        path = new_path
+    parts = path.split("/")[:-1]
+    ext = ".dap"
+    path = "/".join(parts + ["ANY" + ext])
     return path
 
 
@@ -1503,6 +1502,7 @@ def make_key_fn(
     collapse_vars: Iterable[str] = ("i", "j", "k", "tile"),
     ignored_parameters: Iterable[str] = (),
     concat_dim: Optional[str] = None,  # <- single string or None
+    url_list: Optional[List[str]] = None,
 ):
     collapse_vars = set(collapse_vars or ())
     ignored_parameters = list(ignored_parameters or ())
@@ -1513,6 +1513,7 @@ def make_key_fn(
             collapse_vars=collapse_vars,
             ignored_parameters=ignored_parameters,
             concat_dim=concat_dim,  # pass the single string straight through
+            url_list=url_list,
         )
 
     # Introspectable metadata
@@ -1528,6 +1529,7 @@ def create_key(
     ignored_parameters: Iterable[str] = (),
     collapse_vars: Iterable[str] = ("i", "j", "k", "tile"),
     concat_dim: Optional[str] = None,  # <- single string or None
+    url_list: Optional[List[str]] = None,
     **kwargs,
 ) -> str:
     """
@@ -1547,6 +1549,8 @@ def create_key(
     collapse_vars = set(collapse_vars or ())
     ignored_parameters = set(ignored_parameters or ())
     ignored_parameters.add("dap4.checksum")
+
+    common_path = compute_base_url_prefix(url_list)
 
     parts = urlsplit(request.url)
     scheme, netloc, path, query, _ = parts
@@ -1580,7 +1584,7 @@ def create_key(
 
         # collapse path only for collapse-vars
         if var_base and var_base in collapse_vars:
-            norm_path = _normalize_granule_path(path)
+            norm_path = _normalize_granule_path(path, common_path)
         else:
             norm_path = path
 
