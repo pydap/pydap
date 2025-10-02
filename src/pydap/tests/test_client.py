@@ -1346,3 +1346,8 @@ def test_consolidate_metadata_non_batch(cache_tmp_dir):
 
     assert cached_session.settings.key_fn._concat_dim == ["TIME"]
     assert cached_session.settings.key_fn._collapse_vars == {"COADSX", "COADSY"}
+
+    N = len(urls)  # N of DMRS
+    N_repeated_dims = 2  # COADSX, COADSY
+    N_concat_dims = len(urls)  # TIME
+    assert len(cached_session.cache.urls()) == N + N_repeated_dims + N_concat_dims
