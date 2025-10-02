@@ -400,6 +400,8 @@ def build_session(
     if isinstance(base_session, CachedSession):
 
         s: requests.Session = new_session_with_same_store(base_session, **cache_kwargs)
+        if base_session.settings.key_fn:
+            s.settings.key_fn = base_session.settings.key_fn
     else:
         s = requests.Session(**session_kwargs)
 
