@@ -508,7 +508,10 @@ class BaseProxyDap4(BaseProxyDap2):
         index = combine_slices(self.slice, fix_slice(index, self.shape))
 
         scheme, netloc, path, _, query, fragment = urlparse(self.baseurl)
-        self.ce = "dap4.ce=" + self.id + hyperslab(index)
+        if self.id.startswith("/"):
+            self.ce = "dap4.ce=" + self.id + hyperslab(index)
+        else:
+            self.ce = "dap4.ce=/" + self.id + hyperslab(index)
 
         if build_only:
             # In batch mode: just store CE, don't fetch
@@ -523,13 +526,14 @@ class BaseProxyDap4(BaseProxyDap2):
         # download and unpack data
         logger.info("Fetching URL: %s" % url)
 
-        if (
-            isinstance(self.session, requests_cache.CachedSession)
-            and "debug" not in self.session.cache.cache_name
-        ):
-            cache_kwargs = {"skip": True}
-        else:
-            cache_kwargs = {}
+        cache_kwargs = {}
+        if isinstance(self.session, requests_cache.CachedSession):
+            _vars = getattr(self.session.settings.key_fn, "_collapse_vars", None)
+            concat_dim = getattr(self.session.settings.key_fn, "_concat_dim", None)
+            _vars = [] if _vars is None else list(_vars)
+            _vars += [] if concat_dim is None else concat_dim
+            if self.id not in _vars and "debug" not in self.session.cache.cache_name:
+                cache_kwargs = {"skip": True}
 
         r = GET(
             url,
