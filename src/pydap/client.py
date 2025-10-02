@@ -455,7 +455,7 @@ def consolidate_metadata(
                 concat_dim=concat_dim,
                 url_list=URLs,
             )
-            if results[0].dimensions[concat_dim[0]] > 1:
+            if concat_dim and results[0].dimensions[concat_dim[0]] > 1:
                 size = results[0].dimensions[concat_dim[0]] - 1
                 add_urls = [
                     url.split("?")[0]
