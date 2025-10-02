@@ -455,6 +455,29 @@ def consolidate_metadata(
                 concat_dim=concat_dim,
                 url_list=URLs,
             )
+            if results[0].dimensions[concat_dim[0]] > 1:
+                size = results[0].dimensions[concat_dim[0]] - 1
+                add_urls = [
+                    url.split("?")[0]
+                    + ".dap?dap4.ce=/"
+                    + concat_dim[0]
+                    + "%5B0:1:0%5D"
+                    + _check
+                    for url in URLs
+                ]
+                add_urls += [
+                    url.split("?")[0]
+                    + ".dap?dap4.ce=/"
+                    + concat_dim[0]
+                    + "%5B"
+                    + str(size)
+                    + ":1:"
+                    + str(size)
+                    + "%5D"
+                    + _check
+                    for url in URLs
+                ]
+                new_urls += add_urls
             session.settings.key_fn = key_fn
         _ = download_all_urls(session, new_urls, ncores=ncores)
     return None

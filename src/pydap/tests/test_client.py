@@ -1349,7 +1349,7 @@ def test_consolidate_metadata_non_batch(cache_tmp_dir):
 
     N = len(urls)  # N of DMRS
     N_non_concat_dims = 2  # COADSX, COADSY
-    N_concat_dims = len(urls)  # TIME
+    N_concat_dims = 3*len(urls)  # TIME
     assert len(cached_session.cache.urls()) == N + N_non_concat_dims + N_concat_dims
 
     # check that all URLS from COADSX and COADSY are cached, even when only 1 of each
