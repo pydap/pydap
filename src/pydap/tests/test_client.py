@@ -1323,3 +1323,26 @@ def test_data_check(var_batch, key_batch, var_name, var_key, expected_shape):
     data = data_check(var, var_key)
 
     assert data.shape == expected_shape
+
+
+def test_consolidate_metadata_non_batch(cache_tmp_dir):
+    """Test that consolidate_metadata raises an error when batch=False"""
+    urls = [
+        "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+        "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+    ]
+    cache_name = cache_tmp_dir / "test_consolidate_metadata_non_batch"
+    cached_session = create_session(
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_name},
+    )
+    cached_session.cache.clear()
+    consolidate_metadata(
+        urls,
+        session=cached_session,
+        concat_dim="TIME",
+        batch=False,
+    )
+
+    assert cached_session.settings.key_fn._concat_dim == ["TIME"]
+    assert cached_session.settings.key_fn._collapse_vars == {"COADSX", "COADSY"}
