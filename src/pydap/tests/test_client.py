@@ -1370,3 +1370,28 @@ def test_consolidate_metadata_non_batch(cache_tmp_dir):
         if url not in cached_session.cache.urls():
             r = cached_session.get(url)
             assert r.from_cache
+
+
+def test_consolidate_non_matching_dims(cache_tmp_dir):
+    """Test that consolidate warns when dmrs have non matching dimensions"""
+    urls = [
+        "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+        "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5",
+    ]
+    cache_name = cache_tmp_dir / "test_consolidate_non_matching_dims"
+    cached_session = create_session(
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_name},
+    )
+    cached_session.cache.clear()
+    with pytest.warns(
+        UserWarning,
+        match="The dimensions of the datasets are not identical across all datasets",
+    ):
+        consolidate_metadata(
+            urls,
+            session=cached_session,
+            concat_dim="TIME",
+        )
+    assert "consolidated" not in cached_session.headers
+    cached_session.cache.clear()

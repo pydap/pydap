@@ -277,11 +277,11 @@ def consolidate_metadata(
             results = list(
                 executor.map(lambda url: open_dmr(url, session=session), dmr_urls)
             )
-        _dim_check = list(results[0].dimensions)
-        if not all(d == _dim_check for d in [list(ds.dimensions) for ds in results]):
+        _dim_check = results[0].dimensions
+        if not all(d == _dim_check for d in [ds.dimensions for ds in results]):
             warnings.warn(
-                "The dimensions of the datasets are not identical across all remote "
-                "dataset. Please check the URLs and try again."
+                "The dimensions of the datasets are not identical across all datasets"
+                ". Please check the URLs and try again."
             )
             return None
     else:
