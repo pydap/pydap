@@ -40,7 +40,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -192,12 +192,15 @@ gtag("config", "G-EN2VD1J32L");
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="../notebooks/Authentication.html">Basic Authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../notebooks/netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/earthaccess.html">EDL Authentication via earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/SWOT.html">SWOT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/CMIP6.html">CMIP6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/MERRA2.html">MERRA-2 Data via NASA’s OPeNDAP in the Cloud.</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
 <ul class="nav bd-sidenav">
@@ -421,15 +424,13 @@ conda<span class="w"> </span>activate<span class="w"> </span>pydap_docs
 <p class="admonition-title">Note</p>
 <p>If you already have <code class="docutils literal notranslate"><span class="pre">mamba</span></code> installed, you can replace all <code class="docutils literal notranslate"><span class="pre">conda</span></code> in the commands with <code class="docutils literal notranslate"><span class="pre">mamba</span></code>.</p>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">docs/environment.yml</span></code> file provides a ready-to-use environment (it installs <code class="docutils literal notranslate"><span class="pre">pydap-server</span></code>). However, if you have made new changes to the code, we recommend installing pydap in <code class="docutils literal notranslate"><span class="pre">dev</span></code> mode and making sure that all notebooks properly build.</p>
+<ol class="arabic simple" start="3">
+<li><p>Install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> in <code class="docutils literal notranslate"><span class="pre">developer</span></code> mode, to make sure that all notebooks are properly built. To do install in dev mode, run</p></li>
+</ol>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </pre></div>
 </div>
-<p>or to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> directly from the main branch:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
-</pre></div>
-</div>
-<ol class="arabic simple" start="3">
+<ol class="arabic simple" start="4">
 <li><p>Create a new branch, and set its upstream and use git (see <a class="reference internal" href="contr_cod.html"><span class="std std-doc">steps 3 and 4 from contributing to the code</span></a>)</p></li>
 <li><p>The documentation is now split into two source files, one in English (you can find it in: <code class="docutils literal notranslate"><span class="pre">docs/en</span></code>), and one in Spanish (los puedes encontrar aqui <code class="docutils literal notranslate"><span class="pre">docs/es</span></code>). Depending on which version of the documentation you are contributing, you can modify the source files.</p></li>
 <li><p>Once you have made changes to the source files of the documentation (either in <code class="docutils literal notranslate"><span class="pre">docs/en</span></code> or <code class="docutils literal notranslate"><span class="pre">docs/es</span></code>), use the <code class="docutils literal notranslate"><span class="pre">build.sh</span></code> to clean and build <code class="docutils literal notranslate"><span class="pre">html</span></code> documentation files (you may need to make <code class="docutils literal notranslate"><span class="pre">build.sh</span></code>1= executable with <code class="docutils literal notranslate"><span class="pre">chmod</span> <span class="pre">+x</span> </code>)</p></li>
@@ -444,7 +445,7 @@ chmod<span class="w"> </span>+x<span class="w"> </span>build.sh
 <p>Many of the tutorial examples in the documentation require EDL Authentication via a local <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> file. Make sure you have one with valid credentials. See <a class="reference internal" href="../notebooks/Authentication.html"><span class="doc std std-doc">Authentication</span></a></p>
 </div>
 <p>Depending on how many changes you have done to the documentation, this last step may take a while. It also depends on the type of files added to the documentation (<code class="docutils literal notranslate"><span class="pre">ipynb</span></code> are slower to build).</p>
-<ol class="arabic simple" start="6">
+<ol class="arabic simple" start="7">
 <li><p>Once the build process is finished, you can inspect the locally built html files. The <code class="docutils literal notranslate"><span class="pre">build.sh</span></code> creates a redirect at the base of the built html files. Thus, to open the English documentation execute</p></li>
 </ol>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>open<span class="w"> </span>_build/html/index.html
@@ -462,14 +463,14 @@ chmod<span class="w"> </span>+x<span class="w"> </span>build.sh
 <p class="admonition-title">Note</p>
 <p>The documentation will have a toggle to manually switch between the English and Spanish versions.</p>
 </div>
-<ol class="arabic simple" start="7">
+<ol class="arabic simple" start="8">
 <li><p>Push all changes and create a PR. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> follows the recommendations of keeping the <code class="docutils literal notranslate"><span class="pre">source</span></code> files on <code class="docutils literal notranslate"><span class="pre">main</span></code>, and the <code class="docutils literal notranslate"><span class="pre">build</span></code> files on the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch.</p></li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Do not include passwords or tokens. You are only submitting <code class="docutils literal notranslate"><span class="pre">source</span></code> files.</p>
 </div>
-<ol class="arabic simple" start="8">
+<ol class="arabic simple" start="9">
 <li><p>Once a maintaner of <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> has approved your PR it will get merged into <code class="docutils literal notranslate"><span class="pre">main</span></code>. The maintainer of <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> can publish the documentation and update the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch. Broadly, the steps to publish the documentation (i.e. rebuild the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch) are detailed and described here: <a class="reference external" href="https://jupyterbook.org/en/stable/start/publish.html">https://jupyterbook.org/en/stable/start/publish.html</a>.</p></li>
 </ol>
 </section>

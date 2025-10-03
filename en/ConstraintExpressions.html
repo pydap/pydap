@@ -40,7 +40,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -195,12 +195,15 @@ gtag("config", "G-EN2VD1J32L");
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Basic Authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/earthaccess.html">EDL Authentication via earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/CMIP6.html">CMIP6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MERRA2.html">MERRA-2 Data via NASA’s OPeNDAP in the Cloud.</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
 <ul class="nav bd-sidenav">
@@ -479,8 +482,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2.06 s, sys: 15.1 ms, total: 2.08 s
-Wall time: 4.16 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 3.71 s, sys: 18.4 ms, total: 3.73 s
+Wall time: 5.42 s
 </pre></div>
 </div>
 </div>
@@ -1636,8 +1639,8 @@ Wall time: 4.16 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 34.5 ms, sys: 1.57 ms, total: 36 ms
-Wall time: 251 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 39.4 ms, sys: 1.33 ms, total: 40.7 ms
+Wall time: 1.62 s
 </pre></div>
 </div>
 </div>
@@ -1659,8 +1662,8 @@ Wall time: 251 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1 μs, sys: 0 ns, total: 1 μs
-Wall time: 2.15 μs
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2 μs, sys: 0 ns, total: 2 μs
+Wall time: 5.01 μs
 </pre></div>
 </div>
 </div>
@@ -1673,8 +1676,8 @@ Wall time: 2.15 μs
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 30.7 ms, sys: 1.47 ms, total: 32.2 ms
-Wall time: 427 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 38.9 ms, sys: 1.69 ms, total: 40.6 ms
+Wall time: 225 ms
 </pre></div>
 </div>
 </div>
@@ -1780,29 +1783,7 @@ Wall time: 427 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
-<span class="nn">File ~/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:244,</span> in <span class="ni">DapType.__getattr__</span><span class="nt">(self, attr)</span>
-<span class="g g-Whitespace">    </span><span class="mi">243</span> <span class="k">try</span><span class="p">:</span>
-<span class="ne">--&gt; </span><span class="mi">244</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">245</span> <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-
-<span class="ne">KeyError</span>: &#39;dimensions&#39;
-
-<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
-
-<span class="ne">AttributeError</span><span class="g g-Whitespace">                            </span>Traceback (most recent call last)
-<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">12</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Dimensions of variable:&#39;</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;analysed_sst&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span><span class="p">)</span>
-
-<span class="nn">File ~/miniforge3/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:246,</span> in <span class="ni">DapType.__getattr__</span><span class="nt">(self, attr)</span>
-<span class="g g-Whitespace">    </span><span class="mi">244</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">[</span><span class="n">attr</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">245</span> <span class="k">except</span> <span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
-<span class="ne">--&gt; </span><span class="mi">246</span>     <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
-<span class="g g-Whitespace">    </span><span class="mi">247</span>         <span class="s2">&quot;&#39;</span><span class="si">%s</span><span class="s2">&#39; object has no attribute &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="n">attr</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">248</span>     <span class="p">)</span>
-
-<span class="ne">AttributeError</span>: &#39;&lt;class &#39;pydap.model.BaseType&#39;&gt;&#39; object has no attribute &#39;dimensions&#39;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Dimensions of variable: (&#39;/time&#39;, &#39;/lat&#39;, &#39;/lon&#39;)
 </pre></div>
 </div>
 </div>
@@ -1810,6 +1791,11 @@ Wall time: 427 ms
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">dimensions</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;time&#39;: 1, &#39;lat&#39;: 17999, &#39;lon&#39;: 36000}
 </pre></div>
 </div>
 </div>
@@ -1833,10 +1819,21 @@ Wall time: 427 ms
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 39.8 ms, sys: 2.14 ms, total: 42 ms
+Wall time: 226 ms
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nds</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;DatasetType with children &#39;time&#39;, &#39;lat&#39;, &#39;lon&#39;, &#39;mask&#39;, &#39;sea_ice_fraction&#39;, &#39;dt_1km_data&#39;, &#39;analysed_sst&#39;, &#39;analysis_error&#39;, &#39;sst_anomaly&#39;&gt;
 </pre></div>
 </div>
 </div>
@@ -1847,10 +1844,20 @@ Wall time: 427 ms
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 301, 301)
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nds</span><span class="p">[</span><span class="s1">&#39;/lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(301,)
 </pre></div>
 </div>
 </div>
@@ -1864,6 +1871,12 @@ subset dataset to be self-consistent. For example, it can be easy to define the 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 35.9 ms, sys: 1.34 ms, total: 37.2 ms
+Wall time: 342 ms
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1871,10 +1884,20 @@ subset dataset to be self-consistent. For example, it can be easy to define the 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nds</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">nds</span><span class="p">[</span><span class="s1">&#39;analysed_sst&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>((17999,), (1, 301, 301))
 </pre></div>
 </div>
 </div>
@@ -1898,6 +1921,12 @@ subset dataset to be self-consistent. For example, it can be easy to define the 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 35.9 ms, sys: 1.49 ms, total: 37.3 ms
+Wall time: 206 ms
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1905,10 +1934,29 @@ subset dataset to be self-consistent. For example, it can be easy to define the 
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.h5
+├──time
+├──lat
+├──lon
+├──mask
+├──sea_ice_fraction
+├──dt_1km_data
+├──analysed_sst
+├──analysis_error
+└──sst_anomaly
+</pre></div>
+</div>
+</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">nds</span><span class="p">[</span><span class="s1">&#39;/analysed_sst&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="n">nds</span><span class="p">[</span><span class="s1">&#39;sst_anomaly&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
 </pre></div>
 </div>
 </div>

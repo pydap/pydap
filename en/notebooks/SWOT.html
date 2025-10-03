@@ -40,7 +40,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -69,7 +69,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CMIP6" href="CMIP6.html" />
-    <link rel="prev" title="PACE" href="PACE.html" />
+    <link rel="prev" title="PACE Chlorophyll A data over a region in the NorthAtlantic Ocean" href="PACE.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -193,12 +193,15 @@ gtag("config", "G-EN2VD1J32L");
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="Authentication.html">Basic Authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="earthaccess.html">EDL Authentication via earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">SWOT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CMIP6.html">CMIP6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MERRA2.html">MERRA-2 Data via NASA’s OPeNDAP in the Cloud.</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
 <ul class="nav bd-sidenav">
@@ -596,8 +599,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 50.3 ms, sys: 4.63 ms, total: 54.9 ms
-Wall time: 5.13 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 44.7 ms, sys: 9.18 ms, total: 53.9 ms
+Wall time: 3.62 s
 </pre></div>
 </div>
 </div>
@@ -639,7 +642,7 @@ Wall time: 5.13 s
  &#39;comment&#39;: &#39;East longitude relative to Greenwich meridian. See SWOT Nadir Altimeter User Handbook. Associated quality flag is orb_state_diode_flag for the OGDR products, orb_state_rest_flag for the IGDR and GDR products&#39;,
  &#39;path&#39;: &#39;/data_01&#39;,
  &#39;Maps&#39;: (),
- &#39;checksum&#39;: array([4151025818], dtype=uint32)}
+ &#39;_DAP4_Checksum_CRC32&#39;: np.uint32(2594204663)}
 </pre></div>
 </div>
 </div>
@@ -659,7 +662,7 @@ Wall time: 5.13 s
  &#39;comment&#39;: &#39;Positive latitude is North latitude, negative latitude is South latitude. See SWOT Nadir Altimeter User Handbook. Associated quality flag is orb_state_diode_flag for the OGDR products, orb_state_rest_flag for the IGDR and GDR products&#39;,
  &#39;path&#39;: &#39;/data_01&#39;,
  &#39;Maps&#39;: (),
- &#39;checksum&#39;: array([1388797074], dtype=uint32)}
+ &#39;_DAP4_Checksum_CRC32&#39;: np.uint32(2455553874)}
 </pre></div>
 </div>
 </div>
@@ -715,7 +718,7 @@ Wall time: 5.13 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f7716f31337a8aad5f9885e5ba499d37dbc7dec0ff70ec3bd6743fd762ea1e85.png" src="../_images/f7716f31337a8aad5f9885e5ba499d37dbc7dec0ff70ec3bd6743fd762ea1e85.png" />
+<img alt="../_images/84d56c5491c19f564f61dd06a21c0949e556c4f547c346a7588f6ab69abf8bc4.png" src="../_images/84d56c5491c19f564f61dd06a21c0949e556c4f547c346a7588f6ab69abf8bc4.png" />
 </div>
 </div>
 <p><strong>Fig. 1</strong> Global map showing the track (trajectory) of the sampled (satellite) data. Values refer to mean dynamic topography.</p>
@@ -730,7 +733,7 @@ Wall time: 5.13 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/5a64e400ee9c02e783e60cc2d4395401fb3fd3c08e85d4e39b4c65bd086cbb08.png" src="../_images/5a64e400ee9c02e783e60cc2d4395401fb3fd3c08e85d4e39b4c65bd086cbb08.png" />
+<img alt="../_images/be9977d572c1b909a00c68d6d1abb4552942d0117a03e240436677fefbd716c7.png" src="../_images/be9977d572c1b909a00c68d6d1abb4552942d0117a03e240436677fefbd716c7.png" />
 </div>
 </div>
 <p><strong>Fig 2.</strong> Along track values. The first values along the track represent the North Atlantic, whereas the steep dropoff in dynamic topography represent the Southern Ocean.</p>
@@ -773,7 +776,7 @@ Wall time: 5.13 s
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">PACE</p>
+        <p class="prev-next-title">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</p>
       </div>
     </a>
     <a class="right-next"

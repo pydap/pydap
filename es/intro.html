@@ -40,7 +40,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -387,7 +387,7 @@ document.write(`
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-center"><p><em>Figure 1. Comparacion entre dos maneras de descargar una subregion de archivo cientifico remoto en un servidor de OPeNDAP. En este ejemplo, la cobertura de los datos dentro del archivo remoto es global, y el usuario de pydap descarga solamente la region de interes al indexar el arreglo numerico de pydap. La mandera comun de OPeNDAP es por medio del <code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">Request</span> <span class="pre">Form</span></code> que permite al usuario contruir manualmente el URL con su Expression de Restriccion.</em></p></td>
+<tr class="row-even"><td class="text-center"><p><em>Figure 1. Comparacion entre 3 maneras de usar OPeNDAP para descargar una subregion de archivo cientifico remoto expuesto por un servidor de OPeNDAP. En este ejemplo, la cobertura de los datos dentro del archivo remoto es global, y el usuario de Pydap descarga solamente la region de interes al indexar el arreglo numerico de pydap. Para utilizar Pydap por medio de Xarray, es necesario definir pydap como motor (<code class="docutils literal notranslate"><span class="pre">engine='pydap'</span></code>). <code class="docutils literal notranslate"><span class="pre">Note</span></code> el reemplazo del esquema de http por dap4 en el URL. El acceso directo al servidor OPeNDAP es por medio del <code class="docutils literal notranslate"><span class="pre">Data</span> <span class="pre">Request</span> <span class="pre">Form</span></code> que permite al usuario construir manualmente el URL con su Expression de Restriccion.</em></p></td>
 </tr>
 </tbody>
 </table>

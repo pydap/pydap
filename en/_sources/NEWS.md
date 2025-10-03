@@ -1,6 +1,68 @@
 What's New
 ==========
 
+3.5.8
+------
+*Release date: 2025-Oct*
+
+* Enable using a persistent sqlite3 as dabaset session object for testing by @Mikejmnez in https://github.com/pydap/pydap/pull/570
+* use `GET` instead of shared session by @Mikejmnez in https://github.com/pydap/pydap/pull/572
+* Enable batch=False|True when consolidating metadata by @Mikejmnez in https://github.com/pydap/pydap/pull/574
+* Update documentation by @Mikejmnez in https://github.com/pydap/pydap/pull/569
+
+
+3.5.7
+------
+*Release date: 2025-Sept*
+
+* enable updating the session credentials from a different session by @Mikejmnez in https://github.com/pydap/pydap/pull/537
+* Add an extra condition to get_cmr_urls to use if previous returns None by @Mikejmnez in https://github.com/pydap/pydap/pull/539
+* fix: get_cmr_urls by @Mikejmnez in https://github.com/pydap/pydap/pull/540
+* Enable shared dimensions option on when consolidated data by @Mikejmnez in https://github.com/pydap/pydap/pull/541
+* raise exception when trying to batch multiple variables in the dap2 p… by @Mikejmnez in https://github.com/pydap/pydap/pull/544
+* reorganize batching to return None -> add data into pydap dataset instead by @Mikejmnez in https://github.com/pydap/pydap/pull/546
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/548
+* Bump actions/setup-python from 5 to 6 by @dependabot[bot] in https://github.com/pydap/pydap/pull/552
+* a fix to parse ces with subsets by @Mikejmnez in https://github.com/pydap/pydap/pull/556
+* add slice as an argument to create single dap url with multiple variables by @Mikejmnez in https://github.com/pydap/pydap/pull/554
+* Improves memory management by @Mikejmnez in https://github.com/pydap/pydap/pull/560
+* add a data checker by @Mikejmnez in https://github.com/pydap/pydap/pull/561
+* Improve handling dimensions for datasets with nested groups by @Mikejmnez in https://github.com/pydap/pydap/pull/563
+* remove global url definitions - make tests self contained by @Mikejmnez in https://github.com/pydap/pydap/pull/564
+* Improve thread-safety ness and caching behavior by @Mikejmnez in https://github.com/pydap/pydap/pull/566
+* Improve dmr parser and deserialization by @Mikejmnez in https://github.com/pydap/pydap/pull/567
+
+
+3.5.6
+------
+*Release date: 2025-Aug-13*
+
+* Updates documentation with newer xarray by @Mikejmnez in https://github.com/pydap/pydap/pull/487
+* Update Why Pydap figure to show xarray using pydap by @Mikejmnez in https://github.com/pydap/pydap/pull/491
+* Set https as the default url scheme when dap2 or dap4 are used to set by @Mikejmnez in https://github.com/pydap/pydap/pull/493
+* Improvements to consolidate_metadata by @Mikejmnez in https://github.com/pydap/pydap/pull/488
+* Add function to query opendap urls from CMR by @Mikejmnez in https://github.com/pydap/pydap/pull/495
+* Remove slashes from dimension names when creating dds responses (pydap server) by @Mikejmnez in https://github.com/pydap/pydap/pull/503
+* Backwards compat by @Mikejmnez in https://github.com/pydap/pydap/pull/502
+* Improves support for concat_dims with size larger than 1 by @Mikejmnez in https://github.com/pydap/pydap/pull/505
+* Named dim consolidate by @Mikejmnez in https://github.com/pydap/pydap/pull/507
+* Stream into temp file using a chunk manager when downloading dap responses by @Mikejmnez in https://github.com/pydap/pydap/pull/509
+* release memory when downloading with remote dataset by @Mikejmnez in https://github.com/pydap/pydap/pull/511
+* disable caching except when using Consolidate_metadata by @Mikejmnez in https://github.com/pydap/pydap/pull/513
+* enables caching when consolidated-metadata is not run by @Mikejmnez in https://github.com/pydap/pydap/pull/514
+* String arrays by @Mikejmnez in https://github.com/pydap/pydap/pull/517
+* Enable option to requests/skip checksums by @Mikejmnez in https://github.com/pydap/pydap/pull/519
+* Adds Parent references for (nested) Groups and BaseTypes (arrays) by @Mikejmnez in https://github.com/pydap/pydap/pull/523
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/524
+* Enable unpacking responses from httpx by @Mikejmnez in https://github.com/pydap/pydap/pull/527
+* Enables batching multiple variable requests into a single dap url by @Mikejmnez in https://github.com/pydap/pydap/pull/525
+* Ensure consolidate_metadata and batch_mode are well integrated by @Mikejmnez in https://github.com/pydap/pydap/pull/530
+* Improve handling of Maps when consolidating metadata by @Mikejmnez in https://github.com/pydap/pydap/pull/531
+* Bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/pydap/pydap/pull/532
+* Enable caching urls in batch_mode, for debugging purposes by @Mikejmnez in https://github.com/pydap/pydap/pull/533
+* Enforce checksums=True, but expose option to users by @Mikejmnez in https://github.com/pydap/pydap/pull/535
+
+
 3.5.5
 ------
 *Release date: 2025-April-13*

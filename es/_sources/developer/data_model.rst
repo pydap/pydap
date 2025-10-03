@@ -182,11 +182,11 @@ When you *slice* a ``BaseType`` array, the slice is simply passed onto the data 
 .. doctest::
 
     >>> b[-1]
-    <BaseType with data array(3)>
+    <BaseType with data array(shape=(), dtype=int64)>
     >>> b[-1].data
     array(3)
     >>> b[:2]
-    <BaseType with data array([0, 1])>
+    <BaseType with data array(shape=(2,), dtype=int64)>
     >>> b[:2].data
     array([0, 1])
 
@@ -424,7 +424,7 @@ It is possible to disable this feature (some older servers might not handle it n
     >>> print(g)
     <GridType with array 'a' and maps 'x', 'y'>
     >>> print(g[0])
-    <BaseType with data array([0, 1, 2])>
+    <BaseType with data array(shape=(3,), dtype=int64)>
     >>> print(g[0].name)
     a
     >>> print(g[0].data)

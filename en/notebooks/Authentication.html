@@ -40,7 +40,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -193,12 +193,15 @@ gtag("config", "G-EN2VD1J32L");
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active has-children"><a class="current reference internal" href="#">Basic Authentication</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="earthaccess.html">EDL Authentication via earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="CMIP6.html">CMIP6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MERRA2.html">MERRA-2 Data via NASA’s OPeNDAP in the Cloud.</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
 <ul class="nav bd-sidenav">
@@ -391,6 +394,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tokens"><font size="5"><span style="color:#0066cc"> <strong>Tokens</strong><font size="3"></font></span></font></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#earthaccess"><font size="5"><span style="color:#0066cc"> <strong>earthaccess</strong><font size="3"></font></span></font></a></li>
 </ul>
             </nav>
         </div>
@@ -454,7 +458,7 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;requests.sessions.Session object at 0x10b3fcf90&gt;
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;requests.sessions.Session object at 0x10b96bd50&gt;
 </pre></div>
 </div>
 </div>
@@ -511,6 +515,10 @@ document.write(`
 <p class="admonition-title">Note</p>
 <p>At this point only the metadata has been downloaded to generate the pydap dataset, and references to each remove variable have been added</p>
 </div>
+</section>
+<section id="earthaccess">
+<h2><font size="5"><span style='color:#0066cc'> <strong>earthaccess</strong><font size="3"><a class="headerlink" href="#earthaccess" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">earthaccess</span></code> enables users to hide the abstraction associated with the recovery of EDL credentials. Pydap can inherit these from earthaccess auth method. See the accompanying tutorial.</p>
 </section>
 <div class="toctree-wrapper compound">
 </div>
@@ -587,6 +595,7 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tokens"><font size="5"><span style="color:#0066cc"> <strong>Tokens</strong><font size="3"></font></span></font></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#earthaccess"><font size="5"><span style="color:#0066cc"> <strong>earthaccess</strong><font size="3"></font></span></font></a></li>
 </ul>
   </nav></div>
 

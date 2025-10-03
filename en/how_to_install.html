@@ -40,7 +40,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -193,12 +193,15 @@ gtag("config", "G-EN2VD1J32L");
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Basic Authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/earthaccess.html">EDL Authentication via earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/CMIP6.html">CMIP6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MERRA2.html">MERRA-2 Data via NASA’s OPeNDAP in the Cloud.</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
 <ul class="nav bd-sidenav">
@@ -440,7 +443,7 @@ document.write(`
 <h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
 <section id="minimal-required">
 <h3>Minimal Required<a class="headerlink" href="#minimal-required" title="Link to this heading">#</a></h3>
-<p>The following are required to run pydap as a client.</p>
+<p>The following are required to run <code class="docutils literal notranslate"><span class="pre">pydap</span></code> as a client.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">python&gt;=3.10</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
@@ -450,14 +453,14 @@ document.write(`
 <li><p><code class="docutils literal notranslate"><span class="pre">beautifulsoup4</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lxml</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">Webob</span></code></p></li>
-<li></li>
 </ul>
+<p>These are install with every <code class="docutils literal notranslate"><span class="pre">pydap</span></code> installation.</p>
 </section>
 </section>
 <section id="reproducible-conda-environments">
 <h2>Reproducible (conda) environments<a class="headerlink" href="#reproducible-conda-environments" title="Link to this heading">#</a></h2>
 <p>You can easily use conda to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> or <code class="docutils literal notranslate"><span class="pre">pydap-server</span></code>, along with any optional packages for sharing a reproducible workflow. For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>pydap-server
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>pydap-server
 <span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>activate<span class="w"> </span>pydap_env
 </pre></div>
 </div>

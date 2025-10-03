@@ -40,7 +40,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -193,12 +193,15 @@ gtag("config", "G-EN2VD1J32L");
 <ul class="nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Basic Authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/earthaccess.html">EDL Authentication via earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/CMIP6.html">CMIP6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MERRA2.html">MERRA-2 Data via NASA’s OPeNDAP in the Cloud.</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
 <ul class="nav bd-sidenav">
@@ -384,18 +387,21 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.5</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.4</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.3</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.5.2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.5.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.5.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.4.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">3.3.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">3.2.2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">3.2.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">3.2.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">3.1.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.8</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.7</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.6</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.5.5</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.5.4</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.5.3</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.5.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">3.5.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">3.5.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">3.4.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">3.3.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">3.2.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">3.2.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">3.2.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">3.1.1</a></li>
 </ul>
             </nav>
         </div>
@@ -410,7 +416,69 @@ document.write(`
   <section class="tex2jax_ignore mathjax_ignore" id="what-s-new">
 <h1>What’s New<a class="headerlink" href="#what-s-new" title="Link to this heading">#</a></h1>
 <section id="id1">
-<h2>3.5.5<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<h2>3.5.8<a class="headerlink" href="#id1" title="Link to this heading">#</a></h2>
+<p><em>Release date: 2025-Oct</em></p>
+<ul class="simple">
+<li><p>Enable using a persistent sqlite3 as dabaset session object for testing by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/570">pydap/pydap#570</a></p></li>
+<li><p>use <code class="docutils literal notranslate"><span class="pre">GET</span></code> instead of shared session by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/572">pydap/pydap#572</a></p></li>
+<li><p>Enable batch=False|True when consolidating metadata by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/574">pydap/pydap#574</a></p></li>
+<li><p>Update documentation by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/569">pydap/pydap#569</a></p></li>
+</ul>
+</section>
+<section id="id2">
+<h2>3.5.7<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<p><em>Release date: 2025-Sept</em></p>
+<ul class="simple">
+<li><p>enable updating the session credentials from a different session by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/537">pydap/pydap#537</a></p></li>
+<li><p>Add an extra condition to get_cmr_urls to use if previous returns None by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/539">pydap/pydap#539</a></p></li>
+<li><p>fix: get_cmr_urls by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/540">pydap/pydap#540</a></p></li>
+<li><p>Enable shared dimensions option on when consolidated data by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/541">pydap/pydap#541</a></p></li>
+<li><p>raise exception when trying to batch multiple variables in the dap2 p… by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/544">pydap/pydap#544</a></p></li>
+<li><p>reorganize batching to return None -&gt; add data into pydap dataset instead by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/546">pydap/pydap#546</a></p></li>
+<li><p>Update pre-commit hooks by &#64;pre-commit-ci[bot] in <a class="github reference external" href="https://github.com/pydap/pydap/pull/548">pydap/pydap#548</a></p></li>
+<li><p>Bump actions/setup-python from 5 to 6 by &#64;dependabot[bot] in <a class="github reference external" href="https://github.com/pydap/pydap/pull/552">pydap/pydap#552</a></p></li>
+<li><p>a fix to parse ces with subsets by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/556">pydap/pydap#556</a></p></li>
+<li><p>add slice as an argument to create single dap url with multiple variables by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/554">pydap/pydap#554</a></p></li>
+<li><p>Improves memory management by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/560">pydap/pydap#560</a></p></li>
+<li><p>add a data checker by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/561">pydap/pydap#561</a></p></li>
+<li><p>Improve handling dimensions for datasets with nested groups by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/563">pydap/pydap#563</a></p></li>
+<li><p>remove global url definitions - make tests self contained by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/564">pydap/pydap#564</a></p></li>
+<li><p>Improve thread-safety ness and caching behavior by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/566">pydap/pydap#566</a></p></li>
+<li><p>Improve dmr parser and deserialization by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/567">pydap/pydap#567</a></p></li>
+</ul>
+</section>
+<section id="id3">
+<h2>3.5.6<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<p><em>Release date: 2025-Aug-13</em></p>
+<ul class="simple">
+<li><p>Updates documentation with newer xarray by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/487">pydap/pydap#487</a></p></li>
+<li><p>Update Why Pydap figure to show xarray using pydap by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/491">pydap/pydap#491</a></p></li>
+<li><p>Set https as the default url scheme when dap2 or dap4 are used to set by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/493">pydap/pydap#493</a></p></li>
+<li><p>Improvements to consolidate_metadata by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/488">pydap/pydap#488</a></p></li>
+<li><p>Add function to query opendap urls from CMR by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/495">pydap/pydap#495</a></p></li>
+<li><p>Remove slashes from dimension names when creating dds responses (pydap server) by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/503">pydap/pydap#503</a></p></li>
+<li><p>Backwards compat by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/502">pydap/pydap#502</a></p></li>
+<li><p>Improves support for concat_dims with size larger than 1 by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/505">pydap/pydap#505</a></p></li>
+<li><p>Named dim consolidate by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/507">pydap/pydap#507</a></p></li>
+<li><p>Stream into temp file using a chunk manager when downloading dap responses by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/509">pydap/pydap#509</a></p></li>
+<li><p>release memory when downloading with remote dataset by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/511">pydap/pydap#511</a></p></li>
+<li><p>disable caching except when using Consolidate_metadata by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/513">pydap/pydap#513</a></p></li>
+<li><p>enables caching when consolidated-metadata is not run by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/514">pydap/pydap#514</a></p></li>
+<li><p>String arrays by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/517">pydap/pydap#517</a></p></li>
+<li><p>Enable option to requests/skip checksums by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/519">pydap/pydap#519</a></p></li>
+<li><p>Adds Parent references for (nested) Groups and BaseTypes (arrays) by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/523">pydap/pydap#523</a></p></li>
+<li><p>Update pre-commit hooks by &#64;pre-commit-ci[bot] in <a class="github reference external" href="https://github.com/pydap/pydap/pull/524">pydap/pydap#524</a></p></li>
+<li><p>Enable unpacking responses from httpx by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/527">pydap/pydap#527</a></p></li>
+<li><p>Enables batching multiple variable requests into a single dap url by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/525">pydap/pydap#525</a></p></li>
+<li><p>Ensure consolidate_metadata and batch_mode are well integrated by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/530">pydap/pydap#530</a></p></li>
+<li><p>Improve handling of Maps when consolidating metadata by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/531">pydap/pydap#531</a></p></li>
+<li><p>Bump actions/checkout from 4 to 5 by &#64;dependabot[bot] in <a class="github reference external" href="https://github.com/pydap/pydap/pull/532">pydap/pydap#532</a></p></li>
+<li><p>Enable caching urls in batch_mode, for debugging purposes by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/533">pydap/pydap#533</a></p></li>
+<li><p>Enforce checksums=True, but expose option to users by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/535">pydap/pydap#535</a></p></li>
+</ul>
+</section>
+<section id="id4">
+<h2>3.5.5<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2025-April-13</em></p>
 <ul class="simple">
 <li><p>Update documentation by &#64;Mikejmnez in #461 #462, #464, #465, #467, #469,</p></li>
@@ -427,8 +495,8 @@ document.write(`
 <li><p>fix test warn by &#64;Mikejmnez in #484</p></li>
 </ul>
 </section>
-<section id="id2">
-<h2>3.5.4<a class="headerlink" href="#id2" title="Link to this heading">#</a></h2>
+<section id="id5">
+<h2>3.5.4<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2025-March-18</em></p>
 <ul class="simple">
 <li><p>Update pre-commit hooks by &#64;pre-commit-ci in #431</p></li>
@@ -443,8 +511,8 @@ document.write(`
 <li><p>Change default: <code class="docutils literal notranslate"><span class="pre">output_grid=False</span></code> is now the default argument for <code class="docutils literal notranslate"><span class="pre">open_url</span></code> by &#64;Mikejmnez in #457</p></li>
 </ul>
 </section>
-<section id="id3">
-<h2>3.5.3<a class="headerlink" href="#id3" title="Link to this heading">#</a></h2>
+<section id="id6">
+<h2>3.5.3<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2025-Jan-6</em></p>
 <ul class="simple">
 <li><p>Improved parallelism to chunk reader of binary data. This becomed an issue specially for datasets with lots of very small chunks. No longer the case by &#64;Mikejmnez in #419</p></li>
@@ -456,8 +524,8 @@ document.write(`
 in a generaic way, without the need for extra logic to discern which server produced the dap response. By &#64;Mikejmnez in #428</p></li>
 </ul>
 </section>
-<section id="id4">
-<h2>3.5.2<a class="headerlink" href="#id4" title="Link to this heading">#</a></h2>
+<section id="id7">
+<h2>3.5.2<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2024-Nov-19</em></p>
 <ul class="simple">
 <li><p>Add zenodo badge by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/405">pydap/pydap#405</a></p></li>
@@ -468,8 +536,8 @@ in a generaic way, without the need for extra logic to discern which server prod
 <li><p>Quick patchwork to parse TDS DAP4 responses, with proper warning message to use dap2 instead by &#64;Mikejmnez in <a class="github reference external" href="https://github.com/pydap/pydap/pull/415">pydap/pydap#415</a></p></li>
 </ul>
 </section>
-<section id="id5">
-<h2>3.5.1<a class="headerlink" href="#id5" title="Link to this heading">#</a></h2>
+<section id="id8">
+<h2>3.5.1<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2024-Oct-28</em></p>
 <ul class="simple">
 <li><p>DAP4 support:</p>
@@ -507,8 +575,8 @@ in a generaic way, without the need for extra logic to discern which server prod
 </li>
 </ul>
 </section>
-<section id="id6">
-<h2>3.5.0<a class="headerlink" href="#id6" title="Link to this heading">#</a></h2>
+<section id="id9">
+<h2>3.5.0<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2024-Aug-16</em></p>
 <ul class="simple">
 <li><p>DAP4 Support:</p>
@@ -552,8 +620,8 @@ in a generaic way, without the need for extra logic to discern which server prod
 </li>
 </ul>
 </section>
-<section id="id7">
-<h2>3.4.0<a class="headerlink" href="#id7" title="Link to this heading">#</a></h2>
+<section id="id10">
+<h2>3.4.0<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2023-April-5</em></p>
 <ul class="simple">
 <li><p>DAP4/DAS Patch (#278)</p>
@@ -575,8 +643,8 @@ in a generaic way, without the need for extra logic to discern which server prod
 </li>
 </ul>
 </section>
-<section id="id8">
-<h2>3.3.0<a class="headerlink" href="#id8" title="Link to this heading">#</a></h2>
+<section id="id11">
+<h2>3.3.0<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2022-Feb-1</em></p>
 <ul class="simple">
 <li><p>There are many changes going from 3.2.0 to 3.3.0</p>
@@ -646,8 +714,8 @@ in a generaic way, without the need for extra logic to discern which server prod
 </li>
 </ul>
 </section>
-<section id="id9">
-<h2>3.2.2<a class="headerlink" href="#id9" title="Link to this heading">#</a></h2>
+<section id="id12">
+<h2>3.2.2<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2017-May-24</em></p>
 <ul class="simple">
 <li><p>Python 3.3 is no longer supported. This is in line with
@@ -690,8 +758,8 @@ doctests. Doctests use integers for easy continuous integration</p></li>
 <li><p>Adds timeout option to open_urls and open_dods</p></li>
 </ul>
 </section>
-<section id="id10">
-<h2>3.2.1<a class="headerlink" href="#id10" title="Link to this heading">#</a></h2>
+<section id="id13">
+<h2>3.2.1<a class="headerlink" href="#id13" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2017-Mar-28</em></p>
 <ul class="simple">
 <li><p>PyDAP client fixes</p>
@@ -726,8 +794,8 @@ doctests. Doctests use integers for easy continuous integration</p></li>
 </li>
 </ul>
 </section>
-<section id="id11">
-<h2>3.2.0<a class="headerlink" href="#id11" title="Link to this heading">#</a></h2>
+<section id="id14">
+<h2>3.2.0<a class="headerlink" href="#id14" title="Link to this heading">#</a></h2>
 <p><em>Release date: 2016-Dec-01</em></p>
 <ul class="simple">
 <li><p>Adds some optimizations to the server for DAP sequences</p></li>
@@ -742,8 +810,8 @@ Grid Federation (ESGF) and NASA User Registration System (URS).</p></li>
 <li><p>Fixes HTML response to show all dimensions for BaseType variables</p></li>
 </ul>
 </section>
-<section id="id12">
-<h2>3.1.1<a class="headerlink" href="#id12" title="Link to this heading">#</a></h2>
+<section id="id15">
+<h2>3.1.1<a class="headerlink" href="#id15" title="Link to this heading">#</a></h2>
 <p><em>Release date: 14-Nov-2013</em></p>
 <ul class="simple">
 <li><p>Final release done by Roberto De Almeida</p></li>
@@ -815,18 +883,21 @@ Grid Federation (ESGF) and NASA User Registration System (URS).</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.5</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.4</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.3</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.5.2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.5.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.5.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.4.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">3.3.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">3.2.2</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">3.2.1</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">3.2.0</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">3.1.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">3.5.8</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">3.5.7</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">3.5.6</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id4">3.5.5</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id5">3.5.4</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id6">3.5.3</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id7">3.5.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id8">3.5.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id9">3.5.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id10">3.4.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id11">3.3.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id12">3.2.2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id13">3.2.1</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id14">3.2.0</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id15">3.1.1</a></li>
 </ul>
   </nav></div>
 

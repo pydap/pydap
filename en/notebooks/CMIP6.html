@@ -40,7 +40,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
@@ -68,7 +68,7 @@ gtag("config", "G-EN2VD1J32L");
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/CMIP6';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="FAQs" href="../faqs/faqs.html" />
+    <link rel="next" title="MERRA-2 Data via NASA’s OPeNDAP in the Cloud." href="MERRA2.html" />
     <link rel="prev" title="SWOT" href="SWOT.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -193,12 +193,15 @@ gtag("config", "G-EN2VD1J32L");
 <ul class="current nav bd-sidenav">
 <li class="toctree-l1 has-children"><a class="reference internal" href="Authentication.html">Basic Authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="earthaccess.html">EDL Authentication via earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s EarthData in the Cloud</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">CMIP6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MERRA2.html">MERRA-2 Data via NASA’s OPeNDAP in the Cloud.</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
 <ul class="nav bd-sidenav">
@@ -440,8 +443,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 15.4 ms, sys: 3.79 ms, total: 19.2 ms
-Wall time: 488 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 41.9 ms, sys: 8.55 ms, total: 50.4 ms
+Wall time: 602 ms
 </pre></div>
 </div>
 </div>
@@ -648,8 +651,8 @@ Wall time: 488 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 14.9 ms, sys: 2.46 ms, total: 17.4 ms
-Wall time: 436 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 53.6 ms, sys: 7.59 ms, total: 61.2 ms
+Wall time: 589 ms
 </pre></div>
 </div>
 </div>
@@ -663,19 +666,7 @@ Wall time: 436 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;BaseType with data array([[[248.65997, 248.28497, 248.15997, ..., 249.53497, 249.65997,
-         249.15997],
-        [251.65997, 250.78497, 250.53497, ..., 252.65997, 252.40997,
-         251.65997],
-        [251.03497, 250.15997, 249.03497, ..., 255.03497, 253.53497,
-         253.03497],
-        ...,
-        [224.5918 , 224.67487, 225.22243, ..., 226.25885, 225.4502 ,
-         224.54295],
-        [219.77655, 220.37973, 221.11984, ..., 218.04332, 218.55197,
-         219.16682],
-        [220.43169, 220.94601, 221.48468, ..., 220.07048, 219.97438,
-         220.07361]]], shape=(1, 64, 128), dtype=&#39;&gt;f4&#39;)&gt;
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;BaseType with data array(shape=(1, 64, 128), dtype=&gt;f4)&gt;
 </pre></div>
 </div>
 </div>
@@ -720,7 +711,7 @@ Wall time: 436 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e0e423883bbb6de2d2ed1336e5494259949d507856370f44b120d47532967b12.png" src="../_images/e0e423883bbb6de2d2ed1336e5494259949d507856370f44b120d47532967b12.png" />
+<img alt="../_images/261baa9eac05cad56aa02c0b7c38cad7d162ac6123b3f8154fe6969ef654ead0.png" src="../_images/261baa9eac05cad56aa02c0b7c38cad7d162ac6123b3f8154fe6969ef654ead0.png" />
 </div>
 </div>
 <p><strong>Fig 1</strong>. Global Near surface temperature on a (longitude)-periodic domain.</p>
@@ -767,11 +758,11 @@ Wall time: 436 ms
       </div>
     </a>
     <a class="right-next"
-       href="../faqs/faqs.html"
+       href="MERRA2.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">FAQs</p>
+        <p class="prev-next-title">MERRA-2 Data via NASA’s OPeNDAP in the Cloud.</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
