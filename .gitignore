@@ -3,8 +3,8 @@
 # C extensions
 *.so
 
-# # no chached sessions
-# *.sqlite
+# no chached sessions
+*.sqlite
 # Packages
 *.egg
 *.egg-info
