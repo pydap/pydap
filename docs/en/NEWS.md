@@ -5,7 +5,7 @@ What's New
 ------
 *Release date: 2025-Oct*
 
-* Enable using a persistent sqlite data as a session object for testing by @Mikejmnez in https://github.com/pydap/pydap/pull/570
+* Enable using a persistent sqlite3 as dabaset session object for testing by @Mikejmnez in https://github.com/pydap/pydap/pull/570
 * use `GET` instead of shared session by @Mikejmnez in https://github.com/pydap/pydap/pull/572
 * Enable batch=False|True when consolidating metadata by @Mikejmnez in https://github.com/pydap/pydap/pull/574
 * Update documentation by @Mikejmnez in https://github.com/pydap/pydap/pull/569
