@@ -885,7 +885,9 @@ def patch_session_for_shared_dap_cache(
 def get_cmr_urls(
     ccid=None,
     doi=None,
+    short_name: str | None = None,
     time_range=None,
+    version: str | None = None,
     bounding_box: list | dict | None = None,
     point: list | dict | None = None,
     polygon: list | dict | None = None,
@@ -929,12 +931,21 @@ def get_cmr_urls(
         doi : str
             The DOI of the collection to search for. This is an alternative to using
             the ccid parameter.
+        short_name : str | None
+            The short name of the collection to search for. This is an alternative to
+            using the ccid or doi parameter.
+            If multiple of ccid, doi, and short_name are provided, ccid is used,
+            then doi, then short_name.
         time_range : list | None
             The time range to filter by. The time range is a list of two elements,
             each element a datetime.datetime object, of a string in the format
             YYYY-MM-DDTHH:MM:SSZ.
             Example1: ["2023-01-01T00:00:00Z", "2023-12-31T23:59:59Z"]
             Example2: [datetime.datetime(2023, 1, 1), datetime.datetime(2023, 12, 31)]
+
+        version : str | None
+            The version of the collection to search for. If None, the latest version
+            is used.
 
         bounding_box : list | dict | None
             The bounding box to filter by, in the format [west, south, east, north].
@@ -1025,6 +1036,12 @@ def get_cmr_urls(
     if doi:
         doisearch = "https://cmr.earthdata.nasa.gov/search/collections.json?doi=" + doi
         ccid = session.get(doisearch).json()["feed"]["entry"][0]["id"]
+
+    if short_name and not version:
+        raise ValueError(
+            "Both `short_name` and `version` must be provided together to identify a "
+            "specific collection."
+        )
 
     params["concept_id"] = ccid
 
