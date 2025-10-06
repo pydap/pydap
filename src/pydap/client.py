@@ -883,11 +883,11 @@ def patch_session_for_shared_dap_cache(
 
 
 def get_cmr_urls(
-    ccid=None,
+    ccid: str | None = None,
     doi: str | None = None,
-    short_name: list | int | None = None,
+    short_name: str | None = None,
     time_range: list | None = None,
-    version: str | None = None,
+    version: list | str | None = None,
     bounding_box: list | dict | None = None,
     point: list | dict | None = None,
     polygon: list | dict | None = None,
