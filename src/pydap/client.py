@@ -884,9 +884,9 @@ def patch_session_for_shared_dap_cache(
 
 def get_cmr_urls(
     ccid=None,
-    doi=None,
-    short_name: str | None = None,
-    time_range=None,
+    doi: str | None = None,
+    short_name: list | int | None = None,
+    time_range: list | None = None,
     version: str | None = None,
     bounding_box: list | dict | None = None,
     point: list | dict | None = None,
@@ -946,6 +946,8 @@ def get_cmr_urls(
         version : str | None
             The version of the collection to search for. If None, the latest version
             is used.
+
+            Example: version = 1 or version = [1, 2]
 
         bounding_box : list | dict | None
             The bounding box to filter by, in the format [west, south, east, north].
@@ -1023,7 +1025,10 @@ def get_cmr_urls(
     """
 
     if not ccid and not doi:
-        raise ValueError("Either ccid or doi must be provided.")
+        if not short_name and not version:
+            raise ValueError(
+                "Either `ccid`, `doi`, or `short_name` and `version` must be provided."
+            )
 
     cmr_url = "https://cmr.earthdata.nasa.gov/search/granules"
     headers = {
@@ -1037,13 +1042,19 @@ def get_cmr_urls(
         doisearch = "https://cmr.earthdata.nasa.gov/search/collections.json?doi=" + doi
         ccid = session.get(doisearch).json()["feed"]["entry"][0]["id"]
 
-    if short_name and not version:
+    if short_name and not version or (version and not short_name):
         raise ValueError(
             "Both `short_name` and `version` must be provided together to identify a "
             "specific collection."
         )
 
-    params["concept_id"] = ccid
+    if ccid:
+        params["collection_concept_id"] = ccid
+    elif short_name and version:
+        if isinstance(version, str):
+            version = [version]
+        params["short_name"] = short_name
+        cmr_url += "?" + "&".join(["version=" + v for v in version])
 
     if time_range and isinstance(time_range, list):
         if len(time_range) != 2:
@@ -1178,7 +1189,7 @@ def get_cmr_urls(
         r = session.get(cmr_url, params=params, headers=headers)
         r.raise_for_status()
     except requests.exceptions.RequestException as e:
-        print(f"Error - something went wrong: {e}")
+        print(f"Error: {e}")
         return None
 
     cmr_response = r.json()

@@ -978,6 +978,17 @@ def test_get_cmr_urls(cache_tmp_dir, param, expected):
     session.cache.clear()
 
 
+def test_error_get_cmr_urls():
+    """Test that get_cmr_urls raises an error when no concept_id, no doi, and only
+    one of short_name and version is provided."""
+    with pytest.raises(ValueError):
+        get_cmr_urls()
+    with pytest.raises(ValueError):
+        get_cmr_urls(short_name="MODIS_Aqua_L3_SST")
+    with pytest.raises(ValueError):
+        get_cmr_urls(version="61")
+
+
 @pytest.mark.parametrize("var", ["SST"])
 @pytest.mark.parametrize(
     "slice, expected",
