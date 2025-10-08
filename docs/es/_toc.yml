@@ -20,3 +20,8 @@ parts:
   - file: notebooks/PACE
   - file: notebooks/SWOT
   - file: notebooks/CMIP6
+- caption: Frequently Asked Questions
+  chapters:
+  - file: faqs/faqs
+    sections:
+    - file: faqs/dap2_or_dap4_url
