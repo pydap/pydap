@@ -883,9 +883,11 @@ def patch_session_for_shared_dap_cache(
 
 
 def get_cmr_urls(
-    ccid=None,
-    doi=None,
-    time_range=None,
+    ccid: str | None = None,
+    doi: str | None = None,
+    short_name: str | None = None,
+    time_range: list | None = None,
+    version: list | str | None = None,
     bounding_box: list | dict | None = None,
     point: list | dict | None = None,
     polygon: list | dict | None = None,
@@ -929,12 +931,23 @@ def get_cmr_urls(
         doi : str
             The DOI of the collection to search for. This is an alternative to using
             the ccid parameter.
+        short_name : str | None
+            The short name of the collection to search for. This is an alternative to
+            using the ccid or doi parameter.
+            If multiple of ccid, doi, and short_name are provided, ccid is used,
+            then doi, then short_name.
         time_range : list | None
             The time range to filter by. The time range is a list of two elements,
             each element a datetime.datetime object, of a string in the format
             YYYY-MM-DDTHH:MM:SSZ.
             Example1: ["2023-01-01T00:00:00Z", "2023-12-31T23:59:59Z"]
             Example2: [datetime.datetime(2023, 1, 1), datetime.datetime(2023, 12, 31)]
+
+        version : str | None
+            The version of the collection to search for. If None, the latest version
+            is used.
+
+            Example: version = 1 or version = [1, 2]
 
         bounding_box : list | dict | None
             The bounding box to filter by, in the format [west, south, east, north].
@@ -1012,7 +1025,10 @@ def get_cmr_urls(
     """
 
     if not ccid and not doi:
-        raise ValueError("Either ccid or doi must be provided.")
+        if not (short_name and version):
+            raise ValueError(
+                "Either `ccid`, `doi`, or `short_name` and `version` must be provided."
+            )
 
     cmr_url = "https://cmr.earthdata.nasa.gov/search/granules"
     headers = {
@@ -1026,7 +1042,19 @@ def get_cmr_urls(
         doisearch = "https://cmr.earthdata.nasa.gov/search/collections.json?doi=" + doi
         ccid = session.get(doisearch).json()["feed"]["entry"][0]["id"]
 
-    params["concept_id"] = ccid
+    if not (short_name and version):
+        raise ValueError(
+            "Both `short_name` and `version` must be provided together to identify a "
+            "specific collection."
+        )
+
+    if ccid:
+        params["collection_concept_id"] = ccid
+    elif short_name and version:
+        if isinstance(version, str):
+            version = [version]
+        params["short_name"] = short_name
+        cmr_url += "?" + "&".join(["version=" + v for v in version])
 
     if time_range and isinstance(time_range, list):
         if len(time_range) != 2:
@@ -1161,7 +1189,7 @@ def get_cmr_urls(
         r = session.get(cmr_url, params=params, headers=headers)
         r.raise_for_status()
     except requests.exceptions.RequestException as e:
-        print(f"Error - something went wrong: {e}")
+        print(f"Error: {e}")
         return None
 
     cmr_response = r.json()
