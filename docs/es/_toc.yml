@@ -20,3 +20,6 @@ parts:
   - file: notebooks/PACE
   - file: notebooks/SWOT
   - file: notebooks/CMIP6
+  - file: faqs/faqs
+    sections:
+    - file: faqs/dap2_or_dap4_url
