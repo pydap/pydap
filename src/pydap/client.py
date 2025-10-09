@@ -1042,7 +1042,7 @@ def get_cmr_urls(
         doisearch = "https://cmr.earthdata.nasa.gov/search/collections.json?doi=" + doi
         ccid = session.get(doisearch).json()["feed"]["entry"][0]["id"]
 
-    if not (short_name and version):
+    if (short_name and not version) or (version and not short_name):
         raise ValueError(
             "Both `short_name` and `version` must be provided together to identify a "
             "specific collection."
