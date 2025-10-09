@@ -183,8 +183,7 @@ gtag("config", "G-EN2VD1J32L");
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">How to install</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">5 minute tutorial</a></li>
-
+<li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">5 Minute Tutorial</a></li>
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
@@ -387,7 +386,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-metadata-dataset-creation"><font size="5"><span style="color:#0066cc"> <strong>a) Metadata / dataset creation</strong><font size="3"></font></span></font></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-creating-the-dataset"><font size="5"><span style="color:#0066cc"> <strong>a)Creating the Dataset</strong><font size="3"></font></span></font></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b-fetching-numerical-data"><font size="5.5"><span style="color:#0066cc"><strong>b) Fetching numerical data</strong> <font size="3.5"></font></span></font></a></li>
 </ul>
             </nav>
@@ -402,45 +401,122 @@ document.write(`
                   
   <section id="pydap-is-slow-how-can-i-improve-the-download-time">
 <h1>Pydap is slow. How can I improve the download time?<a class="headerlink" href="#pydap-is-slow-how-can-i-improve-the-download-time" title="Link to this heading">#</a></h1>
-<p>There are two stages at which <code class="docutils literal notranslate"><span class="pre">pydap</span></code> downloads content: <code class="docutils literal notranslate"><span class="pre">a)</span></code> during the dataset creation, and <code class="docutils literal notranslate"><span class="pre">b)</span></code> fetching numerical / array data.</p>
-<section id="a-metadata-dataset-creation">
-<h2><font size="5"><span style='color:#0066cc'> <strong>a) Metadata / dataset creation</strong><font size="3"><a class="headerlink" href="#a-metadata-dataset-creation" title="Link to this heading">#</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pyds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap2&#39;</span><span class="p">)</span> <span class="c1"># protocol=&quot;dap4&quot; </span>
+<p>There are two stages at which <code class="docutils literal notranslate"><span class="pre">pydap</span></code> downloads data: <code class="docutils literal notranslate"><span class="pre">a)</span></code> during the <span style='color:#0066cc'><strong>dataset creation</strong></span>, and <code class="docutils literal notranslate"><span class="pre">b)</span></code> when  <span style='color:#0066cc'><strong>downloading array data</strong></span>. These can be slow on their own, due to a couple of scenarios:</p>
+<ol class="arabic simple">
+<li><p>Data behind Authentication.</p></li>
+<li><p>Using DAP2 protocol instead of DAP4 protocol.</p></li>
+<li><p>Remote dataset is chunked with small chunks.</p></li>
+<li><p>The client API is sending too many unnecessary requests to the remote server.</p></li>
+<li><p>Server is not configured correctly.</p></li>
+<li><p>Internet connection is intermittent or subpar.</p></li>
+</ol>
+<p>Among other scenarios. In the vast majority of cases, it is considered a good practive to keep the amount of requests to the server at a minimum, i.e. only request the necessary. This is even more important when data is behind authentication, as there can be many redirects per request from the client API.</p>
+<p>Below are some guidences to improve data access for users. If you continue to experience performance issues, please consider writing an issue in Pydap’s <a class="reference external" href="https://github.com/pydap/pydap/issues">Github IssueTracker</a>. Below we assume users are using <code class="docutils literal notranslate"><span class="pre">pydap</span></code> as a backend engine for <code class="docutils literal notranslate"><span class="pre">Xarray</span></code>. This is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="c1"># or xr.open_mfdataset()</span>
 </pre></div>
 </div>
-<p>The performace depends on various factors:</p>
+<section id="a-creating-the-dataset">
+<h2><font size="5"><span style='color:#0066cc'> <strong>a)Creating the Dataset</strong><font size="3"><a class="headerlink" href="#a-creating-the-dataset" title="Link to this heading">#</a></h2>
+<p>When creating a Dataset, <code class="docutils literal notranslate"><span class="pre">Xarray</span></code>’s internal logic sends requests to the server to:</p>
 <ul class="simple">
-<li><p><strong>Authentication</strong>. There may be many redirects. If possible, use <code class="docutils literal notranslate"><span class="pre">token</span></code> authentication, as it reduces the amount of redirects.</p></li>
-<li><p><strong>Hierarchical metadata</strong>. Some datasets can contain O(100) of variables, and complex nested <code class="docutils literal notranslate"><span class="pre">Groups</span></code> (<code class="docutils literal notranslate"><span class="pre">Groups</span></code> are part of the <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> protocol), and parsing the metadata to create the dataset can be time-consuming. To reduce the timing, you can use the <a class="reference external" href="https://www.opendap.org/support/online-help-files/">Data Request Form</a> to construct a <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expression</span></code> that reduces the amount of <code class="docutils literal notranslate"><span class="pre">Groups</span></code> and variables you wish to include in your dataset. This will allow you to discard variables before creating the dataset. The documentation on <a class="reference internal" href="#ConstraintExpressions"><span class="xref myst">Constraint expressions</span></a> has an example demonstrating the use of <code class="docutils literal notranslate"><span class="pre">CE</span></code>s to reduce the size of the dataset before the dataset creation for the Atlas03 experiment.</p></li>
-<li><p><strong>Cache the Session</strong>. Starting with <code class="docutils literal notranslate"><span class="pre">pydap</span></code> version <code class="docutils literal notranslate"><span class="pre">3.5.4</span></code>, <code class="docutils literal notranslate"><span class="pre">pydap</span></code> can cache sessions, storing the <code class="docutils literal notranslate"><span class="pre">dmr</span></code> (i.e. the metadata) after the first download, for later use.</p></li>
+<li><p><span style='color:#0066cc'><strong>Download Metadata</strong></span>. For <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> protocol these are the <code class="docutils literal notranslate"><span class="pre">.dds</span></code> and <code class="docutils literal notranslate"><span class="pre">.das</span></code>, one of each per remote file. In the <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> only a single metadata request is sent per remote file, the <code class="docutils literal notranslate"><span class="pre">.dmr</span></code>. These metadata files describe the internal structure and information within each remote file (all variable names, types, shapes, attributes), which <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> uses to create the Dataset.</p></li>
+<li><p><span style='color:#0066cc'><strong>Download all dimension array data</strong></span>. Per file, <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> downloads by default all dimensions and loads them into memory. When opening multiple files, this behavior can leads to sub-performant behavior, as <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> will request all dimension data from every file in order to perform a safety check, even when the user know a-priori that this data is identical across all remote files. While these safety checks are very important (and should be in place), it can lead to huge performance losses when aggregating 100 of remote files, each with 2 or more dimensions, in particular when restarting the Kernel (and be force to run the workflow from scratch).</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">requests-cache</span></code> can also recover credentials from the <code class="docutils literal notranslate"><span class="pre">~/.netrc</span></code> file, and handle token authentication.</p>
+<p>As of <code class="docutils literal notranslate"><span class="pre">xarray=v2025.10</span></code>, <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> sends an individual request per variable within a remote file, instead of fetching all variable’s array data within a single request. This behavior is not optimal, and will be improved in the future.</p>
 </div>
-<p>To cache the session, you can initialize it as follows</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.net</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_session</span>
-
-<span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># False is the default</span>
-<span class="n">pyds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">URL</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap4&#39;</span><span class="p">)</span> <span class="c1"># protocol=&quot;dap2&quot; works too</span>
+<p>To improve the performance, and avoid re-downloading the data required to open a dataset we recommend:</p>
+<ol class="arabic simple">
+<li><p><span style='color:#0066cc'><strong>Use DAP4</strong></span>. This is a more modern DAP protocol, and better supported by OPeNDAP services and the overall geospatial community. Moreover, by choosing DAP4 you automatically cut by half the amount of responses associated with metadata, from the same file. To specify the DAP protocol with <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> you can change the scheme of the url as follows:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dap4_url</span> <span class="o">=</span> <span class="s2">&quot;dap4://&lt;www.opendap.org/remote_file&gt;&quot;</span> <span class="c1"># &lt;------- DAP4</span>
+<span class="n">dap2_url</span> <span class="o">=</span> <span class="s2">&quot;dap2://&lt;www.opendap.org/remote_file&gt;&quot;</span> <span class="c1"># &lt;------- DAP2</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://&lt;www.opendap.org/remote_file&gt;&quot;</span>     <span class="c1"># &lt;------- Pydap assumes DAP2.</span>
 </pre></div>
 </div>
-<p>The documentation section on <a class="reference internal" href="#PydapAsClient"><span class="xref myst">Pydap as a Client</span></a> has a short example showing how to cache the <code class="docutils literal notranslate"><span class="pre">dmr</span></code> during the dataset creation.</p>
+<ol class="arabic simple" start="2">
+<li><p><span style='color:#0066cc'><strong>Use Constraint Expressions to produce a Constrained DMR</strong></span>. A <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expression</span></code> can be added to a <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> url following the syntax:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">https</span><span class="p">:</span><span class="o">//...</span><span class="n">opendap_url</span><span class="o">..&gt;</span>
+<span class="n">CE</span> <span class="o">=</span> <span class="s2">&quot;dap4.ce=/VarName1;/VarName2;/...;/VarNameN&quot;</span>
+<span class="n">url_ce</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span> <span class="o">+</span> <span class="n">CE</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">VarName1</span></code>, <code class="docutils literal notranslate"><span class="pre">VarName2</span></code>, and <code class="docutils literal notranslate"><span class="pre">VarNameN</span></code> are all variables present a remote file with <code class="docutils literal notranslate"><span class="pre">M&gt;=N</span></code> variables. Passing this URL to <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> and using <code class="docutils literal notranslate"><span class="pre">pydap</span></code> as the engine, will enable to remote OPeNDAP Server to produce a <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">DMR</span></code>, which will only have information about those variables. This can lead to significant performance gains when <code class="docutils literal notranslate"><span class="pre">N&lt;&lt;M</span></code> (For example <code class="docutils literal notranslate"><span class="pre">N=4</span></code>, and <code class="docutils literal notranslate"><span class="pre">M=1000</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">Xarray</span></code> has internal logic to drop variables. But <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> will parse the metadata from ALL the variables, to then subsequently drop the variables specified by the user in <code class="docutils literal notranslate"><span class="pre">.drop_vars()</span></code>. With a Constrained DMR via the Constraint Expression in the example above, for example, <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> would only process the <code class="docutils literal notranslate"><span class="pre">N</span></code> variables.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">Xarray</span></code> requires the presence of Dimension data to match the shape of any <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">variable</span></code>. When constructing Constraint Expression as above, include all the dimensions associated with the variables of interest, in the <code class="docutils literal notranslate"><span class="pre">CE</span></code>.</p>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><span style='color:#0066cc'><strong>Consolidate Metadata</strong></span>. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> has a method to persist metadata for later reuse. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> can use a <a class="reference external" href="https://requests-cache.readthedocs.io/en/stable/">request_cache.CachedSession</a> to download and persist the metadata required to initiate an <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> Dataset. A <code class="docutils literal notranslate"><span class="pre">CachedSession</span></code> makes use of a <code class="docutils literal notranslate"><span class="pre">SQLite</span></code> backend and can act as a database manager, and since a <code class="docutils literal notranslate"><span class="pre">CachedSession</span></code> can also be used to authenticate, it is a stand-in replacement for a requests.Session object typically used by PyDAP. Consider the example below:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.net</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">consolidate_metadata</span>
+
+<span class="n">URLS</span> <span class="o">=</span> <span class="p">[</span><span class="n">url1</span><span class="p">,</span> <span class="n">url2</span><span class="p">,</span> <span class="n">url3</span><span class="p">,</span> <span class="n">url4</span><span class="p">,</span> <span class="n">url5</span><span class="p">,</span> <span class="o">....</span><span class="p">,</span> <span class="n">urlN</span><span class="p">]</span>
+<span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;&lt;/path_to_persistent_directory_of_metadata_for_the_files/NAME_OF_DATABASE&gt;&#39;</span>
+
+<span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cache_name&#39;</span><span class="p">:</span> <span class="n">database_name</span><span class="p">})</span>
+
+<span class="n">consolidate_metadata</span><span class="p">(</span><span class="n">URLS</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">URLS</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The resulting <code class="docutils literal notranslate"><span class="pre">my_session</span></code> point to a <code class="docutils literal notranslate"><span class="pre">SQLite</span></code> database that can persist, and be version controlled if the <code class="docutils literal notranslate"><span class="pre">/path_to_persistent_directory_of_metadata_for_this_files/</span></code>, where the <code class="docutils literal notranslate"><span class="pre">NAME_OF_DATABASE.sqlite</span></code> file exists, is a version controlled directory (for example using github).</p>
+<p><code class="docutils literal notranslate"><span class="pre">consolidate_metadata</span></code> pre-downloads all the DMRs from the remote server, along with any necessary dimension array data and stores them in the <code class="docutils literal notranslate"><span class="pre">SQLite</span></code> database for later reuse. It is up to the user to know which dimension the data should be concatenated, in the example above, it is <code class="docutils literal notranslate"><span class="pre">time</span></code>. So after restarting the kernel (or deleting the <code class="docutils literal notranslate"><span class="pre">ds</span></code> reference), as long as the <code class="docutils literal notranslate"><span class="pre">my_session</span></code> points to the database, all the metadata persists. Creating/opening the Xarray dataset should take no more that 2-5 seconds.</p>
+<p>In addition, consider the case where the data provider added more remote files to the same collection where the initial URLs belong to. Running the following should update the dataset with the new data. Since the original files are already cached, not data from the original urls should be downloaded.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># new urls</span>
+<span class="n">new_URLs</span> <span class="o">=</span> <span class="p">[</span><span class="n">urlN1</span><span class="p">,</span> <span class="n">urlN2</span><span class="p">,</span> <span class="n">urlN3</span><span class="p">,</span> <span class="n">urlN4</span><span class="p">,</span> <span class="n">urlN5</span><span class="p">,</span> <span class="o">....</span><span class="p">,</span> <span class="n">urlNN</span><span class="p">]</span>
+
+<span class="c1"># add new url to previous ones</span>
+<span class="n">updated_URLs</span> <span class="o">=</span> <span class="n">URLs</span> <span class="o">+</span> <span class="n">new_URLs</span>
+
+<span class="c1"># load the session that points to the SQLite database</span>
+<span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;&lt;/path_to_persistent_directory_of_metadata_for_this_files/NAME_OF_DATABASE&gt;&#39;</span>
+<span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cache_name&#39;</span><span class="p">:</span> <span class="n">database_name</span><span class="p">})</span>
+
+<span class="n">consolidate_metadata</span><span class="p">(</span><span class="n">updated_URLs</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, the SQLite database contains updated dimension data, and metadata.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To clear the metadata, one simply should do: <code class="docutils literal notranslate"><span class="pre">my_session.cache.clear()</span></code>. When clearing the metadata, specially after restarting the Kernel, we suggest starting from <code class="docutils literal notranslate"><span class="pre">create_session</span></code> all over again.</p>
+</div>
 </section>
 <section id="b-fetching-numerical-data">
 <h2><font size="5.5"><span style='color:#0066cc'><strong>b) Fetching numerical data</strong> <font size="3.5"><a class="headerlink" href="#b-fetching-numerical-data" title="Link to this heading">#</a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">pydap</span></code> downloads array data in the form of <code class="docutils literal notranslate"><span class="pre">.dap</span></code> (DAP4) or <code class="docutils literal notranslate"><span class="pre">.dods</span></code> (DAP2) when slicing the array. This is, when:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">pyds</span><span class="p">[</span><span class="s2">&quot;VarName&quot;</span><span class="p">][:]</span> <span class="c1"># this will download all the array, a different indexing will only download the subset</span>
-</pre></div>
-</div>
-<p>or when accessing via <code class="docutils literal notranslate"><span class="pre">xarray</span></code> (with <code class="docutils literal notranslate"><span class="pre">engine=&quot;pydap&quot;</span></code>)</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">dim1</span><span class="o">=</span><span class="n">slice_dim1</span><span class="p">,</span> <span class="n">dim2</span><span class="o">=</span><span class="n">slice_dim2</span><span class="p">)</span><span class="o">.</span><span class="n">data</span> <span class="c1"># e.g. ds[&#39;Theta&#39;].isel(X=slice(1,10), Y=slice(10, 20)).data</span>
-</pre></div>
-</div>
-<p>The speed of download can depend on many factors: chunking of the remote dataset, size of download, internet speed, the remote server, etc. We recommend:</p>
 <ul class="simple">
-<li><p><strong>Subset the Variable</strong>. This limits the size of download (specially when remote datasets are a virtual aggregated of many many remote files). Some organizations impose a 2Gb limit on the download. The <a class="reference internal" href="#notebooks/PACE"><span class="xref myst">PACE Example</span></a> illustrates this point. In it, the coords arrays (<code class="docutils literal notranslate"><span class="pre">lat</span></code> and <code class="docutils literal notranslate"><span class="pre">lon</span></code>) are to identify the subset of 2D array of interest.</p></li>
-<li><p><strong>Cache the Session</strong> . Same as with the dataset creation, a cached session can also store <code class="docutils literal notranslate"><span class="pre">.dap</span></code>/<code class="docutils literal notranslate"><span class="pre">.dods</span></code> responses. This will also limit the times a (repeated) download is requested to the server.</p></li>
+<li><p>It is strongly advised to configure the OPeNDAP server to implement the <span style='color:#ff6666'><strong>DAP4</strong></span> protocol, since its fully supports all data types supported by DAP2, and it can send <span style='color:#0066cc'><strong>chunk Responses</strong></span> over the web.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> protocol, the entire response is sent on a single Chunk. This is, the DAP2 protocol does not support sending chunk response. This can lead to Timeout errors on the server side.</p>
+</div>
+<ul class="simple">
+<li><p>Web streaming data over the network (as opposed to in-Cloud region), It is strongly adviced to exploit the OPeNDAP server’s specialized infrastructure to subset in a data-proximate way. When working with Xarray, this implies <span style='color:#0066cc'><strong>making sure the slice is passed down to the server</strong></span>. This is achieved in the following ways:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+<span class="n">ds</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">dim1</span><span class="o">=</span><span class="n">slice_dim1</span><span class="p">,</span> <span class="n">dim2</span><span class="o">=</span><span class="n">slice_dim2</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">slice_dim1</span></code> and <code class="docutils literal notranslate"><span class="pre">slice_dim2</span></code> are the slices that have been predetermined by the user.</p>
+<p>When working with multiple files, as of <code class="docutils literal notranslate"><span class="pre">Xarray</span> <span class="pre">&lt;=v2025.10</span></code>, the slice is not passed to the server unless the dataset is chunked when creating it. This is</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="n">expected_sizes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dim1&#39;</span><span class="p">:</span><span class="n">expected_size_dim1</span><span class="p">,</span> <span class="s1">&#39;dim2&#39;</span><span class="p">:</span><span class="n">expected_size_dim2</span><span class="p">,</span> <span class="s1">&#39;dim3&#39;</span><span class="p">:</span> <span class="n">expected_size_dim3</span><span class="p">}</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;dim1&#39;</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;nested&#39;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ds</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">dim1</span><span class="o">=</span><span class="n">slice_dim1</span><span class="p">,</span> <span class="n">dim2</span><span class="o">=</span><span class="n">slice_dim2</span><span class="p">,</span> <span class="n">dim3</span><span class="o">=</span><span class="n">slice_dim3</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>where <code class="docutils literal notranslate"><span class="pre">dim1</span></code> is the concatenating dimension, <code class="docutils literal notranslate"><span class="pre">dim2</span></code> and <code class="docutils literal notranslate"><span class="pre">dim3</span></code> are other dimensions in the aggregated dataset, and <code class="docutils literal notranslate"><span class="pre">expected_size_dim1</span></code>, <code class="docutils literal notranslate"><span class="pre">expected_size_dim2</span></code>, and <code class="docutils literal notranslate"><span class="pre">expected_size_dim3</span></code> together define the expected size of the subset within each granule. This size cannot exceed the original size of the dimension. For some examples, see the <a class="reference internal" href="../5_minute_tutorial.html"><span class="doc std std-doc">5 minute tutorial</span></a></p>
+<ul class="simple">
 <li><p><strong>Diagnosing</strong>. It is possible that the remote dataset has many small chunks, resulting in very slow performance. This, along with internet connection, are performance problems outside of the scope of <code class="docutils literal notranslate"><span class="pre">pydap</span></code>. A useful diagnose if the issue is withg <code class="docutils literal notranslate"><span class="pre">pydap</span></code> or with the remote server, is to use curl to download the response.</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="o">-</span><span class="n">n</span> <span class="s2">&quot;&lt;opendap_url_with_constraint_expression&gt;&quot;</span> 
@@ -521,7 +597,7 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-metadata-dataset-creation"><font size="5"><span style="color:#0066cc"> <strong>a) Metadata / dataset creation</strong><font size="3"></font></span></font></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-creating-the-dataset"><font size="5"><span style="color:#0066cc"> <strong>a)Creating the Dataset</strong><font size="3"></font></span></font></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b-fetching-numerical-data"><font size="5.5"><span style="color:#0066cc"><strong>b) Fetching numerical data</strong> <font size="3.5"></font></span></font></a></li>
 </ul>
   </nav></div>

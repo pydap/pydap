@@ -186,7 +186,6 @@ gtag("config", "G-EN2VD1J32L");
 <li class="toctree-l1"><a class="reference internal" href="how_to_install.html">Como Installar</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Comenzar Aqui</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
-
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="NEWS.html">Lo Nuevo</a></li>
@@ -199,6 +198,13 @@ gtag("config", "G-EN2VD1J32L");
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="faqs/faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="faqs/dap2_or_dap4_url.html">Como saber si el URL es DAP2 o DAP4?</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -440,8 +446,8 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 3.72 s, sys: 17.6 ms, total: 3.74 s
-Wall time: 5.52 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 3.71 s, sys: 16.3 ms, total: 3.73 s
+Wall time: 5.48 s
 </pre></div>
 </div>
 </div>
@@ -522,11 +528,11 @@ Wall time: 5.52 s
 │  │  ├──pce_mframe_cnt
 │  │  └──bckgrd_counts
 │  ├──geolocation
+│  │  ├──reference_photon_lon
 │  │  ├──reference_photon_lat
 │  │  ├──delta_time
-│  │  ├──range_bias_corr
 │  │  ├──neutat_delay_derivative
-│  │  ├──reference_photon_lon
+│  │  ├──segment_ph_cnt
 │  │  ├──sigma_across
 │  │  ├──sigma_lon
 │  │  ├──ref_azimuth
@@ -547,10 +553,10 @@ Wall time: 5.52 s
 │  │  ├──full_sat_fract
 │  │  ├──segment_id
 │  │  ├──near_sat_fract
-│  │  ├──segment_ph_cnt
+│  │  ├──segment_length
 │  │  ├──solar_elevation
 │  │  ├──bounce_time_offset
-│  │  ├──segment_length
+│  │  ├──range_bias_corr
 │  │  ├──reference_photon_index
 │  │  ├──altitude_sc
 │  │  ├──segment_dist_x
@@ -593,15 +599,15 @@ Wall time: 5.52 s
 │  │     ├──bckgrd_mean
 │  │     └──z_pc_delta
 │  └──heights
-│     ├──delta_time
+│     ├──lon_ph
 │     ├──lat_ph
-│     ├──dist_ph_along
+│     ├──delta_time
 │     ├──signal_conf_ph
 │     ├──ph_id_pulse
 │     ├──h_ph
 │     ├──ph_id_channel
-│     ├──lon_ph
 │     ├──ph_id_count
+│     ├──dist_ph_along
 │     ├──pce_mframe_cnt
 │     └──dist_ph_across
 ├──gt2r
@@ -619,11 +625,11 @@ Wall time: 5.52 s
 │  │  ├──pce_mframe_cnt
 │  │  └──bckgrd_counts
 │  ├──geolocation
+│  │  ├──reference_photon_lon
 │  │  ├──reference_photon_lat
 │  │  ├──delta_time
-│  │  ├──range_bias_corr
 │  │  ├──neutat_delay_derivative
-│  │  ├──reference_photon_lon
+│  │  ├──segment_ph_cnt
 │  │  ├──sigma_across
 │  │  ├──sigma_lon
 │  │  ├──ref_azimuth
@@ -644,10 +650,10 @@ Wall time: 5.52 s
 │  │  ├──full_sat_fract
 │  │  ├──segment_id
 │  │  ├──near_sat_fract
-│  │  ├──segment_ph_cnt
+│  │  ├──segment_length
 │  │  ├──solar_elevation
 │  │  ├──bounce_time_offset
-│  │  ├──segment_length
+│  │  ├──range_bias_corr
 │  │  ├──reference_photon_index
 │  │  ├──altitude_sc
 │  │  ├──segment_dist_x
@@ -690,15 +696,15 @@ Wall time: 5.52 s
 │  │     ├──bckgrd_mean
 │  │     └──z_pc_delta
 │  └──heights
-│     ├──delta_time
+│     ├──lon_ph
 │     ├──lat_ph
-│     ├──dist_ph_along
+│     ├──delta_time
 │     ├──signal_conf_ph
 │     ├──ph_id_pulse
 │     ├──h_ph
 │     ├──ph_id_channel
-│     ├──lon_ph
 │     ├──ph_id_count
+│     ├──dist_ph_along
 │     ├──pce_mframe_cnt
 │     └──dist_ph_across
 ├──gt1l
@@ -716,11 +722,11 @@ Wall time: 5.52 s
 │  │  ├──pce_mframe_cnt
 │  │  └──bckgrd_counts
 │  ├──geolocation
+│  │  ├──reference_photon_lon
 │  │  ├──reference_photon_lat
 │  │  ├──delta_time
-│  │  ├──range_bias_corr
 │  │  ├──neutat_delay_derivative
-│  │  ├──reference_photon_lon
+│  │  ├──segment_ph_cnt
 │  │  ├──sigma_across
 │  │  ├──sigma_lon
 │  │  ├──ref_azimuth
@@ -741,10 +747,10 @@ Wall time: 5.52 s
 │  │  ├──full_sat_fract
 │  │  ├──segment_id
 │  │  ├──near_sat_fract
-│  │  ├──segment_ph_cnt
+│  │  ├──segment_length
 │  │  ├──solar_elevation
 │  │  ├──bounce_time_offset
-│  │  ├──segment_length
+│  │  ├──range_bias_corr
 │  │  ├──reference_photon_index
 │  │  ├──altitude_sc
 │  │  ├──segment_dist_x
@@ -787,15 +793,15 @@ Wall time: 5.52 s
 │  │     ├──bckgrd_mean
 │  │     └──z_pc_delta
 │  └──heights
-│     ├──delta_time
+│     ├──lon_ph
 │     ├──lat_ph
-│     ├──dist_ph_along
+│     ├──delta_time
 │     ├──signal_conf_ph
 │     ├──ph_id_pulse
 │     ├──h_ph
 │     ├──ph_id_channel
-│     ├──lon_ph
 │     ├──ph_id_count
+│     ├──dist_ph_along
 │     ├──pce_mframe_cnt
 │     └──dist_ph_across
 ├──quality_assessment
@@ -884,11 +890,11 @@ Wall time: 5.52 s
 │  │  ├──pce_mframe_cnt
 │  │  └──bckgrd_counts
 │  ├──geolocation
+│  │  ├──reference_photon_lon
 │  │  ├──reference_photon_lat
 │  │  ├──delta_time
-│  │  ├──range_bias_corr
 │  │  ├──neutat_delay_derivative
-│  │  ├──reference_photon_lon
+│  │  ├──segment_ph_cnt
 │  │  ├──sigma_across
 │  │  ├──sigma_lon
 │  │  ├──ref_azimuth
@@ -909,10 +915,10 @@ Wall time: 5.52 s
 │  │  ├──full_sat_fract
 │  │  ├──segment_id
 │  │  ├──near_sat_fract
-│  │  ├──segment_ph_cnt
+│  │  ├──segment_length
 │  │  ├──solar_elevation
 │  │  ├──bounce_time_offset
-│  │  ├──segment_length
+│  │  ├──range_bias_corr
 │  │  ├──reference_photon_index
 │  │  ├──altitude_sc
 │  │  ├──segment_dist_x
@@ -955,15 +961,15 @@ Wall time: 5.52 s
 │  │     ├──bckgrd_mean
 │  │     └──z_pc_delta
 │  └──heights
-│     ├──delta_time
+│     ├──lon_ph
 │     ├──lat_ph
-│     ├──dist_ph_along
+│     ├──delta_time
 │     ├──signal_conf_ph
 │     ├──ph_id_pulse
 │     ├──h_ph
 │     ├──ph_id_channel
-│     ├──lon_ph
 │     ├──ph_id_count
+│     ├──dist_ph_along
 │     ├──pce_mframe_cnt
 │     └──dist_ph_across
 ├──gt2l
@@ -981,11 +987,11 @@ Wall time: 5.52 s
 │  │  ├──pce_mframe_cnt
 │  │  └──bckgrd_counts
 │  ├──geolocation
+│  │  ├──reference_photon_lon
 │  │  ├──reference_photon_lat
 │  │  ├──delta_time
-│  │  ├──range_bias_corr
 │  │  ├──neutat_delay_derivative
-│  │  ├──reference_photon_lon
+│  │  ├──segment_ph_cnt
 │  │  ├──sigma_across
 │  │  ├──sigma_lon
 │  │  ├──ref_azimuth
@@ -1006,10 +1012,10 @@ Wall time: 5.52 s
 │  │  ├──full_sat_fract
 │  │  ├──segment_id
 │  │  ├──near_sat_fract
-│  │  ├──segment_ph_cnt
+│  │  ├──segment_length
 │  │  ├──solar_elevation
 │  │  ├──bounce_time_offset
-│  │  ├──segment_length
+│  │  ├──range_bias_corr
 │  │  ├──reference_photon_index
 │  │  ├──altitude_sc
 │  │  ├──segment_dist_x
@@ -1052,15 +1058,15 @@ Wall time: 5.52 s
 │  │     ├──bckgrd_mean
 │  │     └──z_pc_delta
 │  └──heights
-│     ├──delta_time
+│     ├──lon_ph
 │     ├──lat_ph
-│     ├──dist_ph_along
+│     ├──delta_time
 │     ├──signal_conf_ph
 │     ├──ph_id_pulse
 │     ├──h_ph
 │     ├──ph_id_channel
-│     ├──lon_ph
 │     ├──ph_id_count
+│     ├──dist_ph_along
 │     ├──pce_mframe_cnt
 │     └──dist_ph_across
 ├──ancillary_data
@@ -1467,11 +1473,11 @@ Wall time: 5.52 s
 │  │  ├──pce_mframe_cnt
 │  │  └──bckgrd_counts
 │  ├──geolocation
+│  │  ├──reference_photon_lon
 │  │  ├──reference_photon_lat
 │  │  ├──delta_time
-│  │  ├──range_bias_corr
 │  │  ├──neutat_delay_derivative
-│  │  ├──reference_photon_lon
+│  │  ├──segment_ph_cnt
 │  │  ├──sigma_across
 │  │  ├──sigma_lon
 │  │  ├──ref_azimuth
@@ -1492,10 +1498,10 @@ Wall time: 5.52 s
 │  │  ├──full_sat_fract
 │  │  ├──segment_id
 │  │  ├──near_sat_fract
-│  │  ├──segment_ph_cnt
+│  │  ├──segment_length
 │  │  ├──solar_elevation
 │  │  ├──bounce_time_offset
-│  │  ├──segment_length
+│  │  ├──range_bias_corr
 │  │  ├──reference_photon_index
 │  │  ├──altitude_sc
 │  │  ├──segment_dist_x
@@ -1538,15 +1544,15 @@ Wall time: 5.52 s
 │  │     ├──bckgrd_mean
 │  │     └──z_pc_delta
 │  └──heights
-│     ├──delta_time
+│     ├──lon_ph
 │     ├──lat_ph
-│     ├──dist_ph_along
+│     ├──delta_time
 │     ├──signal_conf_ph
 │     ├──ph_id_pulse
 │     ├──h_ph
 │     ├──ph_id_channel
-│     ├──lon_ph
 │     ├──ph_id_count
+│     ├──dist_ph_along
 │     ├──pce_mframe_cnt
 │     └──dist_ph_across
 ├──ds_surf_type
@@ -1597,8 +1603,8 @@ Wall time: 5.52 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 26 ms, sys: 875 μs, total: 26.9 ms
-Wall time: 197 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 37.2 ms, sys: 1.64 ms, total: 38.9 ms
+Wall time: 1.58 s
 </pre></div>
 </div>
 </div>
@@ -1620,8 +1626,8 @@ Wall time: 197 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1 μs, sys: 0 ns, total: 1 μs
-Wall time: 3.81 μs
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2 μs, sys: 0 ns, total: 2 μs
+Wall time: 5.01 μs
 </pre></div>
 </div>
 </div>
@@ -1634,8 +1640,8 @@ Wall time: 3.81 μs
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 37.2 ms, sys: 1.43 ms, total: 38.7 ms
-Wall time: 386 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 41.6 ms, sys: 2.1 ms, total: 43.7 ms
+Wall time: 341 ms
 </pre></div>
 </div>
 </div>
@@ -1778,8 +1784,8 @@ Wall time: 386 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 40 ms, sys: 2.17 ms, total: 42.2 ms
-Wall time: 301 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 40.9 ms, sys: 1.66 ms, total: 42.6 ms
+Wall time: 223 ms
 </pre></div>
 </div>
 </div>
@@ -1830,8 +1836,8 @@ subset dataset to be self-consistent. For example, it can be easy to define the 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 36.4 ms, sys: 1.29 ms, total: 37.7 ms
-Wall time: 304 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 32.9 ms, sys: 1.54 ms, total: 34.5 ms
+Wall time: 213 ms
 </pre></div>
 </div>
 </div>
@@ -1880,8 +1886,8 @@ Wall time: 304 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 37.4 ms, sys: 1.62 ms, total: 39 ms
-Wall time: 205 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 29.7 ms, sys: 1.98 ms, total: 31.6 ms
+Wall time: 199 ms
 </pre></div>
 </div>
 </div>

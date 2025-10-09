@@ -184,7 +184,6 @@ gtag("config", "G-EN2VD1J32L");
 <li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Como Installar</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar Aqui</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
-
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="../NEWS.html">Lo Nuevo</a></li>
@@ -197,6 +196,13 @@ gtag("config", "G-EN2VD1J32L");
 </details></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">Como saber si el URL es DAP2 o DAP4?</a></li>
+</ul>
+</details></li>
 </ul>
 
     </div>
@@ -767,7 +773,7 @@ y evitar descargar N veces, informacion que no es requerida.</p>
 <code class="docutils literal notranslate"><span class="pre">requests_cache</span></code>. El comportamiento es casi identico excepto la siguiente celda:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cache_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># caching the session</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cache_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;cache_name&quot;</span><span class="p">:</span><span class="s2">&quot;data/ecco&quot;</span><span class="p">})</span> <span class="c1"># caching the session</span>
 <span class="n">cache_session</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span> <span class="c1"># clear all cache to demonstrate the behavior</span>
 </pre></div>
 </div>
@@ -795,8 +801,8 @@ y evitar descargar N veces, informacion que no es requerida.</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>datacube has dimensions [&#39;i[0:1:89]&#39;, &#39;j[0:1:89]&#39;, &#39;k[0:1:49]&#39;, &#39;tile[0:1:12]&#39;] , and concat dim: `[&#39;time&#39;]`
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 871 ms, sys: 317 ms, total: 1.19 s
-Wall time: 12.1 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.11 s, sys: 401 ms, total: 1.51 s
+Wall time: 18.4 s
 </pre></div>
 </div>
 </div>
@@ -816,8 +822,8 @@ Wall time: 12.1 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 273 ms, sys: 143 ms, total: 417 ms
-Wall time: 391 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 281 ms, sys: 149 ms, total: 430 ms
+Wall time: 371 ms
 </pre></div>
 </div>
 <div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>

@@ -16,7 +16,7 @@ gtag("config", "G-EN2VD1J32L");
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Report Issues on GitHub &#8212; PyDAP tutorial</title>
+    <title>Como saber si el URL es DAP2 o DAP4? &#8212; PyDAP tutorial</title>
   
   
   
@@ -65,9 +65,10 @@ gtag("config", "G-EN2VD1J32L");
     <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'contribute/contr_issues';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'faqs/dap2_or_dap4_url';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="FAQs" href="faqs.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -129,8 +130,6 @@ gtag("config", "G-EN2VD1J32L");
     <div class="bd-container__inner bd-page-width">
       
       
-      
-        
       
       <div class="bd-sidebar-primary bd-sidebar">
         
@@ -198,9 +197,9 @@ gtag("config", "G-EN2VD1J32L");
 <li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">PACE</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">Como saber si el URL es DAP2 o DAP4?</a></li>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="faqs.html">FAQs</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Como saber si el URL es DAP2 o DAP4?</a></li>
 </ul>
 </details></li>
 </ul>
@@ -257,7 +256,7 @@ gtag("config", "G-EN2VD1J32L");
       
       
       
-      <li><a href="../_sources/contribute/contr_issues.md" target="_blank"
+      <li><a href="../_sources/faqs/dap2_or_dap4_url.ipynb" target="_blank"
    class="btn btn-sm btn-download-source-button dropdown-item"
    title="Download source file"
    data-bs-placement="left" data-bs-toggle="tooltip"
@@ -267,7 +266,7 @@ gtag("config", "G-EN2VD1J32L");
 <span class="btn__icon-container">
   <i class="fas fa-file"></i>
   </span>
-<span class="btn__text-container">.md</span>
+<span class="btn__text-container">.ipynb</span>
 </a>
 </li>
       
@@ -328,7 +327,9 @@ document.write(`
   </button>
 `);
 </script>
-
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
 </div></div>
       
     </div>
@@ -339,11 +340,20 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Report Issues on GitHub</h1>
+    <h1>Como saber si el URL es DAP2 o DAP4?</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
             
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hyrax-data-server"><font size="5"><span style="color:#0066cc"> <strong>Hyrax Data Server</strong><font size="3"></font></span></font></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#thredds-data-server"><font size="5"><span style="color:#0066cc"> <strong>Thredds Data Server</strong><font size="3"></font></span></font></a></li>
+</ul>
+            </nav>
         </div>
     </div>
 </div>
@@ -353,23 +363,66 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="report-issues-on-github">
-<h1>Report Issues on GitHub<a class="headerlink" href="#report-issues-on-github" title="Link to this heading">#</a></h1>
-<p>Aside from contributing to code and documentation, another good way to help the package is to report issues. An Issue could be about a feature request, a bug report, or any of your cool suggestions.</p>
-<p>We use GitHub to keep track of the issues. You can see all past and present (open) issues, by simply heading to <a class="reference external" href="https://github.com/pydap/pydap/issues">this page</a>.</p>
-<p>Before you report a new issue, make sure you follow these two simple steps:</p>
-<ol class="arabic simple">
-<li><p>Read through relevant sections in the documentation;</p></li>
-<li><p>Use the search bar to see if the issue has already been reported.</p></li>
-</ol>
-<p>If you cannot find any past issue or discussion relevant to your problem, consider opening a new issue. By reporting an issue, you also help others who are in the same situation. If you spend enough effort working on the problem and still cannot figure it out, there must be something confusing or wrong about the code or the documentation. We will really appreciate it if you point that out.</p>
-<p>Lastly, we highly recommend to follow common practices when describing the issue,</p>
-<ul class="simple">
-<li><p>be concise.</p></li>
-<li><p>be polite. Why this matters in the Open-source community? Read Jacom Tomlinson’s <a class="reference external" href="https://jacobtomlinson.dev/posts/2022/dont-be-that-open-source-user-dont-be-me/">BlogPost</a>.</p></li>
-<li><p>include a <code class="docutils literal notranslate"><span class="pre">minimal</span> <span class="pre">reproducible</span> <span class="pre">example</span></code> that recreates the problem.</p></li>
-<li><p>describe an expected or new desired behavior.</p></li>
-</ul>
+  <section id="como-saber-si-el-url-es-dap2-o-dap4">
+<h1>Como saber si el URL es DAP2 o DAP4?<a class="headerlink" href="#como-saber-si-el-url-es-dap2-o-dap4" title="Link to this heading">#</a></h1>
+<p>Existen solo 2 servidores <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> que implementan el protocolo <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>: <a class="reference external" href="https://www.opendap.org/software/hyrax-data-server/">Hyrax Data Server</a> (developed by <a class="reference external" href="https://www.opendap.org/">OPeNDAP Inc</a>), y <a class="reference external" href="https://www.unidata.ucar.edu/software/tds/">Thredds Data Server</a> (developed by <a class="reference external" href="https://www.unidata.ucar.edu/">NSF Unidata</a>). El protocolo <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> fue disenado en conjunto por <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> y <code class="docutils literal notranslate"><span class="pre">Unidata</span></code> en 2016 (vea <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html">the DAP4 specification</a>). Cualquier servidor <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code> y <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> que implementen <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> tambien implementara <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>, pero verificar que dado algun URL sea <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> o <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> difiere entre los dos.</p>
+<section id="hyrax-data-server">
+<h2><font size="5"><span style='color:#0066cc'> <strong>Hyrax Data Server</strong><font size="3"><a class="headerlink" href="#hyrax-data-server" title="Link to this heading">#</a></h2>
+<p>Con <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code>, la manera mas facil es anadir la extension <code class="docutils literal notranslate"><span class="pre">.dmr</span></code> (o <code class="docutils literal notranslate"><span class="pre">.dmr.html</span></code>), a un URL, utilizar la pagina del ordenador y navegar hacia la pagina. For example, consider the following Hyrax opendap URLPor exemplo considere el siguiente URL de opendap:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">URL</span> <span class="o">=</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">test</span><span class="o">.</span><span class="n">opendap</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">opendap</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nc</span><span class="o">/</span><span class="n">coads_climatology</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p><strong>DAP2 Hyrax URL</strong></p></th>
+<th class="head text-right"><p><strong>DAP4 Hyrax URL</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dds">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dds</a></p></td>
+<td class="text-right"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.html">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.html</a></p></td>
+<td class="text-right"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr.html">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr.html</a></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.das">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.das</a></p></td>
+<td class="text-right"><p><a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr.xml">http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr.xml</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Cualquier servidor de OPeNDAP de Hyrax que implemente <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> tambien implementa <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>. De hecho, con Hyrax, <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> siempre es el protocol pre-determinada.</p>
+</div>
+</section>
+<section id="thredds-data-server">
+<h2><font size="5"><span style='color:#0066cc'> <strong>Thredds Data Server</strong><font size="3"><a class="headerlink" href="#thredds-data-server" title="Link to this heading">#</a></h2>
+<p>En el caso del Thredds Data Server (<code class="docutils literal notranslate"><span class="pre">TDS</span></code>), un URL que posea  <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> siempre esta identificado con el protocolo <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>. Si en su lugar, reemplaza <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> en el URL por <code class="docutils literal notranslate"><span class="pre">dap4</span></code>, este nuevo URL sera <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. Por ejemplo considere el siguiente URL:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">URL</span> <span class="o">=</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">thredds</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">unidata</span><span class="o">.</span><span class="n">ucar</span><span class="o">.</span><span class="n">edu</span><span class="o">/</span><span class="n">thredds</span><span class="o">/</span><span class="n">dodsC</span><span class="o">/</span><span class="n">testdods</span><span class="o">/</span><span class="n">coads_climatology</span><span class="o">.</span><span class="n">nc</span>
+</pre></div>
+</div>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p><strong>DAP2 Thredds URL</strong></p></th>
+<th class="head text-right"><p><strong>DAP4 Thredds URL</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dodsC/testdods/coads_climatology.nc.html">https://thredds-test.unidata.ucar.edu/thredds/dodsC/testdods/coads_climatology.nc.html</a></p></td>
+<td class="text-right"><p><a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dap4/testdods/coads_climatology.nc.html">https://thredds-test.unidata.ucar.edu/thredds/dap4/testdods/coads_climatology.nc.html</a></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dodsC/testdods/coads_climatology.nc.dds">https://thredds-test.unidata.ucar.edu/thredds/dodsC/testdods/coads_climatology.nc.dds</a></p></td>
+<td class="text-right"><p><a class="reference external" href="https://thredds-test.unidata.ucar.edu/thredds/dap4/testdods/coads_climatology.nc.dmr.xml">https://thredds-test.unidata.ucar.edu/thredds/dap4/testdods/coads_climatology.nc.dmr.xml</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Un servidor OPeNDAP  <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> que implemente <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> puede que no implemente <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. Es recomendable asegurarse que el servidor este configurado para implementar el protocolo <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>.</p>
+</div>
+</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -385,7 +438,7 @@ document.write(`
         },
         kernelOptions: {
             name: "python3",
-            path: "./contribute"
+            path: "./faqs"
         },
         predefinedOutput: true
     }
@@ -402,12 +455,37 @@ document.write(`
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="faqs.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">FAQs</p>
+      </div>
+    </a>
 </div>
                 </footer>
               
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#hyrax-data-server"><font size="5"><span style="color:#0066cc"> <strong>Hyrax Data Server</strong><font size="3"></font></span></font></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#thredds-data-server"><font size="5"><span style="color:#0066cc"> <strong>Thredds Data Server</strong><font size="3"></font></span></font></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>

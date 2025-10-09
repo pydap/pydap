@@ -37,8 +37,8 @@ theta_salt_ds = xr.open_mfdataset(
 ------------------
 
 ----- stdout -----
-CPU times: user 273 ms, sys: 143 ms, total: 417 ms
-Wall time: 391 ms
+CPU times: user 281 ms, sys: 149 ms, total: 430 ms
+Wall time: 371 ms
 ------------------
 
 [31m---------------------------------------------------------------------------[39m
