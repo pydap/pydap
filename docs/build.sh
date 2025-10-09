@@ -1,9 +1,14 @@
 #!/bin/zsh
 set -e  # Exit on error
 
+DATA_DIR="notebooks/data/"
 # Build English version
 cd en
 jupyter-book clean . --all
+if ls notebooks/data/*.nc4 > /dev/null 2>&1; then
+  rm -f notebooks/data/*.nc4
+fi
+
 jupyter-book build .
 cd ..
 mkdir -p _build/html/en
@@ -13,6 +18,9 @@ rsync -a --delete en/_build/html/ _build/html/en/
 # Build Spanish version
 cd es
 jupyter-book clean . --all
+if ls notebooks/data/*.nc4 > /dev/null 2>&1; then
+  rm -f notebooks/data/*.nc4
+fi
 jupyter-book build .
 cd ..
 mkdir -p _build/html/es
