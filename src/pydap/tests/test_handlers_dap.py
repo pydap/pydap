@@ -721,7 +721,7 @@ def test_dap_handler_string_array():
 @pytest.mark.parametrize("checksum", [True, False])
 def test_checksum(checksum):
     """Test that the checksum if applied correctly, when requests"""
-    url = "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+    url = "http://test.opendap.org/opendap/dap4/SimpleGroup3.nc4.h5"
     session = create_session()
     pyds = DAPHandler(url, session=session, protocol="dap4", checksums=checksum).dataset
     Y = pyds["SimpleGroup/Y"][:]
