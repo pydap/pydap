@@ -110,7 +110,7 @@ def test_batch_mode_downloads(cache_tmp_dir):
     )
     session.cache.clear()  # Clear cache before testing
 
-    url = "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+    url = "http://test.opendap.org/opendap/dap4/SimpleGroup3.nc4.h5"
     ds = open_url(url, session=session, protocol="dap4", checksums=True, batch=True)
 
     # slash arrays to triger data download.
