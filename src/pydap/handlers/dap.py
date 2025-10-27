@@ -1058,7 +1058,7 @@ class UNPACKDAP4DATA(object):
                 get_charset(self.r, self.user_charset)
             )
         else:
-            dmr = self.raw.read(dmr_length).decode(self.user_charset)
+            dmr = self.raw.read(dmr_length).decode()
         # get endianness from first chunk
         _, _, endianness = decode_chunktype(chunk_type)
         return dmr, endianness
