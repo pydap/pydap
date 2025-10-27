@@ -48,6 +48,7 @@ def test_dap4_slices(cache_tmp_dir, protocol):
     session.cache.clear()
 
 
+@pytest.mark.skip(reason="This file is no longer available on test.opendap.org")
 def test_dap4_unaligned_check_dims():
     """ """
     url = "dap4://test.opendap.org/opendap/dap4/unaligned_simple_datatree.nc.h5"
@@ -64,6 +65,7 @@ def test_dap4_unaligned_check_dims():
     ]
 
 
+@pytest.mark.skip(reason="This file is no longer available on test.opendap.org")
 def test_dap4_unaligned2_check_dims():
     """ """
     url = "dap4://test.opendap.org/opendap/dap4/unaligned_simple_datatree2.nc.h5"
