@@ -1060,7 +1060,7 @@ class UNPACKDAP4DATA(object):
         else:
             dmr = self.raw.read(dmr_length)
             # figure out encoding defined in the xml header
-            match = re.search(br'encoding=["\']([^"\']+)["\']', dmr)
+            match = re.search(rb'encoding=["\']([^"\']+)["\']', dmr)
             if match:
                 encoding = match.group(1).decode("ascii")
             else:
