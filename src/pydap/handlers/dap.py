@@ -887,17 +887,19 @@ def get_count(variable):
     return count
 
 
-def decode_variable(buffer, start, stop, variable, endian):
+def decode_variable(buffer, start, variable, endian):
     dtype = variable.dtype
     dtype = dtype.newbyteorder(endian)
     if dtype.kind == "S":
-        data = numpy.array(decode_utf8_string_array(buffer)).astype(dtype.kind)
+        string, stop = decode_utf8_string_array(buffer)
+        data = numpy.array(string).astype(dtype.kind)
         data = data.reshape(variable.shape)
-        return data
+        return data, stop
     else:
+        stop = get_count(variable) + start
         data = numpy.frombuffer(buffer[start:stop], dtype=dtype)
         data = data.reshape(variable.shape)
-        return DapDecodedArray(data)
+        return DapDecodedArray(data), stop
 
 
 def decode_utf8_string_array(buffer):
@@ -918,7 +920,7 @@ def decode_utf8_string_array(buffer):
         decoded_str = str_bytes.decode("utf-8")
         strings.append(decoded_str)
 
-    return strings
+    return strings, offset
 
 
 def stream2bytearray(data):
@@ -1080,17 +1082,15 @@ class UNPACKDAP4DATA(object):
         buffer = stream2bytearray(self.raw)
         start = 0
         for variable in walk(dataset, BaseType):
-            count = get_count(variable)
-            stop = start + count
-            data = decode_variable(
+            # count = get_count(variable)
+            # stop = start + count
+            data, stop = decode_variable(
                 buffer,
                 start=start,
-                stop=stop,
                 variable=variable,
                 endian=self.endianness,
             )
             variable._set_data(data)
-
             if self.checksums:
                 checksum = numpy.frombuffer(
                     buffer[stop : stop + 4], dtype=checksum_dtype
