@@ -48,17 +48,20 @@ def test_dap4_slices(cache_tmp_dir, protocol):
     session.cache.clear()
 
 
-@pytest.mark.skip(reason="This file is no longer available on test.opendap.org")
 def test_dap4_unaligned_check_dims():
     """ """
-    url = "dap4://test.opendap.org/opendap/dap4/unaligned_simple_datatree.nc.h5"
+    url = (
+        "dap4://thredds-test.unidata.ucar.edu/thredds/dap4/dev/d4icomp/"
+        + "unaligned_simple_datatree.nc.h5"
+    )
     session = create_session()
+
     pyds = open_url(url, session=session)
     assert pyds.dimensions == {"lat": 1, "lon": 2}
     assert pyds["Group1"].dimensions == {"lat": 1, "lon": 2}
     assert pyds["Group1/subgroup1"].dimensions == {"lat": 2, "lon": 2}
     assert pyds["root_variable"].dims == ["/lat", "/lon"]
-    assert pyds["/Group1/group_1_var"].dims == ["/lat", "/lon"]
+    assert pyds["/Group1/group_1_var"].dims == ["/Group1/lat", "/Group1/lon"]
     assert pyds["/Group1/subgroup1/subgroup1_var"].dims == [
         "/Group1/subgroup1/lat",
         "/Group1/subgroup1/lon",
@@ -112,8 +115,10 @@ def test_batch_mode_downloads(cache_tmp_dir):
     )
     session.cache.clear()  # Clear cache before testing
 
-    url = "http://test.opendap.org/opendap/dap4/SimpleGroup3.nc4.h5"
-    ds = open_url(url, session=session, protocol="dap4", checksums=True, batch=True)
+    url = (
+        "dap4://thredds-test.unidata.ucar.edu/thredds/dap4/dev/d4icomp/SimpleGroup.nc4"
+    )
+    ds = open_url(url, session=session, checksums=True, batch=True)
 
     # slash arrays to triger data download.
     # both salt and temp get downloaded with

@@ -1020,25 +1020,27 @@ def test_register_dim_slices(var, slice, expected):
     assert pyds._slices is None
 
 
-# @pytest.mark.parametrize("var", ["/SimpleGroup/Salinity"])
-# @pytest.mark.parametrize(
-#     "slice_, expected",
-#     [
-#         (None, None),
-#         ((0, slice(0, 10, None), slice(0, 10, None)), None),
-#     ],
-# )
-# def test_register_dim_slices_dimension_different_hierarchy(var, slice_, expected):
-#     """
-#     Test for an edge case in which one of the dimension lies on a different hierarchy.
-#     This makes sure the slice is handled properly.
-#     """
-#     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup3.nc4.h5"
-#     session = requests.Session()
-#     pyds = open_url(url, session=session, batch=True)
-#     pyds.register_dim_slices(pyds[var], key=slice_)
-#     slices = pyds._slices
-#     assert slices == expected
+@pytest.mark.parametrize("var", ["/SimpleGroup/Salinity"])
+@pytest.mark.parametrize(
+    "slice_, expected",
+    [
+        (None, None),
+        ((0, slice(0, 10, None), slice(0, 10, None)), None),
+    ],
+)
+def test_register_dim_slices_dimension_different_hierarchy(var, slice_, expected):
+    """
+    Test for an edge case in which one of the dimension lies on a different hierarchy.
+    This makes sure the slice is handled properly.
+    """
+    url = (
+        "dap4://thredds-test.unidata.ucar.edu/thredds/dap4/dev/d4icomp/SimpleGroup.nc4"
+    )
+    session = requests.Session()
+    pyds = open_url(url, session=session, batch=True)
+    pyds.register_dim_slices(pyds[var], key=slice_)
+    slices = pyds._slices
+    assert slices == expected
 
 
 @pytest.mark.parametrize(
@@ -1232,14 +1234,14 @@ def test_get_batch_data(cache_tmp_dir, dims, group):
             (50,),
         ),
         (
-            "http://test.opendap.org/opendap/dap4/SimpleGroup3.nc4.h5",
+            "https://thredds-test.unidata.ucar.edu/thredds/dap4/dev/d4icomp/"
+            + "SimpleGroup.nc4",
             "/SimpleGroup",
             "/SimpleGroup/Salinity",
             "Temperature",
             (0, slice(0, 10, None), slice(10, 20, None)),
-            "/SimpleGroup/time=[0:1:0];/SimpleGroup/Y=[0:1:9];"
-            + "/SimpleGroup/X=[10:1:19];/SimpleGroup/Salinity;/SimpleGroup/time_bnds",
-            (1, 10, 10),  # <------- TIME DIM is also in same hierarchy now
+            "/SimpleGroup/Salinity[0:1:0][0:1:39][0:1:39]",
+            (1, 40, 40),  # <------- TIME DIM is also in same hierarchy now
         ),
     ],
 )
