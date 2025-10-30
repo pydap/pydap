@@ -691,15 +691,16 @@ buffer2 = bytearray(b"\x16\x00\x00\x00\x00\x00\x00\x00" + b"This is a string")
 
 
 @pytest.mark.parametrize(
-    "data, expected",
+    "data, expected_string, expected_stop",
     [
-        (buffer1, ["This", "is", "a", "Test"]),
-        (buffer2, ["This is a string"]),
+        (buffer1, ["This", "is", "a", "Test"], 43),
+        (buffer2, ["This is a string"], 30),
     ],
 )
-def test_decode_utf8_string_array(data, expected):
-    result = decode_utf8_string_array(data)
-    assert result == expected
+def test_decode_utf8_string_array(data, expected_string, expected_stop):
+    result, stop = decode_utf8_string_array(data)
+    assert result == expected_string
+    assert stop == expected_stop
 
 
 def test_dap_handler_string_array():
