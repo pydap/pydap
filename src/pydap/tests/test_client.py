@@ -1243,6 +1243,15 @@ def test_get_batch_data(cache_tmp_dir, dims, group):
             "/SimpleGroup/Salinity[0:1:0][0:1:39][0:1:39]",
             (1, 40, 40),  # <------- TIME DIM is also in same hierarchy now
         ),
+        (
+            "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5",
+            "/SimpleGroup",
+            "/SimpleGroup/Salinity",
+            "Temperature",
+            (0, slice(0, 10, None), slice(10, 20, None)),
+            "/SimpleGroup/Salinity[0:1:0][0:1:39][0:1:39]",
+            (1, 40, 40),  # <------- TIME DIM is also in same hierarchy now
+        ),
     ],
 )
 def test_get_batch_data_sliced_nondims(
