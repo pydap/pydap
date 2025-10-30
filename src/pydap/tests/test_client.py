@@ -1129,7 +1129,7 @@ def test_fetch_consolidated(url):
 
 @pytest.mark.parametrize("group", ["/", "/SimpleGroup"])
 def test_fetched_batched(cache_tmp_dir, group):
-    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup3.nc4.h5"
+    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
     session = create_session(
         use_cache=True,
         cache_kwargs={"cache_name": cache_tmp_dir / "debug_fetched_batched"},
@@ -1162,7 +1162,7 @@ def test_get_batch_data(cache_tmp_dir, dims, group):
     """
     Test that `get_batch_data` works as expected.
     """
-    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup3.nc4.h5"
+    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
     session = create_session(
         use_cache=True,
         cache_kwargs={"cache_name": cache_tmp_dir / "debug_get_batch_data"},
@@ -1201,12 +1201,12 @@ def test_get_batch_data(cache_tmp_dir, dims, group):
     "url, group, var, skip_var, key, expected_ce, expected_shape",
     [
         (
-            "http://test.opendap.org/opendap/dap4/SimpleGroup3.nc4.h5",
+            "http://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5",
             "/",
             "/Pressure",
             "",
             slice(0, 500, None),
-            "/Z=[0:1:499];/Pressure",
+            "/Z=[0:1:499];/Pressure;/time_bnds",
             (500,),
         ),
         (
