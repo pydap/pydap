@@ -889,7 +889,6 @@ def get_count(variable):
 
 def decode_variable(buffer, start, variable, endian):
     dtype = variable.dtype
-    dtype = dtype.newbyteorder(endian)
     if dtype.kind == "S":
         string, stop = decode_utf8_string_array(buffer, start)
         data = numpy.array(string).astype(dtype.kind)
@@ -897,6 +896,7 @@ def decode_variable(buffer, start, variable, endian):
         return data, stop
     else:
         stop = get_count(variable) + start
+        dtype = dtype.newbyteorder(endian)
         data = numpy.frombuffer(buffer[start:stop], dtype=dtype)
         data = data.reshape(variable.shape)
         return DapDecodedArray(data), stop
