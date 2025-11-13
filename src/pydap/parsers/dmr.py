@@ -766,8 +766,7 @@ class DMRParser_new:
             if chunks_shape:
                 chunkmanifest = self._parse_chunks(chunks_tag, chunks_shape)
             else:
-                print("missing data")
-            #   chunkmanifest = ChunkManifest(entries={}, shape=array_fill_value.shape)
+                chunkmanifest = {"entries": {}, "shape": array_fill_value.shape}
             # Filters
             codecs = self._parse_filters(chunks_tag, dtype)
 
@@ -789,8 +788,9 @@ class DMRParser_new:
             dimension_names=dims,
             attributes=attrs,
             fill_value=array_fill_value,
+            chunkmanifest=chunkmanifest,
         )
-        return metadata, chunkmanifest
+        return metadata
 
     def _parse_attribute(self, attr_tag: ET.Element) -> dict[str, Any]:
         """
