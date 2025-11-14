@@ -429,6 +429,7 @@ class DMRParser_new:
     _NS = {
         "dap": "http://xml.opendap.org/ns/DAP/4.0#",
         "dmrpp": "http://xml.opendap.org/dap/dmrpp/1.0.0#",
+        "xmlns": "http://www.w3.org/XML/1998/namespace",
     }
     # DAP data types to numpy data types
     _DAP_NP_DTYPE = {
@@ -475,7 +476,9 @@ class DMRParser_new:
         """
         self.root = root
         self.data_filepath = (
-            data_filepath if data_filepath is not None else self.root.attrib["name"]
+            data_filepath
+            if data_filepath is not None
+            else self.root.attrib.get("{" + self._NS["xmlns"] + "}base")
         )
         # self.skip_variables = skip_variables or ()
 
