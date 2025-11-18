@@ -557,7 +557,6 @@ class BaseProxyDap4(BaseProxyDap2):
             _vars += [] if concat_dim is None else concat_dim
             if self.id not in _vars and "debug" not in self.session.cache.cache_name:
                 cache_kwargs = {"skip": True}
-        print("URL: ", url)
         r = GET(
             url,
             self.application,
@@ -567,7 +566,6 @@ class BaseProxyDap4(BaseProxyDap2):
             get_kwargs=self.get_kwargs,
             cache_kwargs=cache_kwargs,
         )
-        print(r.content)
 
         dataset = UNPACKDAP4DATA(r, self.checksums, self.user_charset).dataset
         self._data = dataset[self.id]._data
