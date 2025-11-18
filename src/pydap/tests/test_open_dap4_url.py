@@ -198,6 +198,11 @@ def test_dmrpp_open_dataset():
     assert pyds["SimpleGroup"].variables() == SimpleGroup_vars
     assert pyds["data"].variables() == Data_vars
 
+    np.testing.assert_array_equal(pyds["SimpleGroup/X"][:].data, np.arange(40))
+    np.testing.assert_array_equal(
+        np.mean(pyds["SimpleGroup/Salinity"][:].data), np.array([30])
+    )
+
 
 if __name__ == "__main__":
     test_maps()
