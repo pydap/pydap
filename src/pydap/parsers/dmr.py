@@ -14,9 +14,6 @@ import numpy as np
 import pydap.lib
 import pydap.model
 
-# from virtualizarr.parsers.utils import encode_cf_fill_value
-
-
 constructors = ("grid", "sequence", "structure")
 name_regexp = r'[\w%!~"\'\*-]+'
 dmr_atomic_types = (
@@ -413,8 +410,7 @@ class DMRParser(object):
         return dataset
 
 
-# ===================================== Ayush's parser ============================
-class DMRParser_new:
+class DMRPPparser:
     """
     Parser for the OPeNDAP DMR++ XML format.
     Reads groups, dimensions, coordinates, data variables, encoding, chunk manifests,
@@ -481,6 +477,56 @@ class DMRParser_new:
             else self.root.attrib.get("{" + self._NS["xmlns"] + "}base")
         )
         # self.skip_variables = skip_variables or ()
+
+    def to_dataset(self):
+        """Parses the DMRpp element and translates it to the Pydap dataset model"""
+        Groups = [str(item) for item in self._split_groups(self.root).keys()]
+        dimensions = {}
+        dim_tags = self._find_dimension_tags(self.find_node_fqn(Groups[0]))
+
+        pyds = pydap.model.DatasetType(
+            name=self.root.get("name"), dimensions=dimensions
+        )
+
+        metadata, attrs = self._parse_dataset(self.find_node_fqn(Groups[0]))
+        # order of serialization
+        for var in metadata.keys():
+            data = DummyData(
+                dtype=metadata[var]["data_type"],
+                shape=metadata[var]["shape"],
+                path=Groups[0],
+            )
+            pyds.createVariable(
+                name=var,
+                data=data,
+                dims=metadata[var]["fqn_dims"],
+                Maps=metadata[var]["Maps"],
+                attributes=metadata[var].pop("attributes"),
+            )
+
+        for gr in Groups[1:]:
+            metadata, attrs = self._parse_dataset(self.find_node_fqn(gr))
+            dimensions = {}
+            dim_tags = self._find_dimension_tags(self.find_node_fqn(gr))
+            for dim in dim_tags:
+                dimensions.update(self._parse_dim(dim))
+
+            pyds.createGroup(name=gr, dimensions=dimensions, attributes=attrs)
+
+            for var in metadata.keys():
+                data = DummyData(
+                    dtype=metadata[var]["data_type"],
+                    shape=metadata[var]["shape"],
+                    path=gr,
+                )
+                pyds.createVariable(
+                    name=gr + "/" + var,
+                    data=data,
+                    dims=metadata[var]["fqn_dims"],
+                    Maps=metadata[var]["Maps"],
+                    attributes=metadata[var].pop("attributes"),
+                )
+        return pyds
 
     def parse_dataset(
         self,
@@ -724,6 +770,30 @@ class DMRParser_new:
                     dimension_tags.append(dimension_tag)
         return dimension_tags
 
+    def _find_dim_tags(self, root: ET.Element) -> list[ET.Element]:
+        """
+        Find the all Dim tags with fully qualifying names.
+
+        Parameters
+        ----------
+        root : ET.Element
+            An ElementTree Element from a DMR++ file.
+
+        Returns
+        -------
+        list[ET.Element]
+        """
+        dimension_tags = root.findall("dap:Dimension", self._NS)
+        if not dimension_tags:
+            # Dim tags contain a fully qualified name that references a Dimension tag
+            #  elsewhere in the DMR++
+            dim_tags = root.findall("dap:Dim", self._NS)
+            for d in dim_tags:
+                dimension_tag = self.find_node_fqn(d.attrib["name"])
+                if dimension_tag is not None:
+                    dimension_tags.append(dimension_tag)
+        return dimension_tags
+
     def _parse_variable(self, var_tag: ET.Element):
         """
         Parse a variable from a DMR++ tag.
@@ -789,6 +859,8 @@ class DMRParser_new:
             chunk_shape=chunks_shape,
             codecs=codecs,
             dimension_names=dims,
+            fqn_dims=[dim.get("name") for dim in var_tag.findall("dap:Dim", self._NS)],
+            Maps=[map.get("name") for map in var_tag.findall("dap:Map", self._NS)],
             attributes=attrs,
             fill_value=array_fill_value,
             chunkmanifest=chunkmanifest,
