@@ -90,10 +90,6 @@ class DAPHandler(BaseHandler):
 
         if not url.startswith("dap4") and url.endswith(".dmrpp"):
             self.protocol = "dap4"
-            if url.endswith(".dap.dmrpp"):
-                self.base_url = url.split(".dap.dmrpp")[0]
-            else:
-                self.base_url = url.split(".dmrpp")[0]
             if url.startswith("http://") or url.startswith("https://"):
                 r = session.get(url)
                 dmrpp = r.content.decode()
@@ -103,6 +99,12 @@ class DAPHandler(BaseHandler):
             dmrpp_instance = DMRPPparser(root=ET.fromstring(dmrpp))
             self.dataset = dmrpp_instance.to_dataset()
             self.base_url = dmrpp_instance.data_filepath
+            if not self.base_url:
+                # some dmrpps do not have the opendap url embedded in their
+                if url.endswith(".dap.dmrpp"):
+                    self.base_url = url.split(".dap.dmrpp")[0]
+                else:
+                    self.base_url = url.split(".dmrpp")[0]
         else:
             self.url = url
             # urlparse returns an additional var compared to
