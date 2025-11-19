@@ -6,7 +6,7 @@ import re
 import warnings
 from collections import OrderedDict
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -456,7 +456,7 @@ class DMRPPparser:
         self,
         root: ET.Element,
         data_filepath: str | None = None,
-        # skip_variables: Iterable[str] | None = None,
+        skip_variables: Iterable[str] | None = None,
     ):
         """
         Initialize the DMRParser with the given DMR++ file contents and source data file
@@ -476,7 +476,7 @@ class DMRPPparser:
             if data_filepath is not None
             else self.root.attrib.get("{" + self._NS["xmlns"] + "}base")
         )
-        # self.skip_variables = skip_variables or ()
+        self.skip_variables = skip_variables or ()
 
     def to_dataset(self):
         """Parses the DMRpp element and translates it to the Pydap dataset model"""
@@ -530,10 +530,8 @@ class DMRPPparser:
 
     def parse_dataset(
         self,
-        # object_store: ObjectStore,
         group: str | None = None,
     ):
-        # ) -> ManifestStore:
         """
         Parses the given file and creates a ManifestStore.
 
@@ -571,11 +569,6 @@ class DMRPPparser:
             )
 
         return self._parse_dataset(dataset_element)
-        # manifest_group = self._parse_dataset(dataset_element)
-        # registry = ObjectStoreRegistry()
-        # registry.register(self.data_filepath, object_store)
-
-        # return ManifestStore(registry=registry, group=manifest_group)
 
     def find_node_fqn(self, fqn: str) -> ET.Element:
         """
@@ -672,7 +665,7 @@ class DMRPPparser:
 
         manifest_dict: dict[str, Any] = {}
         for var_tag in self._find_var_tags(root):
-            if var_tag.attrib["name"]:  # not in self.skip_variables:
+            if var_tag.attrib["name"] not in self.skip_variables:
                 try:
                     variable = self._parse_variable(var_tag)
                     manifest_dict[var_tag.attrib["name"]] = variable
