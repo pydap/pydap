@@ -581,7 +581,7 @@ def test_dmrpp_attributes_parsedvariable():
     assert actual_range == [185.160004, 322.100006]
 
 
-def test_fill_value_parseddataset():
+def test_fill_value_parsedvariable():
     """Test that demonstrates how fill values may appear for a given variable
 
     In addition, this DMRPP has a chunk element with a fill value to be set as nan.
@@ -593,3 +593,20 @@ def test_fill_value_parseddataset():
     assert "_FillValue" in parsed_var["attributes"]
     assert "fill_value" in parsed_var
     assert np.isnan(parsed_var["fill_value"])
+
+
+@pytest.mark.parametrize(
+    "Group, skip_variables, expected_parsed_variables",
+    [
+        ("/", None, ["time"]),
+        ("/SimpleGroup", ("Temperature", "Salinity"), ["Y", "X"]),
+        ("/data", ("lat", "lon"), ["air"]),
+    ],
+)
+def test_parsed_dataset(Group, skip_variables, expected_parsed_variables):
+    """testing elements of parsed dataset"""
+    dmrpp_instance = DMRPPparser(
+        root=ET.fromstring(open(DMRPPTest_file).read()), skip_variables=skip_variables
+    )
+    variables, _ = dmrpp_instance._parse_dataset(dmrpp_instance.find_node_fqn(Group))
+    assert list(variables.keys()) == expected_parsed_variables
