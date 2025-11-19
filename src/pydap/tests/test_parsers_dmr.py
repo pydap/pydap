@@ -509,3 +509,87 @@ def test_dmrpp_Maps_variable(var_path, expected):
     var_tag = dmrpp_instance.find_node_fqn(var_path)
     dimension_names = dmrpp_instance._parse_variable(var_tag)["Maps"]
     assert dimension_names == expected
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        ("/data/air", (1, 25, 53)),
+        ("/SimpleGroup/Temperature", (1, 40, 40)),
+        ("/SimpleGroup/Salinity", (1, 40, 40)),
+    ],
+)
+def test_dmrpp_shape_parsedvariable(var_path, expected):
+    dmrpp_instance = DMRPPparser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    assert dmrpp_instance._parse_variable(var_tag)["shape"] == expected
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        ("/data/air", np.dtype(np.int16)),
+        ("/SimpleGroup/Temperature", np.dtype(np.float32)),
+        ("/SimpleGroup/Salinity", np.dtype(np.float32)),
+    ],
+)
+def test_dmrpp_datatype_parsedvariable(var_path, expected):
+    dmrpp_instance = DMRPPparser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    assert dmrpp_instance._parse_variable(var_tag)["data_type"] == expected
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        ("/data/air", (1, 25, 53)),
+        ("/SimpleGroup/Temperature", (1, 40, 40)),
+        ("/SimpleGroup/Salinity", (1, 40, 40)),
+    ],
+)
+def test_dmrpp_chunk_shape_parsedvariable(var_path, expected):
+    """Data has a single chunk."""
+    dmrpp_instance = DMRPPparser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    assert dmrpp_instance._parse_variable(var_tag)["chunk_shape"] == expected
+
+
+def test_dmrpp_attributes_parsedvariable():
+    """Test attributes keys and some its elements"""
+    dmrpp_instance = DMRPPparser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn("/data/air")
+    attrs = dmrpp_instance._parse_variable(var_tag)["attributes"]
+
+    expected_keys = [
+        "long_name",
+        "units",
+        "precision",
+        "GRIB_id",
+        "GRIB_name",
+        "var_desc",
+        "dataset",
+        "level_desc",
+        "statistic",
+        "parent_stat",
+        "actual_range",
+        "scale_factor",
+    ]
+
+    assert list(attrs.keys()) == expected_keys
+
+    actual_range = [round(val, 6) for val in attrs["actual_range"]]
+    assert actual_range == [185.160004, 322.100006]
+
+
+def test_fill_value_parseddataset():
+    """Test that demonstrates how fill values may appear for a given variable
+
+    In addition, this DMRPP has a chunk element with a fill value to be set as nan.
+    Asserts that is the case.
+    """
+    dmrpp_instance = DMRPPparser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn("/SimpleGroup/Temperature")
+    parsed_var = dmrpp_instance._parse_variable(var_tag)
+    assert "_FillValue" in parsed_var["attributes"]
+    assert "fill_value" in parsed_var
+    assert np.isnan(parsed_var["fill_value"])
