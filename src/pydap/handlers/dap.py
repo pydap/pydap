@@ -92,7 +92,7 @@ class DAPHandler(BaseHandler):
             self.protocol = "dap4"
             if url.startswith("http://") or url.startswith("https://"):
                 r = session.get(url, stream=True)
-                dmrpp = io.BytesIO(r.content.decode())
+                dmrpp = io.BytesIO(r.content)
                 dmrpp_instance = DMRPPParser(root=ET.parse(dmrpp).getroot())
             else:
                 dmrpp = open(url).read()
