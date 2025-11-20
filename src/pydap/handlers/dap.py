@@ -48,7 +48,7 @@ from pydap.net import GET
 from pydap.parsers import parse_ce
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
-from pydap.parsers.dmr import DMRPPparser, dmr_to_dataset
+from pydap.parsers.dmr import DMRPPPparser, dmr_to_dataset
 from pydap.responses.dods import DAP2_response_dtypemap
 
 try:
@@ -93,10 +93,10 @@ class DAPHandler(BaseHandler):
             if url.startswith("http://") or url.startswith("https://"):
                 r = session.get(url, stream=True)
                 dmrpp = io.BytesIO(r.content.decode())
-                dmrpp_instance = DMRPPparser(root=ET.parse(dmrpp).getroot())
+                dmrpp_instance = DMRPPPparser(root=ET.parse(dmrpp).getroot())
             else:
                 dmrpp = open(url).read()
-                dmrpp_instance = DMRPPparser(root=ET.fromstring(dmrpp))
+                dmrpp_instance = DMRPPPparser(root=ET.fromstring(dmrpp))
             self.projection = []
             self.dataset = dmrpp_instance.to_dataset()
             self.base_url = dmrpp_instance.data_filepath

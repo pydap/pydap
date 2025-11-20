@@ -410,7 +410,7 @@ class DMRParser(object):
         return dataset
 
 
-class DMRPPparser:
+class DMRPPPparser:
     """
     Parser for the OPeNDAP DMR++ XML format.
     Reads groups, dimensions, coordinates, data variables, encoding, chunk manifests,
