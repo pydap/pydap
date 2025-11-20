@@ -48,7 +48,7 @@ from pydap.net import GET
 from pydap.parsers import parse_ce
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
-from pydap.parsers.dmr import DMRPPPparser, dmr_to_dataset
+from pydap.parsers.dmr import DMRPPParser, dmr_to_dataset
 from pydap.responses.dods import DAP2_response_dtypemap
 
 try:
@@ -88,18 +88,19 @@ class DAPHandler(BaseHandler):
         self.user_charset = user_charset
         self.get_kwargs = get_kwargs or {}
 
-        if not url.startswith("dap4") and url.endswith(".dmrpp"):
+        if url.endswith(".dmrpp") and not url.startswith("dap4"):
             self.protocol = "dap4"
             if url.startswith("http://") or url.startswith("https://"):
                 r = session.get(url, stream=True)
                 dmrpp = io.BytesIO(r.content.decode())
-                dmrpp_instance = DMRPPPparser(root=ET.parse(dmrpp).getroot())
+                dmrpp_instance = DMRPPParser(root=ET.parse(dmrpp).getroot())
             else:
                 dmrpp = open(url).read()
-                dmrpp_instance = DMRPPPparser(root=ET.fromstring(dmrpp))
+                dmrpp_instance = DMRPPParser(root=ET.fromstring(dmrpp))
             self.projection = []
             self.dataset = dmrpp_instance.to_dataset()
             self.base_url = dmrpp_instance.data_filepath
+
             if not self.base_url:
                 # some dmrpps do not have the opendap url embedded in their
                 if url.endswith(".dap.dmrpp"):
