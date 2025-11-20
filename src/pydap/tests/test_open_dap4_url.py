@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import pytest
 
@@ -5,6 +7,10 @@ from pydap.client import open_url
 from pydap.net import create_session
 
 base_url = "dap4://test.opendap.org"
+
+TestGroupdmrpp = os.path.join(
+    os.path.dirname(__file__), "data/dmrs/TestGroupData.nc4.dmrpp"
+)
 
 
 def test_coads():
@@ -157,6 +163,45 @@ def test_batch_mode_downloads(cache_tmp_dir, url):
     # Check that there is only 1 URL cached: the DMR. The DAP url us no longer cached
     assert len(session.cache.urls()) == 2
     session.cache.clear()
+
+
+def test_dmrpp_open_dataset():
+    file_url = TestGroupdmrpp
+    pyds = open_url(file_url)
+    root_vars = {
+        "time": {"dtype": np.dtype("float32"), "shape": (1,), "dims": ["/time"]}
+    }
+    SimpleGroup_vars = {
+        "Y": {"dtype": np.dtype("int16"), "shape": (40,), "dims": ["/SimpleGroup/Y"]},
+        "X": {"dtype": np.dtype("int16"), "shape": (40,), "dims": ["/SimpleGroup/X"]},
+        "Temperature": {
+            "dtype": np.dtype("float32"),
+            "shape": (1, 40, 40),
+            "dims": ["/time", "/SimpleGroup/Y", "/SimpleGroup/X"],
+        },
+        "Salinity": {
+            "dtype": np.dtype("float32"),
+            "shape": (1, 40, 40),
+            "dims": ["/time", "/SimpleGroup/Y", "/SimpleGroup/X"],
+        },
+    }
+    Data_vars = {
+        "air": {
+            "dtype": np.dtype("int16"),
+            "shape": (1, 25, 53),
+            "dims": ["/time", "/data/lat", "/data/lon"],
+        },
+        "lat": {"dtype": np.dtype("float32"), "shape": (25,), "dims": ["/data/lat"]},
+        "lon": {"dtype": np.dtype("float32"), "shape": (53,), "dims": ["/data/lon"]},
+    }
+    assert pyds.variables() == root_vars
+    assert pyds["SimpleGroup"].variables() == SimpleGroup_vars
+    assert pyds["data"].variables() == Data_vars
+
+    np.testing.assert_array_equal(pyds["SimpleGroup/X"][:].data, np.arange(40))
+    np.testing.assert_array_equal(
+        np.mean(pyds["SimpleGroup/Salinity"][:].data), np.array([30])
+    )
 
 
 if __name__ == "__main__":

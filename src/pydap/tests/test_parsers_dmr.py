@@ -6,11 +6,12 @@ import unittest
 from xml.etree import ElementTree as ET
 
 import numpy as np
+import pytest
 
 from ..client import open_dmr_file
 from ..lib import walk
 from ..model import BaseType
-from ..parsers.dmr import dmr_to_dataset, get_groups
+from ..parsers.dmr import DMRPPParser, dmr_to_dataset, get_groups
 
 
 def load_dmr_file(file_path):
@@ -24,6 +25,11 @@ def read_dmr_file(file_path):
         dmr = dmr_file.read()
     _dmr = re.sub(' xmlns="[^"]+"', "", dmr, count=1)
     return ET.fromstring(_dmr)
+
+
+DMRPPTest_file = os.path.join(
+    os.path.dirname(__file__), "data/dmrs/TestGroupData.nc4.dmrpp"
+)
 
 
 class TestDMRParser(unittest.TestCase):
@@ -341,3 +347,266 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         """
         ds = dmr_to_dataset(dmr)
         assert ds["Last Names"].name == "Last%20Names"
+
+
+@pytest.mark.parametrize(
+    "ns, expected",
+    [
+        ("dap", "http://xml.opendap.org/ns/DAP/4.0#"),
+        ("dmrpp", "http://xml.opendap.org/dap/dmrpp/1.0.0#"),
+        ("xmlns", "http://www.w3.org/XML/1998/namespace"),
+    ],
+)
+def dmrpp_parse(TestGroupDMRPP, ns, expected):
+    dmrpp_instance = DMRPPParser(root=TestGroupDMRPP.read())
+    assert dmrpp_instance._NS[ns] == expected
+
+
+@pytest.mark.parametrize(
+    "filepath, expected",
+    [
+        (None, "http://test.opendap.org/opendap/dap4/TestGroupData.nc4.h5"),
+        (
+            os.path.join(os.path.dirname(__file__), "FakeFileName.nc4"),
+            os.path.join(os.path.dirname(__file__), "FakeFileName.nc4"),
+        ),
+    ],
+)
+def test_datafile_path(filepath, expected):
+    """Test that when filepath not given, extract the filepath from the DMRpp. But if
+    filepath is given, user provided filepath takes precedence.
+    """
+    dmrpp_instance = DMRPPParser(
+        root=ET.fromstring(open(DMRPPTest_file).read()), data_filepath=filepath
+    )
+    assert dmrpp_instance.data_filepath == expected
+
+
+@pytest.mark.parametrize(
+    "Group, parsed_dims",
+    [
+        ("/", [{"time": 1}]),
+        ("SimpleGroup", [{"Y": 40}, {"X": 40}]),
+        ("data", [{"lat": 25}, {"lon": 53}]),
+    ],
+)
+def test_parsed_dim_tag(Group, parsed_dims):
+    """Check that dmrpp parses correctly the dimensions defined within
+    each group (including the root group).
+    """
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    dim_tags = dmrpp_instance._find_dimension_tags(dmrpp_instance.find_node_fqn(Group))
+    dims = [dmrpp_instance._parse_dim(dim_tag) for dim_tag in dim_tags]
+    assert dims == parsed_dims
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        (
+            "/SimpleGroup/Temperature",
+            {
+                "0.0.0": {
+                    "path": "http://test.opendap.org/opendap/dap4/TestGroupData.nc4.h5",
+                    "offset": 12762,
+                    "length": 6400,
+                }
+            },
+        ),
+        (
+            "/SimpleGroup/Salinity",
+            {
+                "0.0.0": {
+                    "path": "http://test.opendap.org/opendap/dap4/TestGroupData.nc4.h5",
+                    "offset": 19162,
+                    "length": 6400,
+                }
+            },
+        ),
+        (
+            "/data/air",
+            {
+                "0.0.0": {
+                    "path": "http://test.opendap.org/opendap/dap4/TestGroupData.nc4.h5",
+                    "offset": 30129,
+                    "length": 2650,
+                }
+            },
+        ),
+    ],
+)
+def test_dmrpp_chunkmanifest_variable(var_path, expected):
+    """Test that the chunk manifest matches the expected value. All variables have
+    data that were created with single chunks.
+    """
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    chunk_manifest = dmrpp_instance._parse_variable(var_tag)["chunkmanifest"]
+
+    assert chunk_manifest == expected
+
+
+def test_dmrpp_parser_variable_keys():
+    """Test elements of parsed variable dictionary"""
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn("SimpleGroup/Temperature")
+    parsed_variable_elements = list(dmrpp_instance._parse_variable(var_tag).keys())
+    expected_elements = [
+        "shape",
+        "data_type",
+        "chunk_shape",
+        "codecs",
+        "dimension_names",
+        "fqn_dims",
+        "Maps",
+        "attributes",
+        "fill_value",
+        "chunkmanifest",
+    ]
+    assert parsed_variable_elements == expected_elements
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        ("/data/air", {"time": 1, "lat": 25, "lon": 53}),
+        ("/SimpleGroup/Temperature", {"time": 1, "Y": 40, "X": 40}),
+        ("/SimpleGroup/Salinity", {"time": 1, "Y": 40, "X": 40}),
+    ],
+)
+def test_dmrpp_dimension_names_variable(var_path, expected):
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    dimension_names = dmrpp_instance._parse_variable(var_tag)["dimension_names"]
+    assert dimension_names == expected
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        ("/data/air", ["/time", "/data/lat", "/data/lon"]),
+        ("/SimpleGroup/Temperature", ["/time", "/SimpleGroup/Y", "/SimpleGroup/X"]),
+        ("/SimpleGroup/Salinity", ["/time", "/SimpleGroup/Y", "/SimpleGroup/X"]),
+    ],
+)
+def test_dmrpp_fqn_dims_variable(var_path, expected):
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    dimension_names = dmrpp_instance._parse_variable(var_tag)["fqn_dims"]
+    assert dimension_names == expected
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        ("/data/air", ["/time", "/data/lat", "/data/lon"]),
+        ("/SimpleGroup/Temperature", ["/time", "/SimpleGroup/Y", "/SimpleGroup/X"]),
+        ("/SimpleGroup/Salinity", ["/time", "/SimpleGroup/Y", "/SimpleGroup/X"]),
+    ],
+)
+def test_dmrpp_Maps_variable(var_path, expected):
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    dimension_names = dmrpp_instance._parse_variable(var_tag)["Maps"]
+    assert dimension_names == expected
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        ("/data/air", (1, 25, 53)),
+        ("/SimpleGroup/Temperature", (1, 40, 40)),
+        ("/SimpleGroup/Salinity", (1, 40, 40)),
+    ],
+)
+def test_dmrpp_shape_parsedvariable(var_path, expected):
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    assert dmrpp_instance._parse_variable(var_tag)["shape"] == expected
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        ("/data/air", np.dtype(np.int16)),
+        ("/SimpleGroup/Temperature", np.dtype(np.float32)),
+        ("/SimpleGroup/Salinity", np.dtype(np.float32)),
+    ],
+)
+def test_dmrpp_datatype_parsedvariable(var_path, expected):
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    assert dmrpp_instance._parse_variable(var_tag)["data_type"] == expected
+
+
+@pytest.mark.parametrize(
+    "var_path, expected",
+    [
+        ("/data/air", (1, 25, 53)),
+        ("/SimpleGroup/Temperature", (1, 40, 40)),
+        ("/SimpleGroup/Salinity", (1, 40, 40)),
+    ],
+)
+def test_dmrpp_chunk_shape_parsedvariable(var_path, expected):
+    """Data has a single chunk."""
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn(var_path)
+    assert dmrpp_instance._parse_variable(var_tag)["chunk_shape"] == expected
+
+
+def test_dmrpp_attributes_parsedvariable():
+    """Test attributes keys and some its elements"""
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn("/data/air")
+    attrs = dmrpp_instance._parse_variable(var_tag)["attributes"]
+
+    expected_keys = [
+        "long_name",
+        "units",
+        "precision",
+        "GRIB_id",
+        "GRIB_name",
+        "var_desc",
+        "dataset",
+        "level_desc",
+        "statistic",
+        "parent_stat",
+        "actual_range",
+        "scale_factor",
+    ]
+
+    assert list(attrs.keys()) == expected_keys
+
+    actual_range = [round(val, 6) for val in attrs["actual_range"]]
+    assert actual_range == [185.160004, 322.100006]
+
+
+def test_fill_value_parsedvariable():
+    """Test that demonstrates how fill values may appear for a given variable
+
+    In addition, this DMRPP has a chunk element with a fill value to be set as nan.
+    Asserts that is the case.
+    """
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    var_tag = dmrpp_instance.find_node_fqn("/SimpleGroup/Temperature")
+    parsed_var = dmrpp_instance._parse_variable(var_tag)
+    assert "_FillValue" in parsed_var["attributes"]
+    assert "fill_value" in parsed_var
+    assert np.isnan(parsed_var["fill_value"])
+
+
+@pytest.mark.parametrize(
+    "Group, skip_variables, expected_parsed_variables",
+    [
+        ("/", None, ["time"]),
+        ("/SimpleGroup", ("Temperature", "Salinity"), ["Y", "X"]),
+        ("/data", ("lat", "lon"), ["air"]),
+    ],
+)
+def test_parsed_dataset(Group, skip_variables, expected_parsed_variables):
+    """testing elements of parsed dataset"""
+    dmrpp_instance = DMRPPParser(
+        root=ET.fromstring(open(DMRPPTest_file).read()), skip_variables=skip_variables
+    )
+    variables, _ = dmrpp_instance._parse_dataset(dmrpp_instance.find_node_fqn(Group))
+    assert list(variables.keys()) == expected_parsed_variables
