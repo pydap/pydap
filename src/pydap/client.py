@@ -192,7 +192,7 @@ def consolidate_metadata(
     verbose=False,
     shared_dimensions=False,
     checksums=True,
-    batch=False,
+    batch=True,
 ):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
@@ -374,6 +374,11 @@ def consolidate_metadata(
         else:
             new_urls = []
     else:
+        warnings.warn(
+            "Use of `batch` will be deprecated and will be removed in the future."
+            " `batch=True` will be the default behavior in the next release.",
+            DeprecationWarning,
+        )
         new_urls = [
             base_url
             + ".dap?dap4.ce=/"
