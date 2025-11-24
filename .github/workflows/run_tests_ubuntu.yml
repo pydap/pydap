@@ -19,7 +19,7 @@ jobs:
         python-version: ['3.10', '3.11', '3.12', '3.13']
     name: ubuntu-latest Python ${{ matrix.python-version }}
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
 
     - name: Install Conda environment with Micromamba
       uses: mamba-org/setup-micromamba@v2
