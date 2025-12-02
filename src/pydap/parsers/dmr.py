@@ -318,6 +318,8 @@ def dmr_to_dataset(dmr):
             "name": pydap.lib._quote(name),
             "data": data,
             "dims": Dims,
+            "dtype": variable["dtype"],
+            "shape": variable["shape"],
             "attributes": variable["attributes"],
         }
         if "maps" in variable.keys():

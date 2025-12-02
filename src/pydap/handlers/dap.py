@@ -20,6 +20,7 @@ import tempfile
 import warnings
 from io import BufferedReader, BytesIO
 from itertools import chain
+from pathlib import Path
 from xml.etree import ElementTree as ET
 
 import numpy
@@ -41,6 +42,7 @@ from pydap.lib import (
     fix_slice,
     hyperslab,
     old_BytesReader,
+    unquote,
     walk,
 )
 from pydap.model import BaseType, DapDecodedArray, GridType, SequenceType, StructureType
@@ -55,6 +57,14 @@ try:
     import httpx
 except ImportError:
     httpx = None
+
+try:
+    from netCDF4 import Dataset
+
+    HAVE_NETCDF4 = True
+except Exception:
+    Dataset = None
+    HAVE_NETCDF4 = False
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -1008,10 +1018,14 @@ class UNPACKDAP4DATA(object):
             See `pydap.net.get.open_dap_file`
     """
 
-    def __init__(self, r, checksums=True, user_charset="ascii"):
+    def __init__(
+        self, r, checksums=True, user_charset="ascii", output_path: str | None = None
+    ):
         self.user_charset = user_charset
         self.checksums = checksums
         self.r = r
+        self.output_path = Path(output_path) if output_path else output_path
+        self.nc = None
         try:
             iterator = self.iter_body()
             CHUNK_SIZE = 1048576
@@ -1026,6 +1040,13 @@ class UNPACKDAP4DATA(object):
                 self.raw = BytesReader(tmp)
                 self.dmr, self.endianness = self.safe_dmr_and_data()
                 dataset = dmr_to_dataset(self.dmr)
+                if self.output_path is not None:
+                    if not HAVE_NETCDF4:
+                        raise ImportError(
+                            "NetCDF4 is required for streaming output. "
+                            "Install with: pip install netCDF4"
+                        )
+                    self._init_netcdf_from_dmr(dataset)
                 self.dataset = self.unpack_dap4_data(dataset)
         except TypeError:
             if isinstance(r, webob_Response):
@@ -1096,6 +1117,34 @@ class UNPACKDAP4DATA(object):
         _, _, endianness = decode_chunktype(chunk_type)
         return dmr, endianness
 
+    def _init_netcdf_from_dmr(self, dataset):
+        """creates an empty nc file"""
+        from netCDF4 import Dataset
+
+        filename = unquote(dataset.name)
+        self.nc = Dataset(self.output_path / filename, "w")
+
+        # create dimensions
+        for name in dataset.dimensions:
+            shape = dataset[name]._shape
+            self.nc.createDimension(name, shape[0])
+
+        # create variables
+        for var in dataset.variables():
+            dtype = dataset[var].dtype
+            _FillValue = dataset[var].attributes.pop("_FillValue", None)
+            ncvar = self.nc.createVariable(
+                var,
+                dtype,
+                [dim.split("/")[1] for dim in dataset[var].dims],
+                fill_value=_FillValue,
+            )
+
+            # copy attributes
+            for k, v in dataset[var].attributes.items():
+                if k not in ["Maps", "path"]:
+                    setattr(ncvar, k, v)
+
     def unpack_dap4_data(self, dataset):
         """
         Takes a pydap.DatasetType previously created, and populates its variables
@@ -1112,7 +1161,13 @@ class UNPACKDAP4DATA(object):
                 variable=variable,
                 endian=self.endianness,
             )
-            variable._set_data(data)
+            if self.nc is not None:
+                name = variable.id.split("/")[-1]
+                ncvar = self.nc.variables[name]
+                ncvar[...] = data
+                variable._set_data(None)
+            else:
+                variable._set_data(data)
             if self.checksums:
                 checksum = numpy.frombuffer(
                     buffer[stop : stop + 4], dtype=checksum_dtype

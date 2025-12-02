@@ -389,14 +389,21 @@ class BaseType(DapType):
     """A thin wrapper over Numpy arrays."""
 
     def __init__(
-        self, name="nameless", data=None, dims=None, attributes=None, **kwargs
+        self,
+        name="nameless",
+        data=None,
+        dims=None,
+        attributes=None,
+        dtype=None,
+        shape=None,
+        **kwargs,
     ):
         super(BaseType, self).__init__(name, attributes, **kwargs)
         self.data = data
         self.dims = [] if not dims else list(dims)
         # these are set when not data is present (eg, when parsing a DDS)
-        self._dtype = None
-        self._shape = ()
+        self._dtype = dtype
+        self._shape = () if not shape else shape
         self._itemsize = None
         self._nbytes = None
         self._is_registered_for_batch = False
@@ -425,7 +432,10 @@ class BaseType(DapType):
     @property
     def dtype(self):
         """Property that returns the data dtype."""
-        return self._data.dtype
+        try:
+            return self._data.dtype
+        except AttributeError:
+            return self._dtype
 
     @property
     def shape(self):
