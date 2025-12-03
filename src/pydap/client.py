@@ -520,7 +520,8 @@ def download_all_urls(session, urls, ncores=4):
                 result = future.result()
                 results.append(result)
             except Exception as e:
-                print(f"[ERROR] Unexpected failure for {url}: {e}")
+                print(f"[ERROR] Unexpected failure for {url}: {e}" ". Trying again")
+                fetch_dim(url, session)
     return results
 
 
