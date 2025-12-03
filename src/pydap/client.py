@@ -1690,7 +1690,10 @@ def stream(url, session_state, output_path, keep_variables=None, dim_slices=None
                 f"The use of {dim_slices} in the constraint expression"
                 " requires defining `keep_variables`"
             )
-        shared_dim = [k + "=" + v for k, v in dim_slices.items()]
+        _slices = {}
+        for dim, _slice in dim_slices.items():
+            _slices[dim] = "[" + str(_slice[0]) + ":1:" + str(_slice[1]) + "]"
+        shared_dim = [k + "=" + v for k, v in _slices.items()]
         ce += ";".join(shared_dim)
 
     if keep_variables is not None:
