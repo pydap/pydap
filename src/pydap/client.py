@@ -50,7 +50,7 @@ import os
 import re
 import warnings
 from collections import Counter
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
 from typing import Iterable, List, Optional, Set
@@ -74,7 +74,7 @@ from pydap.handlers.dap import (
 from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
 from pydap.lib import encode, walk
 from pydap.model import BaseType, BatchPromise, DapType
-from pydap.net import GET, create_session
+from pydap.net import GET, create_session, restore_session
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
@@ -1664,6 +1664,25 @@ def create_key(
     ).encode("utf-8")
 
     return hashlib.sha256(key_material).hexdigest()
+
+
+def download_one(url, session_state, output_path):
+    session = restore_session(session_state)
+    dap_url = url.split("?")[0] + ".dap"
+    if urlparse(url).query:
+        dap_url += "?" + urlparse(url).query
+
+    r = session.get(dap_url, stream=True)
+    UNPACKDAP4DATA(r=r, checksums=True, output_path=output_path)
+    return url
+
+
+def download_many(urls, session_state, output_path, max_workers=4):
+    with ProcessPoolExecutor(max_workers=max_workers) as pool:
+        futures = [
+            pool.submit(download_one, url, session_state, output_path) for url in urls
+        ]
+        return [f.result() for f in futures]
 
 
 if __name__ == "__main__":
