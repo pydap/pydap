@@ -1172,6 +1172,10 @@ class UNPACKDAP4DATA(object):
                 [dim.split("/")[-1] for dim in var.dims],
                 fill_value=_FillValue,
             )
+            # copy attributes
+            for k, v in var.attributes.items():
+                if k not in ["Maps", "path"]:
+                    setattr(ncvar, k, v)
 
     def unpack_dap4_data(self, dataset):
         """
