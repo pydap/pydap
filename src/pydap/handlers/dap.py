@@ -45,7 +45,15 @@ from pydap.lib import (
     unquote,
     walk,
 )
-from pydap.model import BaseType, DapDecodedArray, GridType, SequenceType, StructureType
+from pydap.model import (
+    BaseType,
+    DapDecodedArray,
+    DatasetType,
+    GridType,
+    GroupType,
+    SequenceType,
+    StructureType,
+)
 from pydap.net import GET
 from pydap.parsers import parse_ce
 from pydap.parsers.das import add_attributes, parse_das
@@ -1123,11 +1131,10 @@ class UNPACKDAP4DATA(object):
 
         filename = unquote(dataset.name)
         self.nc = Dataset(self.output_path / filename, "w")
-
+        # start at root
         # create dimensions
-        for name in dataset.dimensions:
-            shape = dataset[name]._shape
-            self.nc.createDimension(name, shape[0])
+        for name, size in dataset.dimensions.items():
+            self.nc.createDimension(name, size)
 
         # create variables
         for var in dataset.variables():
@@ -1144,6 +1151,27 @@ class UNPACKDAP4DATA(object):
             for k, v in dataset[var].attributes.items():
                 if k not in ["Maps", "path"]:
                     setattr(ncvar, k, v)
+
+        # now identify groups and begin to populate
+        variables = [
+            var for var in walk(dataset, BaseType) if isinstance(var.parent, GroupType)
+        ]
+        groups = list(set([var.parent.id for var in variables]))
+        for gr in groups:
+            self.nc.createGroup(gr[1:])
+            for dim, size in dataset[gr[1:]].dimensions.items():
+                self.nc[gr[1:]].createDimension(dim, size)
+
+        for var in variables:
+            parent = var.parent.id
+            dtype = var.dtype
+            _FillValue = var.attributes.pop("_FillValue", None)
+            ncvar = self.nc[parent].createVariable(
+                var.name,
+                dtype,
+                [dim.split("/")[-1] for dim in var.dims],
+                fill_value=_FillValue,
+            )
 
     def unpack_dap4_data(self, dataset):
         """
@@ -1163,7 +1191,11 @@ class UNPACKDAP4DATA(object):
             )
             if self.nc is not None:
                 name = variable.id.split("/")[-1]
-                ncvar = self.nc.variables[name]
+                if isinstance(variable.parent, DatasetType):
+                    ncvar = self.nc.variables[name]
+                else:
+                    parent = variable.parent.id[1:]
+                    ncvar = self.nc[parent].variables[name]
                 ncvar[...] = data
                 variable._set_data(None)
             else:
