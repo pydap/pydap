@@ -48,6 +48,7 @@ import datetime as dt
 import hashlib
 import os
 import re
+import sqlite3
 import warnings
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
@@ -268,7 +269,7 @@ def consolidate_metadata(
         return None
     # All URLs begin with dap4 - to make sure DAP4 compliant
     URLs = ["https" + urls[i][4:] for i in range(len(urls))]
-    ncores = min(len(urls), os.cpu_count() * 4)
+    ncores = min(len(urls), os.cpu_count() // 2)
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
@@ -488,7 +489,7 @@ def consolidate_metadata(
     return None
 
 
-def fetch_dim(url, session, timeout=5):
+def fetch_dim(url, session, timeout=30):
     """helper function that enables catch of http vs https
     connection errors (mostly for testing).
     """
@@ -1421,10 +1422,16 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
         # gets them from cache
         cache_urls = session.cache.urls()
     miss_url, curr_url = recover_missing_url(cache_urls, baseurl)
+
     dap_urls = miss_url + curr_url
     for URL in set(dap_urls):
-        # print("[pydap.lib.fetch_consolidated] Fetching:", URL)
-        r = session.get(URL, stream=True)
+        try:
+            r = session.get(URL)
+        except sqlite3.InterfaceError as e:
+            try:
+                r = session.get(URL)
+            except Exception:
+                raise e
         # create temp dataset
         pyds = UNPACKDAP4DATA(r, checksums=checksums).dataset
         for name in [name for name in pyds.keys() if isinstance(ds[name], BaseType)]:

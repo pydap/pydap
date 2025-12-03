@@ -375,6 +375,7 @@ def new_session_with_same_store(base: CachedSession, **cache_kwargs) -> CachedSe
     return CachedSession(
         backend=backend,
         cache_name=cache_name,
+        fast_save=True,  # reduces write locking
         **cache_kwargs,
     )
 
@@ -425,7 +426,7 @@ def build_session(
         retry_args.setdefault("allowed_methods", ["GET"])
 
     retries = Retry(**retry_args)
-    adapter = HTTPAdapter(max_retries=retries)
+    adapter = HTTPAdapter(max_retries=retries, pool_connections=200, pool_maxsize=200)
 
     # Mount the adapter to the session
     s.mount("http://", adapter)
