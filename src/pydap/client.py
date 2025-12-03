@@ -50,7 +50,7 @@ import os
 import re
 import warnings
 from collections import Counter
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
 from typing import Iterable, List, Optional, Set
@@ -74,7 +74,7 @@ from pydap.handlers.dap import (
 from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
 from pydap.lib import encode, walk
 from pydap.model import BaseType, BatchPromise, DapType
-from pydap.net import GET, create_session
+from pydap.net import GET, create_session, restore_session
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
@@ -1664,6 +1664,68 @@ def create_key(
     ).encode("utf-8")
 
     return hashlib.sha256(key_material).hexdigest()
+
+
+def stream(url, session_state, output_path, keep_variables=None, dim_slices=None):
+    """
+    Downloads a dap response and stores it to a local directory. When keep variables
+    or dim_slices are passed, a constrained dap response is downloaded.
+    """
+    session = restore_session(session_state)
+    dap_url = url.split("?")[0] + ".dap"
+    ce = "?dap4.ce="
+
+    if urlparse(url).query:
+        if (keep_variables, dim_slices) is not None:
+            raise ValueError(
+                "Neither `keep_variables` or `dim_slices` can be used"
+                " when the URL contains the Constraint Expression: "
+                f"{urlparse(url).query}"
+            )
+        dap_url += "?" + urlparse(url).query
+
+    if dim_slices is not None:
+        if keep_variables is None:
+            raise ValueError(
+                f"The use of {dim_slices} in the constraint expression"
+                " requires defining `keep_variables`"
+            )
+        _slices = {}
+        for dim, _slice in dim_slices.items():
+            _slices[dim] = "[" + str(_slice[0]) + ":1:" + str(_slice[1]) + "]"
+        shared_dim = [k + "=" + v for k, v in _slices.items()]
+        ce += ";".join(shared_dim)
+
+    if keep_variables is not None:
+        if not set(dim_slices).issubset(keep_variables):
+            keep_variables += list(set(dim_slices.keys()) - set(keep_variables))
+        if dim_slices is not None:
+            ce += ";"
+        ce += ";".join(keep_variables)
+
+    if ce != "?dap4.ce=":
+        dap_url += ce
+    r = session.get(dap_url + "&dap4.checksums", stream=True)
+    UNPACKDAP4DATA(r=r, checksums=True, output_path=output_path)
+    return url
+
+
+def stream_parallel(
+    urls,
+    session_state,
+    output_path,
+    keep_variables=None,
+    dim_slices=None,
+    max_workers=4,
+):
+    with ProcessPoolExecutor(max_workers=max_workers) as pool:
+        futures = [
+            pool.submit(
+                stream, url, session_state, output_path, keep_variables, dim_slices
+            )
+            for url in urls
+        ]
+        return [f.result() for f in futures]
 
 
 if __name__ == "__main__":

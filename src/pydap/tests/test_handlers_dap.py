@@ -669,7 +669,7 @@ class TestUnpackDap4Data(unittest.TestCase):
         ds = dmr_to_dataset(self.unpacker.dmr)
         self.assertEqual(
             ds.variables(),
-            {"SST": {"dtype": np.dtype(">f4"), "shape": (1, 4, 4), "dims": []}},
+            {"SST": {"dtype": np.dtype("f4"), "shape": (1, 4, 4), "dims": []}},
         )
 
     def testResponse(self):

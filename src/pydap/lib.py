@@ -122,21 +122,21 @@ LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP = {
 # numpy dtype string with specified endiannes.
 # Here, the endianness is very important:
 DAP4_TO_NUMPY_PARSER_TYPEMAP = {
-    "Float16": ">f2",
-    "Float32": ">f4",
-    "Float64": ">f8",
-    "Int8": ">i1",
-    "UInt8": ">u1",
-    "Int16": ">i2",
-    "UInt16": ">u2",
-    "Int32": ">i4",
-    "UInt32": ">u4",
-    "Int64": ">i8",
-    "UInt64": ">u8",
+    "Float16": "f2",
+    "Float32": "f4",
+    "Float64": "f8",
+    "Int8": "i1",
+    "UInt8": "u1",
+    "Int16": "i2",
+    "UInt16": "u2",
+    "Int32": "i4",
+    "UInt32": "u4",
+    "Int64": "i8",
+    "UInt64": "u8",
     "Byte": "B",
     "String": STRING,
     "Url": STRING,
-    "Char": ">u1",
+    "Char": "u1",
 }
 
 

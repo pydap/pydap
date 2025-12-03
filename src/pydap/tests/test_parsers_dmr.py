@@ -39,7 +39,7 @@ class TestDMRParser(unittest.TestCase):
         """Test a single scalar case."""
         single_scalar_dmr = """<Dataset name="foo"><Int32 name="x"/></Dataset>"""
         dataset = dmr_to_dataset(single_scalar_dmr)
-        self.assertEqual(dataset["x"].dtype, ">i4")
+        self.assertEqual(dataset["x"].dtype, "int32")
 
     def test_missing_value(self):
         """Test cases with missing value."""
@@ -75,7 +75,7 @@ class TestDMRParser(unittest.TestCase):
         )
         self.assertEqual(dataset["SST"].attributes["missing_value"], -9.99999979e33)
         self.assertEqual(dataset["AIRT"].shape, (12, 90, 180))
-        self.assertEqual(dataset["VWND"].dtype.str, ">f4")
+        self.assertEqual(dataset["VWND"].dtype.str, "<f4")
 
     def test_atl03(self):
         # Contains groups

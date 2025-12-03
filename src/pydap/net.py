@@ -462,3 +462,21 @@ def cache_store_id(obj: Union[CachedSession, BaseCache]) -> Tuple[Backend, str]:
         return kind, str(getattr(cache, "cache_dir"))
     if kind == "memory":
         return kind, getattr(cache, "cache_name", type(cache).__name__)
+
+
+def extract_session_state(session):
+    return dict(
+        headers=dict(session.headers),
+        cookies=dict(session.cookies),
+        auth=session.auth,
+        verify=session.verify,
+    )
+
+
+def restore_session(session_state):
+    s = requests.Session()
+    s.headers.update(session_state["headers"])
+    s.cookies.update(session_state["cookies"])
+    s.auth = session_state["auth"]
+    s.verify = session_state["verify"]
+    return s
