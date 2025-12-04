@@ -194,6 +194,7 @@ def consolidate_metadata(
     shared_dimensions=False,
     checksums=True,
     batch=True,
+    ncores=None,
 ):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
@@ -241,6 +242,9 @@ def consolidate_metadata(
         Whether to enable batch mode when downloading the dap responses. When False,
         each dimension of a granule is downloaded with a separate dap response. When
         True, all dimensions are downloaded with a single dap response.
+    ncores: None | Int = None
+        number of cores to use when parallelizing downloading dap responses. If
+        ncores >= max_ncores (max cores computed internally), max_cores is chosen.
     """
 
     if not isinstance(session, CachedSession):
@@ -269,12 +273,15 @@ def consolidate_metadata(
         return None
     # All URLs begin with dap4 - to make sure DAP4 compliant
     URLs = ["https" + urls[i][4:] for i in range(len(urls))]
-    ncores = min(len(urls), os.cpu_count() // 2)
+    max_cores = os.cpu_count()
+    if ncores is None:
+        ncores = min(len(urls), max_cores) // 2
+
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
     if safe_mode:
-        with ThreadPoolExecutor(max_workers=ncores) as executor:
+        with ThreadPoolExecutor(max_workers=max_cores * 4) as executor:
             results = list(
                 executor.map(lambda url: open_dmr(url, session=session), dmr_urls)
             )
@@ -1427,16 +1434,14 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
     for URL in set(dap_urls):
         try:
             r = session.get(URL)
-        except sqlite3.InterfaceError as e:
-            try:
+        except (sqlite3.InterfaceError, EOFError):
+            with session.cache_disabled():
                 r = session.get(URL)
-            except Exception:
-                raise e
         # create temp dataset
         pyds = UNPACKDAP4DATA(r, checksums=checksums).dataset
         for name in [name for name in pyds.keys() if isinstance(ds[name], BaseType)]:
             var = pyds[name]
-            ds.dataset[var.id].data = np.asarray(var.data)
+            ds.dataset[var.id].data = np.asarray(var[:].data)
         del pyds
 
 
