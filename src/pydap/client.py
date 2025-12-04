@@ -48,6 +48,7 @@ import datetime as dt
 import hashlib
 import os
 import re
+import sqlite3
 import warnings
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
@@ -193,6 +194,7 @@ def consolidate_metadata(
     shared_dimensions=False,
     checksums=True,
     batch=True,
+    ncores=None,
 ):
     """Consolidates the metadata of a collection of OPeNDAP DAP4 URLs belonging to
     data cube, i.e. urls share identical variables and dimensions. This is done
@@ -240,6 +242,9 @@ def consolidate_metadata(
         Whether to enable batch mode when downloading the dap responses. When False,
         each dimension of a granule is downloaded with a separate dap response. When
         True, all dimensions are downloaded with a single dap response.
+    ncores: None | Int = None
+        number of cores to use when parallelizing downloading dap responses. If
+        ncores >= max_ncores (max cores computed internally), max_cores is chosen.
     """
 
     if not isinstance(session, CachedSession):
@@ -268,12 +273,15 @@ def consolidate_metadata(
         return None
     # All URLs begin with dap4 - to make sure DAP4 compliant
     URLs = ["https" + urls[i][4:] for i in range(len(urls))]
-    ncores = min(len(urls), os.cpu_count() * 4)
+    max_cores = os.cpu_count()
+    if ncores is None:
+        ncores = min(len(urls), max_cores) // 2
+
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
     if safe_mode:
-        with ThreadPoolExecutor(max_workers=ncores) as executor:
+        with ThreadPoolExecutor(max_workers=max_cores * 4) as executor:
             results = list(
                 executor.map(lambda url: open_dmr(url, session=session), dmr_urls)
             )
@@ -488,7 +496,7 @@ def consolidate_metadata(
     return None
 
 
-def fetch_dim(url, session, timeout=5):
+def fetch_dim(url, session, timeout=30):
     """helper function that enables catch of http vs https
     connection errors (mostly for testing).
     """
@@ -520,7 +528,8 @@ def download_all_urls(session, urls, ncores=4):
                 result = future.result()
                 results.append(result)
             except Exception as e:
-                print(f"[ERROR] Unexpected failure for {url}: {e}")
+                print(f"[ERROR] Unexpected failure for {url}: {e}" ". Trying again")
+                fetch_dim(url, session)
     return results
 
 
@@ -1274,8 +1283,15 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
             ]
         dataset = ds.dataset
         dataset.register_dim_slices(array, key=key)  # here slices are recorded
-        register_all_for_batch(dataset, Variables, checksums=checksums)
-        fetch_batched(dataset, Variables)
+        try:
+            register_all_for_batch(dataset, Variables, checksums=checksums)
+            fetch_batched(dataset, Variables)
+        except KeyError as e:
+            try:
+                register_all_for_batch(dataset, Variables, checksums=checksums)
+                fetch_batched(dataset, Variables)
+            except KeyError:
+                print(f"Failed to fetch data: {e}")
 
 
 def data_check(_array: np.ndarray, key: tuple) -> np.ndarray:
@@ -1420,15 +1436,19 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
         # gets them from cache
         cache_urls = session.cache.urls()
     miss_url, curr_url = recover_missing_url(cache_urls, baseurl)
+
     dap_urls = miss_url + curr_url
     for URL in set(dap_urls):
-        # print("[pydap.lib.fetch_consolidated] Fetching:", URL)
-        r = session.get(URL, stream=True)
+        try:
+            r = session.get(URL)
+        except (sqlite3.InterfaceError, EOFError):
+            with session.cache_disabled():
+                r = session.get(URL)
         # create temp dataset
         pyds = UNPACKDAP4DATA(r, checksums=checksums).dataset
         for name in [name for name in pyds.keys() if isinstance(ds[name], BaseType)]:
             var = pyds[name]
-            ds.dataset[var.id].data = np.asarray(var.data)
+            ds.dataset[var.id].data = np.asarray(var[:].data)
         del pyds
 
 
