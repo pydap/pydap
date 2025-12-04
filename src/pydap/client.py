@@ -1283,8 +1283,15 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
             ]
         dataset = ds.dataset
         dataset.register_dim_slices(array, key=key)  # here slices are recorded
-        register_all_for_batch(dataset, Variables, checksums=checksums)
-        fetch_batched(dataset, Variables)
+        try:
+            register_all_for_batch(dataset, Variables, checksums=checksums)
+            fetch_batched(dataset, Variables)
+        except KeyError as e:
+            try:
+                register_all_for_batch(dataset, Variables, checksums=checksums)
+                fetch_batched(dataset, Variables)
+            except KeyError:
+                print(f"Failed to fetch data: {e}")
 
 
 def data_check(_array: np.ndarray, key: tuple) -> np.ndarray:
