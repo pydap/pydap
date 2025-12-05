@@ -345,11 +345,13 @@ def consolidate_metadata(
 
     session.headers["consolidated"] = "True"
 
-    if concat_dim and isinstance(concat_dim, str):
-        concat_dim = [concat_dim]
-    if concat_dim is not None and set(concat_dim).issubset(dims):
-        dims = dims - set(list(concat_dim))
+    if concat_dim:
         concat_dim_urls = []
+        if isinstance(concat_dim, str):
+            concat_dim = [concat_dim]
+        if not set(concat_dim).issubset(dims):
+            raise ValueError(f"{concat_dim} it not a dimensions")
+        dims = dims - set(concat_dim)
         for i, url in enumerate(URLs):
             cdims_ce = ";".join(
                 [
@@ -360,10 +362,36 @@ def consolidate_metadata(
             concat_dim_urls.append(
                 url.split("?")[0] + ".dap?dap4.ce=/" + cdims_ce + _check
             )
-    else:
-        concat_dim_urls = []
+
+            if results[0].dimensions[concat_dim[0]] > 1:
+                size = results[0].dimensions[concat_dim[0]] - 1
+                add_urls = [
+                    url.split("?")[0]
+                    + ".dap?dap4.ce=/"
+                    + concat_dim[0]
+                    + "%5B0:1:0%5D"
+                    + _check
+                    for url in URLs
+                ]
+                add_urls += [
+                    url.split("?")[0]
+                    + ".dap?dap4.ce=/"
+                    + concat_dim[0]
+                    + "%5B"
+                    + str(size)
+                    + ":1:"
+                    + str(size)
+                    + "%5D"
+                    + _check
+                    for url in URLs
+                ]
+                concat_dim_urls += add_urls
+        # step 2 download all concat_dim dap urls
+        _ = download_all_urls(session, concat_dim_urls, ncores=ncores)
 
     # check for named dimensions
+    # Step 3: Download non-concat dimensions
+    # and create special cache key for reuse
     pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
     var_names = list(pyds.variables())
     new_dims = set.intersection(dims, var_names)
@@ -398,7 +426,6 @@ def consolidate_metadata(
             + _check
             for dim in dims
         ]
-    new_urls.extend(concat_dim_urls)
     dim_ces = set(
         [
             ";".join(
@@ -469,29 +496,6 @@ def consolidate_metadata(
                 concat_dim=concat_dim,
                 url_list=URLs,
             )
-            if concat_dim and results[0].dimensions[concat_dim[0]] > 1:
-                size = results[0].dimensions[concat_dim[0]] - 1
-                add_urls = [
-                    url.split("?")[0]
-                    + ".dap?dap4.ce=/"
-                    + concat_dim[0]
-                    + "%5B0:1:0%5D"
-                    + _check
-                    for url in URLs
-                ]
-                add_urls += [
-                    url.split("?")[0]
-                    + ".dap?dap4.ce=/"
-                    + concat_dim[0]
-                    + "%5B"
-                    + str(size)
-                    + ":1:"
-                    + str(size)
-                    + "%5D"
-                    + _check
-                    for url in URLs
-                ]
-                new_urls += add_urls
             session.settings.key_fn = key_fn
         _ = download_all_urls(session, new_urls, ncores=ncores)
     return None

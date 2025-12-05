@@ -602,7 +602,10 @@ def test_consolidate_metadata_concat_dim(cache_tmp_dir, urls, concat_dim):
         )  # all dims are batched together
     else:
         # concat dim is set. Must download N dap responses for the concat_dim.
-        N_concat_dims = len(urls)  # see below !
+        # in this case there are 3 becaue TIME is NOT single valued. By default
+        # xarray will then download the 1st, last elements in the time dimension
+        # in addition to the entire array...
+        N_concat_dims = 3 * len(urls)
         N_non_concat_dims = 1  # all dims are downloaded once, together.
         assert (
             len(cached_session.cache.urls())
