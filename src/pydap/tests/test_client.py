@@ -602,10 +602,7 @@ def test_consolidate_metadata_concat_dim(cache_tmp_dir, urls, concat_dim):
         )  # all dims are batched together
     else:
         # concat dim is set. Must download N dap responses for the concat_dim.
-        # in this case there are 3 becaue TIME is NOT single valued. By default
-        # xarray will then download the 1st, last elements in the time dimension
-        # in addition to the entire array...
-        N_concat_dims = 3 * len(urls)
+        N_concat_dims = len(urls)
         N_non_concat_dims = 1  # all dims are downloaded once, together.
         assert (
             len(cached_session.cache.urls())
@@ -1364,7 +1361,7 @@ def test_consolidate_metadata_non_batch(cache_tmp_dir):
 
     N = len(urls)  # N of DMRS
     N_non_concat_dims = 2  # COADSX, COADSY
-    N_concat_dims = 3 * len(urls)  # TIME
+    N_concat_dims = len(urls)  # TIME
     assert len(cached_session.cache.urls()) == N + N_non_concat_dims + N_concat_dims
 
     # check that all URLS from COADSX and COADSY are cached, even when only 1 of each

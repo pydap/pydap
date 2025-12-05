@@ -362,34 +362,9 @@ def consolidate_metadata(
             concat_dim_urls.append(
                 url.split("?")[0] + ".dap?dap4.ce=/" + cdims_ce + _check
             )
-
-            if results[0].dimensions[concat_dim[0]] > 1:
-                size = results[0].dimensions[concat_dim[0]] - 1
-                add_urls = [
-                    url.split("?")[0]
-                    + ".dap?dap4.ce=/"
-                    + concat_dim[0]
-                    + "%5B0:1:0%5D"
-                    + _check
-                    for url in URLs
-                ]
-                add_urls += [
-                    url.split("?")[0]
-                    + ".dap?dap4.ce=/"
-                    + concat_dim[0]
-                    + "%5B"
-                    + str(size)
-                    + ":1:"
-                    + str(size)
-                    + "%5D"
-                    + _check
-                    for url in URLs
-                ]
-                concat_dim_urls += add_urls
         # step 2 download all concat_dim dap urls
         _ = download_all_urls(session, concat_dim_urls, ncores=ncores)
 
-    # check for named dimensions
     # Step 3: Download non-concat dimensions
     # and create special cache key for reuse
     pyds = open_url(dmr_urls[0], session=session, protocol="dap4")
@@ -1270,8 +1245,10 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
     if "consolidated" in ds.dataset.session.headers and set_dims:
         # need to add a check that consolidated has
         # been performed on that collection.
+        print("[get batch data]", array.id)
         fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
     else:
+        print("[get batch data] non-concat dim", array.id)
         if set_dims:
             Variables = [
                 ds[name].id
@@ -1296,7 +1273,6 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
                 register_all_for_batch(dataset, Variables, checksums=checksums)
                 fetch_batched(dataset, Variables)
             except KeyError:
-                print(Variables)
                 print(f"Failed to fetch data: {e}")
 
 
@@ -1433,8 +1409,6 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
 
     """
 
-    # import pydap
-
     var_name = list(ds.variables())[0]
     baseurl = ds[var_name].data.baseurl
     session = ds.dataset.session
@@ -1444,6 +1418,7 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
     miss_url, curr_url = recover_missing_url(cache_urls, baseurl)
 
     dap_urls = miss_url + curr_url
+
     for URL in set(dap_urls):
         try:
             r = session.get(URL)
@@ -1454,6 +1429,7 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
         pyds = UNPACKDAP4DATA(r, checksums=checksums).dataset
         for name in [name for name in pyds.keys() if isinstance(ds[name], BaseType)]:
             var = pyds[name]
+            print(var.id, URL)
             ds.dataset[var.id].data = np.asarray(var[:].data)
         del pyds
 
@@ -1496,8 +1472,6 @@ def recover_missing_url(cached_urls, baseurl):
 
 
     """
-    # import pydap.client as client
-
     dap_urls = [url for url in cached_urls if url.split("?")[0].endswith(".dap")]
     common_prefix = compute_base_url_prefix(dap_urls)
     # the following is a test on its own it len(dap_ulrs)=0 then there is something
@@ -1517,6 +1491,7 @@ def recover_missing_url(cached_urls, baseurl):
     ]
 
     duplicate = [item for item, count in Counter(base_urls).items() if count > 1]
+
     if len(duplicate) == 1:
         # assume there is only one repeated base url - produce of
         # consolidate metadata with freshly created session object
