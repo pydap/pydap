@@ -506,8 +506,7 @@ def fetch_dim(url, session, timeout=30):
         resp.raise_for_status()
         return resp
     except (ConnectionError, SSLError) as e:
-        parsed = urlparse(url)
-        if parsed.scheme == "https":
+        if url.startswith("https://test.opendap.org/"):
             url = url.replace("https://", "http://")
             resp = new_session.get(url)
             resp.raise_for_status()
