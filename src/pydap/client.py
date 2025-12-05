@@ -75,7 +75,7 @@ from pydap.handlers.dap import (
 from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
 from pydap.lib import encode, walk
 from pydap.model import BaseType, BatchPromise, DapType
-from pydap.net import GET, create_session, restore_session
+from pydap.net import GET, create_session, new_session_with_same_store, restore_session
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
@@ -500,15 +500,16 @@ def fetch_dim(url, session, timeout=30):
     """helper function that enables catch of http vs https
     connection errors (mostly for testing).
     """
+    new_session = new_session_with_same_store(base=session)
     try:
-        resp = session.get(url, timeout=timeout)
+        resp = new_session.get(url, timeout=timeout)
         resp.raise_for_status()
         return resp
     except (ConnectionError, SSLError) as e:
         parsed = urlparse(url)
         if parsed.scheme == "https":
             url = url.replace("https://", "http://")
-            resp = session.get(url)
+            resp = new_session.get(url)
             resp.raise_for_status()
             return resp
         else:
