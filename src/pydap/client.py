@@ -1245,10 +1245,8 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
     if "consolidated" in ds.dataset.session.headers and set_dims:
         # need to add a check that consolidated has
         # been performed on that collection.
-        print("[get batch data]", array.id)
         fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
     else:
-        print("[get batch data] non-concat dim", array.id)
         if set_dims:
             Variables = [
                 ds[name].id
@@ -1429,7 +1427,6 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
         pyds = UNPACKDAP4DATA(r, checksums=checksums).dataset
         for name in [name for name in pyds.keys() if isinstance(ds[name], BaseType)]:
             var = pyds[name]
-            print(var.id, URL)
             ds.dataset[var.id].data = np.asarray(var[:].data)
         del pyds
 
