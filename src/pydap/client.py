@@ -46,6 +46,7 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 import datetime as dt
 import hashlib
+import multiprocessing as mp
 import os
 import re
 import sqlite3
@@ -1291,6 +1292,7 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
                 register_all_for_batch(dataset, Variables, checksums=checksums)
                 fetch_batched(dataset, Variables)
             except KeyError:
+                print(Variables)
                 print(f"Failed to fetch data: {e}")
 
 
@@ -1738,7 +1740,8 @@ def stream_parallel(
     dim_slices=None,
     max_workers=4,
 ):
-    with ProcessPoolExecutor(max_workers=max_workers) as pool:
+    ctx = mp.get_context("spawn")  # <- IMPORTANT on Linux
+    with ProcessPoolExecutor(max_workers=max_workers, mp_context=ctx) as pool:
         futures = [
             pool.submit(
                 stream, url, session_state, output_path, keep_variables, dim_slices
