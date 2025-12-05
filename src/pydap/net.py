@@ -376,7 +376,6 @@ def new_session_with_same_store(base: CachedSession, **cache_kwargs) -> CachedSe
         backend=backend,
         cache_name=cache_name,
         fast_save=True,  # reduces write locking
-        sqlite_wal=True,
         **cache_kwargs,
     )
 
