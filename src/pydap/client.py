@@ -1244,12 +1244,10 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
         try:
             register_all_for_batch(dataset, Variables, checksums=checksums)
             fetch_batched(dataset, Variables)
-        except KeyError as e:
-            try:
-                register_all_for_batch(dataset, Variables, checksums=checksums)
-                fetch_batched(dataset, Variables)
-            except KeyError:
-                print(f"Failed to fetch data: {e}")
+        except KeyError:
+            dataset.disable_batch_mode()
+            for var in Variables:
+                dataset[var]._data = np.asarray(dataset[var][:].data)
 
 
 def data_check(_array: np.ndarray, key: tuple) -> np.ndarray:
