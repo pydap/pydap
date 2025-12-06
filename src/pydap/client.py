@@ -1214,6 +1214,8 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
         return
 
     ds = array.parent
+    dataset = ds.dataset
+
     set_dims = False
     if array.name in ds.dimensions:
         set_dims = True
