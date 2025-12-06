@@ -76,7 +76,7 @@ from pydap.handlers.dap import (
 from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
 from pydap.lib import encode, walk
 from pydap.model import BaseType, BatchPromise, DapType
-from pydap.net import GET, create_session, new_session_with_same_store, restore_session
+from pydap.net import GET, create_session, extract_session_state, restore_session
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
@@ -192,7 +192,6 @@ def consolidate_metadata(
     safe_mode=True,
     set_maps=False,
     verbose=False,
-    shared_dimensions=False,
     checksums=True,
     batch=True,
     ncores=None,
@@ -230,9 +229,6 @@ def consolidate_metadata(
         coords in xarray) that exist in the first remote url dataset. Then
         downloads all these within a single url. The url address is then
         stored in the session's headers as `Maps`.
-    shared_dimensions: bool (False default)
-        Takes the dimensions, and downloads all data in each data url at once
-        as opendap native dap response.
     verbose: bool, optional (default=False)
         For debugging purposes. If `True`, prints various URLs, normalized
         cache-keys, and other information.
@@ -305,8 +301,8 @@ def consolidate_metadata(
         results = [open_dmr(dmr_urls[0], session=session)]
         # Does not download the dmr responses, as a cached key was created.
         # But needs to run so the URL is assigned the key.
-        with session as Session:
-            _ = download_all_urls(Session, dmr_urls, ncores=ncores)
+        session_state = extract_session_state(session)
+        _ = download_all_urls(session_state, dmr_urls, ncores=ncores)
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     dims = set(list(results[0].dimensions))
@@ -318,30 +314,6 @@ def consolidate_metadata(
             stacklevel=2,
         )
     _check = "&dap4.checksum=true"
-
-    if shared_dimensions:
-        shared_dimension_urls = []
-        for i, url in enumerate(URLs):
-            _ces = url.split("?dap4.ce=")[-1].split(";")
-            ndims = ["/" + dim for dim in sorted(list(dims))]
-            _updated = sorted(list(set(_ces) - set(ndims)))
-            _ces = "%3B".join([dim for dim in ndims + _updated])
-            cdims_ce = "%3B".join(
-                [
-                    "/"
-                    + cdim
-                    + "%3D%5B0:1:"
-                    + str(results[i].dimensions[cdim] - 1)
-                    + "%5D"
-                    for cdim in sorted(dims)
-                ]
-            )
-            shared_dimension_urls.append(
-                url.split("?")[0] + ".dap?dap4.ce=" + cdims_ce + ";" + _ces + _check
-            )
-        with session as Session:
-            _ = download_all_urls(Session, shared_dimension_urls, ncores=ncores)
-        return shared_dimension_urls
 
     session.headers["consolidated"] = "True"
 
@@ -363,7 +335,8 @@ def consolidate_metadata(
                 url.split("?")[0] + ".dap?dap4.ce=/" + cdims_ce + _check
             )
         # step 2 download all concat_dim dap urls
-        _ = download_all_urls(session, concat_dim_urls, ncores=ncores)
+        session_state = extract_session_state(session)
+        _ = download_all_urls(session_state, concat_dim_urls, ncores=ncores)
 
     # Step 3: Download non-concat dimensions
     # and create special cache key for reuse
@@ -472,15 +445,18 @@ def consolidate_metadata(
                 url_list=URLs,
             )
             session.settings.key_fn = key_fn
-        _ = download_all_urls(session, new_urls, ncores=ncores)
+
+        session_state = extract_session_state(session)
+        _ = download_all_urls(session_state, new_urls, ncores=ncores)
     return None
 
 
-def fetch_dim(url, session, timeout=30):
+def fetch_dim(url, session_state, timeout=30):
     """helper function that enables catch of http vs https
     connection errors (mostly for testing).
     """
-    new_session = new_session_with_same_store(base=session)
+    new_session = restore_session(session_state)
+
     try:
         resp = new_session.get(url, timeout=timeout)
         resp.raise_for_status()
@@ -495,13 +471,15 @@ def fetch_dim(url, session, timeout=30):
             raise e
 
 
-def download_all_urls(session, urls, ncores=4):
+def download_all_urls(session_state, urls, ncores=4):
     """Helper function that enables parallel download of multiple
     responses. Enables to identify which URL failed.
     """
     results = []
     with ThreadPoolExecutor(max_workers=ncores) as executor:
-        future_to_url = {executor.submit(fetch_dim, url, session): url for url in urls}
+        future_to_url = {
+            executor.submit(fetch_dim, url, session_state): url for url in urls
+        }
         for future in as_completed(future_to_url):
             url = future_to_url[future]
             try:
@@ -509,7 +487,7 @@ def download_all_urls(session, urls, ncores=4):
                 results.append(result)
             except Exception as e:
                 print(f"[ERROR] Unexpected failure for {url}: {e}" ". Trying again")
-                fetch_dim(url, session)
+                fetch_dim(url, session_state)
     return results
 
 
@@ -1234,44 +1212,40 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
     """
     if array._is_data_loaded():
         return
-    # import pydap
 
     ds = array.parent
+    dataset = ds.dataset
+
+    set_dims = False
     if array.name in ds.dimensions:
         set_dims = True
+        Variables = [
+            ds[name].id
+            for name in ds.dimensions
+            if name in ds.keys() and isinstance(ds[name], BaseType)
+        ]  # fully qualified names
     else:
-        set_dims = False
-
-    if "consolidated" in ds.dataset.session.headers and set_dims:
-        # need to add a check that consolidated has
-        # been performed on that collection.
-        fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
-    else:
-        if set_dims:
-            Variables = [
-                ds[name].id
-                for name in ds.dimensions
-                if name in ds.keys() and isinstance(ds[name], BaseType)
-            ]  # fully qualified names
-        if not set_dims:
-            Variables = [
-                ds[var_name].id
-                for var_name in sorted(ds.variables())
-                if isinstance(ds[var_name], BaseType)
-                and not ds[var_name]._is_data_loaded()
-                and var_name not in ds.dimensions
-            ]
-        dataset = ds.dataset
-        dataset.register_dim_slices(array, key=key)  # here slices are recorded
-        try:
+        Variables = [
+            ds[var_name].id
+            for var_name in sorted(ds.variables())
+            if isinstance(ds[var_name], BaseType)
+            and not ds[var_name]._is_data_loaded()
+            and var_name not in ds.dimensions
+        ]
+    try:
+        if "consolidated" in ds.dataset.session.headers and set_dims:
+            # need to add a check that consolidated has
+            # been performed on that collection.
+            fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
+        else:
+            dataset = ds.dataset
+            dataset.register_dim_slices(array, key=key)  # here slices are recorded
             register_all_for_batch(dataset, Variables, checksums=checksums)
             fetch_batched(dataset, Variables)
-        except KeyError as e:
-            try:
-                register_all_for_batch(dataset, Variables, checksums=checksums)
-                fetch_batched(dataset, Variables)
-            except KeyError:
-                print(f"Failed to fetch data: {e}")
+    except (KeyError, AttributeError):
+        dataset.disable_batch_mode()
+        for var in Variables:
+            dataset[var]._data = np.asarray(dataset[var][:].data)
 
 
 def data_check(_array: np.ndarray, key: tuple) -> np.ndarray:

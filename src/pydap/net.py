@@ -466,18 +466,63 @@ def cache_store_id(obj: Union[CachedSession, BaseCache]) -> Tuple[Backend, str]:
 
 
 def extract_session_state(session):
-    return dict(
+    """
+    Extract reusable session state including auth, headers, cookies, TLS verify,
+    and (if the session is a CachedSession) its backend and cache_name.
+
+    Returns a dict suitable for restore_session().
+    """
+    state = dict(
         headers=dict(session.headers),
         cookies=dict(session.cookies),
         auth=session.auth,
         verify=session.verify,
+        cache_name=None,
+        backend=None,
+        cache_kwargs={},
     )
+
+    if isinstance(session, CachedSession):
+        cache = session.cache
+        state["backend"] = detect_backend(session)
+        state["cache_name"] = cache.cache_name
+
+        if hasattr(cache, "wal"):
+            state["cache_kwargs"]["sqlite_wal"] = cache.wal
+
+        # If fast_save was used
+        if hasattr(cache, "fast_save"):
+            state["cache_kwargs"]["fast_save"] = cache.fast_save
+
+    return state
 
 
 def restore_session(session_state):
-    s = requests.Session()
-    s.headers.update(session_state["headers"])
-    s.cookies.update(session_state["cookies"])
-    s.auth = session_state["auth"]
-    s.verify = session_state["verify"]
+    """
+    Restore a session (either CachedSession or plain Session)
+    from the dictionary produced by extract_session_state().
+
+    If session_state["cache_name"] is not None, reconstruct a CachedSession.
+    Otherwise return a plain requests.Session().
+    """
+
+    cache_name = session_state.get("cache_name")
+    backend = session_state.get("backend")
+    cache_kwargs = session_state.get("cache_kwargs", {})
+
+    if cache_name is not None and backend is not None:
+        s = CachedSession(
+            cache_name=cache_name,
+            backend=backend,
+            **cache_kwargs,
+        )
+
+    else:
+        s = requests.Session()
+
+    s.headers.update(session_state.get("headers", {}))
+    s.cookies.update(session_state.get("cookies", {}))
+    s.auth = session_state.get("auth")
+    s.verify = session_state.get("verify")
+
     return s
