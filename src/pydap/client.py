@@ -1212,42 +1212,38 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
     """
     if array._is_data_loaded():
         return
-    # import pydap
 
     ds = array.parent
+    set_dims = False
     if array.name in ds.dimensions:
         set_dims = True
+        Variables = [
+            ds[name].id
+            for name in ds.dimensions
+            if name in ds.keys() and isinstance(ds[name], BaseType)
+        ]  # fully qualified names
     else:
-        set_dims = False
-
-    if "consolidated" in ds.dataset.session.headers and set_dims:
-        # need to add a check that consolidated has
-        # been performed on that collection.
-        fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
-    else:
-        if set_dims:
-            Variables = [
-                ds[name].id
-                for name in ds.dimensions
-                if name in ds.keys() and isinstance(ds[name], BaseType)
-            ]  # fully qualified names
-        if not set_dims:
-            Variables = [
-                ds[var_name].id
-                for var_name in sorted(ds.variables())
-                if isinstance(ds[var_name], BaseType)
-                and not ds[var_name]._is_data_loaded()
-                and var_name not in ds.dimensions
-            ]
-        dataset = ds.dataset
-        dataset.register_dim_slices(array, key=key)  # here slices are recorded
-        try:
+        Variables = [
+            ds[var_name].id
+            for var_name in sorted(ds.variables())
+            if isinstance(ds[var_name], BaseType)
+            and not ds[var_name]._is_data_loaded()
+            and var_name not in ds.dimensions
+        ]
+    try:
+        if "consolidated" in ds.dataset.session.headers and set_dims:
+            # need to add a check that consolidated has
+            # been performed on that collection.
+            fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
+        else:
+            dataset = ds.dataset
+            dataset.register_dim_slices(array, key=key)  # here slices are recorded
             register_all_for_batch(dataset, Variables, checksums=checksums)
             fetch_batched(dataset, Variables)
-        except KeyError:
-            dataset.disable_batch_mode()
-            for var in Variables:
-                dataset[var]._data = np.asarray(dataset[var][:].data)
+    except (KeyError, AttributeError):
+        dataset.disable_batch_mode()
+        for var in Variables:
+            dataset[var]._data = np.asarray(dataset[var][:].data)
 
 
 def data_check(_array: np.ndarray, key: tuple) -> np.ndarray:
@@ -1384,7 +1380,7 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
     """
 
     var_name = list(ds.variables())[0]
-    baseurl = ds[var_name]._data.baseurl
+    baseurl = ds[var_name].data.baseurl
     session = ds.dataset.session
     if not cache_urls and isinstance(session, CachedSession):
         # gets them from cache
