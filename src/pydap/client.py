@@ -1384,7 +1384,7 @@ def fetch_consolidated(ds, cache_urls=None, checksums=True) -> None:
     """
 
     var_name = list(ds.variables())[0]
-    baseurl = ds[var_name].data.baseurl
+    baseurl = ds[var_name]._data.baseurl
     session = ds.dataset.session
     if not cache_urls and isinstance(session, CachedSession):
         # gets them from cache
