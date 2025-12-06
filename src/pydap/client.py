@@ -459,7 +459,6 @@ def fetch_dim(url, session_state, timeout=30):
 
     try:
         resp = new_session.get(url, timeout=timeout)
-        _ = resp.content
         resp.raise_for_status()
         return resp
     except (ConnectionError, SSLError) as e:
