@@ -74,8 +74,7 @@ from pydap.handlers.dap import (
     StreamReader,
     unpack_dap2_data,
 )
-from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
-from pydap.lib import encode, walk
+from pydap.lib import DEFAULT_TIMEOUT, encode, walk
 from pydap.model import BaseType, BatchPromise, DapType
 from pydap.net import GET, create_session, extract_session_state, restore_session
 from pydap.parsers.das import add_attributes, parse_das

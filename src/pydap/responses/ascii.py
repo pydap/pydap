@@ -14,10 +14,10 @@ import copy
 
 import numpy as np
 
-from ..lib import __version__, encode
-from ..model import BaseType, SequenceType, StructureType
-from .dds import dds
-from .lib import BaseResponse
+from pydap.lib import __version__, encode
+from pydap.model import BaseType, SequenceType, StructureType
+from pydap.responses.dds import dds
+from pydap.responses.lib import BaseResponse
 
 
 class ASCIIResponse(BaseResponse):

@@ -16,9 +16,9 @@ from collections.abc import Iterable
 
 import numpy as np
 
-from ..lib import NUMPY_TO_DAP2_TYPEMAP, __version__, _quote, encode
-from ..model import BaseType, DatasetType, GridType, SequenceType, StructureType
-from .lib import BaseResponse
+from pydap.lib import NUMPY_TO_DAP2_TYPEMAP, __version__, _quote, encode
+from pydap.model import BaseType, DatasetType, GridType, SequenceType, StructureType
+from pydap.responses.lib import BaseResponse
 
 INDENT = " " * 4
 

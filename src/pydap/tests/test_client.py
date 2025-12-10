@@ -27,12 +27,11 @@ from pydap.client import (
     stream,
     stream_parallel,
 )
-
-from ..handlers.lib import BaseHandler
-from ..lib import _quote
-from ..model import BaseType, DatasetType, GridType
-from ..net import create_session
-from .datasets import SimpleGrid, SimpleSequence, SimpleStructure
+from pydap.handlers.lib import BaseHandler
+from pydap.lib import _quote
+from pydap.model import BaseType, DatasetType, GridType
+from pydap.net import create_session
+from pydap.tests.datasets import SimpleGrid, SimpleSequence, SimpleStructure
 
 DODS = os.path.join(os.path.dirname(__file__), "data/test.01.dods")
 DAS = os.path.join(os.path.dirname(__file__), "data/test.01.das")

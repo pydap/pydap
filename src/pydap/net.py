@@ -18,7 +18,8 @@ from requests_cache import BaseCache, CachedSession
 from urllib3 import Retry
 from webob.request import Request as webob_Request
 
-from pydap.lib import DEFAULT_TIMEOUT, __version__, _quote
+from pydap import __version__
+from pydap.lib import DEFAULT_TIMEOUT, _quote
 
 _BEARER_RE = re.compile(r"^\s*Bearer\s+.+", re.IGNORECASE)
 

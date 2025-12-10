@@ -9,8 +9,8 @@ import ast
 import operator
 import re
 
-from ..exceptions import ConstraintExpressionError
-from ..lib import get_var, unquote
+from pydap.exceptions import ConstraintExpressionError
+from pydap.lib import get_var, unquote
 
 
 def parse_projection(input, protocol="dap2"):

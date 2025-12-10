@@ -14,7 +14,6 @@ import itertools
 import operator
 import re
 import sys
-from importlib.metadata import entry_points
 
 import numpy as np
 from numpy.lib import Arrayterator
@@ -35,6 +34,8 @@ CORS_RESPONSES = ["dds", "das", "dods", "ver", "json", "dmr"]
 
 def load_handlers():
     r"""Load all handlers, returning them on a list."""
+    from importlib.metadata import entry_points
+
     eps = entry_points(group="pydap.handler")
     Rs = [r for r in eps if r.module[:5] == "pydap"]
     nRs = [r for r in eps if r.module[:5] != "pydap"]

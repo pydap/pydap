@@ -9,7 +9,7 @@ from requests.packages.urllib3.exceptions import (
 )
 from requests.utils import urlparse, urlunparse
 
-from ..lib import __version__
+from pydap import __version__
 
 ssl_verify_categories = [InsecureRequestWarning, InsecurePlatformWarning]
 

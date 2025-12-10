@@ -11,8 +11,8 @@ import operator
 import re
 from functools import reduce
 
-from ..lib import walk
-from . import SimpleParser
+from pydap.lib import walk
+from pydap.parsers import SimpleParser
 
 
 class DASParser(SimpleParser):

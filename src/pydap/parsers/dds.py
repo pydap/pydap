@@ -4,9 +4,9 @@ import re
 
 import numpy as np
 
-from ..lib import LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP, _quote
-from ..model import BaseType, DatasetType, GridType, SequenceType, StructureType
-from . import SimpleParser
+from pydap.lib import LOWER_DAP2_TO_NUMPY_PARSER_TYPEMAP, _quote
+from pydap.model import BaseType, DatasetType, GridType, SequenceType, StructureType
+from pydap.parsers import SimpleParser
 
 constructors = ("grid", "sequence", "structure")
 name_regexp = r'[\w%!~"\'\*-]+'

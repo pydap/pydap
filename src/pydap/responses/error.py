@@ -10,7 +10,7 @@ from traceback import print_exception
 
 from webob import Response
 
-from ..lib import __version__, encode
+from pydap.lib import __version__, encode
 
 
 class ErrorResponse(object):

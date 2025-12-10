@@ -11,8 +11,8 @@ from webob import Response
 from webob.dec import wsgify
 from webob.exc import HTTPSeeOther
 
-from ...lib import __version__
-from ..lib import BaseResponse
+from pydap.lib import __version__
+from pydap.responses.lib import BaseResponse
 
 
 class HTMLResponse(BaseResponse):

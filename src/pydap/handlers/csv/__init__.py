@@ -9,10 +9,10 @@ import time
 from email.utils import formatdate
 from stat import ST_MTIME
 
-from ...exceptions import OpenFileError
-from ...handlers.lib import BaseHandler, IterData
-from ...model import BaseType, DatasetType, SequenceType
-from ...parsers.das import add_attributes
+from pydap.exceptions import OpenFileError
+from pydap.handlers.lib import BaseHandler, IterData
+from pydap.model import BaseType, DatasetType, SequenceType
+from pydap.parsers.das import add_attributes
 
 
 class CSVHandler(BaseHandler):
