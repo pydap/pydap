@@ -2,6 +2,7 @@
 
 import datetime as dt
 import os
+import tempfile
 
 import numpy as np
 import pytest
@@ -1413,21 +1414,23 @@ def test_consolidate_non_matching_dims(cache_tmp_dir):
     cached_session.cache.clear()
 
 
-def test_stream(cache_tmp_dir):
+def test_stream():
     url = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
-    _ = stream(
-        url,
-        output_path=cache_tmp_dir,
-    )
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        _ = stream(
+            url,
+            output_path=tmp_dir,
+        )
 
 
-def test_stream_parallel(cache_tmp_dir):
+def test_stream_parallel():
     urls = [
         "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
         "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
     ]
-    _ = stream_parallel(
-        urls,
-        output_path=cache_tmp_dir,
-        max_workers=2,
-    )
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        _ = stream_parallel(
+            urls,
+            output_path=tmp_dir,
+            max_workers=2,
+        )
