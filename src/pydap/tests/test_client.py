@@ -8,7 +8,7 @@ import pytest
 import requests
 from requests_cache import CachedSession
 
-from ..client import (
+from pydap.client import (
     compute_base_url_prefix,
     consolidate_metadata,
     data_check,
@@ -23,7 +23,10 @@ from ..client import (
     patch_session_for_shared_dap_cache,
     recover_missing_url,
     register_all_for_batch,
+    stream,
+    stream_parallel,
 )
+
 from ..handlers.lib import BaseHandler
 from ..lib import _quote
 from ..model import BaseType, DatasetType, GridType
@@ -1408,3 +1411,23 @@ def test_consolidate_non_matching_dims(cache_tmp_dir):
         )
     assert "consolidated" not in cached_session.headers
     cached_session.cache.clear()
+
+
+def test_stream(cache_tmp_dir):
+    url = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
+    _ = stream(
+        url,
+        output_path=cache_tmp_dir,
+    )
+
+
+def test_stream_parallel(cache_tmp_dir):
+    urls = [
+        "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+        "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+    ]
+    _ = stream_parallel(
+        urls,
+        output_path=cache_tmp_dir,
+        max_workers=2,
+    )
