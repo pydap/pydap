@@ -5,7 +5,7 @@ import csv
 import numpy as np
 import pytest
 
-from pydap.handlers.csv_handler import CSVHandler
+from pydap.handlers._csv import CSVHandler
 from pydap.handlers.dap import DAPHandler
 
 
