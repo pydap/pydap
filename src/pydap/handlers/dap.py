@@ -1130,6 +1130,8 @@ class UNPACKDAP4DATA(object):
         from netCDF4 import Dataset
 
         filename = unquote(dataset.name)
+        if not filename.endswith("nc4"):
+            filename = str(Path(filename).with_suffix("")) + ".nc4"
         self.nc = Dataset(self.output_path / filename, "w")
         # start at root
         # create dimensions

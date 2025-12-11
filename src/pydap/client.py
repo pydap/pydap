@@ -55,6 +55,7 @@ from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
+from pathlib import Path
 from typing import Iterable, List, Optional, Set
 from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 
@@ -73,8 +74,7 @@ from pydap.handlers.dap import (
     StreamReader,
     unpack_dap2_data,
 )
-from pydap.lib import DEFAULT_TIMEOUT as DEFAULT_TIMEOUT
-from pydap.lib import encode, walk
+from pydap.lib import DEFAULT_TIMEOUT, encode, walk
 from pydap.model import BaseType, BatchPromise, DapType
 from pydap.net import GET, create_session, extract_session_state, restore_session
 from pydap.parsers.das import add_attributes, parse_das
@@ -1638,14 +1638,27 @@ def create_key(
     return hashlib.sha256(key_material).hexdigest()
 
 
-def stream(url, session_state, output_path, keep_variables=None, dim_slices=None):
+def stream(
+    url, session_state=None, output_path=None, keep_variables=None, dim_slices=None
+):
     """
     Downloads a dap response and stores it to a local directory. When keep variables
     or dim_slices are passed, a constrained dap response is downloaded.
     """
-    session = restore_session(session_state)
+
     dap_url = url.split("?")[0] + ".dap"
     ce = "?dap4.ce="
+
+    if not session_state:
+        session = create_session()
+    else:
+        session = restore_session(session_state)
+    if output_path is None:
+        warnings.warn(
+            "No location was provided. The file will be stored "
+            "in the current directory by default"
+        )
+        output_path = Path(".")
 
     if urlparse(url).query:
         if (keep_variables, dim_slices) is not None:
@@ -1677,15 +1690,20 @@ def stream(url, session_state, output_path, keep_variables=None, dim_slices=None
 
     if ce != "?dap4.ce=":
         dap_url += ce
-    r = session.get(dap_url + "&dap4.checksums", stream=True)
+    if bool(parse_qs(dap_url)):
+        dap_url += "&dap4.checksum=true"
+    else:
+        dap_url += "?dap4.checksum=true"
+
+    r = session.get(dap_url, stream=True)
     UNPACKDAP4DATA(r=r, checksums=True, output_path=output_path)
     return url
 
 
 def stream_parallel(
     urls,
-    session_state,
-    output_path,
+    session_state=None,
+    output_path=None,
     keep_variables=None,
     dim_slices=None,
     max_workers=4,

@@ -6,7 +6,7 @@ from json import dumps
 
 from webob import Response
 
-from ..lib import __dap__, __version__
+from pydap.lib import __dap__, __version__
 
 
 class VersionResponse(object):

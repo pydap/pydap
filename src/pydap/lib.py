@@ -9,8 +9,8 @@ import numpy as np
 from requests.utils import quote as quote_
 from requests.utils import unquote as unquote_
 
-from . import __version__
-from .exceptions import ConstraintExpressionError
+from pydap import __version__
+from pydap.exceptions import ConstraintExpressionError
 
 __dap__ = "2.15"
 

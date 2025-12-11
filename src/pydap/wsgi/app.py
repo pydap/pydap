@@ -33,9 +33,10 @@ from webob.dec import wsgify
 from webob.exc import HTTPForbidden, HTTPNotFound
 from webob.static import DirectoryApp, FileApp
 
-from ..exceptions import ExtensionNotSupportedError
-from ..handlers.lib import get_handler, load_handlers
-from ..lib import __version__, unquote
+from pydap.exceptions import ExtensionNotSupportedError
+from pydap.handlers.lib import get_handler, load_handlers
+from pydap.lib import __version__, unquote
+
 from .ssf import ServerSideFunctions
 
 

@@ -13,7 +13,7 @@ import copy
 
 import numpy as np
 
-from ..lib import (
+from pydap.lib import (
     DAP2_ARRAY_LENGTH_NUMPY_TYPE,
     DAP2_TO_NUMPY_RESPONSE_TYPEMAP,
     END_OF_SEQUENCE,
@@ -22,6 +22,7 @@ from ..lib import (
     __version__,
     walk,
 )
+
 from ..model import BaseType, SequenceType, StructureType
 from .dds import dds
 from .lib import BaseResponse

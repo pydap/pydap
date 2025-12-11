@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from netCDF4 import Dataset
 
-from pydap.handlers.netcdf import NetCDFHandler
+from pydap.handlers.netcdf_handler import NetCDFHandler
 
 
 @pytest.fixture(scope="module")

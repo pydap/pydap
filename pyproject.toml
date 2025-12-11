@@ -48,8 +48,8 @@ density = "pydap.wsgi.functions:density"
 mean = "pydap.wsgi.functions:mean"
 
 [project.entry-points."pydap.handler"]
-csv = "pydap.handlers.csv:CSVHandler"
-nc = "pydap.handlers.netcdf:NetCDFHandler"
+csv = "pydap.handlers.csv_handler:CSVHandler"
+nc = "pydap.handlers.netcdf_handler:NetCDFHandler"
 
 [project.entry-points."pydap.response"]
 asc = "pydap.responses.ascii:ASCIIResponse"

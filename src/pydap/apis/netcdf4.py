@@ -2,8 +2,8 @@ import logging
 
 from netCDF4 import Dataset
 
-from ..handlers.lib import BaseHandler
-from ..server.devel import LocalTestServer
+from pydap.handlers.lib import BaseHandler
+from pydap.server.devel import LocalTestServer
 
 _logger = logging.getLogger(__name__)
 
