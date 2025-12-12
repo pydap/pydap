@@ -1413,12 +1413,16 @@ def test_consolidate_non_matching_dims(cache_tmp_dir):
     cached_session.cache.clear()
 
 
-def test_stream():
+@pytest.mark.parametrize("dim_slices", [None, {"TIME": (0, 1)}])
+def test_stream(dim_slices):
+    keep_variables = ["TIME", "COADSX", "COADSY", "SST"]
     url = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
     with tempfile.TemporaryDirectory() as tmp_dir:
         _ = stream(
             url,
             output_path=tmp_dir,
+            keep_variables=keep_variables,
+            dim_slices=dim_slices,
         )
 
 
