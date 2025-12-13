@@ -1682,7 +1682,7 @@ def stream(
         ce += ";".join(shared_dim)
 
     if keep_variables is not None:
-        if not set(dim_slices).issubset(keep_variables):
+        if dim_slices and not set(dim_slices).issubset(keep_variables):
             keep_variables += list(set(dim_slices.keys()) - set(keep_variables))
         if dim_slices is not None:
             ce += ";"
