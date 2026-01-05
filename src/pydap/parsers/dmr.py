@@ -47,7 +47,9 @@ def dap4_to_numpy_typemap(type_string):
 def get_variables(node, prefix="") -> dict:
     variables = OrderedDict()
     group_name = (
-        pydap.lib._quote(node.get("name")) if node.get("name") is not None else None
+        pydap.lib._quote(node.get("name"))
+        if node.tag in ["Dataset", "Group", "Structure"]
+        else None if node.get("name") is not None else None
     )
     if group_name is None:
         return variables
@@ -57,7 +59,10 @@ def get_variables(node, prefix="") -> dict:
         if subnode.tag in dmr_atomic_types + ("String",):
             name = subnode.get("name")
             if prefix != "":
-                name = prefix + "/" + name
+                if node.tag == "Group":
+                    name = prefix + "/" + name
+                elif node.tag in ["Structure", "Sequences"]:
+                    name = prefix + "." + name
             _dims = get_dim_names(copy.deepcopy(subnode))
             variables[name] = {
                 "name": name,
@@ -282,7 +287,6 @@ def dmr_to_dataset(dmr):
                 except KeyError as e:
                     print(name, variables[name]["dims"])
                     raise e
-
     for name, variable in variables.items():
         var_name = variable["name"]
         path = None
@@ -312,7 +316,6 @@ def dmr_to_dataset(dmr):
                     nqfDims.append("/" + dim)
                 else:
                     nqfDims.append(dim)
-
         # pass along maps
         var_kwargs = {
             "name": pydap.lib._quote(name),
@@ -328,9 +331,8 @@ def dmr_to_dataset(dmr):
             "Sequence",
             "Structure",
         ]:
-            parts = name.split(split_by)
-            parent_name = parts[-2]
-            path = ("/").join(parts[:-2])
+            # Flat Access
+            parent_name = name.split(".")[-2]
             if (
                 variable["parent"] == "Sequence"
                 and parent_name not in dataset[path].keys()
@@ -345,8 +347,6 @@ def dmr_to_dataset(dmr):
             dataset.createVariable(**var_kwargs)
         # assign root to each variable
         dataset.assign_dataset_recursive(dataset)
-
-    del variables, variable
 
     return dataset
 
