@@ -319,7 +319,6 @@ def dmr_to_dataset(dmr, flat=True):
 
         # pass along maps
         var_kwargs = {
-            "name": pydap.lib._quote(name),
             "data": data,
             "dims": Dims,
             "dtype": variable["dtype"],
@@ -332,14 +331,32 @@ def dmr_to_dataset(dmr, flat=True):
             "Sequence",
             "Structure",
         ]:
-            # Flat Access
             parent_type = variable["parent"]
-            warnings.warn(
-                f"The remote dataset contains a variable named `{name[1:]}` inside a"
-                f" `{parent_type}`, and its access is flattened. The variable can be"
-                f" safely accessed by replacing the `dot` in the variable name with"
-                " `%2E`."
-            )
+            if flat:
+                # Flat Access
+                warnings.warn(
+                    f"The remote dataset contains a variable named `{name[1:]}` inside"
+                    f" a `{parent_type}`, and its access is flattened. The variable"
+                    " can be safely accessed by replacing the `dot` in the variable "
+                    "name with `%2E`."
+                )
+                var_kwargs.update({"name": pydap.lib._quote(name)})
+            else:
+                parent_name = name.split(".")
+                var_kwargs.update({"name": name})
+                if len(parent_name) > 2:
+                    raise ValueError(
+                        f" The variable {name[1:]} contains one or more nested"
+                        f"{parent_type}s. This is currently unsupported. Consider"
+                        "removing this variable by using a Constraint Expression"
+                    )
+                if parent_name[0][1:] not in dataset.keys():
+                    if parent_type == "Sequence":
+                        dataset.createSequence(parent_name[0], dims=Dims)
+                    else:
+                        dataset.createStructure(parent_name[0], dims=Dims)
+        else:
+            var_kwargs.update({"name": pydap.lib._quote(name)})
         dataset.createVariable(**var_kwargs)
         # assign root to each variable
         dataset.assign_dataset_recursive(dataset)
