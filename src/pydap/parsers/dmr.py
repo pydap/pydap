@@ -336,8 +336,9 @@ def dmr_to_dataset(dmr, flat=True):
             parent_type = variable["parent"]
             warnings.warn(
                 f"The remote dataset contains a variable named `{name[1:]}` inside a"
-                f" `{parent_type}`. The access to the variable is flattened and "
-                f"escaped. It can accessed unescaped as: {name[1:]}."
+                f" `{parent_type}`, and its access is flattened. The variable can be"
+                f" safely accessed by replacing the `dot` in the variable name with"
+                " `%2E`."
             )
         dataset.createVariable(**var_kwargs)
         # assign root to each variable
