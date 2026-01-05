@@ -48,7 +48,7 @@ def get_variables(node, prefix="") -> dict:
     variables = OrderedDict()
     group_name = (
         pydap.lib._quote(node.get("name"))
-        if node.tag in ["Dataset", "Group", "Structure"]
+        if node.tag in ["Dataset", "Group", "Structure", "Sequence"]
         else None if node.get("name") is not None else None
     )
     if group_name is None:
@@ -61,7 +61,7 @@ def get_variables(node, prefix="") -> dict:
             if prefix != "":
                 if node.tag == "Group":
                     name = prefix + "/" + name
-                elif node.tag in ["Structure", "Sequences"]:
+                elif node.tag in ["Structure", "Sequence"]:
                     name = prefix + "." + name
             _dims = get_dim_names(copy.deepcopy(subnode))
             variables[name] = {
@@ -253,7 +253,7 @@ def get_groups(node, prefix="/") -> dict:
     return out
 
 
-def dmr_to_dataset(dmr):
+def dmr_to_dataset(dmr, flat=True):
     """Return a dataset object from a DMR representation."""
 
     # Parse the DMR. First dropping the namespace
@@ -316,6 +316,7 @@ def dmr_to_dataset(dmr):
                     nqfDims.append("/" + dim)
                 else:
                     nqfDims.append(dim)
+
         # pass along maps
         var_kwargs = {
             "name": pydap.lib._quote(name),
@@ -332,19 +333,13 @@ def dmr_to_dataset(dmr):
             "Structure",
         ]:
             # Flat Access
-            parent_name = name.split(".")[-2]
-            if (
-                variable["parent"] == "Sequence"
-                and parent_name not in dataset[path].keys()
-            ):
-                dataset.createSequence(("/").join(parts), path=path)
-            elif (
-                variable["parent"] == "Structure"
-                and parent_name not in dataset[path].keys()
-            ):
-                dataset.createStructure(("/").join(parts), path=path)
-        else:
-            dataset.createVariable(**var_kwargs)
+            parent_type = variable["parent"]
+            warnings.warn(
+                f"The remote dataset contains a variable named `{name[1:]}` inside a"
+                f" `{parent_type}`. The access to the variable is flattened and "
+                f"escaped. It can accessed unescaped as: {name[1:]}."
+            )
+        dataset.createVariable(**var_kwargs)
         # assign root to each variable
         dataset.assign_dataset_recursive(dataset)
 

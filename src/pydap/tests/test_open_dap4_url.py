@@ -204,5 +204,18 @@ def test_dmrpp_open_dataset():
     )
 
 
+@pytest.mark.parametrize(
+    "url,var",
+    [
+        ("dap4://test.opendap.org/opendap/dap4/d4ts/test_struct1.nc.h5", "s.x"),
+        ("dap4://test.opendap.org/opendap/data/ff/avhrr.dat", "URI_Avhrr.day"),
+    ],
+)
+def test_structs_and_sequences_warns(url, var):
+    with pytest.warns(UserWarning):
+        pyds = open_url(url)
+        pyds[var][:].data
+
+
 if __name__ == "__main__":
     test_maps()
