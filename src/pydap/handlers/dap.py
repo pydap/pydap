@@ -88,7 +88,8 @@ class DAPHandler(BaseHandler):
         url,
         application=None,
         session=None,
-        output_grid=True,
+        output_grid=False,
+        flat=True,
         timeout=DEFAULT_TIMEOUT,
         verify=True,
         checksums=True,
@@ -100,6 +101,7 @@ class DAPHandler(BaseHandler):
         self.application = application
         self.session = session
         self.output_grid = output_grid
+        self.flat = flat
         self.timeout = timeout
         self.verify = verify
         self.checksums = checksums
@@ -222,7 +224,7 @@ class DAPHandler(BaseHandler):
             get_kwargs=self.get_kwargs,
         )
         dmr = safe_charset_text(r, self.user_charset)
-        self.dataset = dmr_to_dataset(dmr)
+        self.dataset = dmr_to_dataset(dmr, self.flat)
 
     def dataset_from_dap2(self):
         # escape for certain characters
@@ -280,14 +282,23 @@ class DAPHandler(BaseHandler):
     def add_dap4_proxies(self):
         # remove any projection from the base_url, leaving selections
         for var in walk(self.dataset, BaseType):
-            if var.path is not None:
-                var_name = (
-                    var.path + "/" + var.name
-                    if var.path[-1] != "/"
-                    else var.path + var.name
-                )
+            if hasattr(var, "parent") and isinstance(var.parent, StructureType):
+                if var.parent.type == "Group":
+                    var_name = var.parent.id + "/" + var.name
+                elif isinstance(var.parent, DatasetType):
+                    var_name = var.name
+                elif var.parent.type == "Structure":
+                    var_name = var.parent.id + "." + var.name
             else:
-                var_name = var.name
+                if var.path is not None:
+                    var_name = (
+                        var.path + "/" + var.name
+                        if var.path[-1] != "/"
+                        else var.path + var.name
+                    )
+                else:
+                    var_name = var.name
+            print(var_name)
             var.data = BaseProxyDap4(
                 self.base_url,
                 var_name,
