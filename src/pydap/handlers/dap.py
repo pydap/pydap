@@ -88,7 +88,7 @@ class DAPHandler(BaseHandler):
         url,
         application=None,
         session=None,
-        output_grid=False,
+        output_grid=True,
         flat=True,
         timeout=DEFAULT_TIMEOUT,
         verify=True,
