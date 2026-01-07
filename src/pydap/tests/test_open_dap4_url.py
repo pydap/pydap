@@ -246,7 +246,7 @@ def test_structs_and_sequences_warns(url, var, expected_value):
 def test_structs_and_sequences_unflat(url, var, ContainerType, val):
     pyds = open_url(url, flat=False)
     assert isinstance(pyds[var].parent, ContainerType)
-    if isinstance(pyds[var].parent, StructureType):
+    if not isinstance(pyds[var].parent, SequenceType):
         assert pyds[var][:].data == val
 
 

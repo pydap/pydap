@@ -314,16 +314,10 @@ class DAPHandler(BaseHandler):
             )
 
         for var in walk(self.dataset, SequenceType):
-            template = copy.copy(var)
-            var.data = SequenceProxy(
-                self.base_url,
-                template,
-                selection=self.selection,
-                application=self.application,
-                session=self.session,
-                timeout=self.timeout,
-                verify=self.verify,
-                get_kwargs={**self.get_kwargs, "stream": True},
+            warnings.warn(
+                f"The remote file contains Sequence `{var.name}`"
+                ". Sequences in DAP4 are not fully supported and their"
+                " use may lead to unexpected results."
             )
 
         self.dataset.assign_dataset_recursive(self.dataset)
