@@ -287,9 +287,9 @@ class DAPHandler(BaseHandler):
                     var_name = var.parent.id + "/" + var.name
                 elif isinstance(var.parent, DatasetType):
                     var_name = var.name
-                elif var.parent.type == "Structure":
-                    var_name = var.parent.id + "." + var.name
-                elif isinstance(var.parent, SequenceType):
+                elif var.parent.type == "Structure" or isinstance(
+                    var.parent, SequenceType
+                ):
                     var_name = var.parent.id + "." + var.name
             else:
                 if var.path is not None:
