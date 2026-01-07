@@ -289,6 +289,8 @@ class DAPHandler(BaseHandler):
                     var_name = var.name
                 elif var.parent.type == "Structure":
                     var_name = var.parent.id + "." + var.name
+                elif isinstance(var.parent, SequenceType):
+                    var_name = var.parent.id + "." + var.name
             else:
                 if var.path is not None:
                     var_name = (
@@ -298,7 +300,6 @@ class DAPHandler(BaseHandler):
                     )
                 else:
                     var_name = var.name
-            print(var_name)
             var.data = BaseProxyDap4(
                 self.base_url,
                 var_name,
@@ -309,6 +310,19 @@ class DAPHandler(BaseHandler):
                 timeout=self.timeout,
                 verify=self.verify,
                 checksums=self.checksums,
+                get_kwargs={**self.get_kwargs, "stream": True},
+            )
+
+        for var in walk(self.dataset, SequenceType):
+            template = copy.copy(var)
+            var.data = SequenceProxy(
+                self.base_url,
+                template,
+                selection=self.selection,
+                application=self.application,
+                session=self.session,
+                timeout=self.timeout,
+                verify=self.verify,
                 get_kwargs={**self.get_kwargs, "stream": True},
             )
 
