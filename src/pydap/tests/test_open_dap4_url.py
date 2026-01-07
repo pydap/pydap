@@ -250,5 +250,11 @@ def test_structs_and_sequences_unflat(url, var, ContainerType, val):
         assert pyds[var][:].data == val
 
 
+def test_sequence_warns():
+    url = "dap4://test.opendap.org/opendap/data/ff/avhrr.dat"
+    with pytest.warns(UserWarning):
+        open_url(url, flat=False)
+
+
 if __name__ == "__main__":
     test_maps()
