@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from pydap.client import open_url
+from pydap.model import SequenceType, StructureType
 from pydap.net import create_session
 
 base_url = "dap4://test.opendap.org"
@@ -202,6 +203,57 @@ def test_dmrpp_open_dataset():
     np.testing.assert_array_equal(
         np.mean(pyds["SimpleGroup/Salinity"][:].data), np.array([30])
     )
+
+
+@pytest.mark.parametrize(
+    "url,var, expected_value",
+    [
+        (
+            "dap4://test.opendap.org/opendap/dap4/d4ts/test_struct1.nc.h5",
+            "s.x",
+            np.array(1, np.int32),
+        ),
+        (
+            "dap4://test.opendap.org/opendap/data/ff/avhrr.dat",
+            "URI_Avhrr.day",
+            np.array(31472, np.int32),
+        ),
+    ],
+)
+def test_structs_and_sequences_warns(url, var, expected_value):
+    with pytest.warns(UserWarning):
+        pyds = open_url(url)
+        np.testing.assert_array_equal(pyds[var][:].data, expected_value)
+
+
+@pytest.mark.parametrize(
+    "url, var, ContainerType, val",
+    [
+        (
+            "dap4://test.opendap.org/opendap/dap4/d4ts/test_struct1.nc.h5",
+            "s.x",
+            StructureType,
+            np.array(1, np.int32),
+        ),
+        (
+            "dap4://test.opendap.org/opendap/data/ff/avhrr.dat",
+            "URI_Avhrr.day",
+            SequenceType,
+            np.nan,
+        ),
+    ],
+)
+def test_structs_and_sequences_unflat(url, var, ContainerType, val):
+    pyds = open_url(url, flat=False)
+    assert isinstance(pyds[var].parent, ContainerType)
+    if not isinstance(pyds[var].parent, SequenceType):
+        assert pyds[var][:].data == val
+
+
+def test_sequence_warns():
+    url = "dap4://test.opendap.org/opendap/data/ff/avhrr.dat"
+    with pytest.warns(UserWarning):
+        open_url(url, flat=False)
 
 
 if __name__ == "__main__":

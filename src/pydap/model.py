@@ -270,29 +270,31 @@ class DapType(object):
         self.dataset = dataset
         self.id = path or "/"  # <-- KEY LINE!
 
-        if isinstance(self, BaseType):
-            if not self.parent:
-                self.parent = self.dataset
-            if type(self._data).__name__ == "BaseProxyDap4" and not hasattr(
-                self, "_original_data_args"
-            ):
-                # Store the original data for later use
-                self._original_data_args = (
-                    self._data.baseurl,
-                    self._data.id,
-                    self._data.dtype,
-                    self._data.shape,
-                    self._data.application,
-                    self._data.session,
-                    self._data.timeout,
-                    self._data.verify,
-                    self._data.checksums,
-                    self._data.user_charset,
-                    self._data.get_kwargs,
-                )
-        for child in self.children():
-            child_path = f"{path}/{child.name}" if path else f"/{child.name}"
-            child.assign_dataset_recursive(dataset, child_path)
+        if not isinstance(self, SequenceType):
+            # not necessary for sequences
+            if isinstance(self, BaseType):
+                if not self.parent:
+                    self.parent = self.dataset
+                if type(self._data).__name__ == "BaseProxyDap4" and not hasattr(
+                    self, "_original_data_args"
+                ):
+                    # Store the original data for later use
+                    self._original_data_args = (
+                        self._data.baseurl,
+                        self._data.id,
+                        self._data.dtype,
+                        self._data.shape,
+                        self._data.application,
+                        self._data.session,
+                        self._data.timeout,
+                        self._data.verify,
+                        self._data.checksums,
+                        self._data.user_charset,
+                        self._data.get_kwargs,
+                    )
+            for child in self.children():
+                child_path = f"{path}/{child.name}" if path else f"/{child.name}"
+                child.assign_dataset_recursive(dataset, child_path)
 
 
 class BatchPromise:
@@ -1372,14 +1374,14 @@ class SequenceType(StructureType):
     data = property(_get_data, _set_data)
 
     def iterdata(self):
-        for line in self.data:
+        for line in self._data:
             yield tuple(map(decode_np_strings, line))
 
     def __iter__(self):
         return self.iterdata()
 
     def __len__(self):
-        return len(self.data)
+        return len(self._data)
 
     def items(self):
         # This method should be removed in pydap 3.4

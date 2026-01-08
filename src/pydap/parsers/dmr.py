@@ -47,7 +47,9 @@ def dap4_to_numpy_typemap(type_string):
 def get_variables(node, prefix="") -> dict:
     variables = OrderedDict()
     group_name = (
-        pydap.lib._quote(node.get("name")) if node.get("name") is not None else None
+        pydap.lib._quote(node.get("name"))
+        if node.tag in ["Dataset", "Group", "Structure", "Sequence"]
+        else None if node.get("name") is not None else None
     )
     if group_name is None:
         return variables
@@ -57,7 +59,10 @@ def get_variables(node, prefix="") -> dict:
         if subnode.tag in dmr_atomic_types + ("String",):
             name = subnode.get("name")
             if prefix != "":
-                name = prefix + "/" + name
+                if node.tag == "Group":
+                    name = prefix + "/" + name
+                elif node.tag in ["Structure", "Sequence"]:
+                    name = prefix + "." + name
             _dims = get_dim_names(copy.deepcopy(subnode))
             variables[name] = {
                 "name": name,
@@ -248,7 +253,7 @@ def get_groups(node, prefix="/") -> dict:
     return out
 
 
-def dmr_to_dataset(dmr):
+def dmr_to_dataset(dmr, flat=True):
     """Return a dataset object from a DMR representation."""
 
     # Parse the DMR. First dropping the namespace
@@ -282,7 +287,6 @@ def dmr_to_dataset(dmr):
                 except KeyError as e:
                     print(name, variables[name]["dims"])
                     raise e
-
     for name, variable in variables.items():
         var_name = variable["name"]
         path = None
@@ -315,7 +319,6 @@ def dmr_to_dataset(dmr):
 
         # pass along maps
         var_kwargs = {
-            "name": pydap.lib._quote(name),
             "data": data,
             "dims": Dims,
             "dtype": variable["dtype"],
@@ -328,25 +331,40 @@ def dmr_to_dataset(dmr):
             "Sequence",
             "Structure",
         ]:
-            parts = name.split(split_by)
-            parent_name = parts[-2]
-            path = ("/").join(parts[:-2])
-            if (
-                variable["parent"] == "Sequence"
-                and parent_name not in dataset[path].keys()
-            ):
-                dataset.createSequence(("/").join(parts), path=path)
-            elif (
-                variable["parent"] == "Structure"
-                and parent_name not in dataset[path].keys()
-            ):
-                dataset.createStructure(("/").join(parts), path=path)
+            parent_type = variable["parent"]
+            if flat:
+                # Flat Access
+                warnings.warn(
+                    f"The remote dataset contains a variable named `{name[1:]}` inside"
+                    f" a `{parent_type}`, and its access is flattened. The variable"
+                    " can be safely accessed by replacing the `dot` in the variable "
+                    "name with `%2E`."
+                )
+                var_kwargs.update({"name": pydap.lib._quote(name)})
+            else:
+                parent_name = name.split(".")
+                var_kwargs.update({"name": name})
+                if len(parent_name) > 2:
+                    raise ValueError(
+                        f" The variable {name[1:]} contains one or more nested"
+                        f"{parent_type}s. This is currently unsupported. Consider"
+                        "removing this variable by using a Constraint Expression"
+                    )
+                if parent_name[0][1:] not in dataset.keys():
+                    if parent_type == "Sequence":
+                        warnings.warn(
+                            f"The remote file contains Sequence `{parent_name[0][1:]}`"
+                            ". Sequences in DAP4 are not fully supported and their"
+                            " use may lead to unexpected results."
+                        )
+                        dataset.createSequence(parent_name[0], dims=Dims)
+                    else:
+                        dataset.createStructure(parent_name[0], dims=Dims)
         else:
-            dataset.createVariable(**var_kwargs)
+            var_kwargs.update({"name": pydap.lib._quote(name)})
+        dataset.createVariable(**var_kwargs)
         # assign root to each variable
         dataset.assign_dataset_recursive(dataset)
-
-    del variables, variable
 
     return dataset
 
