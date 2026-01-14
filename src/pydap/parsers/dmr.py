@@ -254,7 +254,8 @@ def get_groups(node, prefix="/") -> dict:
 
 
 def dmr_to_dataset(dmr, flat=True):
-    """Return a dataset object from a DMR representation."""
+    """Return a dataset object from a DMR representation. flat: boolean only
+    for Structures"""
 
     # Parse the DMR. First dropping the namespace
     dom_et = copy.deepcopy(DMRParser(dmr).node)
@@ -382,14 +383,40 @@ class DMRParser(object):
             # no groups here
             self.Groups = True
 
+        # Hyrax has bumped the dmrVersion from 1.0 to 2.0 to indicate proper
+        # deserialization of DAP4 datasets in accordance with the DAP4 spec.
+        # Pydap only supports version 1.0 for now, and so this attribute
+        # will be used to discern between the two versions.
+        if hasattr(self.node, "attrib") and "dmrVersion" in self.node.attrib:
+            self.dmrVersion = self.node.attrib["dmrVersion"]
+
+        AttsNames = [subnode.get("name") for subnode in self.node.findall("Attribute")]
+        # identify any TDS specific attribute and if so, bump version to 2
+        if any(
+            map(
+                lambda x: x in AttsNames,
+                ["_NCProperties", "_dap4.ce", "_DAP4_Little_Endian"],
+            )
+        ):
+            self.dmrVersion = "2.0"
+
     def init_dataset(self):
         """creates an empty dataset with a name and attributes"""
         dataset_name = self.node.get("name")
         dataset = pydap.model.DatasetType(dataset_name)
+        server_attrs = [
+            "DODS_EXTRA",
+            "_NCProperties",
+            "_dap4.ce",
+            "_DAP4_Little_Endian",
+        ]
         AttsNames = [subnode.get("name") for subnode in self.node.findall("Attribute")]
         Attrs = {}
         for subnode in self.node:
-            if subnode.get("name") in AttsNames:
+            if (
+                subnode.get("name") in AttsNames
+                and subnode.get("name") not in server_attrs
+            ):
                 if subnode.get("type") not in dmr_atomic_types + (
                     "String",
                     "URI",
