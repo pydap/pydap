@@ -264,7 +264,8 @@ def dmr_to_dataset(dmr, flat=True):
         split_by = "/"
     else:
         split_by = None
-
+    if DMRParser(dmr).dmrVersion == "2.0":
+        GROUPS_metadata = get_groups(dom_et)
     dataset = DMRParser(dmr).init_dataset()
 
     variables: OrderedDict[str, dict] = OrderedDict()
@@ -363,6 +364,18 @@ def dmr_to_dataset(dmr, flat=True):
                         dataset.createStructure(parent_name[0], dims=Dims)
         else:
             var_kwargs.update({"name": pydap.lib._quote(name)})
+            if DMRParser(dmr).dmrVersion == "2.0" and path:
+                if path[1:] not in dataset.groups() and path in GROUPS_metadata.keys():
+                    dims = GROUPS_metadata[path].pop("dimensions", None)
+                    Maps = GROUPS_metadata[path].pop("Maps", None)
+                    attributes = GROUPS_metadata[path].pop("attributes", None)
+                    dataset.createGroup(
+                        name=pydap.lib._quote(path),
+                        dimensions=dims,
+                        Maps=Maps,
+                        attributes=attributes,
+                    )
+
         dataset.createVariable(**var_kwargs)
         # assign root to each variable
         dataset.assign_dataset_recursive(dataset)
@@ -444,16 +457,21 @@ class DMRParser(object):
 
         # create Groups via dict
         Groups = get_groups(self.node)
-        for key in Groups:
-            dims = Groups[key].pop("dimensions", None)
-            Maps = Groups[key].pop("Maps", None)
-            attributes = Groups[key].pop("attributes", None)
-            dataset.createGroup(
-                name=pydap.lib._quote(key),
-                dimensions=dims,
-                Maps=Maps,
-                attributes=attributes,
-            )
+
+        if self.dmrVersion == "1.0":
+            for key in Groups:
+                dims = Groups[key].pop("dimensions", None)
+                Maps = Groups[key].pop("Maps", None)
+                attributes = Groups[key].pop("attributes", None)
+                dataset.createGroup(
+                    name=pydap.lib._quote(key),
+                    dimensions=dims,
+                    Maps=Maps,
+                    attributes=attributes,
+                )
+        # else:
+        #     print(self.dmrVersion)
+
         return dataset
 
 
