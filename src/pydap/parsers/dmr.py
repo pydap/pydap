@@ -405,10 +405,10 @@ class DMRParser(object):
 
         AttsNames = [subnode.get("name") for subnode in self.node.findall("Attribute")]
         # identify any TDS specific attribute and if so, bump version to 2
-        if any(
+        if all(
             map(
                 lambda x: x in AttsNames,
-                ["_NCProperties", "_dap4.ce", "_DAP4_Little_Endian"],
+                ["_NCProperties", "_DAP4_Little_Endian"],
             )
         ):
             self.dmrVersion = "2.0"
@@ -469,8 +469,6 @@ class DMRParser(object):
                     Maps=Maps,
                     attributes=attributes,
                 )
-        # else:
-        #     print(self.dmrVersion)
 
         return dataset
 
