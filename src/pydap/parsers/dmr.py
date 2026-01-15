@@ -254,7 +254,8 @@ def get_groups(node, prefix="/") -> dict:
 
 
 def dmr_to_dataset(dmr, flat=True):
-    """Return a dataset object from a DMR representation."""
+    """Return a dataset object from a DMR representation. flat: boolean only
+    for Structures"""
 
     # Parse the DMR. First dropping the namespace
     dom_et = copy.deepcopy(DMRParser(dmr).node)
@@ -263,7 +264,8 @@ def dmr_to_dataset(dmr, flat=True):
         split_by = "/"
     else:
         split_by = None
-
+    if DMRParser(dmr).dmrVersion == "2.0":
+        GROUPS_metadata = get_groups(dom_et)
     dataset = DMRParser(dmr).init_dataset()
 
     variables: OrderedDict[str, dict] = OrderedDict()
@@ -362,6 +364,18 @@ def dmr_to_dataset(dmr, flat=True):
                         dataset.createStructure(parent_name[0], dims=Dims)
         else:
             var_kwargs.update({"name": pydap.lib._quote(name)})
+            if DMRParser(dmr).dmrVersion == "2.0" and path:
+                if path[1:] not in dataset.groups() and path in GROUPS_metadata.keys():
+                    dims = GROUPS_metadata[path].pop("dimensions", None)
+                    Maps = GROUPS_metadata[path].pop("Maps", None)
+                    attributes = GROUPS_metadata[path].pop("attributes", None)
+                    dataset.createGroup(
+                        name=pydap.lib._quote(path),
+                        dimensions=dims,
+                        Maps=Maps,
+                        attributes=attributes,
+                    )
+
         dataset.createVariable(**var_kwargs)
         # assign root to each variable
         dataset.assign_dataset_recursive(dataset)
@@ -382,14 +396,40 @@ class DMRParser(object):
             # no groups here
             self.Groups = True
 
+        # Hyrax has bumped the dmrVersion from 1.0 to 2.0 to indicate proper
+        # deserialization of DAP4 datasets in accordance with the DAP4 spec.
+        # Pydap only supports version 1.0 for now, and so this attribute
+        # will be used to discern between the two versions.
+        if hasattr(self.node, "attrib") and "dmrVersion" in self.node.attrib:
+            self.dmrVersion = self.node.attrib["dmrVersion"]
+
+        AttsNames = [subnode.get("name") for subnode in self.node.findall("Attribute")]
+        # identify any TDS specific attribute and if so, bump version to 2
+        if any(
+            map(
+                lambda x: x in AttsNames,
+                ["_DAP4_Little_Endian", "_dap4.ce"],
+            )
+        ):
+            self.dmrVersion = "2.0"
+
     def init_dataset(self):
         """creates an empty dataset with a name and attributes"""
         dataset_name = self.node.get("name")
         dataset = pydap.model.DatasetType(dataset_name)
+        server_attrs = [
+            "DODS_EXTRA",
+            "_NCProperties",
+            "_dap4.ce",
+            "_DAP4_Little_Endian",
+        ]
         AttsNames = [subnode.get("name") for subnode in self.node.findall("Attribute")]
         Attrs = {}
         for subnode in self.node:
-            if subnode.get("name") in AttsNames:
+            if (
+                subnode.get("name") in AttsNames
+                and subnode.get("name") not in server_attrs
+            ):
                 if subnode.get("type") not in dmr_atomic_types + (
                     "String",
                     "URI",
@@ -417,16 +457,19 @@ class DMRParser(object):
 
         # create Groups via dict
         Groups = get_groups(self.node)
-        for key in Groups:
-            dims = Groups[key].pop("dimensions", None)
-            Maps = Groups[key].pop("Maps", None)
-            attributes = Groups[key].pop("attributes", None)
-            dataset.createGroup(
-                name=pydap.lib._quote(key),
-                dimensions=dims,
-                Maps=Maps,
-                attributes=attributes,
-            )
+
+        if self.dmrVersion == "1.0":
+            for key in Groups:
+                dims = Groups[key].pop("dimensions", None)
+                Maps = Groups[key].pop("Maps", None)
+                attributes = Groups[key].pop("attributes", None)
+                dataset.createGroup(
+                    name=pydap.lib._quote(key),
+                    dimensions=dims,
+                    Maps=Maps,
+                    attributes=attributes,
+                )
+
         return dataset
 
 

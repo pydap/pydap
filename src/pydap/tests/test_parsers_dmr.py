@@ -11,7 +11,7 @@ import pytest
 from ..client import open_dmr_file
 from ..lib import walk
 from ..model import BaseType
-from ..parsers.dmr import DMRPPParser, dmr_to_dataset, get_groups
+from ..parsers.dmr import DMRParser, DMRPPParser, dmr_to_dataset, get_groups
 
 
 def load_dmr_file(file_path):
@@ -37,17 +37,19 @@ class TestDMRParser(unittest.TestCase):
 
     def test_single_scalar(self):
         """Test a single scalar case."""
-        single_scalar_dmr = """<Dataset name="foo"><Int32 name="x"/></Dataset>"""
+        single_scalar_dmr = (
+            """<Dataset name="foo" dmrVersion="1.0"><Int32 name="x"/></Dataset>"""
+        )
         dataset = dmr_to_dataset(single_scalar_dmr)
         self.assertEqual(dataset["x"].dtype, "int32")
 
     def test_missing_value(self):
         """Test cases with missing value."""
-        NAN_dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        NAN_dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="missing_value" type="Float32">\n
                             <Value>NaN</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
-        INF_dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        INF_dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="missing_value" type="Float32">\n
                             <Value>Inf</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -61,7 +63,7 @@ class TestDMRParser(unittest.TestCase):
         self.assertEqual(np.isinf(X_inf.attributes["missing_value"]), True)
 
     def test_attribute_warning(self):
-        byte_dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        byte_dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="missing_value" type="Byte">\n
                             <Value>x00</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -177,7 +179,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
     """Test parsing a DMR with all types"""
 
     def test_int8(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="Int8">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -185,7 +187,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], int)
 
     def test_uint8(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="UInt8">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -193,7 +195,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], int)
 
     def test_Char(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="Char">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -201,7 +203,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], int)
 
     def test_int16(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="Int16">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -209,7 +211,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], int)
 
     def test_uint16(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="UInt16">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -217,7 +219,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], int)
 
     def test_int32(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="Int32">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -225,7 +227,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], int)
 
     def test_uint32(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="UInt32">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -233,7 +235,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], int)
 
     def test_int64(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="Int64">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -241,7 +243,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], int)
 
     def test_uint64(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="UInt64">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -249,7 +251,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], int)
 
     def test_float32(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="Float32">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -257,7 +259,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], float)
 
     def test_float64(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="Float64">\n
                             <Value>1</Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -265,7 +267,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], float)
 
     def test_floatNone(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="Float32">\n
                             <Value></Value>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -273,7 +275,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert ds["x"].attributes["attr"] is None
 
     def test_TDSfloat64(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
                 <Attribute name="attr" type="Float64">\n
                             <Value value="0.0"/>\n        </Attribute>\n
                                 </Int32>\n</Dataset>"""
@@ -281,12 +283,12 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert isinstance(ds["x"].attributes["attr"], float)
 
     def test_multiple_entries(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
         <Attribute name="attr" type="Float32">\n
                     <Value>-1</Value>\n        <Value value="1"/>\n</Attribute>\n
                         </Int32>\n</Dataset>"""
 
-        dmr2 = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr2 = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
         <Attribute name="attr" type="Float32">\n
                     <Value value="-1"/>\n        <Value>1</Value>\n</Attribute>\n
                         </Int32>\n</Dataset>"""
@@ -297,7 +299,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert ds2["x"].attributes["attr"] == [-1.0, 1.0]
 
     def test_multiple_entries2(self):
-        dmr = """<Dataset name="foo">\n    <Int32 name="x">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <Int32 name="x">\n
         <Attribute name="attr" type="Float32" value="100">\n
                     <Value></Value>\n        <Value>2</Value>\n
                             <Value value="1"/>\n</Attribute>\n
@@ -306,7 +308,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
         assert ds["x"].attributes["attr"] == [100, None, 2.0, 1.0]
 
     def test_string(self):
-        dmr = """<Dataset name="foo">\n    <String name="bears">\n
+        dmr = """<Dataset name="foo" dmrVersion="1.0">\n    <String name="bears">\n
                 <Attribute name="attr" type="Float32">\n
                             <Value></Value>\n        </Attribute>\n
                                 </String>\n</Dataset>"""
@@ -316,7 +318,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
 
     def test_attr_InlineValue(self):
         dmr = """
-        <Dataset name="foo">\n
+        <Dataset name="foo" dmrVersion="1.0">\n
         <String name="bears">\n
             <Attribute name="attr" type="Float32" value="100"/>\n
         </String>\n
@@ -326,7 +328,7 @@ class TestAttrsTypesDMRParser(unittest.TestCase):
 
     def test_escapedcharacters(self):
         dmr = """
-        <Dataset name="FamilyNames.h5">\n
+        <Dataset name="FamilyNames.h5" dmrVersion="1.0">\n
             <Group name="Last Names">\n
                 <String name="Simpson"/>\n
             </Group>\n
@@ -610,3 +612,27 @@ def test_parsed_dataset(Group, skip_variables, expected_parsed_variables):
     )
     variables, _ = dmrpp_instance._parse_dataset(dmrpp_instance.find_node_fqn(Group))
     assert list(variables.keys()) == expected_parsed_variables
+
+
+@pytest.mark.parametrize(
+    "url, expected_dmrVersion",
+    [
+        ("""<Dataset name="foo" dmrVersion="1.0"><Int32 name="x"/></Dataset>""", "1.0"),
+        ("""<Dataset name="foo" dmrVersion="2.0"><Int32 name="x"/></Dataset>""", "2.0"),
+    ],
+)
+def test_dmr_version(url, expected_dmrVersion):
+    dmr_instance = DMRParser(url)
+    assert dmr_instance.dmrVersion == expected_dmrVersion
+
+
+def test_tds_dmrVersion2():
+    dmr = """
+    <Dataset name="FamilyNames.h5" dmrVersion="1.0">\n
+        <Attribute name='_NCProperties' type='String' value='version=2,
+        netcdf=4.9.2,hdf5=1.14.4'/>\n
+        <Attribute name='_DAP4_Little_Endian' type='UInt8' value="1"/>\n
+    </Dataset>
+    """
+    dmr_instance = DMRParser(dmr)
+    assert dmr_instance.dmrVersion == "2.0"
