@@ -180,7 +180,7 @@ import numpy as np
 import requests
 import requests_cache
 
-from pydap.lib import _quote, decode_np_strings, tree, walk
+from pydap.lib import _quote, decode_np_strings, tree, unquote, walk
 from pydap.net import GET
 
 __all__ = [
@@ -838,7 +838,13 @@ class StructureType(DapType, Mapping):
             else:
                 dims = []
             out.update(
-                {var.name: {"dtype": var.dtype, "shape": var.shape, "dims": dims}}
+                {
+                    unquote(var.name): {
+                        "dtype": var.dtype,
+                        "shape": var.shape,
+                        "dims": dims,
+                    }
+                }
             )
         return out
 
