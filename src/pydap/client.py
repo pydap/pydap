@@ -1663,7 +1663,7 @@ def stream(
         output_path = Path(".")
 
     if urlparse(url).query:
-        if (keep_variables, dim_slices) is not None:
+        if keep_variables or dim_slices:
             raise ValueError(
                 "Neither `keep_variables` or `dim_slices` can be used"
                 " when the URL contains the Constraint Expression: "
