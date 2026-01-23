@@ -1663,14 +1663,22 @@ def stream(
         output_path = Path(".")
 
     if urlparse(url).query:
-        if keep_variables or dim_slices:
-            raise ValueError(
-                "Neither `keep_variables` or `dim_slices` can be used"
-                " when the URL contains the Constraint Expression: "
-                f"{urlparse(url).query}"
-            )
+        if keep_variables:
+            _ce = urlparse(url).query.replace("dap4.ce=", "").split(";")
+            # need to update the query
+            if not set(keep_variables).issubset(set(_ce)):
+                raise ValueError(
+                    f"The provided keep_variables {keep_variables} do not "
+                    f"match those in the URL constraint expression {_ce}"
+                )
+            url = url.split("?")[0] + "?dap4.ce=" + ";".join(keep_variables)
+            keep_variables = None  # already handled
+            if dim_slices is not None:
+                warnings.warn(
+                    "The use of dim_slices is ignored since the provided "
+                    "URL already contains a constraint expression."
+                )
         dap_url += "?" + urlparse(url).query
-
     if dim_slices is not None:
         if keep_variables is None:
             raise ValueError(
@@ -1683,10 +1691,10 @@ def stream(
         shared_dim = [k + "=" + v for k, v in _slices.items()]
         ce += ";".join(shared_dim)
 
-    if keep_variables is not None:
+    if keep_variables:
         if dim_slices and not set(dim_slices).issubset(keep_variables):
             keep_variables += list(set(dim_slices.keys()) - set(keep_variables))
-        if dim_slices is not None:
+        if dim_slices:
             ce += ";"
         ce += ";".join(keep_variables)
 
