@@ -1159,14 +1159,18 @@ class UNPACKDAP4DATA(object):
 
         # create variables
         for var in dataset.variables():
-            dtype = dataset[var].dtype
             _FillValue = dataset[var].attributes.pop("_FillValue", None)
-            ncvar = self.nc.createVariable(
-                var,
-                dtype,
-                [dim.split("/")[1] for dim in dataset[var].dims],
-                fill_value=_FillValue,
-            )
+            dtype = dataset[var].dtype
+            _dims = [dim.split("/")[1] for dim in dataset[var].dims]
+            args = {
+                "varname": var,
+                "datatype": dtype,
+                "fill_value": _FillValue,
+            }
+            if len(_dims) != len(dataset[var].shape):
+                _dims = self._create_nc_phony_dims(var, dataset[var]._data)
+
+            ncvar = self.nc.createVariable(**args, dimensions=_dims)
 
             # copy attributes
             for k, v in dataset[var].attributes.items():
@@ -1197,6 +1201,29 @@ class UNPACKDAP4DATA(object):
             for k, v in var.attributes.items():
                 if k not in ["Maps", "path"]:
                     setattr(ncvar, k, v)
+
+    def _next_phony_dim_name(self):
+        """
+        Return the next unique phony dim name: phony_dim1, phony_dim2, ...
+        Guaranteed not to collide with existing dims in the file.
+        """
+        i = 1
+        while f"phony_dim{i}" in self.nc.dimensions:
+            i += 1
+        return f"phony_dim{i}"
+
+    def _create_nc_phony_dims(self, varname, data):
+        """
+        Creates a dimensioned variable in the netcdf file with phony
+        dimensions to match the shape of data. Returns the list of
+        dimension names created.
+        """
+        dim_names = []
+        for n in data.shape:
+            dim_name = self._next_phony_dim_name()
+            self.nc.createDimension(dim_name, n)
+            dim_names.append(dim_name)
+        return dim_names
 
     def unpack_dap4_data(self, dataset):
         """
