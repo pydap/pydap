@@ -1426,14 +1426,11 @@ def test_stream(dim_slices):
         )
 
 
-@pytest.mark.skip(
-    reason="Until changes to PR https://github.com/pydap/pydap/pull/625 are merged"
-)
 def test_stream_phony_dim():
     """Test that stream works when there are unnamed dimensions in the dataset."""
     from pydap.handlers.netcdf_handler import NetCDFHandler
 
-    base_url = "http://test.opendap.org/opendap/hyrax/data/dap4/SimpleGroup.nc4.h5"
+    base_url = "http://test.opendap.org/opendap/hyrax/dap4/SimpleGroup.nc4.h5"
     # the following url has unnamed dimensions
     url = f"{base_url}?dap4.ce=/Pressure[0:1:999]&dap4.checksum=true"
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -1442,7 +1439,6 @@ def test_stream_phony_dim():
             output_path=tmp_dir,
         )
         pyds = NetCDFHandler(tmp_dir + "/SimpleGroup.nc4.nc4").dataset
-        assert hasattr(pyds["dimensions"], "phony_dim1")
         assert pyds.dimensions["phony_dim1"] == 1000
 
 
