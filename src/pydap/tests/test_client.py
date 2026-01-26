@@ -1426,6 +1426,23 @@ def test_stream(dim_slices):
         )
 
 
+def test_stream_phony_dim():
+    """Test that stream works when there are unnamed dimensions in the dataset."""
+    from pydap.handlers.netcdf_handler import NetCDFHandler
+
+    base_url = "http://test.opendap.org/opendap/hyrax/data/dap4/SimpleGroup.nc4.h5"
+    # the following url has unnamed dimensions
+    url = f"{base_url}?dap4.ce=/Pressure[0:1:999]&dap4.checksum=true"
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        _ = stream(
+            url,
+            output_path=tmp_dir,
+        )
+        pyds = NetCDFHandler(tmp_dir + "/SimpleGroup.nc4.nc4").dataset
+        assert hasattr(pyds["dimensions"], "phony_dim1")
+        assert pyds.dimensions["phony_dim1"] == 1000
+
+
 def test_stream_parallel():
     urls = [
         "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
