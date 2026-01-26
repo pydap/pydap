@@ -636,3 +636,23 @@ def test_tds_dmrVersion2():
     """
     dmr_instance = DMRParser(dmr)
     assert dmr_instance.dmrVersion == "2.0"
+
+
+def test_nested_empty_groups_dmrVersion2():
+    """Test that empty nested groups are parsed correctly with dmrVersion=2."""
+    nested_empty_groups_dmr = """
+    <Dataset dapVersion="4.0" dmrVersion="2.0" name="all_aligned_child_nodes.nc.h5">
+        <Group name="Group1">
+            <Group name="subgroup1">
+                <Dimension name="lat" size="1"/>
+                <Dimension name="lon" size="2"/>
+                <Float64 name="subgroup_1_var">
+                    <Dim name="/Group1/subgroup1/lat"/>
+                    <Dim name="/Group1/subgroup1/lon"/>
+                </Float64>
+            </Group>
+        </Group>
+    </Dataset>
+    """
+    dataset = dmr_to_dataset(nested_empty_groups_dmr)
+    assert set(["Group1", "subgroup1"]).issubset(dataset.groups().keys())
