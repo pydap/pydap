@@ -1426,6 +1426,9 @@ def test_stream(dim_slices):
         )
 
 
+@pytest.mark.skip(
+    reason="Until changes to PR https://github.com/pydap/pydap/pull/625 are merged"
+)
 def test_stream_phony_dim():
     """Test that stream works when there are unnamed dimensions in the dataset."""
     from pydap.handlers.netcdf_handler import NetCDFHandler
