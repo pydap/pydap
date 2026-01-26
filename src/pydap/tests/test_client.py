@@ -1213,8 +1213,8 @@ def test_get_batch_data(cache_tmp_dir, dims, group):
             (
                 "http://test.opendap.org/opendap/hyrax/"
                 + "NSIDC/ATL08_20181016124656_02730110_002_01.h5?dap4.ce="
-                + "/gt1l/land_segments/delta_time;/gt1l/land_segments/delta_time;"
-                + "/gt1l/land_segments/latitude;/gt1l/land_segments/longitude"
+                + "/gt1l/land_segments/delta_time;/gt1l/land_segments/latitude;"
+                + "/gt1l/land_segments/longitude"
             ),
             "/gt1l/land_segments",
             "/gt1l/land_segments/latitude",

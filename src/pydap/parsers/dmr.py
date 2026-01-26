@@ -365,16 +365,24 @@ def dmr_to_dataset(dmr, flat=True):
         else:
             var_kwargs.update({"name": pydap.lib._quote(name)})
             if DMRParser(dmr).dmrVersion == "2.0" and path:
-                if path[1:] not in dataset.groups() and path in GROUPS_metadata.keys():
-                    dims = GROUPS_metadata[path].pop("dimensions", None)
-                    Maps = GROUPS_metadata[path].pop("Maps", None)
-                    attributes = GROUPS_metadata[path].pop("attributes", None)
-                    dataset.createGroup(
-                        name=pydap.lib._quote(path),
-                        dimensions=dims,
-                        Maps=Maps,
-                        attributes=attributes,
-                    )
+                groups = path.split("/")
+                groups_fqn = ["/".join(groups[:N]) for N in range(1, len(groups) + 1)][
+                    1:
+                ]
+                # keep track of existing groups in dataset (fqn)
+                ds_groups = [path + gr for gr, path in dataset.groups().items()]
+                for group in groups_fqn:
+                    if group not in ds_groups and group in GROUPS_metadata.keys():
+                        dims = GROUPS_metadata[group].pop("dimensions", None)
+                        Maps = GROUPS_metadata[group].pop("Maps", None)
+                        attributes = GROUPS_metadata[group].pop("attributes", None)
+                        dataset.createGroup(
+                            name=pydap.lib._quote(group),
+                            dimensions=dims,
+                            Maps=Maps,
+                            attributes=attributes,
+                        )
+                    ds_groups = [path + gr for gr, path in dataset.groups().items()]
 
         dataset.createVariable(**var_kwargs)
         # assign root to each variable
