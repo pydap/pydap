@@ -656,3 +656,35 @@ def test_nested_empty_groups_dmrVersion2():
     """
     dataset = dmr_to_dataset(nested_empty_groups_dmr)
     assert set(["Group1", "subgroup1"]).issubset(dataset.groups().keys())
+
+
+def test_nested_empty_group_dmrVersion2_RelativeNameCollision():
+    """Test that empty nested groups with relative name collisions are parsed correctly
+    with dmrVersion=2."""
+    dmr = """
+    <Dataset dapVersion="4.0" dmrVersion="2.0" name="all_aligned_child_nodes.nc.h5">
+        <Group name="Group1">
+            <Group name="Data">
+                <Dimension name="lat" size="2"/>
+                <Dimension name="lon" size="2"/>
+                <Float64 name="subgroup_1_var">
+                    <Dim name="/Group1/Data/lat"/>
+                    <Dim name="/Group1/Data/lon"/>
+                </Float64>
+            </Group>
+        </Group>
+        <Group name="Group2">
+            <Group name="Data">
+                <Dimension name="lat" size="1"/>
+                <Dimension name="lon" size="2"/>
+                <Float64 name="subgroup_2_var">
+                    <Dim name="/Group2/Data/lat"/>
+                    <Dim name="/Group2/Data/lon"/>
+                </Float64>
+            </Group>
+        </Group>
+    </Dataset>
+    """
+    ds = dmr_to_dataset(dmr)
+    assert ds["Group1/Data"].dimensions == {"lat": 2, "lon": 2}
+    assert ds["Group2/Data"].dimensions == {"lat": 1, "lon": 2}
