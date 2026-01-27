@@ -1199,8 +1199,19 @@ class UNPACKDAP4DATA(object):
             )
             # copy attributes
             for k, v in var.attributes.items():
-                if k not in ["Maps", "path"]:
-                    setattr(ncvar, k, v)
+                try:
+                    with warnings.catch_warnings():
+                        warnings.filterwarnings(
+                            "error", message=r".*valid_range.*", category=UserWarning
+                        )
+                        if k not in ["Maps", "path"]:
+                            setattr(ncvar, k, v)
+                except UserWarning:
+                    print("Warning turned into error")
+                    print(
+                        f"Could not set valid_range attribute for variable {var.name}"
+                        f" in group {parent}. Skipping attribute."
+                    )
 
     def _next_phony_dim_name(self):
         """
