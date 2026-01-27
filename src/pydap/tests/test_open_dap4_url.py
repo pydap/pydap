@@ -256,5 +256,22 @@ def test_sequence_warns():
         open_url(url, flat=False)
 
 
+def tests_structure_unflatted_unescaped():
+    """Test that repr remains escaped when data access is flatted (default)
+    for structures, but that `DatasetType.variables()` returns unescaped names.
+    This is necessary for improved interoperatbility with Xarray
+    """
+    url = "dap4://test.opendap.org/opendap/dap4/d4ts/test_struct1.nc.h5"
+    with pytest.warns(UserWarning):
+        pyds = open_url(url)
+    # assert flattened access
+    assert repr(pyds) == "<DatasetType with children 's%2Ex', 's%2Ey'>"
+    assert pyds.variables() == {
+        "s.x": {"dtype": np.dtype("int32"), "shape": (), "dims": []},
+        "s.y": {"dtype": np.dtype("int32"), "shape": (), "dims": []},
+    }
+    np.testing.assert_equal(np.asarray(pyds["s.x"].data[:]), 1)
+
+
 if __name__ == "__main__":
     test_maps()
