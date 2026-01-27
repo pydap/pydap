@@ -1198,20 +1198,13 @@ class UNPACKDAP4DATA(object):
                 fill_value=_FillValue,
             )
             # copy attributes
-            for k, v in var.attributes.items():
-                try:
-                    with warnings.catch_warnings():
-                        warnings.filterwarnings(
-                            "error", message=r".*valid_range.*", category=UserWarning
-                        )
-                        if k not in ["Maps", "path"]:
-                            setattr(ncvar, k, v)
-                except UserWarning:
-                    print("Warning turned into error")
-                    print(
-                        f"Could not set valid_range attribute for variable {var.name}"
-                        f" in group {parent}. Skipping attribute."
-                    )
+            attrs = var.attributes.copy()
+            _, _ = attrs.pop("Maps", None), attrs.pop("path", None)
+            for k, v in attrs.items():
+                if k == "valid_range":
+                    # update v to ensure valid_range attr has correct dtype
+                    v = numpy.array(v, dtype=var.dtype)
+                setattr(ncvar, k, v)
 
     def _next_phony_dim_name(self):
         """
