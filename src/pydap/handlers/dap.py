@@ -1198,9 +1198,13 @@ class UNPACKDAP4DATA(object):
                 fill_value=_FillValue,
             )
             # copy attributes
-            for k, v in var.attributes.items():
-                if k not in ["Maps", "path"]:
-                    setattr(ncvar, k, v)
+            attrs = var.attributes.copy()
+            _, _ = attrs.pop("Maps", None), attrs.pop("path", None)
+            for k, v in attrs.items():
+                if k == "valid_range":
+                    # update v to ensure valid_range attr has correct dtype
+                    v = numpy.array(v, dtype=var.dtype)
+                setattr(ncvar, k, v)
 
     def _next_phony_dim_name(self):
         """
