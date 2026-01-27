@@ -46,7 +46,7 @@ class TestHTMLResponseSequence(unittest.TestCase):
                     ("OPeNDAP-Server", "pydap/" + __version__),
                     ("Content-description", "DAP_form"),
                     ("Content-type", "text/html; charset=utf-8"),
-                    ("Content-Length", "5884"),
+                    ("Content-Length", "5819"),
                 ]
             ),
         )
@@ -180,7 +180,7 @@ class TestHTMLResponseSimpleGroup(unittest.TestCase):
                     ("OPeNDAP-Server", "pydap/" + __version__),
                     ("Content-description", "DAP_form"),
                     ("Content-type", "text/html; charset=utf-8"),
-                    ("Content-Length", "8224"),
+                    ("Content-Length", "8159"),
                 ]
             ),
         )
