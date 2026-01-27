@@ -236,8 +236,12 @@ class StaticMiddleware(object):
 
         content_type, content_encoding = mimetypes.guess_type(full_path)
         package += (".").join([""] + parts)
+        if content_encoding is None:
+            body = importlib.resources.read_binary(package, resource)
+        else:
+            body = importlib.resources.read_text(package, resource, encoding=content_encoding)
         return Response(
-            body=importlib.resources.read_text(package, resource),
+            body=body,
             content_type=content_type,
             content_encoding=content_encoding,
         )
