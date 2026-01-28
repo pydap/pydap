@@ -1714,7 +1714,7 @@ def stream(
 
 
 def stream2file(
-    urls: list,
+    urls: list | str,
     session: requests.Session = None,
     output_path: str = None,
     keep_variables: list = None,
@@ -1726,8 +1726,10 @@ def stream2file(
         session_state = extract_session_state(session)
     else:
         session_state = None
-    if len(urls) == 1:
-        return [stream(urls[0], session_state, output_path, keep_variables, dim_slices)]
+    if len(urls) == 1 or isinstance(urls, str):
+        if isinstance(urls, list):
+            urls = urls[0]
+        return [stream(urls, session_state, output_path, keep_variables, dim_slices)]
 
     ncores = mp.cpu_count()
     if max_workers is None:

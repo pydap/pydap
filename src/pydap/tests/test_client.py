@@ -1418,7 +1418,7 @@ def test_stream(dim_slices):
     url = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
     with tempfile.TemporaryDirectory() as tmp_dir:
         _ = stream2file(
-            [url],
+            url,
             output_path=tmp_dir,
             keep_variables=keep_variables,
             dim_slices=dim_slices,
@@ -1434,7 +1434,7 @@ def test_stream_phony_dim():
     url = f"{base_url}?dap4.ce=/Pressure[0:1:999]&dap4.checksum=true"
     with tempfile.TemporaryDirectory() as tmp_dir:
         _ = stream2file(
-            [url],
+            url,
             output_path=tmp_dir,
         )
         pyds = NetCDFHandler(tmp_dir + "/SimpleGroup.nc4.nc4").dataset
