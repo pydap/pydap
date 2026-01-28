@@ -310,7 +310,7 @@ def tree(template, prefix=""):
     if prefix == "":
         print(f".{unquote_(template.name)}")
     else:
-        print(template.name)
+        print(f"{unquote_(template.name)}")
 
     # Iterate over the children
     Nchild = len([child for child in template.children()])
