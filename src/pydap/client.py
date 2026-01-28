@@ -1714,12 +1714,12 @@ def stream(
 
 
 def stream2file(
-    urls,
-    session=None,
-    output_path=None,
-    keep_variables=None,
-    dim_slices=None,
-    max_workers=None,
+    urls: list,
+    session: requests.Session = None,
+    output_path: str = None,
+    keep_variables: list = None,
+    dim_slices: dict = None,
+    max_workers: int = None,
 ):
     ctx = mp.get_context("spawn")  # <- IMPORTANT on Linux
     if session:
