@@ -92,6 +92,9 @@ def test_dap4_unaligned_check_dims():
     ]
 
 
+@pytest.mark.skip(
+    reason="Test opendap server returns wrong dim metadata for this dataset"
+)
 def test_dap4_unaligned2_check_dims():
     """ """
     url = "dap4://test.opendap.org/opendap/dap4/unaligned_simple_datatree2.nc.h5"
