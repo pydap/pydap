@@ -1713,7 +1713,7 @@ def stream(
     return url
 
 
-def stream2file(
+def stream_tonetcdf(
     urls: list | str,
     session: requests.Session = None,
     output_path: str = None,
@@ -1721,6 +1721,13 @@ def stream2file(
     dim_slices: dict = None,
     max_workers: int = None,
 ):
+    """
+    Downloads multiple dap responses in parallel, and stores them to a local directory.
+    It can handle both single url (str) or multiple urls (list), storing each dap
+    response as a separate netcdf4 file in the output_path directory. The netcdf4 files
+    are named using the name attribute in the DMR of the response (which coincides with
+    the name of the remote file)
+    """
     ctx = mp.get_context("spawn")  # <- IMPORTANT on Linux
     if session:
         session_state = extract_session_state(session)
