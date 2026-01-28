@@ -75,6 +75,9 @@ def test_dap4_unaligned_check_dims_tds():
     ]
 
 
+@pytest.mark.skip(
+    reason="Test opendap server returns wrong dim metadata for this dataset"
+)
 def test_dap4_unaligned_check_dims():
     """ """
     url = "dap4://test.opendap.org/opendap/dap4/unaligned_simple_datatree.nc.h5"
@@ -256,7 +259,7 @@ def test_sequence_warns():
         open_url(url, flat=False)
 
 
-def tests_structure_unflatted_unescaped():
+def tests_structure_unflatted_unescaped(capsys):
     """Test that repr remains escaped when data access is flatted (default)
     for structures, but that `DatasetType.variables()` returns unescaped names.
     This is necessary for improved interoperatbility with Xarray
@@ -271,6 +274,12 @@ def tests_structure_unflatted_unescaped():
         "s.y": {"dtype": np.dtype("int32"), "shape": (), "dims": []},
     }
     np.testing.assert_equal(np.asarray(pyds["s.x"].data[:]), 1)
+
+    # now unflattened and unescaped in tree representation
+    pyds.tree()
+    out = capsys.readouterr().out
+    expected = ".test_struct1.nc.h5\n├──s.x\n└──s.y\n"
+    assert out == expected
 
 
 if __name__ == "__main__":
