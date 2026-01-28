@@ -24,8 +24,7 @@ from pydap.client import (
     patch_session_for_shared_dap_cache,
     recover_missing_url,
     register_all_for_batch,
-    stream,
-    stream_parallel,
+    stream2file,
 )
 from pydap.handlers.lib import BaseHandler
 from pydap.lib import _quote
@@ -1418,8 +1417,8 @@ def test_stream(dim_slices):
     keep_variables = ["TIME", "COADSX", "COADSY", "SST"]
     url = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
     with tempfile.TemporaryDirectory() as tmp_dir:
-        _ = stream(
-            url,
+        _ = stream2file(
+            [url],
             output_path=tmp_dir,
             keep_variables=keep_variables,
             dim_slices=dim_slices,
@@ -1434,8 +1433,8 @@ def test_stream_phony_dim():
     # the following url has unnamed dimensions
     url = f"{base_url}?dap4.ce=/Pressure[0:1:999]&dap4.checksum=true"
     with tempfile.TemporaryDirectory() as tmp_dir:
-        _ = stream(
-            url,
+        _ = stream2file(
+            [url],
             output_path=tmp_dir,
         )
         pyds = NetCDFHandler(tmp_dir + "/SimpleGroup.nc4.nc4").dataset
@@ -1448,7 +1447,7 @@ def test_stream_parallel():
         "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
     ]
     with tempfile.TemporaryDirectory() as tmp_dir:
-        _ = stream_parallel(
+        _ = stream2file(
             urls,
             output_path=tmp_dir,
             max_workers=2,

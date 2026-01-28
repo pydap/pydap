@@ -1651,6 +1651,9 @@ def stream(
     dap_url = url.split("?")[0] + ".dap"
     ce = "?dap4.ce="
 
+    # session could be a request session object of a session state dict? dual use
+    # means that it could
+
     if not session_state:
         session = create_session()
     else:
@@ -1710,15 +1713,27 @@ def stream(
     return url
 
 
-def stream_parallel(
+def stream2file(
     urls,
-    session_state=None,
+    session=None,
     output_path=None,
     keep_variables=None,
     dim_slices=None,
-    max_workers=4,
+    max_workers=None,
 ):
     ctx = mp.get_context("spawn")  # <- IMPORTANT on Linux
+    if session:
+        session_state = extract_session_state(session)
+    else:
+        session_state = None
+    if len(urls) == 1:
+        return [stream(urls[0], session_state, output_path, keep_variables, dim_slices)]
+
+    ncores = mp.cpu_count()
+    if max_workers is None:
+        max_workers = ncores
+    max_workers = min(max_workers, ncores, len(urls))
+
     with ProcessPoolExecutor(max_workers=max_workers, mp_context=ctx) as pool:
         futures = [
             pool.submit(
