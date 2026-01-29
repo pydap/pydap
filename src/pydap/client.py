@@ -1719,7 +1719,7 @@ def stream(
     return url
 
 
-def stream_tonetcdf(
+def to_netcdf(
     urls: list | str,
     session: requests.Session = None,
     output_path: str = None,
@@ -1746,7 +1746,7 @@ def stream_tonetcdf(
 
     max_workers = min(32, len(urls))  # limit to 32 workers
 
-    results = []
+    failures = []
 
     with ThreadPoolExecutor(max_workers=max_workers) as pool:
         future_to_url = {
@@ -1759,11 +1759,12 @@ def stream_tonetcdf(
         for fut in as_completed(future_to_url):
             url = future_to_url[fut]
             try:
-                results.append(fut.result())
+                fut.result()
             except Exception as e:
-                print(f"FAILED to write: {url}\n  {type(e).__name__}: {e}")
-
-    return results
+                failures.append((url, e))
+                print(f"FAILED: {url} → {e}")
+    if failures:
+        raise RuntimeError(f"{len(failures)} downloads failed out of {len(urls)}")
 
 
 if __name__ == "__main__":

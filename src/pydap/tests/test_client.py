@@ -24,7 +24,7 @@ from pydap.client import (
     patch_session_for_shared_dap_cache,
     recover_missing_url,
     register_all_for_batch,
-    stream_tonetcdf,
+    to_netcdf,
 )
 from pydap.handlers.lib import BaseHandler
 from pydap.lib import _quote
@@ -1413,11 +1413,11 @@ def test_consolidate_non_matching_dims(cache_tmp_dir):
 
 
 @pytest.mark.parametrize("dim_slices", [None, {"TIME": (0, 1)}])
-def test_stream(dim_slices):
+def test_to_netcdf(dim_slices):
     keep_variables = ["TIME", "COADSX", "COADSY", "SST"]
     url = "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"
     with tempfile.TemporaryDirectory() as tmp_dir:
-        _ = stream_tonetcdf(
+        _ = to_netcdf(
             url,
             output_path=tmp_dir,
             keep_variables=keep_variables,
@@ -1425,15 +1425,15 @@ def test_stream(dim_slices):
         )
 
 
-def test_stream_phony_dim():
-    """Test that stream works when there are unnamed dimensions in the dataset."""
+def test_to_netcdf_phony_dim():
+    """Test that to_netcdf works when there are unnamed dimensions in the dataset."""
     from pydap.handlers.netcdf_handler import NetCDFHandler
 
     base_url = "http://test.opendap.org/opendap/hyrax/dap4/SimpleGroup.nc4.h5"
     # the following url has unnamed dimensions
     url = f"{base_url}?dap4.ce=/Pressure[0:1:999]&dap4.checksum=true"
     with tempfile.TemporaryDirectory() as tmp_dir:
-        _ = stream_tonetcdf(
+        _ = to_netcdf(
             url,
             output_path=tmp_dir,
         )
@@ -1441,13 +1441,13 @@ def test_stream_phony_dim():
         assert pyds.dimensions["phony_dim1"] == 1000
 
 
-def test_stream_parallel():
+def test_to_netcdf_multiple():
     urls = [
         "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
         "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
     ]
     with tempfile.TemporaryDirectory() as tmp_dir:
-        _ = stream_tonetcdf(
+        _ = to_netcdf(
             urls,
             output_path=tmp_dir,
         )
