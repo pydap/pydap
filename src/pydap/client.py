@@ -46,13 +46,12 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 import datetime as dt
 import hashlib
-import multiprocessing as mp
 import os
 import re
 import sqlite3
 import warnings
 from collections import Counter
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
 from pathlib import Path
@@ -76,7 +75,13 @@ from pydap.handlers.dap import (
 )
 from pydap.lib import DEFAULT_TIMEOUT, encode, walk
 from pydap.model import BaseType, BatchPromise, DapType
-from pydap.net import GET, create_session, extract_session_state, restore_session
+from pydap.net import (
+    GET,
+    create_session,
+    extract_session_state,
+    get_session,
+    restore_session,
+)
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
@@ -1653,11 +1658,11 @@ def stream(
 
     # session could be a request session object of a session state dict? dual use
     # means that it could
-
     if not session_state:
         session = create_session()
     else:
-        session = restore_session(session_state)
+        session = get_session(session_state)
+
     if output_path is None:
         warnings.warn(
             "No location was provided. The file will be stored "
@@ -1708,8 +1713,9 @@ def stream(
     else:
         dap_url += "?dap4.checksum=true"
 
-    r = session.get(dap_url, stream=True)
-    UNPACKDAP4DATA(r=r, checksums=True, output_path=output_path)
+    with session.get(dap_url, stream=True, timeout=(10, 120)) as r:
+        r.raise_for_status()
+        UNPACKDAP4DATA(r=r, checksums=True, output_path=output_path)
     return url
 
 
@@ -1719,38 +1725,45 @@ def stream_tonetcdf(
     output_path: str = None,
     keep_variables: list = None,
     dim_slices: dict = None,
-    max_workers: int = None,
-):
+) -> list:
     """
-    Downloads multiple dap responses in parallel, and stores them to a local directory.
+    Downloads multiple dap4 responses in parallel, and stores them to a local directory.
     It can handle both single url (str) or multiple urls (list), storing each dap
     response as a separate netcdf4 file in the output_path directory. The netcdf4 files
     are named using the name attribute in the DMR of the response (which coincides with
     the name of the remote file)
     """
-    ctx = mp.get_context("spawn")  # <- IMPORTANT on Linux
+
     if session:
         session_state = extract_session_state(session)
     else:
         session_state = None
+
     if len(urls) == 1 or isinstance(urls, str):
         if isinstance(urls, list):
             urls = urls[0]
         return [stream(urls, session_state, output_path, keep_variables, dim_slices)]
 
-    ncores = mp.cpu_count()
-    if max_workers is None:
-        max_workers = ncores
-    max_workers = min(max_workers, ncores, len(urls))
+    max_workers = min(32, len(urls))  # limit to 32 workers
 
-    with ProcessPoolExecutor(max_workers=max_workers, mp_context=ctx) as pool:
-        futures = [
+    results = []
+
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        future_to_url = {
             pool.submit(
                 stream, url, session_state, output_path, keep_variables, dim_slices
-            )
+            ): url
             for url in urls
-        ]
-        return [f.result() for f in futures]
+        }
+
+        for fut in as_completed(future_to_url):
+            url = future_to_url[fut]
+            try:
+                results.append(fut.result())
+            except Exception as e:
+                print(f"FAILED to write: {url}\n  {type(e).__name__}: {e}")
+
+    return results
 
 
 if __name__ == "__main__":

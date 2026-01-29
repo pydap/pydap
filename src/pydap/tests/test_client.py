@@ -1450,5 +1450,4 @@ def test_stream_parallel():
         _ = stream_tonetcdf(
             urls,
             output_path=tmp_dir,
-            max_workers=2,
         )
