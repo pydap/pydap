@@ -336,12 +336,6 @@ def dmr_to_dataset(dmr, flat=True):
             parent_type = variable["parent"]
             if flat:
                 # Flat Access
-                warnings.warn(
-                    f"The remote dataset contains a variable named `{name[1:]}` inside"
-                    f" a `{parent_type}`, and its access is flattened. The variable"
-                    " can be safely accessed by replacing the `dot` in the variable "
-                    "name with `%2E`."
-                )
                 var_kwargs.update({"name": pydap.lib._quote(name)})
             else:
                 parent_name = name.split(".")

@@ -224,9 +224,8 @@ def test_dmrpp_open_dataset():
     ],
 )
 def test_structs_and_sequences_warns(url, var, expected_value):
-    with pytest.warns(UserWarning):
-        pyds = open_url(url)
-        np.testing.assert_array_equal(pyds[var][:].data, expected_value)
+    pyds = open_url(url)
+    np.testing.assert_array_equal(pyds[var][:].data, expected_value)
 
 
 @pytest.mark.parametrize(
@@ -255,8 +254,7 @@ def test_structs_and_sequences_unflat(url, var, ContainerType, val):
 
 def test_sequence_warns():
     url = "dap4://test.opendap.org/opendap/data/ff/avhrr.dat"
-    with pytest.warns(UserWarning):
-        open_url(url, flat=False)
+    open_url(url, flat=False)
 
 
 def tests_structure_unflatted_unescaped(capsys):
@@ -265,8 +263,7 @@ def tests_structure_unflatted_unescaped(capsys):
     This is necessary for improved interoperatbility with Xarray
     """
     url = "dap4://test.opendap.org/opendap/dap4/d4ts/test_struct1.nc.h5"
-    with pytest.warns(UserWarning):
-        pyds = open_url(url)
+    pyds = open_url(url)
     # assert flattened access
     assert repr(pyds) == "<DatasetType with children 's%2Ex', 's%2Ey'>"
     assert pyds.variables() == {
