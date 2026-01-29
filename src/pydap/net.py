@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import ssl
+import threading
 import warnings
 from typing import Any, Dict, Literal, Optional, Tuple, Union
 
@@ -24,6 +25,8 @@ from pydap.lib import DEFAULT_TIMEOUT, _quote
 _BEARER_RE = re.compile(r"^\s*Bearer\s+.+", re.IGNORECASE)
 
 Backend = Literal["sqlite", "filesystem", "memory"]
+
+_thread_local = threading.local()
 
 
 def GET(
@@ -498,6 +501,41 @@ def extract_session_state(session):
     return state
 
 
+def get_thread_session(session_state=None):
+    """
+    Return a thread-local requests.Session, initializing it once per thread
+    using session_state.
+    """
+    if not hasattr(_thread_local, "session"):
+        s = requests.Session()
+
+        if session_state is not None:
+            # headers
+            s.headers.update(session_state.get("headers", {}))
+
+            # cookies
+            s.cookies.update(session_state.get("cookies", {}))
+
+            # auth / TLS options
+            s.auth = session_state.get("auth")
+            s.verify = session_state.get("verify", True)
+
+        _thread_local.session = s
+
+    return _thread_local.session
+
+
+def get_session(session_state=None):
+    if session_state:
+        # you might want one restored session per thread too
+        if not hasattr(_thread_local, "session"):
+            _thread_local.session = restore_session(session_state)
+    else:
+        if not hasattr(_thread_local, "session"):
+            _thread_local.session = create_session()
+    return _thread_local.session
+
+
 def restore_session(session_state):
     """
     Restore a session (either CachedSession or plain Session)
@@ -519,7 +557,7 @@ def restore_session(session_state):
         )
 
     else:
-        s = requests.Session()
+        s = create_session()
 
     s.headers.update(session_state.get("headers", {}))
     s.cookies.update(session_state.get("cookies", {}))
