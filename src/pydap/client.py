@@ -46,13 +46,12 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 import datetime as dt
 import hashlib
-import multiprocessing as mp
 import os
 import re
 import sqlite3
 import warnings
 from collections import Counter
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
 from pathlib import Path
@@ -76,7 +75,13 @@ from pydap.handlers.dap import (
 )
 from pydap.lib import DEFAULT_TIMEOUT, encode, walk
 from pydap.model import BaseType, BatchPromise, DapType
-from pydap.net import GET, create_session, extract_session_state, restore_session
+from pydap.net import (
+    GET,
+    create_session,
+    extract_session_state,
+    get_session,
+    restore_session,
+)
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
@@ -1651,10 +1656,13 @@ def stream(
     dap_url = url.split("?")[0] + ".dap"
     ce = "?dap4.ce="
 
+    # session could be a request session object of a session state dict? dual use
+    # means that it could
     if not session_state:
         session = create_session()
     else:
-        session = restore_session(session_state)
+        session = get_session(session_state)
+
     if output_path is None:
         warnings.warn(
             "No location was provided. The file will be stored "
@@ -1663,14 +1671,22 @@ def stream(
         output_path = Path(".")
 
     if urlparse(url).query:
-        if (keep_variables, dim_slices) is not None:
-            raise ValueError(
-                "Neither `keep_variables` or `dim_slices` can be used"
-                " when the URL contains the Constraint Expression: "
-                f"{urlparse(url).query}"
-            )
+        if keep_variables:
+            _ce = urlparse(url).query.replace("dap4.ce=", "").split(";")
+            # need to update the query
+            if not set(keep_variables).issubset(set(_ce)):
+                raise ValueError(
+                    f"The provided keep_variables {keep_variables} do not "
+                    f"match those in the URL constraint expression {_ce}"
+                )
+            url = url.split("?")[0] + "?dap4.ce=" + ";".join(keep_variables)
+            keep_variables = None  # already handled
+            if dim_slices is not None:
+                warnings.warn(
+                    "The use of dim_slices is ignored since the provided "
+                    "URL already contains a constraint expression."
+                )
         dap_url += "?" + urlparse(url).query
-
     if dim_slices is not None:
         if keep_variables is None:
             raise ValueError(
@@ -1683,10 +1699,10 @@ def stream(
         shared_dim = [k + "=" + v for k, v in _slices.items()]
         ce += ";".join(shared_dim)
 
-    if keep_variables is not None:
+    if keep_variables:
         if dim_slices and not set(dim_slices).issubset(keep_variables):
             keep_variables += list(set(dim_slices.keys()) - set(keep_variables))
-        if dim_slices is not None:
+        if dim_slices:
             ce += ";"
         ce += ";".join(keep_variables)
 
@@ -1697,28 +1713,58 @@ def stream(
     else:
         dap_url += "?dap4.checksum=true"
 
-    r = session.get(dap_url, stream=True)
-    UNPACKDAP4DATA(r=r, checksums=True, output_path=output_path)
+    with session.get(dap_url, stream=True, timeout=(10, 120)) as r:
+        r.raise_for_status()
+        UNPACKDAP4DATA(r=r, checksums=True, output_path=output_path)
     return url
 
 
-def stream_parallel(
-    urls,
-    session_state=None,
-    output_path=None,
-    keep_variables=None,
-    dim_slices=None,
-    max_workers=4,
-):
-    ctx = mp.get_context("spawn")  # <- IMPORTANT on Linux
-    with ProcessPoolExecutor(max_workers=max_workers, mp_context=ctx) as pool:
-        futures = [
+def to_netcdf(
+    urls: list | str,
+    session: requests.Session = None,
+    output_path: str = None,
+    keep_variables: list = None,
+    dim_slices: dict = None,
+) -> list:
+    """
+    Downloads multiple dap4 responses in parallel, and stores them to a local directory.
+    It can handle both single url (str) or multiple urls (list), storing each dap
+    response as a separate netcdf4 file in the output_path directory. The netcdf4 files
+    are named using the name attribute in the DMR of the response (which coincides with
+    the name of the remote file)
+    """
+
+    if session:
+        session_state = extract_session_state(session)
+    else:
+        session_state = None
+
+    if len(urls) == 1 or isinstance(urls, str):
+        if isinstance(urls, list):
+            urls = urls[0]
+        return [stream(urls, session_state, output_path, keep_variables, dim_slices)]
+
+    max_workers = min(32, len(urls))  # limit to 32 workers
+
+    failures = []
+
+    with ThreadPoolExecutor(max_workers=max_workers) as pool:
+        future_to_url = {
             pool.submit(
                 stream, url, session_state, output_path, keep_variables, dim_slices
-            )
+            ): url
             for url in urls
-        ]
-        return [f.result() for f in futures]
+        }
+
+        for fut in as_completed(future_to_url):
+            url = future_to_url[fut]
+            try:
+                fut.result()
+            except Exception as e:
+                failures.append((url, e))
+                print(f"FAILED: {url} → {e}")
+    if failures:
+        raise RuntimeError(f"{len(failures)} downloads failed out of {len(urls)}")
 
 
 if __name__ == "__main__":

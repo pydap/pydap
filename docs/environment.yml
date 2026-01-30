@@ -11,5 +11,6 @@ dependencies:
 - dask
 - earthaccess
 - h5netcdf
+- pip
 - pip:
   - git+https://github.com/pydap/pydap.git

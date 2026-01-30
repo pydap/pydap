@@ -1264,4 +1264,6 @@ class UNPACKDAP4DATA(object):
 
             # Jump over the 4 byte chunk_header
             start = stop + 4
+        if self.nc is not None:
+            self.nc.close()
         return dataset
