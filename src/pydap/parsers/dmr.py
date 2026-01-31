@@ -291,7 +291,6 @@ def dmr_to_dataset(dmr, flat=True):
                     raise e
     for name, variable in variables.items():
         var_name = variable["name"]
-        print(var_name)
         path = None
         if len(var_name.split(split_by)) > 1:
             # path-like name - Groups!
@@ -457,7 +456,7 @@ class DMRParser(object):
                 global_dimensions.append([name, size])
 
         dataset.dimensions = {k: v for k, v in global_dimensions}
-        # variables = get_variables(self.node)
+        variables = get_variables(self.node)
         # create Groups via dict
         Groups = get_groups(self.node)
         # check if any var at root level
@@ -468,7 +467,7 @@ class DMRParser(object):
         ]
 
         if self.dmrVersion == "1.0" or len(root_vars) == 0:
-            if self.dmrVersion == "1.0":
+            if self.dmrVersion == "1.0" or len(variables.keys()) == 0:
                 for key in Groups:
                     dims = Groups[key].pop("dimensions", None)
                     Maps = Groups[key].pop("Maps", None)
