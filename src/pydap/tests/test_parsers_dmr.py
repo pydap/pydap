@@ -696,13 +696,15 @@ def test_nested_empty_group_dmrVersion2_():
     dmr = """
     <Dataset dapVersion="4.0" dmrVersion="2.0" name="all_aligned_child_nodes.nc.h5">
         <Group name="Group1">
-            <Group name="METADATA">
-                <Attribute name="description" type="String" value="Metadata Group"/>
+            <Group name="Group2">
+                <Group name="METADATA">
+                    <Attribute name="description" type="String" value="Metadata Group"/>
+                </Group>
             </Group>
         </Group>
     </Dataset>
     """
     ds = dmr_to_dataset(dmr)
     assert "METADATA" in ds.groups()
-    assert hasattr(ds["Group1/METADATA"], "attributes")
-    assert ds["Group1/METADATA"].attributes["description"] == "Metadata Group"
+    assert hasattr(ds["Group1/Group2/METADATA"], "attributes")
+    assert ds["Group1/Group2/METADATA"].attributes["description"] == "Metadata Group"
