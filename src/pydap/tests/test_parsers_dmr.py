@@ -690,7 +690,7 @@ def test_nested_group_dmrVersion2_RelativeNameCollision():
     assert ds["Group2/Data"].dimensions == {"lat": 1, "lon": 2}
 
 
-def test_nested_empty_group_dmrVersion2_():
+def test_nested_empty_group_dmrVersion2():
     """Test that empty nested groups with relative name collisions are parsed correctly
     with dmrVersion=2."""
     dmr = """
@@ -700,6 +700,36 @@ def test_nested_empty_group_dmrVersion2_():
                 <Group name="METADATA">
                     <Attribute name="description" type="String" value="Metadata Group"/>
                 </Group>
+            </Group>
+        </Group>
+    </Dataset>
+    """
+    ds = dmr_to_dataset(dmr)
+    assert "METADATA" in ds.groups()
+    assert hasattr(ds["Group1/Group2/METADATA"], "attributes")
+    assert ds["Group1/Group2/METADATA"].attributes["description"] == "Metadata Group"
+
+
+def test_nested_empty_group_dmrVersion2_somevars():
+    """Test that empty nested groups with relative name collisions are parsed correctly
+    with dmrVersion=2."""
+    dmr = """
+    <Dataset dapVersion="4.0" dmrVersion="2.0" name="all_aligned_child_nodes.nc.h5">
+        <Group name="Group1">
+            <Group name="Group2">
+                <Group name="METADATA">
+                    <Attribute name="description" type="String" value="Metadata Group"/>
+                </Group>
+            </Group>
+        </Group>
+        <Group name="Group3">
+            <Group name="Data">
+                <Dimension name="lat" size="1"/>
+                <Dimension name="lon" size="2"/>
+                <Float64 name="subgroup_2_var">
+                    <Dim name="/Group3/Data/lat"/>
+                    <Dim name="/Group3/Data/lon"/>
+                </Float64>
             </Group>
         </Group>
     </Dataset>
