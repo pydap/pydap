@@ -291,6 +291,7 @@ def dmr_to_dataset(dmr, flat=True):
                     raise e
     for name, variable in variables.items():
         var_name = variable["name"]
+        print(var_name)
         path = None
         if len(var_name.split(split_by)) > 1:
             # path-like name - Groups!
@@ -456,21 +457,44 @@ class DMRParser(object):
                 global_dimensions.append([name, size])
 
         dataset.dimensions = {k: v for k, v in global_dimensions}
-
+        # variables = get_variables(self.node)
         # create Groups via dict
         Groups = get_groups(self.node)
+        # check if any var at root level
+        root_vars = [
+            subnode.tag
+            for subnode in self.node
+            if subnode.tag in dmr_atomic_types + ("String",)
+        ]
 
-        if self.dmrVersion == "1.0":
-            for key in Groups:
-                dims = Groups[key].pop("dimensions", None)
-                Maps = Groups[key].pop("Maps", None)
-                attributes = Groups[key].pop("attributes", None)
-                dataset.createGroup(
-                    name=pydap.lib._quote(key),
-                    dimensions=dims,
-                    Maps=Maps,
-                    attributes=attributes,
-                )
+        if self.dmrVersion == "1.0" or len(root_vars) == 0:
+            if self.dmrVersion == "1.0":
+                for key in Groups:
+                    dims = Groups[key].pop("dimensions", None)
+                    Maps = Groups[key].pop("Maps", None)
+                    attributes = Groups[key].pop("attributes", None)
+                    dataset.createGroup(
+                        name=pydap.lib._quote(key),
+                        dimensions=dims,
+                        Maps=Maps,
+                        attributes=attributes,
+                    )
+            else:
+                root_groups = [
+                    subnode.get("name")
+                    for subnode in self.node
+                    if subnode.tag == "Group"
+                ]
+                for ky in root_groups:
+                    dims = Groups["/" + ky].pop("dimensions", None)
+                    Maps = Groups["/" + ky].pop("Maps", None)
+                    attributes = Groups["/" + ky].pop("attributes", None)
+                    dataset.createGroup(
+                        name=pydap.lib._quote("/" + ky),
+                        dimensions=dims,
+                        Maps=Maps,
+                        attributes=attributes,
+                    )
 
         return dataset
 
