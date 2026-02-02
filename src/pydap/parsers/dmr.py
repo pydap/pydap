@@ -377,11 +377,24 @@ def dmr_to_dataset(dmr, flat=True):
                             attributes=attributes,
                         )
                     ds_groups = [path + gr for gr, path in dataset.groups().items()]
-
         dataset.createVariable(**var_kwargs)
-        # assign root to each variable
-        dataset.assign_dataset_recursive(dataset)
 
+    if DMRParser(dmr).dmrVersion == "2.0":
+        # create any missing groups
+        recorded = [path + gname for gname, path in dataset.groups().items()]
+        miss = [fqn for fqn in GROUPS_metadata.keys() if fqn not in recorded]
+        for fqn in miss:
+            dims = GROUPS_metadata[fqn].pop("dimensions", None)
+            Maps = GROUPS_metadata[fqn].pop("Maps", None)
+            attributes = GROUPS_metadata[fqn].pop("attributes", None)
+            dataset.createGroup(
+                name=pydap.lib._quote(fqn),
+                dimensions=dims,
+                Maps=Maps,
+                attributes=attributes,
+            )
+        # assign root to each variable
+    dataset.assign_dataset_recursive(dataset)
     return dataset
 
 

@@ -664,30 +664,30 @@ def test_nested_group_dmrVersion2_RelativeNameCollision():
     dmr = """
     <Dataset dapVersion="4.0" dmrVersion="2.0" name="all_aligned_child_nodes.nc.h5">
         <Group name="Group1">
-            <Group name="Data">
+            <Group name="Data1">
                 <Dimension name="lat" size="2"/>
                 <Dimension name="lon" size="2"/>
                 <Float64 name="subgroup_1_var">
-                    <Dim name="/Group1/Data/lat"/>
-                    <Dim name="/Group1/Data/lon"/>
+                    <Dim name="/Group1/Data1/lat"/>
+                    <Dim name="/Group1/Data1/lon"/>
                 </Float64>
             </Group>
         </Group>
         <Group name="Group2">
-            <Group name="Data">
+            <Group name="Data2">
                 <Dimension name="lat" size="1"/>
                 <Dimension name="lon" size="2"/>
                 <Float64 name="subgroup_2_var">
-                    <Dim name="/Group2/Data/lat"/>
-                    <Dim name="/Group2/Data/lon"/>
+                    <Dim name="/Group2/Data2/lat"/>
+                    <Dim name="/Group2/Data2/lon"/>
                 </Float64>
             </Group>
         </Group>
     </Dataset>
     """
     ds = dmr_to_dataset(dmr)
-    assert ds["Group1/Data"].dimensions == {"lat": 2, "lon": 2}
-    assert ds["Group2/Data"].dimensions == {"lat": 1, "lon": 2}
+    assert ds["Group1/Data1"].dimensions == {"lat": 2, "lon": 2}
+    assert ds["Group2/Data2"].dimensions == {"lat": 1, "lon": 2}
 
 
 def test_nested_empty_group_dmrVersion2():
@@ -723,13 +723,15 @@ def test_nested_empty_group_dmrVersion2_somevars():
             </Group>
         </Group>
         <Group name="Group3">
-            <Group name="Data">
-                <Dimension name="lat" size="1"/>
-                <Dimension name="lon" size="2"/>
-                <Float64 name="subgroup_2_var">
-                    <Dim name="/Group3/Data/lat"/>
-                    <Dim name="/Group3/Data/lon"/>
-                </Float64>
+            <Group name="Group4">
+                <Group name="Data">
+                    <Dimension name="lat" size="1"/>
+                    <Dimension name="lon" size="2"/>
+                    <Float64 name="subgroup_2_var">
+                        <Dim name="/Group3/Group4/Data/lat"/>
+                        <Dim name="/Group3/Group4/Data/lon"/>
+                    </Float64>
+                </Group>
             </Group>
         </Group>
     </Dataset>
