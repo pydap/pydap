@@ -810,7 +810,7 @@ class StructureType(DapType, Mapping):
         out = {}
         for var in walk(self, GroupType):
             if var.type == "Group":
-                out.update({var.name: var.path})
+                out.update({var.path + var.name: var.path})
         return out
 
     def sequences(self) -> dict:

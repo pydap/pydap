@@ -538,10 +538,10 @@ def test_DatasetType_groups(sequence_example):
     dataset.createGroup("/Group2/SubGroup2")
     groups = dataset.groups()
     values = {
-        "Group1": "/",
-        "SubGroup1": "/Group1/",
-        "Group2": "/",
-        "SubGroup2": "/Group2/",
+        "/Group1": "/",
+        "/Group1/SubGroup1": "/Group1/",
+        "/Group2": "/",
+        "/Group2/SubGroup2": "/Group2/",
     }
     assert groups == values
 
