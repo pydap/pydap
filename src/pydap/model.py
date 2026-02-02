@@ -1058,12 +1058,8 @@ class DatasetType(StructureType):
             for i in range(1, len(parts)):
                 self[("/").join(parts[:i])]
         except KeyError:
-            warnings.warn(
-                """Failed to create `{}` because parent `{}` does not exist!
-                """.format(
-                    parts[-1], parts[-2]
-                )
-            )
+            warnings.warn("""Failed to create `{}` because parent `{}` does not exist!
+                """.format(parts[-1], parts[-2]))
             return None
         if "path" in attrs:
             del attrs["path"]

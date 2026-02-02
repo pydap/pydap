@@ -173,13 +173,9 @@ def get_atomic_attr(element):
                 value = [ast.literal_eval(val) for val in value if val is not None]
             except ValueError:
                 # leaves value as string
-                raise Warning(
-                    """
+                raise Warning("""
                     Pydap failed to retrieve Attribute: `{}` element during
-                    parsing of the `DMR`.""".format(
-                        name
-                    )
-                )
+                    parsing of the `DMR`.""".format(name))
     if len(value) <= 1:
         if value != []:
             value = value[0]
