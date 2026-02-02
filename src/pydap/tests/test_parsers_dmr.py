@@ -706,7 +706,7 @@ def test_nested_empty_group_dmrVersion2():
     </Dataset>
     """
     ds = dmr_to_dataset(dmr)
-    assert "METADATA" in ds.groups()
+    assert "/Group1/Group2/METADATA" in ds.groups()
     assert hasattr(ds["Group1/Group2/METADATA"], "attributes")
     assert ds["Group1/Group2/METADATA"].attributes["description"] == "Metadata Group"
 
@@ -738,6 +738,6 @@ def test_nested_empty_group_dmrVersion2_somevars():
     </Dataset>
     """
     ds = dmr_to_dataset(dmr)
-    assert "METADATA" in ds.groups()
+    assert "/Group1/Group2/METADATA" in ds.groups()
     assert hasattr(ds["Group1/Group2/METADATA"], "attributes")
     assert ds["Group1/Group2/METADATA"].attributes["description"] == "Metadata Group"
