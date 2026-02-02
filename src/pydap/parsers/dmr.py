@@ -360,7 +360,7 @@ def dmr_to_dataset(dmr, flat=True):
                     1:
                 ]
                 # keep track of existing groups in dataset (fqn)
-                ds_groups = [path + gr for gr, path in dataset.groups().items()]
+                ds_groups = list(dataset.groups().items())
                 for group in groups_fqn:
                     if group not in ds_groups and group in GROUPS_metadata.keys():
                         dims = GROUPS_metadata[group].pop("dimensions", None)
@@ -372,7 +372,9 @@ def dmr_to_dataset(dmr, flat=True):
                             Maps=Maps,
                             attributes=attributes,
                         )
-                    ds_groups = [path + gr for gr, path in dataset.groups().items()]
+                        GROUPS_metadata.pop(group)
+                    ds_groups = list(dataset.groups().items())
+
         dataset.createVariable(**var_kwargs)
 
     if DMRParser(dmr).dmrVersion == "2.0":

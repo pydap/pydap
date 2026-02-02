@@ -655,7 +655,7 @@ def test_nested_empty_groups_dmrVersion2():
     </Dataset>
     """
     dataset = dmr_to_dataset(nested_empty_groups_dmr)
-    assert set(["Group1", "subgroup1"]).issubset(dataset.groups().keys())
+    assert set(["/Group1", "/Group1/subgroup1"]).issubset(dataset.groups().keys())
 
 
 @pytest.mark.skip(reason="DMR v2 relative name collision not yet supported")
