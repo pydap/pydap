@@ -1089,13 +1089,11 @@ class UNPACKDAP4DATA(object):
                 self.r = webob_Response()  # make empty response
                 self.raw = BytesReader(r.read())
             else:
-                raise TypeError(
-                    """
+                raise TypeError("""
                     Unrecognized file type object for unpacking dap4 binary data.
                     Acceptable formats are `webob.response.Response` and
                     `io.BufferedReader`
-                    """
-                )
+                    """)
             self.dmr, self.endianness = self.safe_dmr_and_data()
             # need to split dmr from data
             dataset = dmr_to_dataset(self.dmr)
