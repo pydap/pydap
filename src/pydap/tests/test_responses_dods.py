@@ -366,9 +366,7 @@ class TestDODSResponseNestedSequence(unittest.TestCase):
     } location;
 } NestedSequence;
 Data:
-"""
-            + START_OF_SEQUENCE
-            + b"\x00\x00\x00\x01"
+""" + START_OF_SEQUENCE + b"\x00\x00\x00\x01"
             b"\x00\x00\x00\x01"
             b"\x00\x00\x00\x01" + START_OF_SEQUENCE + b"\x00\x00\x00\n"
             b"\x00\x00\x00\x0b"
