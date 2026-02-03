@@ -80,7 +80,6 @@ from pydap.net import (
     create_session,
     extract_session_state,
     get_session,
-    restore_session,
 )
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
@@ -261,6 +260,13 @@ def consolidate_metadata(
     if not all(isinstance(url, str) for url in urls):
         raise TypeError("`urls` must be a list of string urls")
 
+    if ncores:
+        warnings.warn(
+            "`ncores` is deprecated and will be removed in a future release."
+            " The number of cores is now computed internally based on the number"
+            " of URLs to download.",
+            DeprecationWarning,
+        )
     schemes = [urlparse(urls[n]).scheme for n in range(len(urls))]
     # check if all urls have the same scheme
     scheme = set(schemes)
@@ -277,18 +283,14 @@ def consolidate_metadata(
         return None
     # All URLs begin with dap4 - to make sure DAP4 compliant
     URLs = ["https" + urls[i][4:] for i in range(len(urls))]
-    max_cores = os.cpu_count()
-    if ncores is None:
-        ncores = min(len(urls), max_cores) // 2
-
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
+    max_workers = min(len(dmr_urls), 32)
+    session_state = extract_session_state(session)
     if safe_mode:
-        with ThreadPoolExecutor(max_workers=max_cores * 4) as executor:
-            results = list(
-                executor.map(lambda url: open_dmr(url, session=session), dmr_urls)
-            )
+        _ = download_all_urls(session_state, dmr_urls, ncores=max_workers)
+        results = [open_dmr(dmr_url, session=session) for dmr_url in dmr_urls]
         _dim_check = {k: v for k, v in results[0].dimensions.items() if k != concat_dim}
         if not all(
             {k: v for k, v in d.dimensions.items() if k != concat_dim} == _dim_check
@@ -309,7 +311,7 @@ def consolidate_metadata(
         # Does not download the dmr responses, as a cached key was created.
         # But needs to run so the URL is assigned the key.
         session_state = extract_session_state(session)
-        _ = download_all_urls(session_state, dmr_urls, ncores=ncores)
+        _ = download_all_urls(session_state, dmr_urls, ncores=max_workers)
     # Download dimensions once and construct cache key their dap responses
     base_url = URLs[0].split("?")[0]
     dims = set(list(results[0].dimensions))
@@ -454,7 +456,8 @@ def consolidate_metadata(
             session.settings.key_fn = key_fn
 
         session_state = extract_session_state(session)
-        _ = download_all_urls(session_state, new_urls, ncores=ncores)
+        max_workers = min(len(new_urls), 32)
+        _ = download_all_urls(session_state, new_urls, ncores=max_workers)
     return None
 
 
@@ -462,11 +465,11 @@ def fetch_dim(url, session_state, timeout=30):
     """helper function that enables catch of http vs https
     connection errors (mostly for testing).
     """
-    new_session = restore_session(session_state)
+    new_session = get_session(session_state)
 
     try:
-        resp = new_session.get(url, timeout=timeout)
-        resp.raise_for_status()
+        with new_session.get(url, timeout=timeout) as resp:
+            resp.raise_for_status()
         return resp
     except (ConnectionError, SSLError) as e:
         if url.startswith("https://test.opendap.org/"):
