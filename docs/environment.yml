@@ -3,7 +3,7 @@ channels:
 - conda-forge
 dependencies:
 - python=3.11
-- jupyter-book
+- jupyter-book<2.0
 - jupyterlab
 - matplotlib
 - cartopy

@@ -564,4 +564,20 @@ def restore_session(session_state):
     s.auth = session_state.get("auth")
     s.verify = session_state.get("verify")
 
+    # Handle retry arguments separately
+    retry_args = {}
+    retry_args.setdefault("total", 5)
+    retry_args.setdefault("status", 2)
+    retry_args.setdefault("connect", 1)
+    retry_args.setdefault("status_forcelist", [500, 502, 503, 504])
+    retry_args.setdefault("backoff_factor", 0.1)
+    retry_args.setdefault("allowed_methods", ["GET"])
+
+    retries = Retry(**retry_args)
+    adapter = HTTPAdapter(max_retries=retries, pool_connections=200, pool_maxsize=200)
+
+    # Mount the adapter to the session
+    s.mount("http://", adapter)
+    s.mount("https://", adapter)
+
     return s
