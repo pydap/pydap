@@ -56,7 +56,7 @@ from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_compl
 from io import BytesIO, open
 from os.path import commonprefix
 from pathlib import Path
-from typing import Iterable, List, Optional, Set
+from typing import Iterable, List, Mapping, Optional, Sequence, Set, Union
 from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 
 import numpy as np
@@ -1675,8 +1675,12 @@ def _stream_worker(url):
 
 
 def stream(
-    url, session_state=None, output_path=None, keep_variables=None, dim_slices=None
-):
+    url: str,
+    session_state: Optional[dict] = None,
+    output_path: Optional[Union[str, Path]] = None,
+    keep_variables: Optional[Sequence[str]] = None,
+    dim_slices: Optional[Mapping[str, tuple[int, int]]] = None,
+) -> str:
     """
     Downloads a dap response and stores it to a local directory. When keep variables
     or dim_slices are passed, a constrained dap response is downloaded.
@@ -1747,12 +1751,12 @@ def stream(
 
 
 def to_netcdf(
-    urls: list | str,
-    session: requests.Session = None,
-    output_path: str = None,
-    keep_variables: list = None,
-    dim_slices: dict = None,
-) -> list:
+    urls: Union[str, Sequence[str]],
+    session: Optional[requests.Session] = None,
+    output_path: Optional[Union[str, Path]] = None,
+    keep_variables: Optional[Sequence[str]] = None,
+    dim_slices: Optional[Mapping[str, tuple[int, int]]] = None,
+) -> None:
     """
     Downloads multiple dap4 responses in parallel, and stores them to a local directory.
     It can handle both single url (str) or multiple urls (list), storing each dap
