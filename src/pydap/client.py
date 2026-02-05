@@ -46,16 +46,18 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 import datetime as dt
 import hashlib
+import multiprocessing as mp
 import os
 import re
 import sqlite3
+import time
 import warnings
 from collections import Counter
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
 from pathlib import Path
-from typing import Iterable, List, Optional, Set
+from typing import Iterable, List, Mapping, Optional, Sequence, Set, Tuple, Union
 from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlsplit, urlunsplit
 
 import numpy as np
@@ -73,7 +75,7 @@ from pydap.handlers.dap import (
     StreamReader,
     unpack_dap2_data,
 )
-from pydap.lib import DEFAULT_TIMEOUT, encode, walk
+from pydap.lib import DEFAULT_TIMEOUT, Failure, _is_retryable, encode, tqdm, walk
 from pydap.model import BaseType, BatchPromise, DapType
 from pydap.net import (
     GET,
@@ -86,6 +88,18 @@ from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
 
 VARPATH_RE = re.compile(r"^\s*/([^[]+)\s*\[")
+
+SliceTuple = Union[
+    tuple[int, int],
+    tuple[int, int, int],
+]
+
+# Per-process globals (initialized once per worker process)
+# Used by to_netcdf when using multiprocessing to share state across processes.
+_G_SESSION_STATE = None
+_G_OUTPUT_PATH = None
+_G_KEEP_VARS = None
+_G_DIM_SLICES = None
 
 
 def open_url(
@@ -1648,9 +1662,32 @@ def create_key(
     return hashlib.sha256(key_material).hexdigest()
 
 
+def _init_worker(session_state, output_path, keep_variables, dim_slices):
+    global _G_SESSION_STATE, _G_OUTPUT_PATH, _G_KEEP_VARS, _G_DIM_SLICES
+    _G_SESSION_STATE = session_state
+    _G_OUTPUT_PATH = str(output_path)  # keep pickling simple
+    _G_KEEP_VARS = keep_variables
+    _G_DIM_SLICES = dim_slices
+
+
+def _stream_worker(url):
+    # Call your existing stream() with per-process state
+    return stream(
+        url,
+        session_state=_G_SESSION_STATE,
+        output_path=_G_OUTPUT_PATH,
+        keep_variables=_G_KEEP_VARS,
+        dim_slices=_G_DIM_SLICES,
+    )
+
+
 def stream(
-    url, session_state=None, output_path=None, keep_variables=None, dim_slices=None
-):
+    url: str,
+    session_state: Optional[dict] = None,
+    output_path: Optional[Union[str, Path]] = None,
+    keep_variables: Optional[Sequence[str]] = None,
+    dim_slices: Optional[Mapping[str, SliceTuple]] = None,
+) -> str:
     """
     Downloads a dap response and stores it to a local directory. When keep variables
     or dim_slices are passed, a constrained dap response is downloaded.
@@ -1697,14 +1734,26 @@ def stream(
                 " requires defining `keep_variables`"
             )
         _slices = {}
-        for dim, _slice in dim_slices.items():
-            _slices[dim] = "[" + str(_slice[0]) + ":1:" + str(_slice[1]) + "]"
+        for dim, slc in dim_slices.items():
+            if len(slc) == 2:
+                start, stop = slc
+                step = 1
+            elif len(slc) == 3:
+                start, stop, step = slc
+            else:
+                raise ValueError(
+                    f"dim_slices[{dim!r}] must be a 2- or 3-tuple (start, stop[, step])"
+                    f" but got {slc!r} instead."
+                )
+
+            if step == 0:
+                raise ValueError(f"dim_slices[{dim!r}] step cannot be 0; got {slc!r}")
+
+            _slices[dim] = f"[{start}:{step}:{stop}]"
         shared_dim = [k + "=" + v for k, v in _slices.items()]
         ce += ";".join(shared_dim)
 
     if keep_variables:
-        if dim_slices and not set(dim_slices).issubset(keep_variables):
-            keep_variables += list(set(dim_slices.keys()) - set(keep_variables))
         if dim_slices:
             ce += ";"
         ce += ";".join(keep_variables)
@@ -1715,20 +1764,136 @@ def stream(
         dap_url += "&dap4.checksum=true"
     else:
         dap_url += "?dap4.checksum=true"
-
     with session.get(dap_url, stream=True, timeout=(10, 120)) as r:
         r.raise_for_status()
         UNPACKDAP4DATA(r=r, checksums=True, output_path=output_path)
     return url
 
 
+def _run_process_batch(
+    urls: Sequence[str],
+    session_state: dict,
+    output_path: Union[str, Path, None],
+    keep_variables: Optional[Sequence[str]],
+    max_workers: int,
+    dim_slices: Optional[Mapping[str, SliceTuple]] = None,
+    *,
+    desc: Optional[str] = None,
+) -> List[Tuple[str, BaseException]]:
+    """
+    Run stream() for each URL in a process pool. Return list of (url, exception)
+    failures.
+    """
+    failures: List[Tuple[str, BaseException]] = []
+    ctx = mp.get_context("spawn")  # macOS-safe
+
+    workers = max(1, min(max_workers, len(urls)))
+    bar_desc = desc or f"Downloading ({len(urls)} remote files)"
+
+    with ProcessPoolExecutor(max_workers=workers, mp_context=ctx) as pool:
+        future_to_url = {
+            pool.submit(
+                stream, url, session_state, output_path, keep_variables, dim_slices
+            ): url
+            for url in urls
+        }
+        with tqdm(total=len(future_to_url), desc=bar_desc, unit="url") as pbar:
+            for fut in as_completed(future_to_url):
+                url = future_to_url[fut]
+                try:
+                    fut.result()
+                except BaseException as e:
+                    failures.append((url, e))
+                    # tqdm-friendly printing (fallback tqdm may not have .write)
+                    try:
+                        tqdm.write(f"FAILED: {url} → {type(e).__name__}: {e}")
+                    except Exception:
+                        print(f"FAILED: {url} → {type(e).__name__}: {e}")
+                finally:
+                    pbar.update(1)
+
+    return failures
+
+
+def _download_with_retries_process(
+    urls: Sequence[str],
+    session_state: dict,
+    output_path: Union[str, Path, None],
+    keep_variables: Optional[Sequence[str]],
+    dim_slices: Optional[Mapping[str, SliceTuple]],
+    max_attempts: int = 2,
+    max_workers_first: int = 32,
+    max_workers_retry: int = 8,
+    backoff_seconds: float = 10.0,
+) -> None:
+    """
+    Attempt downloads; retry only retryable failures up to max_attempts.
+    Raises RuntimeError with a summary if failures remain.
+    """
+    remaining = list(urls)
+    all_failures: List[Failure] = []
+
+    for attempt in range(1, max_attempts + 1):
+        if not remaining:
+            return
+
+        workers = max_workers_first if attempt == 1 else max_workers_retry
+
+        batch_failures = _run_process_batch(
+            remaining,
+            session_state=session_state,
+            output_path=output_path,
+            keep_variables=keep_variables,
+            dim_slices=dim_slices,
+            max_workers=workers,
+        )
+
+        if not batch_failures:
+            return
+
+        # Decide what to retry
+        retry_urls: List[str] = []
+        for url, exc in batch_failures:
+            all_failures.append(
+                Failure(url=url, exc_type=type(exc).__name__, message=str(exc))
+            )
+
+            if _is_retryable(exc) and attempt < max_attempts:
+                retry_urls.append(url)
+
+        # Anything that failed but is not retryable => we can stop early
+        non_retryable = [url for url, exc in batch_failures if not _is_retryable(exc)]
+        if non_retryable:
+            # Keep message short but actionable
+            sample = non_retryable[:10]
+            raise RuntimeError(
+                f"{len(non_retryable)} non-retryable failures encountered"
+                f" (e.g. {sample[0]}). Aborting without further retries."
+            )
+
+        remaining = retry_urls
+        if remaining and attempt < max_attempts and backoff_seconds > 0:
+            sleep_for = backoff_seconds * (2 ** (attempt - 1))
+            print(f"Retrying {len(remaining)} URLs after {sleep_for:.0f}s backoff...")
+            time.sleep(sleep_for)
+
+    # If we get here, retries were exhausted
+    if remaining:
+        # Summarize last errors for remaining URLs (best-effort)
+        sample = remaining[:10]
+        raise RuntimeError(
+            f"{len(remaining)} downloads failed after {max_attempts} attempts. "
+            f"Sample failed URL: {sample[0]}"
+        )
+
+
 def to_netcdf(
-    urls: list | str,
-    session: requests.Session = None,
-    output_path: str = None,
-    keep_variables: list = None,
-    dim_slices: dict = None,
-) -> list:
+    urls: Union[str, Sequence[str]],
+    session: Optional[requests.Session] = None,
+    output_path: Optional[Union[str, Path]] = None,
+    keep_variables: Optional[Sequence[str]] = None,
+    dim_slices: Optional[Mapping[str, SliceTuple]] = None,
+) -> None:
     """
     Downloads multiple dap4 responses in parallel, and stores them to a local directory.
     It can handle both single url (str) or multiple urls (list), storing each dap
@@ -1736,7 +1901,6 @@ def to_netcdf(
     are named using the name attribute in the DMR of the response (which coincides with
     the name of the remote file)
     """
-
     if session:
         session_state = extract_session_state(session)
     else:
@@ -1747,27 +1911,20 @@ def to_netcdf(
             urls = urls[0]
         return [stream(urls, session_state, output_path, keep_variables, dim_slices)]
 
-    max_workers = min(32, len(urls))  # limit to 32 workers
+    max_workers = min(len(urls), 32)
 
-    failures = []
-
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        future_to_url = {
-            pool.submit(
-                stream, url, session_state, output_path, keep_variables, dim_slices
-            ): url
-            for url in urls
-        }
-
-        for fut in as_completed(future_to_url):
-            url = future_to_url[fut]
-            try:
-                fut.result()
-            except Exception as e:
-                failures.append((url, e))
-                print(f"FAILED: {url} → {e}")
-    if failures:
-        raise RuntimeError(f"{len(failures)} downloads failed out of {len(urls)}")
+    # Multi-URL case:
+    _download_with_retries_process(
+        urls,
+        session_state=session_state,  # or derive from session
+        output_path=output_path,
+        keep_variables=keep_variables,
+        dim_slices=dim_slices,
+        max_attempts=2,
+        max_workers_first=max_workers,
+        max_workers_retry=8,
+        backoff_seconds=10.0,
+    )
 
 
 if __name__ == "__main__":

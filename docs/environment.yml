@@ -10,7 +10,7 @@ dependencies:
 - xarray
 - dask
 - earthaccess
-- h5netcdf
+- netcdf4
 - pip
 - pip:
   - git+https://github.com/pydap/pydap.git

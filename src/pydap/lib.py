@@ -1,16 +1,43 @@
 """Basic functions related to the DAP spec."""
 
 import operator
+from dataclasses import dataclass
 from functools import reduce
 from itertools import zip_longest
 from sys import maxsize as MAXSIZE
 
 import numpy as np
+import requests
 from requests.utils import quote as quote_
 from requests.utils import unquote as unquote_
 
 from pydap import __version__
 from pydap.exceptions import ConstraintExpressionError
+
+try:
+    from tqdm.auto import tqdm
+except ImportError:  # pragma: no cover
+
+    class tqdm:  # type: ignore
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def update(self, n=1):
+            pass
+
+        def set_postfix(self, **kwargs):
+            pass
+
+        @staticmethod
+        def write(msg):
+            print(msg)
+
 
 __dap__ = "2.15"
 
@@ -443,3 +470,42 @@ class BytesReader:
         buf = self.data.read(n)
         self.data.seek(pos)
         return buf
+
+
+@dataclass(frozen=True)
+class Failure:
+    url: str
+    exc_type: str
+    message: str
+
+
+def _is_retryable(exc: BaseException) -> bool:
+    """
+    Conservative retry classifier.
+
+    - Don't retry obvious permanent/user errors (auth, invalid args).
+    - Do retry transient runtime issues (timeouts, intermittent I/O, some
+        HDF5 weirdness).
+    """
+    # Your own validation / programmer errors: usually permanent
+    if isinstance(exc, (ValueError, TypeError)):
+        return False
+
+    # Requests errors are usually transient; but auth/404 are not
+    if isinstance(exc, requests.HTTPError):
+        resp = getattr(exc, "response", None)
+        code = getattr(resp, "status_code", None)
+        if code in (401, 403, 404):
+            return False
+        return True
+
+    # Many intermittent FS/HDF5 issues surface as OSError/RuntimeError
+    if isinstance(exc, (OSError, RuntimeError)):
+        msg = str(exc).lower()
+        # Don't retry "out of space"
+        if "no space left" in msg or "enospc" in msg:
+            return False
+        return True
+
+    # Default: retry once (conservative)
+    return True
