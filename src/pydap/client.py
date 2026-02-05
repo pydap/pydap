@@ -46,12 +46,13 @@ lazy mechanism for function call, supporting any function. Eg, to call the
 
 import datetime as dt
 import hashlib
+import multiprocessing as mp
 import os
 import re
 import sqlite3
 import warnings
 from collections import Counter
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor, as_completed
 from io import BytesIO, open
 from os.path import commonprefix
 from pathlib import Path
@@ -86,6 +87,12 @@ from pydap.parsers.dds import dds_to_dataset
 from pydap.parsers.dmr import DMRParser, dmr_to_dataset
 
 VARPATH_RE = re.compile(r"^\s*/([^[]+)\s*\[")
+# Per-process globals (initialized once per worker process)
+# Used by to_netcdf when using multiprocessing to share state across processes.
+_G_SESSION_STATE = None
+_G_OUTPUT_PATH = None
+_G_KEEP_VARS = None
+_G_DIM_SLICES = None
 
 
 def open_url(
@@ -1648,6 +1655,25 @@ def create_key(
     return hashlib.sha256(key_material).hexdigest()
 
 
+def _init_worker(session_state, output_path, keep_variables, dim_slices):
+    global _G_SESSION_STATE, _G_OUTPUT_PATH, _G_KEEP_VARS, _G_DIM_SLICES
+    _G_SESSION_STATE = session_state
+    _G_OUTPUT_PATH = str(output_path)  # keep pickling simple
+    _G_KEEP_VARS = keep_variables
+    _G_DIM_SLICES = dim_slices
+
+
+def _stream_worker(url):
+    # Call your existing stream() with per-process state
+    return stream(
+        url,
+        session_state=_G_SESSION_STATE,
+        output_path=_G_OUTPUT_PATH,
+        keep_variables=_G_KEEP_VARS,
+        dim_slices=_G_DIM_SLICES,
+    )
+
+
 def stream(
     url, session_state=None, output_path=None, keep_variables=None, dim_slices=None
 ):
@@ -1734,6 +1760,7 @@ def to_netcdf(
     are named using the name attribute in the DMR of the response (which coincides with
     the name of the remote file)
     """
+    ctx = mp.get_context("spawn")
 
     if session:
         session_state = extract_session_state(session)
@@ -1745,17 +1772,17 @@ def to_netcdf(
             urls = urls[0]
         return [stream(urls, session_state, output_path, keep_variables, dim_slices)]
 
-    max_workers = min(32, len(urls))  # limit to 32 workers
+    max_workers = min(len(urls), os.cpu_count() or 4)
 
     failures = []
 
-    with ThreadPoolExecutor(max_workers=max_workers) as pool:
-        future_to_url = {
-            pool.submit(
-                stream, url, session_state, output_path, keep_variables, dim_slices
-            ): url
-            for url in urls
-        }
+    with ProcessPoolExecutor(
+        max_workers=max_workers,
+        mp_context=ctx,
+        initializer=_init_worker,
+        initargs=(session_state, output_path, keep_variables, dim_slices),
+    ) as pool:
+        future_to_url = {pool.submit(_stream_worker, url): url for url in urls}
 
         for fut in as_completed(future_to_url):
             url = future_to_url[fut]
@@ -1764,6 +1791,7 @@ def to_netcdf(
             except Exception as e:
                 failures.append((url, e))
                 print(f"FAILED: {url} → {e}")
+
     if failures:
         raise RuntimeError(f"{len(failures)} downloads failed out of {len(urls)}")
 
