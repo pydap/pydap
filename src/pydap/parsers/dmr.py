@@ -1074,6 +1074,7 @@ class DMRPPParser:
         default_num: list[int] = (
             [0 for i in range(len(chunks_shape))] if chunks_shape else [0]
         )
+        path: str = None
         chunk_key_template = ".".join(["{}" for i in range(len(default_num))])
         for chunk_tag in chunks_tag.iterfind("dmrpp:chunk", self._NS):
             chunk_num = default_num
@@ -1085,10 +1086,14 @@ class DMRPPParser:
                     int(chunk_pos[i]) // chunks_shape[i]
                     for i in range(len(chunks_shape))
                 ]
+            if "href" in chunk_tag.attrib:
+                path = chunk_tag.attrib["href"]
+            path = path if path is not None else self.data_filepath
             # [0,1,5] -> "0.1.5"
             chunk_key = chunk_key_template.format(*chunk_num)
+
             chunkmanifest[chunk_key] = {
-                "path": self.data_filepath,
+                "path": path,
                 "offset": int(chunk_tag.attrib["offset"]),
                 "length": int(chunk_tag.attrib["nBytes"]),
             }
