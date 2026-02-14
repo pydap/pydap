@@ -784,9 +784,18 @@ class DMRPPParser:
             # Remove the container attribute and add its children to the root dataset
             root.remove(hdf5_global_attrs)
             root.extend(hdf5_global_attrs)
+        # remove dmrpp build attribute (only appears at root-level)
+        dmrpp_build_attr = root.find(
+            "dap:Attribute[@name='build_dmrpp_metadata']", self._NS
+        )
+        if dmrpp_build_attr is not None:
+            root.remove(dmrpp_build_attr)
+        cattrs = root.findall("dap:Attribute[@type='Container']", self._NS)
+        for attr in cattrs:
+            root.remove(attr)
+            root.extend(attr)
         for attr_tag in root.iterfind("dap:Attribute", self._NS):
             attrs.update(self._parse_attribute(attr_tag))
-
         return manifest_dict, attrs
 
     def _find_var_tags(self, root: ET.Element) -> list[ET.Element]:
@@ -945,6 +954,10 @@ class DMRPPParser:
 
         # Attributes
         attrs: dict[str, Any] = {}
+        cattrs = var_tag.findall("dap:Attribute[@type='Container']", self._NS)
+        for attr in cattrs:
+            var_tag.remove(attr)
+            var_tag.extend(attr)
         for attr_tag in var_tag.iterfind("dap:Attribute", self._NS):
             attrs.update(self._parse_attribute(attr_tag))
         # if "_FillValue" in attrs:
@@ -985,18 +998,14 @@ class DMRPPParser:
         """
         attr: dict[str, Any] = {}
         values = []
-        if "type" in attr_tag.attrib and attr_tag.attrib["type"] == "Container":
-            # DMR++ build information that is not part of the dataset
-            if attr_tag.attrib["name"] == "build_dmrpp_metadata":
-                return {}
-            else:
-                container_attr = attr_tag.attrib["name"]
-                warnings.warn(
-                    "This DMRpp contains a nested attribute "
-                    f"{container_attr}. Nested attributes cannot "
-                    "be assigned to a variable or dataset and will be dropped"
-                )
-                return {}
+        # if "type" in attr_tag.attrib and attr_tag.attrib["type"] == "Container":
+        #     container_attr = attr_tag.attrib["name"]
+        #     warnings.warn(
+        #         "This DMRpp contains a nested attribute "
+        #         f"{container_attr}. Nested attributes cannot "
+        #         "be assigned to a variable or dataset and will be dropped"
+        #     )
+        #     return {}
         dtype = np.dtype(self._DAP_NP_DTYPE[attr_tag.attrib["type"]])
         # if multiple Value tags are present, store as "key": "[v1, v2, ...]"
         for value_tag in attr_tag:
