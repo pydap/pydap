@@ -670,6 +670,18 @@ def test_parsed_dataset(Group, skip_variables, expected_parsed_variables):
     assert list(variables.keys()) == expected_parsed_variables
 
 
+def test_dmrpp_container_attributes():
+    """Test tht the dmrpp flattens container attributes correctly at root and when a
+    defined within variable.
+    """
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file3).read()))
+    variables, attrs = dmrpp_instance._parse_dataset(dmrpp_instance.find_node_fqn("/"))
+    assert "created" in attrs
+    assert attrs["created"] == "2025-08-14T23:32:01Z"
+    assert "long_name" in variables["data"]["attributes"]
+    assert variables["data"]["attributes"]["long_name"] == "empty scalar data"
+
+
 @pytest.mark.parametrize(
     "url, expected_dmrVersion",
     [
