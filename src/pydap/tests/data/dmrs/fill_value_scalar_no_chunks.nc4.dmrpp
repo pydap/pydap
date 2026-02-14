@@ -13,9 +13,6 @@
         <Attribute name="created" type="String">
             <Value>2025-08-14T23:32:01Z</Value>
         </Attribute>
-        <Attribute name="reason" type="String">
-            <Value>container attributes are no longer supported</Value>
-        </Attribute>
     </Attribute>
     <Attribute name="build_dmrpp_metadata" type="Container">
         <Attribute name="created" type="String">
