@@ -31,6 +31,8 @@ DMRPPTest_file = os.path.join(
     os.path.dirname(__file__), "data/dmrs/TestGroupData.nc4.dmrpp"
 )
 
+DMRPPTest_file2 = os.path.join(os.path.dirname(__file__), "data/dmrs/MOD13Q1.hdf.dmrpp")
+
 
 class TestDMRParser(unittest.TestCase):
     """Test parsing a DMR."""
@@ -403,9 +405,10 @@ def test_parsed_dim_tag(Group, parsed_dims):
 
 
 @pytest.mark.parametrize(
-    "var_path, expected",
+    "file, var_path, expected",
     [
         (
+            DMRPPTest_file,
             "/SimpleGroup/Temperature",
             {
                 "0.0.0": {
@@ -416,6 +419,7 @@ def test_parsed_dim_tag(Group, parsed_dims):
             },
         ),
         (
+            DMRPPTest_file,
             "/SimpleGroup/Salinity",
             {
                 "0.0.0": {
@@ -426,6 +430,38 @@ def test_parsed_dim_tag(Group, parsed_dims):
             },
         ),
         (
+            DMRPPTest_file2,
+            "/MODIS_Grid_16DAY_250m_500m_VI/XDim",
+            {
+                "0": {
+                    "path": "/sidecar/MOD13Q1/1.hdf_mvs.h5",
+                    "offset": 138734334,
+                    "length": 6748,
+                },
+                "1": {
+                    "path": "/sidecar/MOD13Q1/2.hdf_mvs.h5",
+                    "offset": 138741082,
+                    "length": 6709,
+                },
+                "2": {
+                    "path": "/sidecar/MOD13Q1/3.hdf_mvs.h5",
+                    "offset": 138747791,
+                    "length": 6695,
+                },
+                "3": {
+                    "path": "/sidecar/MOD13Q1/4.hdf_mvs.h5",
+                    "offset": 138754486,
+                    "length": 6495,
+                },
+                "4": {
+                    "path": "/sidecar/MOD13Q1/5.hdf_mvs.h5",
+                    "offset": 138760981,
+                    "length": 4224,
+                },
+            },
+        ),
+        (
+            DMRPPTest_file,
             "/data/air",
             {
                 "0.0.0": {
@@ -437,11 +473,11 @@ def test_parsed_dim_tag(Group, parsed_dims):
         ),
     ],
 )
-def test_dmrpp_chunkmanifest_variable(var_path, expected):
+def test_dmrpp_chunkmanifest_variable(file, var_path, expected):
     """Test that the chunk manifest matches the expected value. All variables have
     data that were created with single chunks.
     """
-    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file).read()))
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(file).read()))
     var_tag = dmrpp_instance.find_node_fqn(var_path)
     chunk_manifest = dmrpp_instance._parse_variable(var_tag)["chunkmanifest"]
 
