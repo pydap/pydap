@@ -931,7 +931,15 @@ class DMRPPParser:
             if chunks_shape:
                 chunkmanifest = self._parse_chunks(chunks_tag, chunks_shape)
             else:
-                chunkmanifest = {"entries": {}, "shape": array_fill_value.shape}
+                # there could a scalar with chunk element with offset/nbytes attrs
+                c_attrs = [c.attrib for c in chunks_tag]
+                if len(c_attrs) > 0 and "nBytes" in c_attrs[0].keys():
+                    c_attrs = c_attrs[0]
+                    chunkmanifest = self._parse_chunks(
+                        chunks_tag, (c_attrs["nBytes"][0])
+                    )
+                else:
+                    chunkmanifest = {"entries": {}, "shape": array_fill_value.shape}
             # Filters
             codecs = self._parse_filters(chunks_tag, dtype)
 

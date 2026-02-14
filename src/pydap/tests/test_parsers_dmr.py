@@ -33,6 +33,10 @@ DMRPPTest_file = os.path.join(
 
 DMRPPTest_file2 = os.path.join(os.path.dirname(__file__), "data/dmrs/MOD13Q1.hdf.dmrpp")
 
+DMRPPTest_file3 = os.path.join(
+    os.path.dirname(__file__), "data/dmrs/fill_value_scalar_no_chunks.nc4.dmrpp"
+)
+
 
 class TestDMRParser(unittest.TestCase):
     """Test parsing a DMR."""
@@ -470,6 +474,22 @@ def test_parsed_dim_tag(Group, parsed_dims):
                     "length": 2650,
                 }
             },
+        ),
+        (
+            DMRPPTest_file2,
+            "/MODIS_Grid_16DAY_250m_500m_VI/eos_cf_projection",
+            {
+                "0": {
+                    "path": "/sidecar/MOD13Q1/1.hdf_mvs.h5",
+                    "offset": 8971,
+                    "length": 1,
+                }
+            },
+        ),
+        (
+            DMRPPTest_file3,
+            "/data",
+            {"entries": {}, "shape": ()},
         ),
     ],
 )
