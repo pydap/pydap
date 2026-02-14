@@ -998,14 +998,6 @@ class DMRPPParser:
         """
         attr: dict[str, Any] = {}
         values = []
-        # if "type" in attr_tag.attrib and attr_tag.attrib["type"] == "Container":
-        #     container_attr = attr_tag.attrib["name"]
-        #     warnings.warn(
-        #         "This DMRpp contains a nested attribute "
-        #         f"{container_attr}. Nested attributes cannot "
-        #         "be assigned to a variable or dataset and will be dropped"
-        #     )
-        #     return {}
         dtype = np.dtype(self._DAP_NP_DTYPE[attr_tag.attrib["type"]])
         # if multiple Value tags are present, store as "key": "[v1, v2, ...]"
         for value_tag in attr_tag:
