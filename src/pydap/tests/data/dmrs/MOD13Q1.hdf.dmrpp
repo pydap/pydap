@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#" xmlns:dmrpp="http://xml.opendap.org/dap/dmrpp/1.0.0#" dapVersion="4.0" dmrVersion="1.0" name="MOD13Q1.A2023193.h21v08.061.2023215104800.hdf" dmrpp:href="/sidecar/MOD13Q1/MOD13Q1.A2023193.h21v08.061.2023215104800.hdf">
+    <Dimension name="YDim_MODIS_Grid_16DAY_250m_500m_VI" size="4800"/>
+    <Dimension name="XDim_MODIS_Grid_16DAY_250m_500m_VI" size="4800"/>
+    <Attribute name="HDFEOSVersion" type="String">
+        <Value>HDFEOS_V2.19</Value>
+    </Attribute>
+    <Group name="MODIS_Grid_16DAY_250m_500m_VI">
+        <Byte name="eos_cf_projection">
+            <Attribute name="grid_mapping_name" type="String">
+                <Value>sinusoidal</Value>
+            </Attribute>
+            <Attribute name="longitude_of_central_meridian" type="Float64">
+                <Value>0.0</Value>
+            </Attribute>
+            <Attribute name="earth_radius" type="Float64">
+                <Value>6371007.181</Value>
+            </Attribute>
+            <Attribute name="_CoordinateAxisTypes" type="String">
+                <Value>GeoX GeoY</Value>
+            </Attribute>
+            <Attribute name="eos_cf_grid_mapping" type="String">
+                <Value>MODIS_Grid_16DAY_250m_500m_VI eos_cf_projection</Value>
+            </Attribute>
+            <dmrpp:chunks fillValue="0" byteOrder="LE">
+                <dmrpp:chunk offset="8971" nBytes="1" href="/sidecar/MOD13Q1/1.hdf_mvs.h5" />
+            </dmrpp:chunks>
+        </Byte>
+        <Float64 name="XDim">
+            <Dim name="/XDim_MODIS_Grid_16DAY_250m_500m_VI"/>
+            <Attribute name="standard_name" type="String">
+                <Value>projection_x_coordinate</Value>
+            </Attribute>
+            <Attribute name="long_name" type="String">
+                <Value>x coordinate of projection </Value>
+            </Attribute>
+            <Attribute name="units" type="String">
+                <Value>meter</Value>
+            </Attribute>
+            <Attribute name="_CoordinateAxisType" type="String">
+                <Value>GeoX</Value>
+            </Attribute>
+            <Attribute name="eos_cf_grid" type="String">
+                <Value>MODIS_Grid_16DAY_250m_500m_VI XDim</Value>
+            </Attribute>
+            <dmrpp:chunks compressionType="deflate" deflateLevel="4" fillValue="0" byteOrder="LE">
+                <dmrpp:chunkDimensionSizes>1024</dmrpp:chunkDimensionSizes>
+                <dmrpp:chunk offset="138734334" nBytes="6748" chunkPositionInArray="[0]" href="/sidecar/MOD13Q1/1.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138741082" nBytes="6709" chunkPositionInArray="[1024]" href="/sidecar/MOD13Q1/2.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138747791" nBytes="6695" chunkPositionInArray="[2048]" href="/sidecar/MOD13Q1/3.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138754486" nBytes="6495" chunkPositionInArray="[3072]" href="/sidecar/MOD13Q1/4.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138760981" nBytes="4224" chunkPositionInArray="[4096]" href="/sidecar/MOD13Q1/5.hdf_mvs.h5" />
+            </dmrpp:chunks>
+        </Float64>
+        <Float64 name="YDim">
+            <Dim name="/YDim_MODIS_Grid_16DAY_250m_500m_VI"/>
+            <Attribute name="standard_name" type="String">
+                <Value>projection_y_coordinate</Value>
+            </Attribute>
+            <Attribute name="long_name" type="String">
+                <Value>y coordinate of projection </Value>
+            </Attribute>
+            <Attribute name="units" type="String">
+                <Value>meter</Value>
+            </Attribute>
+            <Attribute name="_CoordinateAxisType" type="String">
+                <Value>GeoY</Value>
+            </Attribute>
+            <Attribute name="eos_cf_grid" type="String">
+                <Value>MODIS_Grid_16DAY_250m_500m_VI YDim</Value>
+            </Attribute>
+            <dmrpp:chunks compressionType="deflate" deflateLevel="4" fillValue="0" byteOrder="LE">
+                <dmrpp:chunkDimensionSizes>1024</dmrpp:chunkDimensionSizes>
+                <dmrpp:chunk offset="138765205" nBytes="7274" chunkPositionInArray="[0]" href="/sidecar/MOD13Q1/1.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138772479" nBytes="7303" chunkPositionInArray="[1024]" href="/sidecar/MOD13Q1/2.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138779782" nBytes="7562" chunkPositionInArray="[2048]" href="/sidecar/MOD13Q1/3.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138787344" nBytes="7427" chunkPositionInArray="[3072]" href="/sidecar/MOD13Q1/4.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138794771" nBytes="4809" chunkPositionInArray="[4096]" href="/sidecar/MOD13Q1/5.hdf_mvs.h5" />
+            </dmrpp:chunks>
+        </Float64>
+        <Float64 name="Latitude">
+            <Dim name="/YDim_MODIS_Grid_16DAY_250m_500m_VI"/>
+            <Dim name="/XDim_MODIS_Grid_16DAY_250m_500m_VI"/>
+            <Attribute name="units" type="String">
+                <Value>degrees_north</Value>
+            </Attribute>
+            <Attribute name="eos_latlon" type="String">
+                <Value>MODIS_Grid_16DAY_250m_500m_VI lat</Value>
+            </Attribute>
+            <dmrpp:chunks compressionType="deflate" deflateLevel="4" fillValue="0" byteOrder="LE">
+                <dmrpp:chunkDimensionSizes>1024 1024</dmrpp:chunkDimensionSizes>
+                <dmrpp:chunk offset="17827" nBytes="20027" chunkPositionInArray="[0,0]" href="/sidecar/MOD13Q1/1.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="37854" nBytes="20027" chunkPositionInArray="[0,1024]" href="/sidecar/MOD13Q1/2.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="57881" nBytes="20027" chunkPositionInArray="[0,2048]" href="/sidecar/MOD13Q1/3.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="77908" nBytes="20027" chunkPositionInArray="[0,3072]" href="/sidecar/MOD13Q1/4.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="178267" nBytes="25196" chunkPositionInArray="[0,4096]" href="/sidecar/MOD13Q1/5.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="97935" nBytes="20083" chunkPositionInArray="[1024,0]" href="/sidecar/MOD13Q1/6.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="118018" nBytes="20083" chunkPositionInArray="[1024,1024]" href="/sidecar/MOD13Q1/7.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138101" nBytes="20083" chunkPositionInArray="[1024,2048]" href="/sidecar/MOD13Q1/8.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="158184" nBytes="20083" chunkPositionInArray="[1024,3072]" href="/sidecar/MOD13Q1/9.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="283791" nBytes="25356" chunkPositionInArray="[1024,4096]" href="/sidecar/MOD13Q1/10.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="203463" nBytes="20082" chunkPositionInArray="[2048,0]" href="/sidecar/MOD13Q1/11.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="223545" nBytes="20082" chunkPositionInArray="[2048,1024]" href="/sidecar/MOD13Q1/12.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="243627" nBytes="20082" chunkPositionInArray="[2048,2048]" href="/sidecar/MOD13Q1/13.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="263709" nBytes="20082" chunkPositionInArray="[2048,3072]" href="/sidecar/MOD13Q1/14.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="389575" nBytes="25320" chunkPositionInArray="[2048,4096]" href="/sidecar/MOD13Q1/15.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="309147" nBytes="20107" chunkPositionInArray="[3072,0]" href="/sidecar/MOD13Q1/16.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="329254" nBytes="20107" chunkPositionInArray="[3072,1024]" href="/sidecar/MOD13Q1/17.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="349361" nBytes="20107" chunkPositionInArray="[3072,2048]" href="/sidecar/MOD13Q1/18.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="369468" nBytes="20107" chunkPositionInArray="[3072,3072]" href="/sidecar/MOD13Q1/19.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="414895" nBytes="25434" chunkPositionInArray="[3072,4096]" href="/sidecar/MOD13Q1/20.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="440329" nBytes="16387" chunkPositionInArray="[4096,0]" href="/sidecar/MOD13Q1/21.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="456716" nBytes="16387" chunkPositionInArray="[4096,1024]" href="/sidecar/MOD13Q1/22.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="473103" nBytes="16387" chunkPositionInArray="[4096,2048]" href="/sidecar/MOD13Q1/23.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138799580" nBytes="16387" chunkPositionInArray="[4096,3072]" href="/sidecar/MOD13Q1/24.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138815967" nBytes="20530" chunkPositionInArray="[4096,4096]" href="/sidecar/MOD13Q1/25.hdf_mvs.h5" />
+            </dmrpp:chunks>
+        </Float64>
+        <Float64 name="Longitude">
+            <Dim name="/YDim_MODIS_Grid_16DAY_250m_500m_VI"/>
+            <Dim name="/XDim_MODIS_Grid_16DAY_250m_500m_VI"/>
+            <Attribute name="units" type="String">
+                <Value>degrees_east</Value>
+            </Attribute>
+            <Attribute name="eos_latlon" type="String">
+                <Value>MODIS_Grid_16DAY_250m_500m_VI lon</Value>
+            </Attribute>
+            <dmrpp:chunks compressionType="deflate" deflateLevel="4" fillValue="0" byteOrder="LE">
+                <dmrpp:chunkDimensionSizes>1024 1024</dmrpp:chunkDimensionSizes>
+                <dmrpp:chunk offset="492106" nBytes="6888366" chunkPositionInArray="[0,0]" href="/sidecar/MOD13Q1/1.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="7380472" nBytes="6553555" chunkPositionInArray="[0,1024]" href="/sidecar/MOD13Q1/2.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="13934027" nBytes="6566403" chunkPositionInArray="[0,2048]" href="/sidecar/MOD13Q1/3.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="20500430" nBytes="6569250" chunkPositionInArray="[0,3072]" href="/sidecar/MOD13Q1/4.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="53670388" nBytes="4552149" chunkPositionInArray="[0,4096]" href="/sidecar/MOD13Q1/5.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="27069680" nBytes="6914339" chunkPositionInArray="[1024,0]" href="/sidecar/MOD13Q1/6.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="33984019" nBytes="6554872" chunkPositionInArray="[1024,1024]" href="/sidecar/MOD13Q1/7.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="40538891" nBytes="6564316" chunkPositionInArray="[1024,2048]" href="/sidecar/MOD13Q1/8.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="47103207" nBytes="6567181" chunkPositionInArray="[1024,3072]" href="/sidecar/MOD13Q1/9.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="84820644" nBytes="4547925" chunkPositionInArray="[1024,4096]" href="/sidecar/MOD13Q1/10.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="58222537" nBytes="6926775" chunkPositionInArray="[2048,0]" href="/sidecar/MOD13Q1/11.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="65149312" nBytes="6548974" chunkPositionInArray="[2048,1024]" href="/sidecar/MOD13Q1/12.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="71698286" nBytes="6560130" chunkPositionInArray="[2048,2048]" href="/sidecar/MOD13Q1/13.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="78258416" nBytes="6562228" chunkPositionInArray="[2048,3072]" href="/sidecar/MOD13Q1/14.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="115981220" nBytes="4538103" chunkPositionInArray="[2048,4096]" href="/sidecar/MOD13Q1/15.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="89368569" nBytes="6943064" chunkPositionInArray="[3072,0]" href="/sidecar/MOD13Q1/16.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="96311633" nBytes="6548296" chunkPositionInArray="[3072,1024]" href="/sidecar/MOD13Q1/17.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="102859929" nBytes="6558921" chunkPositionInArray="[3072,2048]" href="/sidecar/MOD13Q1/18.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="109418850" nBytes="6562370" chunkPositionInArray="[3072,3072]" href="/sidecar/MOD13Q1/19.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="120519323" nBytes="4531178" chunkPositionInArray="[3072,4096]" href="/sidecar/MOD13Q1/20.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="125050501" nBytes="4698958" chunkPositionInArray="[4096,0]" href="/sidecar/MOD13Q1/21.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="129749459" nBytes="4491730" chunkPositionInArray="[4096,1024]" href="/sidecar/MOD13Q1/22.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="134241189" nBytes="4493145" chunkPositionInArray="[4096,2048]" href="/sidecar/MOD13Q1/23.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="138836497" nBytes="4493674" chunkPositionInArray="[4096,3072]" href="/sidecar/MOD13Q1/24.hdf_mvs.h5"/>
+                <dmrpp:chunk offset="143330171" nBytes="3102358" chunkPositionInArray="[4096,4096]" href="/sidecar/MOD13Q1/25.hdf_mvs.h5" />
+            </dmrpp:chunks>
+        </Float64>
+    </Group>
+</Dataset>
