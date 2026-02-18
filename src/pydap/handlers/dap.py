@@ -1173,7 +1173,7 @@ class UNPACKDAP4DATA(object):
             # copy attributes
             for k, v in dataset[var].attributes.items():
                 if k not in ["Maps", "path"]:
-                    setattr(ncvar, k, v)
+                    ncvar.setncattr(k, v)
 
         # now identify groups and begin to populate
         variables = [
