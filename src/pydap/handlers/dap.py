@@ -1143,8 +1143,18 @@ class UNPACKDAP4DATA(object):
         return dmr, endianness
 
     def _init_netcdf_from_dmr(self, dataset):
-        """creates an empty nc file"""
-        from netCDF4 import Dataset
+        """Create an empty netCDF4 file from a DMR description.
+
+        Requires the optional dependency `netCDF4`.
+        """
+
+        if not HAVE_NETCDF4:
+            raise ImportError(
+                "The 'netCDF4' package is required to initialize a netCDF file "
+                "from a DMR response. Currently it is not installed."
+            )
+
+        FILL_KEYS = {"missing_value", "fmissing_value"}  # keep _FillValue
 
         filename = unquote(dataset.name)
         if not filename.endswith("nc4"):
@@ -1167,13 +1177,15 @@ class UNPACKDAP4DATA(object):
             }
             if len(_dims) != len(dataset[var].shape):
                 _dims = self._create_nc_phony_dims(var, dataset[var]._data)
-
             ncvar = self.nc.createVariable(**args, dimensions=_dims)
 
             # copy attributes
             for k, v in dataset[var].attributes.items():
-                if k not in ["Maps", "path"]:
-                    setattr(ncvar, k, v)
+                if k in {"Maps", "path"}:
+                    continue
+                if k in FILL_KEYS:  # avoid writing multiple fill values
+                    continue
+                ncvar.setncattr(k, v)
 
         # now identify groups and begin to populate
         variables = [
