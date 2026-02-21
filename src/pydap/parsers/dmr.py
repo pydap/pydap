@@ -926,10 +926,13 @@ class DMRPPParser:
         chunks_tag = var_tag.find("dmrpp:chunks", self._NS)
         array_fill_value = np.array(0).astype(dtype)[()]
         miss_val_tag = var_tag.find("dmrpp:missingdata", self._NS)
+        compact_tag = var_tag.find("dmrpp:compact", self._NS)
         if miss_val_tag is not None:
             inline_value = miss_val_tag.text
             codecs = None
             chunkmanifest = {}
+        if compact_tag is not None:
+            inline_value = compact_tag.text
         if chunks_tag is not None:
             # Chunks
             chunk_dim_text = chunks_tag.findtext(
