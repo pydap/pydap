@@ -921,9 +921,15 @@ class DMRPPParser:
         )
         # Chunks and Filters
         shape: tuple[int, ...] = tuple(dims.values())
+        inline_value: str | None = None
         chunks_shape = shape
         chunks_tag = var_tag.find("dmrpp:chunks", self._NS)
         array_fill_value = np.array(0).astype(dtype)[()]
+        miss_val_tag = var_tag.find("dmrpp:missingdata", self._NS)
+        if miss_val_tag is not None:
+            inline_value = miss_val_tag.text
+            codecs = None
+            chunkmanifest = {}
         if chunks_tag is not None:
             # Chunks
             chunk_dim_text = chunks_tag.findtext(
@@ -951,7 +957,6 @@ class DMRPPParser:
                     chunkmanifest = {"entries": {}, "shape": array_fill_value.shape}
             # Filters
             codecs = self._parse_filters(chunks_tag, dtype)
-
         # Attributes
         attrs: dict[str, Any] = {}
         cattrs = var_tag.findall("dap:Attribute[@type='Container']", self._NS)
@@ -960,10 +965,10 @@ class DMRPPParser:
             var_tag.extend(attr)
         for attr_tag in var_tag.iterfind("dap:Attribute", self._NS):
             attrs.update(self._parse_attribute(attr_tag))
+
         # if "_FillValue" in attrs:
         # encoded_cf_fill_value = encode_cf_fill_value(attrs["_FillValue"], dtype)
         # attrs["_FillValue"] = encoded_cf_fill_value
-
         metadata: dict[str, Any] = {}
         # creates array v3 in virtualizarr
         metadata.update(
@@ -977,6 +982,7 @@ class DMRPPParser:
             attributes=attrs,
             fill_value=array_fill_value,
             chunkmanifest=chunkmanifest,
+            missingdata=inline_value,
         )
         return metadata
 

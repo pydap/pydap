@@ -520,6 +520,7 @@ def test_dmrpp_parser_variable_keys():
         "attributes",
         "fill_value",
         "chunkmanifest",
+        "missingdata",
     ]
     assert parsed_variable_elements == expected_elements
 
