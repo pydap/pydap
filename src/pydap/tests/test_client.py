@@ -1451,3 +1451,22 @@ def test_to_netcdf_multiple():
             urls,
             output_path=tmp_dir,
         )
+
+
+@pytest.mark.parametrize(
+    "dim_slices",
+    [[{"/TIME": (0, 1)}], [{"/TIME": (0, 1)}, {"/TIME": (0, 1)}, {"/TIME": (0, 1)}]],
+)
+def test_to_netcdf_multiple_dim_slices_error(dim_slices):
+    """Test that when dim_slices is a list longer the list of URLs,
+    there is a ValueError
+    """
+    urls = [
+        "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+        "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+    ]
+    with pytest.raises(ValueError):
+        _ = to_netcdf(
+            urls,
+            dim_slices=dim_slices,
+        )
