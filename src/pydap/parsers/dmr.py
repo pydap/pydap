@@ -866,9 +866,15 @@ class DMRPPParser:
             #  elsewhere in the DMR++
             dim_tags = root.findall("dap:Dim", self._NS)
             for d in dim_tags:
-                dimension_tag = self.find_node_fqn(d.attrib["name"])
-                if dimension_tag is not None:
-                    dimension_tags.append(dimension_tag)
+                try:
+                    dimension_tag = self.find_node_fqn(d.attrib["name"])
+                    if dimension_tag is not None:
+                        dimension_tags.append(dimension_tag)
+                except KeyError:
+                    warnings.warn(
+                        "Failed to parse Dim. There is an unnamed Dim element "
+                        "without a Dimension element declaration."
+                    )
         return dimension_tags
 
     def _find_dim_tags(self, root: ET.Element) -> list[ET.Element]:
@@ -928,11 +934,14 @@ class DMRPPParser:
         miss_val_tag = var_tag.find("dmrpp:missingdata", self._NS)
         compact_tag = var_tag.find("dmrpp:compact", self._NS)
         if miss_val_tag is not None:
-            inline_value = miss_val_tag.text
+            missing_bytes = pydap.lib.decode_missingdata(miss_val_tag.text)
+            inline_value = np.frombuffer(missing_bytes, dtype=dtype)
             codecs = None
             chunkmanifest = {}
         if compact_tag is not None:
-            inline_value = compact_tag.text
+            missing_bytes = pydap.lib.decode_compact(compact_tag.text)
+            inline_value = np.frombuffer(missing_bytes, dtype=dtype)
+
         if chunks_tag is not None:
             # Chunks
             chunk_dim_text = chunks_tag.findtext(
@@ -985,7 +994,7 @@ class DMRPPParser:
             attributes=attrs,
             fill_value=array_fill_value,
             chunkmanifest=chunkmanifest,
-            missingdata=inline_value,
+            inline=inline_value,
         )
         return metadata
 
