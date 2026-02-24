@@ -866,9 +866,15 @@ class DMRPPParser:
             #  elsewhere in the DMR++
             dim_tags = root.findall("dap:Dim", self._NS)
             for d in dim_tags:
-                dimension_tag = self.find_node_fqn(d.attrib["name"])
-                if dimension_tag is not None:
-                    dimension_tags.append(dimension_tag)
+                try:
+                    dimension_tag = self.find_node_fqn(d.attrib["name"])
+                    if dimension_tag is not None:
+                        dimension_tags.append(dimension_tag)
+                except KeyError:
+                    warnings.warn(
+                        "Failed to parse Dim. There is an unnamed Dim element "
+                        "without a Dimension element declaration."
+                    )
         return dimension_tags
 
     def _find_dim_tags(self, root: ET.Element) -> list[ET.Element]:
@@ -921,9 +927,21 @@ class DMRPPParser:
         )
         # Chunks and Filters
         shape: tuple[int, ...] = tuple(dims.values())
+        inline_value: str | None = None
         chunks_shape = shape
         chunks_tag = var_tag.find("dmrpp:chunks", self._NS)
         array_fill_value = np.array(0).astype(dtype)[()]
+        miss_val_tag = var_tag.find("dmrpp:missingdata", self._NS)
+        compact_tag = var_tag.find("dmrpp:compact", self._NS)
+        if miss_val_tag is not None:
+            missing_bytes = pydap.lib.decode_missingdata(miss_val_tag.text)
+            inline_value = np.frombuffer(missing_bytes, dtype=dtype)
+            codecs = None
+            chunkmanifest = {}
+        if compact_tag is not None:
+            missing_bytes = pydap.lib.decode_compact(compact_tag.text)
+            inline_value = np.frombuffer(missing_bytes, dtype=dtype)
+
         if chunks_tag is not None:
             # Chunks
             chunk_dim_text = chunks_tag.findtext(
@@ -951,7 +969,6 @@ class DMRPPParser:
                     chunkmanifest = {"entries": {}, "shape": array_fill_value.shape}
             # Filters
             codecs = self._parse_filters(chunks_tag, dtype)
-
         # Attributes
         attrs: dict[str, Any] = {}
         cattrs = var_tag.findall("dap:Attribute[@type='Container']", self._NS)
@@ -960,10 +977,10 @@ class DMRPPParser:
             var_tag.extend(attr)
         for attr_tag in var_tag.iterfind("dap:Attribute", self._NS):
             attrs.update(self._parse_attribute(attr_tag))
+
         # if "_FillValue" in attrs:
         # encoded_cf_fill_value = encode_cf_fill_value(attrs["_FillValue"], dtype)
         # attrs["_FillValue"] = encoded_cf_fill_value
-
         metadata: dict[str, Any] = {}
         # creates array v3 in virtualizarr
         metadata.update(
@@ -977,6 +994,7 @@ class DMRPPParser:
             attributes=attrs,
             fill_value=array_fill_value,
             chunkmanifest=chunkmanifest,
+            inline=inline_value,
         )
         return metadata
 

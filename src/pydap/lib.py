@@ -1,6 +1,8 @@
 """Basic functions related to the DAP spec."""
 
+import base64
 import operator
+import zlib
 from dataclasses import dataclass
 from functools import reduce
 from itertools import zip_longest
@@ -509,3 +511,27 @@ def _is_retryable(exc: BaseException) -> bool:
 
     # Default: retry once (conservative)
     return True
+
+
+def b64_to_bytes(s: str) -> bytes:
+    # base64 sometimes contains whitespace/newlines
+    return base64.b64decode("".join(s.split()))
+
+
+def inflate(data: bytes) -> bytes:
+    """
+    Try zlib-wrapped DEFLATE first (common when strings start with eJw...),
+    then raw DEFLATE as a fallback.
+    """
+    try:
+        return zlib.decompress(data)  # zlib header (your sample works with this)
+    except zlib.error:
+        return zlib.decompress(data, wbits=-15)  # raw deflate
+
+
+def decode_missingdata(text: str) -> bytes:
+    return inflate(b64_to_bytes(text))
+
+
+def decode_compact(text: str) -> bytes:
+    return b64_to_bytes(text)
