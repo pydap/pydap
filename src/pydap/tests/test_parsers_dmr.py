@@ -2,6 +2,7 @@
 
 import os
 import re
+import textwrap
 import unittest
 from xml.etree import ElementTree as ET
 
@@ -824,3 +825,49 @@ def test_compact_inline():
     inline_data = Vars["my_dataset"]["inline"]
     dtype = Vars["my_dataset"]["data_type"]
     np.testing.assert_array_equal(inline_data, np.arange(10, dtype=dtype))
+
+
+def test_missingdata_inline():
+    """Testing support for missingdata elements that contained inline values
+    in a dmrpp
+    """
+
+    dmrpp = textwrap.dedent("""
+        <Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#"
+                 xmlns:dmrpp="http://xml.opendap.org/dap/dmrpp/1.0.0#"
+                 dapVersion="4.0"
+                 dmrVersion="1.0"
+                name="file:///test.hdf"
+                dmrpp:href="test.hdf"
+                dmrpp:version="3.21.1">
+
+            <Dimension name="Latitude" size="91"/>
+
+            <Group name="Data">
+                <Float64 name="Latitude">
+                    <Dim name="/Latitude"/>
+
+                    <Attribute name="units" type="String">
+                        <Value>degrees_north</Value>
+                    </Attribute>
+
+                    <dmrpp:missingdata>
+                        eJw1yTkKwmAUhdG3BEtLCwsLiyAiIhIS5znGIbVL+Zfm0hQ9uc3h40Z892qK+
+                        I3pqZkemumumW6aqdZMV91a8cIzTzzywD133HLDNVdccsGSBXPOOeOUE445Ys
+                        YhB+yzxy47jNZ2bz+77LHPAYfMOOKYE04545w5C5ZccMkV19xwyx33PPDIE8+
+                        8sOL1b2LUmnHTjLtmPDTjqRmNbt4fWLdK1Q==
+                    </dmrpp:missingdata>
+
+                </Float64>
+            </Group>
+        </Dataset>
+        """)
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(dmrpp))
+    Vars, _ = dmrpp_instance._parse_dataset(dmrpp_instance.find_node_fqn("/Data"))
+    inline_data = Vars["Latitude"]["inline"]
+    dtype = Vars["Latitude"]["data_type"]
+    expected = np.concatenate(
+        (np.arange(-90, 90, 2, dtype=type), np.array([89.5], dtype=dtype)),
+        axis=0,
+    )
+    np.testing.assert_array_equal(inline_data, expected[::-1])
