@@ -9,6 +9,8 @@ from pydap.exceptions import ConstraintExpressionError
 from pydap.lib import (
     _quote,
     combine_slices,
+    decode_compact,
+    decode_missingdata,
     encode,
     fix_shorthand,
     fix_slice,
@@ -318,3 +320,30 @@ class TestGetVar(unittest.TestCase):
         dataset["b"]["c"] = BaseType("c")
 
         self.assertEqual(get_var(dataset, "b.c"), dataset["b"]["c"])
+
+
+def test_decode_compact():
+    """tests that decoding compact xml elements from a dmrpp works as expected"""
+    compact_b64 = (
+        "AAAAAAAAAAABAAAAAAAAAAIAAAAAAAAAAwAAAAAAAAAEAAAAAAAAAAUAAAAAAAAA"
+        "BgAAAAAAAAAHAAAAAAAAAAgAAAAAAAAACQAAAAAAAAA="
+    )
+    compact_bytes = decode_compact(compact_b64)
+    compact_vals = np.frombuffer(compact_bytes, dtype="<u8")
+    np.testing.assert_array_equal(compact_vals, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+
+def test_decode_missingdata():
+    """Tests that decodong missingdata xml elements from a dmrp works as expected"""
+    missing_b64 = (
+        "eJw1yTkKwmAUhdG3BEtLCwsLiyAiIhIS5znGIbVL+Zfm0hQ9uc3h40Z892qK+I3pqZkemumum"
+        "W6aqdZMV91a8cIzTzzywD133HLDNVdccsGSBXPOOeOUE445YsYhB+yzxy47jNZ2bz+77LHPAY"
+        "fMOOKYE04545w5C5ZccMkV19xwyx33PPDIE8+8sOL1b2LUmnHTjLtmPDTjqRmNbt4fWLdK1Q=="
+    )
+    missing_bytes = decode_missingdata(missing_b64)
+    missing_vals = np.frombuffer(missing_bytes, dtype="<f8")
+    expected = np.concatenate(
+        (np.arange(-90, 90, 2, dtype=np.float32), np.array([89.5], dtype=np.float32)),
+        axis=0,
+    )
+    np.testing.assert_array_equal(missing_vals, expected[::-1])
