@@ -27,6 +27,7 @@ from pydap.client import (
     to_netcdf,
 )
 from pydap.handlers.lib import BaseHandler
+from pydap.handlers.netcdf_handler import NetCDFHandler
 from pydap.lib import _quote
 from pydap.model import BaseType, DatasetType, GridType
 from pydap.net import create_session
@@ -1470,3 +1471,30 @@ def test_to_netcdf_multiple_dim_slices_error(dim_slices):
             urls,
             dim_slices=dim_slices,
         )
+
+
+def test_to_netcdf_multiple_dim_slices():
+    """test that when dims_slice is passed as a list of mappings, that these
+    mappings of slices are properly applied as constraint expressions
+    """
+    urls = [
+        "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+        "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+    ]
+    # define two different slices and test later that these are properly applied
+    ds = [
+        {"/TIME": (0, 1)},
+        {"/TIME": (0, 2)},
+    ]
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        _ = to_netcdf(
+            urls,
+            keep_variables=["/SST", "/COADSX", "/COADSY", "/TIME"],
+            output_path=tmp_dir,
+            dim_slices=ds,
+        )
+        pyds1 = NetCDFHandler(tmp_dir + "/coads_climatology.nc4").dataset
+        pyds2 = NetCDFHandler(tmp_dir + "/coads_climatology2.nc4").dataset
+
+        assert pyds1.dimensions["TIME"] == 1
+        assert pyds2.dimensions["TIME"] == 2
