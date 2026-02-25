@@ -1455,6 +1455,26 @@ def test_to_netcdf_multiple():
 
 
 @pytest.mark.parametrize(
+    "urls",
+    [
+        ["http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc"],
+        [
+            "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
+            "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology2.nc",
+        ],
+    ],
+)
+def test_to_netcdf_multiple_dim_slice_no_keep_variable_error(urls):
+    with pytest.raises(ValueError):
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            _ = to_netcdf(
+                urls,
+                output_path=tmp_dir,
+                dim_slices={"/TIME": (0, 1)},
+            )
+
+
+@pytest.mark.parametrize(
     "dim_slices",
     [[{"/TIME": (0, 1)}], [{"/TIME": (0, 1)}, {"/TIME": (0, 1)}, {"/TIME": (0, 1)}]],
 )

@@ -1930,6 +1930,12 @@ def to_netcdf(
             urls = urls[0]
         return [stream(urls, session_state, output_path, keep_variables, dim_slices)]
 
+    if dim_slices is not None and not keep_variables:
+        raise ValueError(
+            f"The use of {dim_slices} in the constraint expression"
+            " requires defining `keep_variables`"
+        )
+
     max_workers = min(len(urls), 32)
 
     # Multi-URL case:
