@@ -1745,7 +1745,7 @@ def stream(
                     f"dim_slices[{dim!r}] must be a 2- or 3-tuple (start, stop[, step])"
                     f" but got {slc!r} instead."
                 )
-
+            stop += -1  # Fix: opendap `stop` is inclusive - python's is not.
             if step == 0:
                 raise ValueError(f"dim_slices[{dim!r}] step cannot be 0; got {slc!r}")
 
