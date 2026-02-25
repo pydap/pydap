@@ -1745,7 +1745,7 @@ def stream(
                     f"dim_slices[{dim!r}] must be a 2- or 3-tuple (start, stop[, step])"
                     f" but got {slc!r} instead."
                 )
-
+            stop += -1  # Fix: opendap `stop` is inclusive - python's is not.
             if step == 0:
                 raise ValueError(f"dim_slices[{dim!r}] step cannot be 0; got {slc!r}")
 
@@ -1776,7 +1776,9 @@ def _run_process_batch(
     output_path: Union[str, Path, None],
     keep_variables: Optional[Sequence[str]],
     max_workers: int,
-    dim_slices: Optional[Mapping[str, SliceTuple]] = None,
+    dim_slices: Optional[
+        Union[Mapping[str, SliceTuple], Sequence[Mapping[str, SliceTuple]]]
+    ] = None,
     *,
     desc: Optional[str] = None,
 ) -> List[Tuple[str, BaseException]]:
@@ -1790,12 +1792,25 @@ def _run_process_batch(
     workers = max(1, min(max_workers, len(urls)))
     bar_desc = desc or f"Downloading ({len(urls)} remote files)"
 
+    if dim_slices is None:
+        dim_slices_list = [None] * len(urls)
+
+    elif isinstance(dim_slices, Mapping):
+        dim_slices_list = [dim_slices] * len(urls)
+    else:
+        # Must be a sequence of mappings
+        if len(dim_slices) != len(urls):
+            raise ValueError(
+                "When dim_slices is a sequence, it must have the same length as urls"
+            )
+        dim_slices_list = list(dim_slices)
+
     with ProcessPoolExecutor(max_workers=workers, mp_context=ctx) as pool:
         future_to_url = {
             pool.submit(
-                stream, url, session_state, output_path, keep_variables, dim_slices
+                stream, url, session_state, output_path, keep_variables, ds
             ): url
-            for url in urls
+            for url, ds in zip(urls, dim_slices_list)
         }
         with tqdm(total=len(future_to_url), desc=bar_desc, unit="url") as pbar:
             for fut in as_completed(future_to_url):
@@ -1820,7 +1835,9 @@ def _download_with_retries_process(
     session_state: dict,
     output_path: Union[str, Path, None],
     keep_variables: Optional[Sequence[str]],
-    dim_slices: Optional[Mapping[str, SliceTuple]],
+    dim_slices: Optional[
+        Union[Mapping[str, SliceTuple], Sequence[Mapping[str, SliceTuple]]]
+    ] = None,
     max_attempts: int = 2,
     max_workers_first: int = 32,
     max_workers_retry: int = 8,
@@ -1892,7 +1909,9 @@ def to_netcdf(
     session: Optional[requests.Session] = None,
     output_path: Optional[Union[str, Path]] = None,
     keep_variables: Optional[Sequence[str]] = None,
-    dim_slices: Optional[Mapping[str, SliceTuple]] = None,
+    dim_slices: Optional[
+        Union[Mapping[str, SliceTuple], Sequence[Mapping[str, SliceTuple]]]
+    ] = None,
 ) -> None:
     """
     Downloads multiple dap4 responses in parallel, and stores them to a local directory.
@@ -1910,6 +1929,12 @@ def to_netcdf(
         if isinstance(urls, list):
             urls = urls[0]
         return [stream(urls, session_state, output_path, keep_variables, dim_slices)]
+
+    if dim_slices is not None and not keep_variables:
+        raise ValueError(
+            f"The use of {dim_slices} in the constraint expression"
+            " requires defining `keep_variables`"
+        )
 
     max_workers = min(len(urls), 32)
 
