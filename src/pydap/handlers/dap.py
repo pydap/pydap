@@ -1239,10 +1239,6 @@ class UNPACKDAP4DATA(object):
         return f"dim{i}"
 
     def _ensure_nc_dim(self, dim_name: str, size: int) -> str:
-        if self.nc is None:
-            raise RuntimeError(
-                "self.nc is not initialized yet; cannot create dimensions."
-            )
         if dim_name not in self.nc.dimensions:
             self.nc.createDimension(dim_name, size)
         return dim_name
@@ -1277,11 +1273,6 @@ class UNPACKDAP4DATA(object):
         Decide dims for this variable and ensure they exist in the output netCDF.
         Reuses group-scoped dims when possible.
         """
-        if self.nc is None:
-            raise RuntimeError(
-                "self.nc is not initialized yet; cannot create dimensions."
-            )
-
         shape = tuple(int(s) for s in data_obj.shape)
         rank = len(shape)
 
