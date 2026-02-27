@@ -1459,8 +1459,8 @@ def test_to_netcdf_phony_dim_across_groups():
         )
         pyds = NetCDFHandler(tmp_dir + "/TestGroupData.nc4").dataset
         assert pyds["/SimpleGroup/Temperature"].dims == ["/dim0", "/dim1", "/dim2"]
-        assert pyds["/SimpleGroup/Salinity"].dims == ["/dim3", "/dim4", "/dim5"]
-        assert pyds["/data/air"].dims == ["/dim6", "/dim7", "/dim8"]
+        assert pyds["/SimpleGroup/Salinity"].dims == ["/dim0", "/dim1", "/dim2"]
+        assert pyds["/data/air"].dims == ["/dim3", "/dim4", "/dim5"]
 
 
 def test_to_netcdf_multiple():

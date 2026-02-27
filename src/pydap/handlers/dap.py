@@ -1053,6 +1053,7 @@ class UNPACKDAP4DATA(object):
         self.r = r
         self.output_path = Path(output_path) if output_path else output_path
         self.nc = None
+        self._dims_cache: dict[tuple[str, tuple[int, ...]], list[str]] = {}
         try:
             iterator = self.iter_body()
             CHUNK_SIZE = 1048576
@@ -1160,7 +1161,7 @@ class UNPACKDAP4DATA(object):
         if "nc4" in filename.split("."):
             # filename may have nc4.h5 or something
             # retain only the first extension in name
-            # to avoid nc4.nc4 or something
+            # to avoid nc4.nc4
             filename = ".".join(filename.split(".nc4")[:-1] + ["nc4"])
         if not filename.endswith(".nc4"):
             filename = str(Path(filename).with_suffix("")) + ".nc4"
@@ -1181,7 +1182,7 @@ class UNPACKDAP4DATA(object):
                 "fill_value": _FillValue,
             }
             if len(_dims) != len(dataset[var].shape):
-                _dims = self._create_nc_phony_dims(var, dataset[var]._data)
+                _dims = self._get_or_create_dims_for_var(var, dataset[var])
             ncvar = self.nc.createVariable(**args, dimensions=_dims)
 
             # copy attributes
@@ -1216,8 +1217,7 @@ class UNPACKDAP4DATA(object):
             _dims = [dim.split("/")[1] for dim in var.dims]
             # copy attributes
             if len(_dims) != len(dataset[var.id].shape):
-                _dims = self._create_nc_phony_dims(var.id, dataset[var.id]._data)
-
+                _dims = self._get_or_create_dims_for_var(var, dataset[var.id])
             ncvar = self.nc[parent].createVariable(**args, dimensions=_dims)
 
             # copy attributes
@@ -1228,28 +1228,102 @@ class UNPACKDAP4DATA(object):
                     continue
                 ncvar.setncattr(k, v)
 
-    def _next_phony_dim_name(self):
-        """
-        Return the next unique phony dim name: phony_dim1, phony_dim2, ...
-        Guaranteed not to collide with existing dims in the file.
-        """
+    def _next_phony_dim_name(self) -> str:
+        if self.nc is None:
+            raise RuntimeError(
+                "self.nc is not initialized yet; cannot create dimensions."
+            )
         i = 0
         while f"dim{i}" in self.nc.dimensions:
             i += 1
         return f"dim{i}"
 
-    def _create_nc_phony_dims(self, varname, data):
+    def _ensure_nc_dim(self, dim_name: str, size: int) -> str:
+        if self.nc is None:
+            raise RuntimeError(
+                "self.nc is not initialized yet; cannot create dimensions."
+            )
+        if dim_name not in self.nc.dimensions:
+            self.nc.createDimension(dim_name, size)
+        return dim_name
+
+    def _infer_dims_from_parent(
+        self, parent_dims: dict, shape: tuple[int, ...]
+    ) -> list[str] | None:
+        if not parent_dims:
+            return None
+
+        items = list(parent_dims.items())  # preserve parent ordering if any
+        chosen: list[str] = []
+        used: set[str] = set()
+
+        for axis_size in shape:
+            match = None
+            for name, dim_size in items:
+                if name in used:
+                    continue
+                if int(dim_size) == int(axis_size):
+                    match = name
+                    break
+            if match is None:
+                return None
+            chosen.append(match)
+            used.add(match)
+
+        return chosen
+
+    def _get_or_create_dims_for_var(self, varname: str, data_obj) -> list[str]:
         """
-        Creates a dimensioned variable in the netcdf file with phony
-        dimensions to match the shape of data. Returns the list of
-        dimension names created.
+        Decide dims for this variable and ensure they exist in the output netCDF.
+        Reuses group-scoped dims when possible.
         """
-        dim_names = []
-        for n in data.shape:
-            dim_name = self._next_phony_dim_name()
-            self.nc.createDimension(dim_name, n)
-            dim_names.append(dim_name)
-        return dim_names
+        if self.nc is None:
+            raise RuntimeError(
+                "self.nc is not initialized yet; cannot create dimensions."
+            )
+
+        shape = tuple(int(s) for s in data_obj.shape)
+        rank = len(shape)
+
+        group_path = data_obj.parent.id
+
+        # 1) Honor usable variable dims if present
+
+        var_dims = data_obj.dims
+        if len(var_dims) == rank:
+            parent = getattr(data_obj, "parent", None)
+            parent_dims = getattr(parent, "dimensions", {}) or {}
+            for d, axis_size in zip(var_dims, shape):
+                self._ensure_nc_dim(d, int(parent_dims.get(d, axis_size)))
+            return var_dims
+
+        # 2) Cache hit: same group + same shape
+        key = (group_path, shape)
+        cached = self._dims_cache.get(key)
+        if cached is not None:
+            for d, axis_size in zip(cached, shape):
+                self._ensure_nc_dim(d, axis_size)
+            return cached
+
+        # 3) Infer from parent group dimensions
+        parent = getattr(data_obj, "parent", None)
+        parent_dims = getattr(parent, "dimensions", {}) or {}
+        inferred = self._infer_dims_from_parent(parent_dims, shape)
+        if inferred is not None:
+            for d, axis_size in zip(inferred, shape):
+                self._ensure_nc_dim(d, int(parent_dims.get(d, axis_size)))
+            self._dims_cache[key] = inferred
+            return inferred
+
+        # 4) Fallback: create phony dims, but cache for reuse
+        phony: list[str] = []
+        for axis_size in shape:
+            d = self._next_phony_dim_name()
+            self._ensure_nc_dim(d, axis_size)
+            phony.append(d)
+
+        self._dims_cache[key] = phony
+        return phony
 
     def unpack_dap4_data(self, dataset):
         """
