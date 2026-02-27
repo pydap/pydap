@@ -1442,6 +1442,27 @@ def test_to_netcdf_phony_dim():
         assert pyds.dimensions["dim0"] == 1000
 
 
+def test_to_netcdf_phony_dim_across_groups():
+    """Test that to_netcdf works when there are unnamed dimensions in the dataset."""
+    from pydap.handlers.netcdf_handler import NetCDFHandler
+
+    base_url = "http://test.opendap.org/opendap/hyrax/dap4/TestGroupData.nc4.h5"
+    # the following url has unnamed dimensions
+    url = (
+        f"{base_url}?dap4.ce=/SimpleGroup/Temperature[0:1:0][0:1:39][0:1:39];"
+        "/SimpleGroup/Salinity[0:1:0][0:1:39][0:1:39];/data/air[0:1:0][0:1:24][0:1:52]"
+    )
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        _ = to_netcdf(
+            url + "&dap4.checksum=true",
+            output_path=tmp_dir,
+        )
+        pyds = NetCDFHandler(tmp_dir + "/TestGroupData.nc4").dataset
+        assert pyds["/SimpleGroup/Temperature"].dims == ["/dim0", "/dim1", "/dim2"]
+        assert pyds["/SimpleGroup/Salinity"].dims == ["/dim3", "/dim4", "/dim5"]
+        assert pyds["/data/air"].dims == ["/dim6", "/dim7", "/dim8"]
+
+
 def test_to_netcdf_multiple():
     urls = [
         "http://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
