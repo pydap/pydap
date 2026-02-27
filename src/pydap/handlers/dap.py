@@ -1228,9 +1228,9 @@ class UNPACKDAP4DATA(object):
         Guaranteed not to collide with existing dims in the file.
         """
         i = 1
-        while f"phony_dim{i}" in self.nc.dimensions:
+        while f"dim{i}" in self.nc.dimensions:
             i += 1
-        return f"phony_dim{i}"
+        return f"dim{i}"
 
     def _create_nc_phony_dims(self, varname, data):
         """

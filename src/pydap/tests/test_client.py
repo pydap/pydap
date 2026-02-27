@@ -1439,7 +1439,7 @@ def test_to_netcdf_phony_dim():
             output_path=tmp_dir,
         )
         pyds = NetCDFHandler(tmp_dir + "/SimpleGroup.nc4.nc4").dataset
-        assert pyds.dimensions["phony_dim1"] == 1000
+        assert pyds.dimensions["dim1"] == 1000
 
 
 def test_to_netcdf_multiple():
