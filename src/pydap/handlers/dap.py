@@ -1200,12 +1200,12 @@ class UNPACKDAP4DATA(object):
         groups = list(set([var.parent.id for var in variables]))
 
         for gr in groups:
-            self.nc.createGroup(gr[1:])
+            self.nc.createGroup(unquote(gr[1:]))
             for dim, size in dataset[gr[1:]].dimensions.items():
-                self.nc[gr[1:]].createDimension(dim, size)
+                self.nc[unquote(gr[1:])].createDimension(dim, size)
 
         for var in variables:
-            parent = var.parent.id[1:]
+            parent = unquote(var.parent.id[1:])
             dtype = var.dtype
             _FillValue = var.attributes.pop("_FillValue", None)
             args = {
@@ -1337,7 +1337,7 @@ class UNPACKDAP4DATA(object):
                 if isinstance(variable.parent, DatasetType):
                     ncvar = self.nc.variables[name]
                 else:
-                    parent = variable.parent.id[1:]
+                    parent = unquote(variable.parent.id[1:])
                     ncvar = self.nc[parent].variables[name]
                 ncvar[...] = data
                 variable._set_data(None)
