@@ -1157,8 +1157,14 @@ class UNPACKDAP4DATA(object):
         FILL_KEYS = {"missing_value", "fmissing_value"}  # keep _FillValue
 
         filename = unquote(dataset.name)
-        if not filename.endswith("nc4"):
+        if "nc4" in filename.split("."):
+            # filename may have nc4.h5 or something
+            # retain only the first extension in name
+            # to avoid nc4.nc4 or something
+            filename = ".".join(filename.split(".nc4")[:-1] + ["nc4"])
+        if not filename.endswith(".nc4"):
             filename = str(Path(filename).with_suffix("")) + ".nc4"
+
         self.nc = Dataset(self.output_path / filename, "w")
         # start at root
         # create dimensions
@@ -1227,7 +1233,7 @@ class UNPACKDAP4DATA(object):
         Return the next unique phony dim name: phony_dim1, phony_dim2, ...
         Guaranteed not to collide with existing dims in the file.
         """
-        i = 1
+        i = 0
         while f"dim{i}" in self.nc.dimensions:
             i += 1
         return f"dim{i}"
