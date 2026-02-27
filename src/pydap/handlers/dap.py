@@ -1164,7 +1164,6 @@ class UNPACKDAP4DATA(object):
         # create dimensions
         for name, size in dataset.dimensions.items():
             self.nc.createDimension(name, size)
-
         # create variables
         for var in dataset.variables():
             _FillValue = dataset[var].attributes.pop("_FillValue", None)
@@ -1192,29 +1191,36 @@ class UNPACKDAP4DATA(object):
             var for var in walk(dataset, BaseType) if isinstance(var.parent, GroupType)
         ]
         groups = list(set([var.parent.id for var in variables]))
+
         for gr in groups:
             self.nc.createGroup(gr[1:])
             for dim, size in dataset[gr[1:]].dimensions.items():
                 self.nc[gr[1:]].createDimension(dim, size)
 
         for var in variables:
-            parent = var.parent.id
+            parent = var.parent.id[1:]
             dtype = var.dtype
             _FillValue = var.attributes.pop("_FillValue", None)
-            ncvar = self.nc[parent].createVariable(
-                var.name,
-                dtype,
-                [dim.split("/")[-1] for dim in var.dims],
-                fill_value=_FillValue,
-            )
+            args = {
+                "varname": var.name,
+                "datatype": dtype,
+                "fill_value": _FillValue,
+            }
+
+            _dims = [dim.split("/")[1] for dim in var.dims]
             # copy attributes
-            attrs = var.attributes.copy()
-            _, _ = attrs.pop("Maps", None), attrs.pop("path", None)
-            for k, v in attrs.items():
-                if k == "valid_range":
-                    # update v to ensure valid_range attr has correct dtype
-                    v = numpy.array(v, dtype=var.dtype)
-                setattr(ncvar, k, v)
+            if len(_dims) != len(dataset[var.id].shape):
+                _dims = self._create_nc_phony_dims(var.id, dataset[var.id]._data)
+
+            ncvar = self.nc[parent].createVariable(**args, dimensions=_dims)
+
+            # copy attributes
+            for k, v in dataset[var.id].attributes.items():
+                if k in {"Maps", "path"}:
+                    continue
+                if k in FILL_KEYS:  # avoid writing multiple fill values
+                    continue
+                ncvar.setncattr(k, v)
 
     def _next_phony_dim_name(self):
         """
