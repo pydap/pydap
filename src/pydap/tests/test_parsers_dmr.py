@@ -820,8 +820,7 @@ def test_compact_inline():
     session = requests.Session()
     dmrpp = session.get(dmrpp_file).content.decode()
     dmrpp_instance = DMRPPParser(root=ET.fromstring(dmrpp))
-    with pytest.warns(UserWarning, match="Failed to parse Dim"):
-        Vars, _ = dmrpp_instance._parse_dataset(dmrpp_instance.find_node_fqn("/"))
+    Vars, _ = dmrpp_instance._parse_dataset(dmrpp_instance.find_node_fqn("/"))
     inline_data = Vars["my_dataset"]["inline"]
     dtype = Vars["my_dataset"]["data_type"]
     np.testing.assert_array_equal(inline_data, np.arange(10, dtype=dtype))

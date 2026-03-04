@@ -1194,7 +1194,7 @@ class DMRPPParser:
             n_bytes = self._get_attrib(chunk_tag, "nBytes", required=True)
             if offset is not None and n_bytes is not None:
                 chunkmanifest[chunk_key] = {
-                    "path": self.data_filepath,
+                    "path": path,
                     "offset": int(offset),
                     "length": int(n_bytes),
                 }
