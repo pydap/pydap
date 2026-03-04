@@ -1075,7 +1075,6 @@ class UNPACKDAP4DATA(object):
                 self.raw = BytesReader(tmp)
                 self.dmr, self.endianness = self.safe_dmr_and_data()
                 dataset = dmr_to_dataset(self.dmr, dmrVersion=self.dmrVersion)
-                print(dataset.tree())
                 if self.output_path is not None:
                     if not HAVE_NETCDF4:
                         raise ImportError(
