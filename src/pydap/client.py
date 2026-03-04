@@ -1943,13 +1943,13 @@ def to_netcdf(
         session_state = extract_session_state(session)
     else:
         session_state = None
-        _session = create_session()  # needed to check hyrax version
+        session = create_session()  # needed to check hyrax version
 
     # check if cloud opendap url
     url = urls[0] if isinstance(urls, list) else urls
     # check if response come sfrom hyrax, and its build number
     dmrVersion = None
-    rv = _session.get(url.split("?")[0] + ".ver")  # hyrax specific!
+    rv = session.get(url.split("?")[0] + ".ver")  # hyrax specific!
     dmr_ver = rv.content.decode()
     try:
         root = ET.fromstring(dmr_ver)
