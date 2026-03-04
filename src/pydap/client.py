@@ -1934,41 +1934,37 @@ def to_netcdf(
     It can handle both single url (str) or multiple urls (list), storing each dap
     response as a separate netcdf4 file in the output_path directory. The netcdf4 files
     are named using the name attribute in the DMR of the response (which coincides with
-    the name of the remote file)
+    the name of the remote file).
+
+    If data is behind authentication (e.g EDL), make sure to provide session with auth
+    or have a .netrc with proper credentials correctly in place.
     """
     if session:
         session_state = extract_session_state(session)
     else:
         session_state = None
+        _session = create_session()  # needed to check hyrax version
 
     # check if cloud opendap url
     url = urls[0] if isinstance(urls, list) else urls
+    # check if response come sfrom hyrax, and its build number
     dmrVersion = None
-    if urlparse(url).netloc == "opendap.earthdata.nasa.gov":
-        # try to get dmrpp version and compare against hyrax version
-        rv = session.get(url + ".dmr.ver")
-        dmr = rv.content.decode()
-        root = ET.fromstring(dmr)
+    rv = _session.get(url.split("?")[0] + ".ver")  # hyrax specific!
+    dmr_ver = rv.content.decode()
+    try:
+        root = ET.fromstring(dmr_ver)
         ver = root.find("Hyrax").attrib.get("version")
         ver_parts = ver.split("-")[0].split(".")  # major release only
         # e.g. turns 1.17.1 into float value of 1.171
         version = float(".".join(ver_parts[:-1]) + ver_parts[-1])
         build_number = float(ver.split("-")[1])  # get build only
-        if version <= 1.171 and build_number > 500:
+        if version == 1.171 and build_number > 500:
             # see https://github.com/pydap/pydap/issues/656
-            dmrpp_v = "http://xml.opendap.org/dap/dmrpp/1.0.0#"
-            try:
-                r = session.get(url.replace("dap4", "https") + ".dap.dmrpp")
-                r.raise_for_status()
-                dmrpp = r.content.decode()
-                root = ET.fromstring(dmrpp)
-                dmrpp_version = root.attrib["{" + f"{dmrpp_v}" + "}version"]
-                build_number = int(dmrpp_version.split("-")[-1])
-                if build_number < 819:
-                    dmrVersion = "2.0"
-            except requests.exceptions.HTTPError:
-                # there is no dmrpp!
-                dmrVersion = None
+            # enforce always 2.0 - some servers may indicate 1.0
+            dmrVersion = "2.0"
+    except ET.ParseError:
+        # server is not a Hyrax!
+        dmrVersion = None  # infers from dap response
     if len(urls) == 1 or isinstance(urls, str):
         if isinstance(urls, list):
             urls = urls[0]
