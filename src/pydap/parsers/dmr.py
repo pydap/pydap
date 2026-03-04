@@ -249,20 +249,22 @@ def get_groups(node, prefix="/") -> dict:
     return out
 
 
-def dmr_to_dataset(dmr, flat=True):
+def dmr_to_dataset(dmr, flat=True, dmrVersion=None):
     """Return a dataset object from a DMR representation. flat: boolean only
     for Structures"""
 
     # Parse the DMR. First dropping the namespace
-    dom_et = copy.deepcopy(DMRParser(dmr).node)
+    dom_et = copy.deepcopy(DMRParser(dmr, dmrVersion=dmrVersion).node)
+    dmr_instance = DMRParser(dmr, dmrVersion=dmrVersion)
+
     # emtpy dataset
-    if DMRParser(dmr).Groups:
+    if dmr_instance.Groups:
         split_by = "/"
     else:
         split_by = None
-    if DMRParser(dmr).dmrVersion == "2.0":
+    if dmr_instance.dmrVersion == "2.0":
         GROUPS_metadata = get_groups(dom_et)
-    dataset = DMRParser(dmr).init_dataset()
+    dataset = dmr_instance.init_dataset()
 
     variables: OrderedDict[str, dict] = OrderedDict()
     named: dict[str, int] = {}
@@ -354,7 +356,7 @@ def dmr_to_dataset(dmr, flat=True):
                         dataset.createStructure(parent_name[0], dims=Dims)
         else:
             var_kwargs.update({"name": pydap.lib._quote(name)})
-            if DMRParser(dmr).dmrVersion == "2.0" and path:
+            if dmr_instance.dmrVersion == "2.0" and path:
                 groups = path.split("/")
                 groups_fqn = ["/".join(groups[:N]) for N in range(1, len(groups) + 1)][
                     1:
@@ -377,7 +379,7 @@ def dmr_to_dataset(dmr, flat=True):
 
         dataset.createVariable(**var_kwargs)
 
-    if DMRParser(dmr).dmrVersion == "2.0":
+    if dmr_instance.dmrVersion == "2.0":
         # create any missing groups
         recorded = [path + gname for gname, path in dataset.groups().items()]
         miss = [fqn for fqn in GROUPS_metadata.keys() if fqn not in recorded]
@@ -399,10 +401,10 @@ def dmr_to_dataset(dmr, flat=True):
 class DMRParser(object):
     """A parser for the DMR."""
 
-    def __init__(self, dmr):
+    def __init__(self, dmr, dmrVersion=None):
         self.dmr = dmr
+        self.dmrVersion = dmrVersion
         self.Groups = None
-
         _dmr = re.sub(' xmlns="[^"]+"', "", self.dmr, count=1)
         self.node = ET.fromstring(_dmr)
         if len(get_groups(self.node)) > 0:
@@ -413,7 +415,11 @@ class DMRParser(object):
         # deserialization of DAP4 datasets in accordance with the DAP4 spec.
         # Pydap only supports version 1.0 for now, and so this attribute
         # will be used to discern between the two versions.
-        if hasattr(self.node, "attrib") and "dmrVersion" in self.node.attrib:
+        if (
+            self.dmrVersion is None
+            and hasattr(self.node, "attrib")
+            and "dmrVersion" in self.node.attrib
+        ):
             self.dmrVersion = self.node.attrib["dmrVersion"]
 
         AttsNames = [subnode.get("name") for subnode in self.node.findall("Attribute")]
