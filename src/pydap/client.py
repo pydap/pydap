@@ -59,6 +59,7 @@ from os.path import commonprefix
 from pathlib import Path
 from typing import Iterable, List, Mapping, Optional, Sequence, Set, Tuple, Union
 from urllib.parse import parse_qs, parse_qsl, unquote, urlencode, urlsplit, urlunsplit
+from xml.etree import ElementTree as ET
 
 import numpy as np
 import requests
@@ -100,6 +101,7 @@ _G_SESSION_STATE = None
 _G_OUTPUT_PATH = None
 _G_KEEP_VARS = None
 _G_DIM_SLICES = None
+_G_DMR_VERSION = None
 
 
 def open_url(
@@ -1662,12 +1664,13 @@ def create_key(
     return hashlib.sha256(key_material).hexdigest()
 
 
-def _init_worker(session_state, output_path, keep_variables, dim_slices):
-    global _G_SESSION_STATE, _G_OUTPUT_PATH, _G_KEEP_VARS, _G_DIM_SLICES
+def _init_worker(session_state, output_path, keep_variables, dim_slices, dmrVersion):
+    global _G_SESSION_STATE, _G_OUTPUT_PATH, _G_KEEP_VARS, _G_DIM_SLICES, _G_DMR_VERSION
     _G_SESSION_STATE = session_state
     _G_OUTPUT_PATH = str(output_path)  # keep pickling simple
     _G_KEEP_VARS = keep_variables
     _G_DIM_SLICES = dim_slices
+    _G_DMR_VERSION = dmrVersion
 
 
 def _stream_worker(url):
@@ -1678,6 +1681,7 @@ def _stream_worker(url):
         output_path=_G_OUTPUT_PATH,
         keep_variables=_G_KEEP_VARS,
         dim_slices=_G_DIM_SLICES,
+        dmrVersion=_G_DMR_VERSION,
     )
 
 
@@ -1687,6 +1691,7 @@ def stream(
     output_path: Optional[Union[str, Path]] = None,
     keep_variables: Optional[Sequence[str]] = None,
     dim_slices: Optional[Mapping[str, SliceTuple]] = None,
+    dmrVersion: Optional[Union[str, None]] = None,
 ) -> str:
     """
     Downloads a dap response and stores it to a local directory. When keep variables
@@ -1766,7 +1771,9 @@ def stream(
         dap_url += "?dap4.checksum=true"
     with session.get(dap_url, stream=True, timeout=(10, 120)) as r:
         r.raise_for_status()
-        UNPACKDAP4DATA(r=r, checksums=True, output_path=output_path)
+        UNPACKDAP4DATA(
+            r=r, checksums=True, output_path=output_path, dmrVersion=dmrVersion
+        )
     return url
 
 
@@ -1779,6 +1786,7 @@ def _run_process_batch(
     dim_slices: Optional[
         Union[Mapping[str, SliceTuple], Sequence[Mapping[str, SliceTuple]]]
     ] = None,
+    dmrVersion: Union[str, None] = None,
     *,
     desc: Optional[str] = None,
 ) -> List[Tuple[str, BaseException]]:
@@ -1808,7 +1816,13 @@ def _run_process_batch(
     with ProcessPoolExecutor(max_workers=workers, mp_context=ctx) as pool:
         future_to_url = {
             pool.submit(
-                stream, url, session_state, output_path, keep_variables, ds
+                stream,
+                url,
+                session_state,
+                output_path,
+                keep_variables,
+                ds,
+                dmrVersion,
             ): url
             for url, ds in zip(urls, dim_slices_list)
         }
@@ -1838,6 +1852,7 @@ def _download_with_retries_process(
     dim_slices: Optional[
         Union[Mapping[str, SliceTuple], Sequence[Mapping[str, SliceTuple]]]
     ] = None,
+    dmrVersion=Union[str, None],
     max_attempts: int = 2,
     max_workers_first: int = 32,
     max_workers_retry: int = 8,
@@ -1862,6 +1877,7 @@ def _download_with_retries_process(
             output_path=output_path,
             keep_variables=keep_variables,
             dim_slices=dim_slices,
+            dmrVersion=dmrVersion,
             max_workers=workers,
         )
 
@@ -1925,10 +1941,47 @@ def to_netcdf(
     else:
         session_state = None
 
+    # check if cloud opendap url
+    url = urls[0] if isinstance(urls, list) else urls
+    dmrVersion = None
+    if urlparse(url).netloc == "opendap.earthdata.nasa.gov":
+        # try to get dmrpp version and compare against hyrax version
+        rv = session.get(url + ".dmr.ver")
+        dmr = rv.content.decode()
+        root = ET.fromstring(dmr)
+        ver = root.find("Hyrax").attrib.get("version")
+        ver_parts = ver.split("-")[0].split(".")  # major release only
+        # e.g. turns 1.17.1 into float value of 1.171
+        version = float(".".join(ver_parts[:-1]) + ver_parts[-1])
+        build_number = float(ver.split("-")[1])  # get build only
+        if version <= 1.171 and build_number > 500:
+            # see https://github.com/pydap/pydap/issues/656
+            dmrpp_v = "http://xml.opendap.org/dap/dmrpp/1.0.0#"
+            try:
+                r = session.get(url.replace("dap4", "https") + ".dap.dmrpp")
+                r.raise_for_status()
+                dmrpp = r.content.decode()
+                root = ET.fromstring(dmrpp)
+                dmrpp_version = root.attrib["{" + f"{dmrpp_v}" + "}version"]
+                build_number = int(dmrpp_version.split("-")[-1])
+                if build_number < 819:
+                    dmrVersion = "2.0"
+            except requests.exceptions.HTTPError:
+                # there is no dmrpp!
+                dmrVersion = None
     if len(urls) == 1 or isinstance(urls, str):
         if isinstance(urls, list):
             urls = urls[0]
-        return [stream(urls, session_state, output_path, keep_variables, dim_slices)]
+        return [
+            stream(
+                urls,
+                session_state,
+                output_path,
+                keep_variables,
+                dim_slices,
+                dmrVersion=dmrVersion,
+            )
+        ]
 
     if dim_slices is not None and not keep_variables:
         raise ValueError(
@@ -1945,6 +1998,7 @@ def to_netcdf(
         output_path=output_path,
         keep_variables=keep_variables,
         dim_slices=dim_slices,
+        dmrVersion=dmrVersion,
         max_attempts=2,
         max_workers_first=max_workers,
         max_workers_retry=8,

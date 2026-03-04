@@ -1046,7 +1046,12 @@ class UNPACKDAP4DATA(object):
     """
 
     def __init__(
-        self, r, checksums=True, user_charset="ascii", output_path: str | None = None
+        self,
+        r,
+        checksums=True,
+        user_charset="ascii",
+        output_path: str | None = None,
+        dmrVersion: str | None = None,
     ):
         self.user_charset = user_charset
         self.checksums = checksums
@@ -1054,6 +1059,8 @@ class UNPACKDAP4DATA(object):
         self.output_path = Path(output_path) if output_path else output_path
         self.nc = None
         self._dims_cache: dict[tuple[str, tuple[int, ...]], list[str]] = {}
+        self.dmrVersion = dmrVersion
+
         try:
             iterator = self.iter_body()
             CHUNK_SIZE = 1048576
@@ -1067,7 +1074,8 @@ class UNPACKDAP4DATA(object):
                 tmp.seek(0)
                 self.raw = BytesReader(tmp)
                 self.dmr, self.endianness = self.safe_dmr_and_data()
-                dataset = dmr_to_dataset(self.dmr)
+                dataset = dmr_to_dataset(self.dmr, dmrVersion=self.dmrVersion)
+                print(dataset.tree())
                 if self.output_path is not None:
                     if not HAVE_NETCDF4:
                         raise ImportError(
