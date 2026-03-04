@@ -575,11 +575,10 @@ class DMRPPParser:
         assert data_filepath_from_root is not None  # required=True guarantees non-None
 
         self.data_filepath = (
-            data_filepath
-            if data_filepath is not None
-            else self.root.attrib.get("{" + self._NS["xmlns"] + "}base")
+            data_filepath if data_filepath is not None else data_filepath_from_root
         )  # this may need change / must compare here
         self.skip_variables = skip_variables or ()
+        self.opendap_url = self.root.attrib.get("{" + self._NS["xmlns"] + "}base")
 
     def _get_attrib(
         self, element: ET.Element, attrib_name: str, required: bool = False

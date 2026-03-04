@@ -375,7 +375,7 @@ def dmrpp_parse(TestGroupDMRPP, ns, expected):
 @pytest.mark.parametrize(
     "filepath, expected",
     [
-        (None, "http://test.opendap.org/opendap/dap4/TestGroupData.nc4.h5"),
+        (None, "TestGroupData.nc4.h5"),
         (
             os.path.join(os.path.dirname(__file__), "FakeFileName.nc4"),
             os.path.join(os.path.dirname(__file__), "FakeFileName.nc4"),
@@ -418,7 +418,7 @@ def test_parsed_dim_tag(Group, parsed_dims):
             "/SimpleGroup/Temperature",
             {
                 "0.0.0": {
-                    "path": "http://test.opendap.org/opendap/dap4/TestGroupData.nc4.h5",
+                    "path": "TestGroupData.nc4.h5",
                     "offset": 12762,
                     "length": 6400,
                 }
@@ -429,7 +429,7 @@ def test_parsed_dim_tag(Group, parsed_dims):
             "/SimpleGroup/Salinity",
             {
                 "0.0.0": {
-                    "path": "http://test.opendap.org/opendap/dap4/TestGroupData.nc4.h5",
+                    "path": "TestGroupData.nc4.h5",
                     "offset": 19162,
                     "length": 6400,
                 }
@@ -471,7 +471,7 @@ def test_parsed_dim_tag(Group, parsed_dims):
             "/data/air",
             {
                 "0.0.0": {
-                    "path": "http://test.opendap.org/opendap/dap4/TestGroupData.nc4.h5",
+                    "path": "TestGroupData.nc4.h5",
                     "offset": 30129,
                     "length": 2650,
                 }

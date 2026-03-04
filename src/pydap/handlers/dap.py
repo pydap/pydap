@@ -119,7 +119,7 @@ class DAPHandler(BaseHandler):
                 dmrpp_instance = DMRPPParser(root=ET.fromstring(dmrpp))
             self.projection = []
             self.dataset = dmrpp_instance.to_dataset()
-            self.base_url = dmrpp_instance.data_filepath
+            self.base_url = dmrpp_instance.opendap_url
 
             if not self.base_url:
                 # some dmrpps do not have the opendap url embedded in their
