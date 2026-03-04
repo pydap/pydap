@@ -977,8 +977,9 @@ class DMRPPParser:
         # Dimension info
         dims: dict[str, int] = {}
         dimension_tags = self._find_dimension_tags(var_tag)
-        for dim in dimension_tags:
-            dims.update(self._parse_dim(dim))
+        for dim_index, dim in enumerate(dimension_tags):
+            dims.update(self._parse_dim(dim, dim_index=dim_index))
+
         # convert DAP dtype to numpy dtype
         dtype = np.dtype(
             self._DAP_NP_DTYPE[var_tag.tag.removeprefix("{" + self._NS["dap"] + "}")]
