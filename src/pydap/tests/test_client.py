@@ -1426,6 +1426,21 @@ def test_to_netcdf(dim_slices):
         )
 
 
+def test_to_netcdf_tds():
+    """check that to_netcdf properly cathces the ParseError and deserializes
+    non-hyrax dap responses
+    """
+    tds_base_url = "https://thredds-test.unidata.ucar.edu/thredds/dap4/dev/d4icomp/"
+    tds_url = f"{tds_base_url}SimpleGroup.nc4?dap4.ce=/Pressure"
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        _ = to_netcdf(
+            tds_url,
+            output_path=tmp_dir,
+        )
+        pyds = NetCDFHandler(tmp_dir + "/SimpleGroup.nc4").dataset
+        assert pyds.dimensions["Z"] == 1000
+
+
 def test_to_netcdf_phony_dim():
     """Test that to_netcdf works when there are unnamed dimensions in the dataset."""
     from pydap.handlers.netcdf_handler import NetCDFHandler
