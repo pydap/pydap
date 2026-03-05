@@ -576,12 +576,59 @@ class DMRPPParser:
             If None, the data file path is taken from the DMR++ file.
         """
         self.root = root
+        self._validation_issues: list[str] = []
+        data_filepath_from_root = self._get_attrib(self.root, "name", required=True)
+        assert data_filepath_from_root is not None  # required=True guarantees non-None
+
         self.data_filepath = (
-            data_filepath
-            if data_filepath is not None
-            else self.root.attrib.get("{" + self._NS["xmlns"] + "}base")
-        )
+            data_filepath if data_filepath is not None else data_filepath_from_root
+        )  # this may need change / must compare here
         self.skip_variables = skip_variables or ()
+        self.opendap_url = self.root.attrib.get("{" + self._NS["xmlns"] + "}base")
+
+    def _get_attrib(
+        self, element: ET.Element, attrib_name: str, required: bool = False
+    ) -> str | None:
+        """
+        Safely get an attribute from an XML element, logging validation issues.
+
+        Parameters
+        ----------
+        element
+            The XML element to get the attribute from.
+        attrib_name
+            The name of the attribute to get.
+        required
+            If True, raises a ValueError when the attribute is missing. If False,
+            returns None and logs the issue.
+
+        Returns
+        -------
+        str | None
+            The attribute value if found, None otherwise.
+
+        Raises
+        ------
+        ValueError
+            If required is True and the attribute is not found.
+        """
+        if attrib_name in element.attrib:
+            return element.attrib[attrib_name]
+
+        element_info = (
+            element.tag
+            if "name" not in element.attrib
+            else f"{element.tag}[@name='{element.attrib['name']}']"
+        )
+        issue_msg = (
+            f"Missing required attribute '{attrib_name}' in element: {element_info}"
+        )
+        self._validation_issues.append(issue_msg)
+
+        if required:
+            raise ValueError(issue_msg)
+
+        return None
 
     def to_dataset(self):
         """Parses the DMRpp element and translates it to the Pydap dataset model"""
@@ -742,7 +789,10 @@ class DMRPPParser:
     ) -> dict[Path, ET.Element]:
         group_dict: dict[Path, ET.Element] = {}
         for g in root.iterfind("dap:Group", self._NS):
-            new_path = current_path / Path(g.attrib["name"])
+            group_name = self._get_attrib(g, "name", required=True)
+            if group_name is None:
+                continue
+            new_path = current_path / Path(group_name)
             dataset_tags = [
                 d for d in g if d.tag != "{" + self._NS["dap"] + "}" + "Group"
             ]
@@ -770,14 +820,14 @@ class DMRPPParser:
 
         manifest_dict: dict[str, Any] = {}
         for var_tag in self._find_var_tags(root):
-            if var_tag.attrib["name"] not in self.skip_variables:
+            var_name = self._get_attrib(var_tag, "name")
+            if var_name and var_name not in self.skip_variables:
                 try:
                     variable = self._parse_variable(var_tag)
-                    manifest_dict[var_tag.attrib["name"]] = variable
+                    manifest_dict[var_name] = variable
                 except (UnboundLocalError, ValueError):
-                    name = var_tag.attrib["name"]
                     warnings.warn(
-                        f"This DMRpp contains the variable {name} that could not"
+                        f"This DMRpp contains the variable {var_name} that could not"
                         " be parsed. Consider adding it to the list  of skipped "
                         "variables, or opening an issue to help resolve this"
                     )
@@ -823,12 +873,12 @@ class DMRPPParser:
             vars_tags += root.findall(f"dap:{dap_dtype}", self._NS)
         return vars_tags
 
-    def _parse_dim(self, root: ET.Element) -> dict[str, int]:
+    def _parse_dim(self, root: ET.Element, dim_index: int = 0) -> dict[str, int]:
         """
         Parse single <Dim> or <Dimension> tag
 
         If the tag has no name attribute, it is a phony dimension.
-        E.g. <Dim size="300"/> --> {"phony_dim": 300}
+        E.g. <Dim size="300"/> --> {"phony_dim_0": 300}
         If the tag has both name and size attributes, it is a regular dimension.
         E.g. <Dim name="lat" size="1447"/> --> {"lat": 1447}
 
@@ -836,17 +886,25 @@ class DMRPPParser:
         ----------
         root : ET.Element
             The root element Dim/Dimension tag
+        dim_index : int
+            Index of the dimension, used for naming phony dimensions
 
         Returns
         -------
         dict
-            E.g. {"time": 1, "lat": 1447, "lon": 2895}, {"phony_dim": 300},
-                 {"time": None, "lat": None, "lon": None}
+            E.g. {"time": 1, "lat": 1447, "lon": 2895}, {"phony_dim_0": 300},
+            {"time": None, "lat": None, "lon": None}
         """
-        if "name" not in root.attrib and "size" in root.attrib:
-            return {"phony_dim": int(root.attrib["size"])}
-        if "name" in root.attrib and "size" in root.attrib:
-            return {Path(root.attrib["name"]).name: int(root.attrib["size"])}
+        size_attr = self._get_attrib(root, "size")
+        name_attr = self._get_attrib(root, "name")
+
+        if size_attr is not None:
+            size = int(size_attr)
+            if name_attr is not None:
+                return {Path(name_attr).name: size}
+            else:
+                return {f"phony_dim_{dim_index}": size}
+
         raise ValueError("Not enough information to parse Dim/Dimension tag")
 
     def _find_dimension_tags(self, root: ET.Element) -> list[ET.Element]:
@@ -868,19 +926,19 @@ class DMRPPParser:
         """
         dimension_tags = root.findall("dap:Dimension", self._NS)
         if not dimension_tags:
-            # Dim tags contain a fully qualified name that references a Dimension tag
-            #  elsewhere in the DMR++
+            # Dim tags contain a fully qualified name that references a
+            # Dimension tag elsewhere in the DMR++
+            # or they are phony dimensions (have size but no name)
             dim_tags = root.findall("dap:Dim", self._NS)
             for d in dim_tags:
-                try:
-                    dimension_tag = self.find_node_fqn(d.attrib["name"])
+                dim_name = self._get_attrib(d, "name")
+                if dim_name is not None:
+                    dimension_tag = self.find_node_fqn(dim_name)
                     if dimension_tag is not None:
                         dimension_tags.append(dimension_tag)
-                except KeyError:
-                    warnings.warn(
-                        "Failed to parse Dim. There is an unnamed Dim element "
-                        "without a Dimension element declaration."
-                    )
+                else:
+                    # Phony dimension - use the Dim tag directly
+                    dimension_tags.append(d)
         return dimension_tags
 
     def _find_dim_tags(self, root: ET.Element) -> list[ET.Element]:
@@ -925,8 +983,9 @@ class DMRPPParser:
         # Dimension info
         dims: dict[str, int] = {}
         dimension_tags = self._find_dimension_tags(var_tag)
-        for dim in dimension_tags:
-            dims.update(self._parse_dim(dim))
+        for dim_index, dim in enumerate(dimension_tags):
+            dims.update(self._parse_dim(dim, dim_index=dim_index))
+
         # convert DAP dtype to numpy dtype
         dtype = np.dtype(
             self._DAP_NP_DTYPE[var_tag.tag.removeprefix("{" + self._NS["dap"] + "}")]
@@ -958,9 +1017,9 @@ class DMRPPParser:
                 chunks_shape = tuple(map(int, chunk_dim_text.split()))
             else:
                 chunks_shape = shape
-            if "fillValue" in chunks_tag.attrib:
-                fillValue_attrib = chunks_tag.attrib["fillValue"]
-                array_fill_value = np.array(fillValue_attrib).astype(dtype)[()]
+            fill_value = self._get_attrib(chunks_tag, "fillValue")
+            if fill_value is not None:
+                array_fill_value = np.array(fill_value).astype(dtype)[()]
             if chunks_shape:
                 chunkmanifest = self._parse_chunks(chunks_tag, chunks_shape)
             else:
@@ -1022,7 +1081,16 @@ class DMRPPParser:
         """
         attr: dict[str, Any] = {}
         values = []
-        dtype = np.dtype(self._DAP_NP_DTYPE[attr_tag.attrib["type"]])
+        attr_type = self._get_attrib(attr_tag, "type")
+        attr_name = self._get_attrib(attr_tag, "name", required=True)
+
+        if attr_name is None:
+            return {}
+
+        if attr_type is None:
+            return {}
+
+        dtype = np.dtype(self._DAP_NP_DTYPE[attr_type])
         # if multiple Value tags are present, store as "key": "[v1, v2, ...]"
         for value_tag in attr_tag:
             # cast attribute to native python type using dmr provided dtype
@@ -1035,7 +1103,7 @@ class DMRPPParser:
             if val == "*":
                 val = np.nan
             values.append(val)
-        attr[attr_tag.attrib["name"]] = values[0] if len(values) == 1 else values
+        attr[attr_name] = values[0] if len(values) == 1 else values
         return attr
 
     def _parse_filters(
@@ -1057,10 +1125,11 @@ class DMRPPParser:
         list[dict] | None
             E.g. [{"id": "shuffle", "elementsize": 4}, {"id": "zlib", "level": 4}]
         """
-        if "compressionType" in chunks_tag.attrib:
+        compression_type = self._get_attrib(chunks_tag, "compressionType")
+        if compression_type is not None:
             filters: list[dict] = []
             # shuffle deflate --> ["shuffle", "deflate"]
-            compression_types = chunks_tag.attrib["compressionType"].split(" ")
+            compression_types = compression_type.split(" ")
             for c in compression_types:
                 if c == "shuffle":
                     filters.append(
@@ -1070,15 +1139,17 @@ class DMRPPParser:
                         }
                     )
                 elif c == "deflate":
+                    deflate_level = self._get_attrib(chunks_tag, "deflateLevel")
+                    level = (
+                        int(deflate_level)
+                        if deflate_level is not None
+                        else self._DEFAULT_ZLIB_VALUE
+                    )
                     filters.append(
                         {
                             "name": "numcodecs.zlib",
                             "configuration": {
-                                "level": int(
-                                    chunks_tag.attrib.get(
-                                        "deflateLevel", self._DEFAULT_ZLIB_VALUE
-                                    )
-                                ),
+                                "level": level,
                             },
                         }
                     )
@@ -1111,9 +1182,10 @@ class DMRPPParser:
         chunk_key_template = ".".join(["{}" for i in range(len(default_num))])
         for chunk_tag in chunks_tag.iterfind("dmrpp:chunk", self._NS):
             chunk_num = default_num
-            if "chunkPositionInArray" in chunk_tag.attrib:
+            chunk_position = self._get_attrib(chunk_tag, "chunkPositionInArray")
+            if chunk_position is not None:
                 # "[0,1023,10235]" -> ["0","1023","10235"]
-                chunk_pos = chunk_tag.attrib["chunkPositionInArray"][1:-1].split(",")
+                chunk_pos = chunk_position[1:-1].split(",")
                 # [0,1023,10235] // [1, 1023, 2047] -> [0,1,5]
                 chunk_num = [
                     int(chunk_pos[i]) // chunks_shape[i]
@@ -1124,12 +1196,14 @@ class DMRPPParser:
             path = path if path is not None else self.data_filepath
             # [0,1,5] -> "0.1.5"
             chunk_key = chunk_key_template.format(*chunk_num)
-
-            chunkmanifest[chunk_key] = {
-                "path": path,
-                "offset": int(chunk_tag.attrib["offset"]),
-                "length": int(chunk_tag.attrib["nBytes"]),
-            }
+            offset = self._get_attrib(chunk_tag, "offset", required=True)
+            n_bytes = self._get_attrib(chunk_tag, "nBytes", required=True)
+            if offset is not None and n_bytes is not None:
+                chunkmanifest[chunk_key] = {
+                    "path": path,
+                    "offset": int(offset),
+                    "length": int(n_bytes),
+                }
         return chunkmanifest
 
 
