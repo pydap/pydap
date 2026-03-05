@@ -4,6 +4,7 @@ import os
 import re
 import textwrap
 import unittest
+from pathlib import Path
 from xml.etree import ElementTree as ET
 
 import numpy as np
@@ -37,6 +38,10 @@ DMRPPTest_file2 = os.path.join(os.path.dirname(__file__), "data/dmrs/MOD13Q1.hdf
 
 DMRPPTest_file3 = os.path.join(
     os.path.dirname(__file__), "data/dmrs/fill_value_scalar_no_chunks.nc4.dmrpp"
+)
+DMRPPTest_file4 = os.path.join(os.path.dirname(__file__), "data/dmrs/air.nc.dmrpp")
+DMRPPTest_file5 = os.path.join(
+    os.path.dirname(__file__), "data/dmrs/air_groups.nc.dmrpp"
 )
 
 
@@ -529,9 +534,9 @@ def test_dmrpp_parser_variable_keys():
 @pytest.mark.parametrize(
     "var_path, expected",
     [
-        ("/data/air", {"time": 1, "lat": 25, "lon": 53}),
-        ("/SimpleGroup/Temperature", {"time": 1, "Y": 40, "X": 40}),
-        ("/SimpleGroup/Salinity", {"time": 1, "Y": 40, "X": 40}),
+        ("/data/air", ["time", "lat", "lon"]),
+        ("/SimpleGroup/Temperature", ["time", "Y", "X"]),
+        ("/SimpleGroup/Salinity", ["time", "Y", "X"]),
     ],
 )
 def test_dmrpp_dimension_names_variable(var_path, expected):
@@ -989,3 +994,81 @@ def test_dmrpp_phony_dim_naming():
     var = parser._parse_variable(parser.find_node_fqn("/data"))
     assert list(var["dimension_names"]) == ["phony_dim_0", "phony_dim_1"]
     assert var["shape"] == (10, 20)
+
+
+@pytest.mark.parametrize(
+    "fqn_path, expected_xpath",
+    [
+        ("/", "."),
+        ("/air", "./*[@name='air']"),
+    ],
+)
+def test_find_node_fqn_simple(fqn_path, expected_xpath):
+    parser_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file4).read()))
+    result = parser_instance.find_node_fqn(fqn_path)
+    expected = parser_instance.root.find(expected_xpath, parser_instance._NS)
+    assert result == expected
+
+
+def test_find_node_fqn_grouped():
+    parser_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file5).read()))
+    result = parser_instance.find_node_fqn("/test/group/air")
+    expected = parser_instance.root.find(
+        "./*[@name='test']/*[@name='group']/*[@name='air']", parser_instance._NS
+    )
+    assert result == expected
+
+
+@pytest.mark.parametrize(
+    "group_path",
+    [
+        ("/"),
+        ("/test"),
+        ("/test/group"),
+    ],
+)
+def test_split_groups(group_path):
+    dmrpp_instance = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file5).read()))
+
+    # get all tags in a dataset (so all tags excluding nested groups)
+    def dataset_tags(x):
+        return [
+            d for d in x if d.tag != "{" + dmrpp_instance._NS["dap"] + "}" + "Group"
+        ]
+
+    # check that contents of the split groups dataset match contents of the original
+    #  dataset
+    result_tags = dataset_tags(
+        dmrpp_instance._split_groups(dmrpp_instance.root)[Path(group_path)]
+    )
+    expected_tags = dataset_tags(dmrpp_instance.find_node_fqn(group_path))
+    assert result_tags == expected_tags
+
+
+def test_parse_variable():
+    parser = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file4).read()))
+
+    var = parser._parse_variable(parser.find_node_fqn("/air"))
+    assert var["data_type"] == "int16"
+    assert var["dimension_names"] == ["time", "lat", "lon"]
+    assert var["shape"] == (2920, 25, 53)
+    assert var["chunk_shape"] == (2920, 25, 53)
+    # _FillValue is encoded for array dtype
+    assert var["attributes"]["scale_factor"] == 0.01
+    assert (
+        var["attributes"]["long_name"] == "4xDaily Air temperature at sigma level 995"
+    )
+
+
+@pytest.mark.parametrize(
+    "attr_path, expected",
+    [
+        ("air/long_name", {"long_name": "4xDaily Air temperature at sigma level 995"}),
+        ("air/scale_factor", {"scale_factor": 0.01}),
+    ],
+)
+def test_parse_attribute(attr_path, expected):
+    parser = DMRPPParser(root=ET.fromstring(open(DMRPPTest_file4).read()))
+
+    result = parser._parse_attribute(parser.find_node_fqn(attr_path))
+    assert result == expected

@@ -1053,7 +1053,7 @@ class DMRPPParser:
             data_type=dtype,
             chunk_shape=chunks_shape,
             codecs=codecs,
-            dimension_names=dims,
+            dimension_names=list(dims),
             fqn_dims=[dim.get("name") for dim in var_tag.findall("dap:Dim", self._NS)],
             Maps=[map.get("name") for map in var_tag.findall("dap:Map", self._NS)],
             attributes=attrs,
