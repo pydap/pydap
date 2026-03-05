@@ -1059,8 +1059,9 @@ class DMRPPParser:
             attributes=attrs,
             fill_value=array_fill_value,
             chunkmanifest=chunkmanifest,
-            inline=inline_value,
         )
+        if inline_value is not None:
+            metadata.update(inline=inline_value)
         return metadata
 
     def _parse_attribute(self, attr_tag: ET.Element) -> dict[str, Any]:
