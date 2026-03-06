@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#" xmlns:dmrpp="http://xml.opendap.org/dap/dmrpp/1.0.0#" dapVersion="4.0" dmrVersion="1.0" name="air_groups.nc" dmrpp:href="OPeNDAP_DMRpp_DATA_ACCESS_URL" dmrpp:version="3.21.1-451">
+    <Attribute name="build_dmrpp_metadata" type="Container">
+        <Attribute name="created" type="String">
+            <Value>2025-07-16T21:57:57Z</Value>
+        </Attribute>
+        <Attribute name="build_dmrpp" type="String">
+            <Value>3.21.1-451</Value>
+        </Attribute>
+        <Attribute name="bes" type="String">
+            <Value>3.21.1-451</Value>
+        </Attribute>
+        <Attribute name="libdap" type="String">
+            <Value>libdap-3.21.1-178</Value>
+        </Attribute>
+        <Attribute name="invocation" type="String">
+            <Value>build_dmrpp -f /usr/share/hyrax/hdf5_groups_file.nc -r hdf5_groups_file.nc.dmr -u OPeNDAP_DMRpp_DATA_ACCESS_URL -M</Value>
+        </Attribute>
+    </Attribute>
     <Group name="test">
         <Group name="group">
             <Dimension name="lat" size="25"/>
@@ -133,21 +150,4 @@
             </Attribute>
         </Group>
     </Group>
-    <Attribute name="build_dmrpp_metadata" type="Container">
-        <Attribute name="created" type="String">
-            <Value>2025-07-16T21:57:57Z</Value>
-        </Attribute>
-        <Attribute name="build_dmrpp" type="String">
-            <Value>3.21.1-451</Value>
-        </Attribute>
-        <Attribute name="bes" type="String">
-            <Value>3.21.1-451</Value>
-        </Attribute>
-        <Attribute name="libdap" type="String">
-            <Value>libdap-3.21.1-178</Value>
-        </Attribute>
-        <Attribute name="invocation" type="String">
-            <Value>build_dmrpp -f /usr/share/hyrax/hdf5_groups_file.nc -r hdf5_groups_file.nc.dmr -u OPeNDAP_DMRpp_DATA_ACCESS_URL -M</Value>
-        </Attribute>
-    </Attribute>
 </Dataset>
