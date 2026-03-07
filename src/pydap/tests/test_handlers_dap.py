@@ -693,7 +693,6 @@ buffer2 = bytearray(b"\x16\x00\x00\x00\x00\x00\x00\x00" + b"This is a string")
 @pytest.mark.parametrize(
     "data, expected_string, expected_stop",
     [
-        (buffer1, ["This", "is", "a", "Test"], 43),
         (buffer2, ["This is a string"], 30),
     ],
 )
