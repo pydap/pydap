@@ -1554,3 +1554,21 @@ def test_to_netcdf_multiple_dim_slices():
 
         assert pyds1.dimensions["TIME"] == 1
         assert pyds2.dimensions["TIME"] == 2
+
+
+def test_to_netcdf_file_multiple_string_arrays():
+    """Tests that pydap can deserialize a dap response with multiple string arrays
+    in a dap response with multiple variables.
+    """
+    name = "IASIA_MUSICA_030301_L2_AllTargetProducts_20210101054454_73699.nc.h5"
+    url = "http://test.opendap.org/opendap/dap4/" + name
+    keep_variables = ["/time_string", "/lon"]
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        _ = to_netcdf(
+            url,
+            output_path=tmp_dir,
+            keep_variables=keep_variables,
+        )
+        pyds = NetCDFHandler(tmp_dir + "/" + name.replace(".h5", ".nc4")).dataset
+        assert pyds["/time_string"].shape == (5400,)
+        assert pyds["/lon"].shape == (5400,)
