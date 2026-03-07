@@ -951,9 +951,12 @@ def get_count(variable):
 def decode_variable(buffer, start, variable, endian):
     dtype = variable.dtype
     if dtype.kind == "S":
-        string, stop = decode_utf8_string_array(buffer, start)
-        data = numpy.array(string).astype(dtype.kind)
-        data = data.reshape(variable.shape)
+        DATA = []
+        stop = start
+        for i in range(int(numpy.prod(variable.shape))):
+            string, stop = decode_utf8_string_array(buffer, start=stop)
+            DATA.append(numpy.array(string).astype(dtype.kind))
+        data = numpy.array(DATA).reshape(variable.shape)
         return data, stop
     else:
         stop = get_count(variable) + start
@@ -967,19 +970,18 @@ def decode_utf8_string_array(buffer, start=0):
     offset = start
     strings = []
 
-    while offset < len(buffer) - 4:  # last four elements are the checksums
-        # 1. Read 8-byte little-endian length
-        length_bytes = buffer[offset : offset + 8]
-        strlen = int.from_bytes(length_bytes, byteorder="little")
-        offset += 8
+    # 1. Read 8-byte little-endian length
+    length_bytes = buffer[offset : offset + 8]
+    strlen = int.from_bytes(length_bytes, byteorder="little")
+    offset += 8
 
-        # 2. Read the UTF-8 string
-        str_bytes = buffer[offset : offset + strlen]
-        offset += strlen
+    # 2. Read the UTF-8 string
+    str_bytes = buffer[offset : offset + strlen]
+    offset += strlen
 
-        # 3. Decode the bytes to Python string (UTF-8)
-        decoded_str = str_bytes.decode("utf-8")
-        strings.append(decoded_str)
+    # 3. Decode the bytes to Python string (UTF-8)
+    decoded_str = str_bytes.decode("utf-8")
+    strings.append(decoded_str)
 
     return strings, offset
 
