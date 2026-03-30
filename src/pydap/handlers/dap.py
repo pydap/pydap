@@ -1176,6 +1176,11 @@ class UNPACKDAP4DATA(object):
             filename = str(Path(filename).with_suffix("")) + ".nc4"
 
         self.nc = Dataset(self.output_path / filename, "w")
+
+        # set attributes at dataset level
+        for k, v in dataset.attributes.items():
+            self.nc.setncattr(k, v)
+
         # start at root
         # create dimensions
         for name, size in dataset.dimensions.items():
