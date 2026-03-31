@@ -1228,7 +1228,7 @@ class UNPACKDAP4DATA(object):
                 "fill_value": _FillValue,
             }
 
-            _dims = [dim.split("/")[1] for dim in var.dims]
+            _dims = [dim.split("/")[-1] for dim in var.dims]
             # copy attributes
             if len(_dims) != len(dataset[var.id].shape):
                 _dims = self._get_or_create_dims_for_var(var, dataset[var.id])
@@ -1353,6 +1353,8 @@ class UNPACKDAP4DATA(object):
                 else:
                     parent = unquote(variable.parent.id[1:])
                     ncvar = self.nc[parent].variables[name]
+                # raw packed data from pydap should be written raw
+                ncvar.set_auto_maskandscale(False)
                 ncvar[...] = data
                 variable._set_data(None)
             else:
