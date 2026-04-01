@@ -713,6 +713,34 @@ def test_tds_dmrVersion2():
     assert dmr_instance.dmrVersion == "2.0"
 
 
+def test_dmrpp_container_attr():
+    dmr = """
+    <Dataset xml:base="test.h5"
+            dapVersion="4.0" dmrVersion="1.0"
+            name="test.h5">
+        <Attribute name="build_dmrpp_metadata" type="Container">
+            <Attribute name="created" type="String">
+                <Value>2025-03-02T12:32:45Z</Value>
+            </Attribute>
+            <Attribute name="build_dmrpp" type="String">
+                <Value>3.21.0-526</Value>
+            </Attribute>
+            <Attribute name="bes" type="String">
+                <Value>3.21.0-526</Value>
+            </Attribute>
+            <Attribute name="libdap" type="String">
+                <Value>libdap-3.21.0-120</Value>
+            </Attribute>
+        </Attribute>
+        <Int32 name="Var1">
+            <Dim size="1"/>
+        </Int32>
+    </Dataset>
+    """
+    ds = dmr_to_dataset(dmr)
+    assert {} == ds.attributes
+
+
 def test_escapeGroupName_dmrVersion2():
     dmr = """
     <Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#"
