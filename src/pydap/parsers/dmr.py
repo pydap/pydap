@@ -382,7 +382,11 @@ def dmr_to_dataset(dmr, flat=True, dmrVersion=None):
     if dmr_instance.dmrVersion == "2.0":
         # create any missing groups
         recorded = [path + gname for gname, path in dataset.groups().items()]
-        miss = [fqn for fqn in GROUPS_metadata.keys() if fqn not in recorded]
+        miss = [
+            fqn
+            for fqn in GROUPS_metadata.keys()
+            if pydap.lib._quote(fqn) not in recorded
+        ]
         for fqn in miss:
             dims = GROUPS_metadata[fqn].pop("dimensions", None)
             Maps = GROUPS_metadata[fqn].pop("Maps", None)
