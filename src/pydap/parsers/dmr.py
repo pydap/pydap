@@ -445,6 +445,7 @@ class DMRParser(object):
             "_NCProperties",
             "_dap4.ce",
             "_DAP4_Little_Endian",
+            "build_dmrpp_metadata",
         ]
         AttsNames = [subnode.get("name") for subnode in self.node.findall("Attribute")]
         Attrs = {}
