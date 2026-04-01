@@ -381,7 +381,7 @@ def dmr_to_dataset(dmr, flat=True, dmrVersion=None):
 
     if dmr_instance.dmrVersion == "2.0":
         # create any missing groups
-        recorded = [path + gname for gname, path in dataset.groups().items()]
+        recorded = [path + gname[1:] for gname, path in dataset.groups().items()]
         miss = [
             fqn
             for fqn in GROUPS_metadata.keys()

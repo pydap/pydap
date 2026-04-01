@@ -713,6 +713,26 @@ def test_tds_dmrVersion2():
     assert dmr_instance.dmrVersion == "2.0"
 
 
+def test_escapeGroupName_dmrVersion2():
+    dmr = """
+    <Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#"
+        xml:base="test.h5" dapVersion="4.0"
+        dmrVersion="2.0" name="test.h5">
+        <Group name="White Space">
+            <Int32 name="Var1">
+                <Dim size="1"/>
+            </Int32>
+            <Int32 name="Var2">
+                <Dim size="1"/>
+            </Int32>
+        </Group>
+    </Dataset>
+    """
+    ds = dmr_to_dataset(dmr)
+    assert "Var1" in ds["White Space"].variables()
+    assert "Var2" in ds["White Space"].variables()
+
+
 def test_nested_empty_groups_dmrVersion2():
     """Test that empty nested groups are parsed correctly with dmrVersion=2."""
     nested_empty_groups_dmr = """
