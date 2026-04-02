@@ -1179,7 +1179,13 @@ class UNPACKDAP4DATA(object):
 
         # set attributes at dataset level
         for k, v in dataset.attributes.items():
-            self.nc.setncattr(k, v)
+            try:
+                self.nc.setncattr(k, v)
+            except TypeError as e:
+                if v is None:
+                    self.nc.setncattr(k, str(v))
+                else:
+                    raise e
 
         # start at root
         # create dimensions
