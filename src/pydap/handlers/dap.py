@@ -401,6 +401,7 @@ def safe_charset_text(r, user_charset):
             r.charset = get_charset(r, user_charset)
     return r.text
 
+
 def _split_dds_data(raw):
     """Split raw DODS bytes into (dds_bytes, data_bytes), tolerating \\r\\n."""
     sep = b"\nData:\n"
@@ -410,7 +411,7 @@ def _split_dds_data(raw):
         idx = raw.find(sep)
     if idx == -1:
         raise ValueError("Could not find Data separator in DODS response")
-    return raw[:idx], raw[idx + len(sep):]
+    return raw[:idx], raw[idx + len(sep) :]
 
 
 def safe_dds_and_data(r, user_charset):

@@ -628,6 +628,7 @@ def open_dods_url(
 
     r = GET(url, application, session, timeout=timeout)
     from pydap.handlers.dap import _split_dds_data
+
     dds, data = _split_dds_data(r.body)
     dds = dds.decode(r.content_encoding or "ascii")
     dataset = dds_to_dataset(dds)
