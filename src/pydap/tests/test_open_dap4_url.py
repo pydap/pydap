@@ -20,6 +20,7 @@ def test_coads():
     pydap_ds["COADSX"][10:12:1]
 
 
+@pytest.mark.skip(reason="path temporarily unavailable. See OPENDAP/bes#1332")
 def test_groups():
     url = base_url + "/opendap/dmrpp_test_files/"
     pydap_ds = open_url(url + "ATL03_20181228015957_13810110_003_01.2var.h5.dmrpp")
