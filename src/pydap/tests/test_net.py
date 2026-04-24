@@ -127,6 +127,13 @@ def test_extract_session_state():
     assert state["headers"]["User-Agent"].startswith("pydap/")
 
 
-@pytest.mark.parametrize("session", [create_session(), create_session(use_cache=True)])
+@pytest.mark.parametrize(
+    "session",
+    [
+        create_session(),
+        create_session(use_cache=True),
+        create_session(session=requests.Session()),
+    ],
+)
 def test_pydap_user_agent_headers(session):
     assert session.headers["User-Agent"].startswith("pydap/")
