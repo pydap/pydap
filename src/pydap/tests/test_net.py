@@ -14,6 +14,7 @@ from pydap.net import (
     create_request,
     create_session,
     detect_backend,
+    extract_session_state,
     get_response,
     inherit_bearer_header,
 )
@@ -117,3 +118,10 @@ def test_inherit_bearer_header():
     session_no_header = requests.Session()
     inherit_bearer_header(session_no_header, session)
     assert session_no_header.headers == session.headers
+
+
+def test_extract_session_state():
+    session = requests.Session()
+    state = extract_session_state(session)
+    assert "User-Agent" in state["headers"]
+    assert state["headers"]["User-Agent"].startswith("pydap/")
