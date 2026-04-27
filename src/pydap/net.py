@@ -485,6 +485,8 @@ def extract_session_state(session):
         backend=None,
         cache_kwargs={},
     )
+    state["headers"].pop("User-Agent", None)
+    state["headers"]["User-Agent"] = "pydap/" + __version__
 
     if isinstance(session, CachedSession):
         cache = session.cache
