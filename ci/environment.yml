@@ -2,7 +2,7 @@ name: pydap_tests
 channels:
 - conda-forge
 dependencies:
-- netCDF4
+- netcdf4
 - docopt-ng
 - pip
 - pip:
