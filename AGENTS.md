@@ -2,11 +2,11 @@
 
 ## Scope
 
-These instructions apply to the entire `bes` repository.
+These instructions apply to the entire `pydap` repository.
 
 ## Communication
 
-- State assumptions and environment details explicitly, especially configure flags and dependency locations.
+- State assumptions and environment details explicitly
 - If full validation was not run, say exactly what was run and what was not.
 - If a change depends on external prerequisites, note that clearly.
 - Do not make up data.
@@ -33,6 +33,7 @@ pytest -n 2 src/pydap/tests/test_open_dap4_url.py # specific file
 ```
 ### CI And github Workflows
 
+- CI environmental file is located in [`.ci/environment.yml`](.ci/environment.yml).
 - Additional CI in [`.github/workflows`](.github/workflows) for OSX Intel and ARM64.
 
 ### Testing Expectations
@@ -41,8 +42,8 @@ pytest -n 2 src/pydap/tests/test_open_dap4_url.py # specific file
 
 ### Documentation
 
-- Top-level API docs are built with jupyterbook. There is an executable shell script in the docs folder called `./build.sh`. Run this to clean and generate the local files.
-- Documentation is generated using jupyter notebooks. Currently there is a version in English and a version in Spanish.
+- Documentation is generated using jupyter notebooks.
+- Top-level API docs are built with jupyterbook. The [`.docs/build.sh`](.docs/build.sh) is an executable shell script that cleans and generates the documentation.
 
 ### Linting
 
@@ -51,7 +52,7 @@ pre-commit run -a  # Includes ruff and other checks
 ```
 
 ### Project Context
-- `pydap` has client code for accessing data from OPeNDAP servers, and it also has server code for making data available through DAP protocol. Downstream users depend on stable behavior.
+- `pydap` has client code for accessing data from OPeNDAP servers, and it also has server code for making data available through the DAP protocol. Downstream users depend on stable behavior.
 - Prefer compatibility, behavioral stability, and small reviewable diffs over broad cleanup or refactoring.
 - Treat changes to protocol behavior, server startup/configuration, packaging, and installed layout as high risk.
 
