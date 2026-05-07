@@ -168,6 +168,22 @@ DAP4_TO_NUMPY_PARSER_TYPEMAP = {
     "Char": "u1",
 }
 
+NUMPY_TO_DAP4_TYPEMAP = {
+    ("b", 1): "UInt8",
+    ("i", 1): "Int8",
+    ("u", 1): "UInt8",
+    ("i", 2): "Int16",
+    ("u", 2): "UInt16",
+    ("i", 4): "Int32",
+    ("u", 4): "UInt32",
+    ("i", 8): "Int64",
+    ("u", 8): "UInt64",
+    ("f", 4): "Float32",
+    ("f", 8): "Float64",
+    ("S", None): "String",
+    ("U", None): "String",
+}
+
 
 def _quote(name):
     """Return quoted name according to the DAP specification.

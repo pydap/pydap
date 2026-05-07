@@ -273,3 +273,34 @@ FaultyGrid["x"] = FaultyGrid["FaultyGrid"]["x"] = BaseType(
 FaultyGrid["y"] = FaultyGrid["FaultyGrid"]["y"] = BaseType(
     "y", np.arange(2), axis="Y", code=np.int32([])
 )
+
+DSUnDims = DatasetType(
+    "unnamed_dims.nc",
+    Description="A simple dataset with unnamed dimensions.",
+    dimensions=(),
+)
+DSUnDims.createGroup(
+    "Group1",
+    Description="Test group with numerical data",
+    dimensions=(),
+)
+DSUnDims.createGroup(
+    "Group2",
+    Description="Another Test group with numerical data",
+    dimensions=(),
+)
+
+DSUnDims.createVariable(
+    name="/Group1/Temperature",
+    data=np.arange(10, 26, 1, dtype="f4").reshape(1, 4, 4),
+    units="degrees_celsius",
+    _FillValue=np.inf,
+    ValidRange=[-10, 100],
+)
+DSUnDims.createVariable(
+    name="/Group2/Salinity",
+    data=30 * np.ones(np.shape(np.arange(10, 26, 1, dtype="f4").reshape(1, 4, 4))),
+    units="psu",
+    _FillValue=np.inf,
+    ValidRange=[0, 50],
+)
