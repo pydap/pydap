@@ -40,7 +40,7 @@ The initial target should be modest:
 ### Goal
 
 Make DMR generation more complete, deterministic, and easier to extend before
-adding sequence support.
+adding any sequence support. Focus on what is there already.
 
 ### Why This Matters
 
@@ -132,7 +132,6 @@ read reliably. The DMR tells the deserializer how to interpret the binary data.
 ### Action Items
 
 - Implement correct DMR generation for `SequenceType`.
-- Implement the minimum useful DMR generation for `StructureType`.
 - Keep the first version focused on non-nested sequences.
 - Ensure child variables are emitted in the same order used by row serialization.
 - Add tests using synthetic sequence datasets from pydap's own test fixtures.
