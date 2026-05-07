@@ -31,6 +31,10 @@ def _xml_text(value):
     return value.encode("ascii", "xmlcharrefreplace").decode("ascii")
 
 
+def _dataset_name_attr(value):
+    return _xml_attr(str(value).replace("%2E", ".").replace("%2e", "."))
+
+
 def _dtype_to_dap4(dtype):
     dtype = np.dtype(dtype)
     key = (dtype.kind, dtype.itemsize)
@@ -214,7 +218,7 @@ def _(var, level=0):
     str0 = 'Dataset xmlns="{namespace}"'.format(namespace=namespace[""])
     str1 = ' xml:base="{url}"'.format(url=_xml_attr("http://localhost:8001"))
     str2 = ' dapVersion="4.0" dmrVersion="1.0"'
-    str3 = ' name="{name}">\n'.format(name=_xml_attr(var.name))
+    str3 = ' name="{name}">\n'.format(name=_dataset_name_attr(var.name))
     yield "<{indent}".format(indent=level * INDENT) + str0 + str1 + str2 + str3
     yield from _emit_dimensions(_dimensions(var.attributes), level + 1)
     yield from _emit_child_variables(var, level + 1)

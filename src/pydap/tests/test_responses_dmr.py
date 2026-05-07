@@ -118,6 +118,17 @@ def test_dmr_escapes_xml_names_and_attribute_values():
     assert 'A &amp; B &lt; C &gt; D "quoted"' in body
 
 
+def test_dmr_preserves_dots_in_dataset_name():
+    dataset = DatasetType("example file.nc4.h5")
+
+    body = b"".join(DMRResponse(dataset)).decode("ascii")
+
+    ET.fromstring(body)
+    assert 'name="example%20file.nc4.h5"' in body
+    assert "%2E" not in body
+    assert "%2e" not in body
+
+
 @pytest.mark.parametrize(
     "dtype, value, expected_type",
     [
