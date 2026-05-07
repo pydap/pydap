@@ -59,15 +59,15 @@ def _normalize_scalar(value):
 def _attribute_values(value):
     if isinstance(value, np.ndarray):
         if value.shape == ():
-            return [_normalize_scalar(value)]
-        return [_normalize_scalar(item) for item in value.ravel()]
+            return [value[()]]
+        return list(value.ravel())
     if (
         isinstance(value, Iterable)
         and not isinstance(value, (str, bytes, Mapping))
         and getattr(value, "shape", None) != ()
     ):
-        return [_normalize_scalar(item) for item in value]
-    return [_normalize_scalar(value)]
+        return list(value)
+    return [value]
 
 
 def _scalar_attribute_type(value):

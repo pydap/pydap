@@ -129,6 +129,63 @@ def test_dmr_preserves_dots_in_dataset_name():
     assert "%2e" not in body
 
 
+def test_dmr_generates_attribute_forms_from_dap4_schema_examples():
+    dataset = DatasetType(
+        "AttributesFile.nc",
+        description=(
+            "DMR for testing Maps, Dims at root level "
+            "(no Groups, Sequences or Structures)."
+        ),
+        offset1=np.int16(1),
+        offsets=np.array([1, 2, 3], dtype=np.int64),
+        _ChunkSizes=np.array([1, 964], dtype=np.uint32),
+        FF_GLOBAL={"Server": "DODS FreeFrom based on FFND release 4.2.3"},
+        iso_19139_dataset_xml=(
+            "<?xml version=`1.0` encoding=`UTF-8` standalone=`no` ?> "
+            "Text here inside an xml document"
+        ),
+    )
+    dataset["var"] = BaseType(
+        "var",
+        data=np.array([1], dtype="i4"),
+        attributes={
+            "scale_factor": np.float32(36.0),
+            "value_attribute_equivalent": np.array([5, 9674774], dtype=np.uint32),
+        },
+    )
+    dataset.createGroup(
+        "TestGroup",
+        fileName=["File_001.h5", "File_002.h5"],
+        identifier="L2Data",
+        resolution=np.float32(36.0),
+    )
+
+    body = b"".join(DMRResponse(dataset)).decode("ascii")
+
+    ET.fromstring(body)
+    assert '<Attribute name="description" type="String">' in body
+    assert "<Value>DMR for testing Maps, Dims at root level" in body
+    assert '<Attribute name="offset1" type="Int16">' in body
+    assert '<Attribute name="offsets" type="Int64">' in body
+    assert body.count("<Value>1</Value>") >= 2
+    assert "<Value>2</Value>" in body
+    assert "<Value>3</Value>" in body
+    assert '<Attribute name="_ChunkSizes" type="UInt32">' in body
+    assert "<Value>964</Value>" in body
+    assert '<Attribute name="FF_GLOBAL" type="Container">' in body
+    assert '<Attribute name="Server" type="String">' in body
+    assert '<Attribute name="iso_19139_dataset_xml" type="String">' in body
+    assert "&lt;?xml version=`1.0` encoding=`UTF-8` standalone=`no` ?&gt;" in body
+    assert '<Attribute name="scale_factor" type="Float32">' in body
+    assert '<Attribute name="value_attribute_equivalent" type="UInt32">' in body
+    assert "<Value>9674774</Value>" in body
+    assert '<Group name="TestGroup">' in body
+    assert '<Attribute name="fileName" type="String">' in body
+    assert "<Value>File_001.h5</Value>" in body
+    assert "<Value>File_002.h5</Value>" in body
+    assert '<Attribute name="resolution" type="Float32">' in body
+
+
 @pytest.mark.parametrize(
     "dtype, value, expected_type",
     [
