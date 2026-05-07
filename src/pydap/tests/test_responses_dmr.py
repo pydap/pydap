@@ -14,7 +14,7 @@ from pydap.lib import __version__
 from pydap.model import BaseType, DatasetType
 from pydap.parsers.dmr import dmr_to_dataset
 from pydap.responses.dmr import DMRResponse, dmr
-from pydap.tests.datasets import SimpleArray, SimpleGroup
+from pydap.tests.datasets import DSUnDims, SimpleArray, SimpleGroup
 
 
 def load_dmr_file(file_path):
@@ -96,10 +96,60 @@ class TestDMRResponseArray(unittest.TestCase):
 
     def test_body_parses_back_to_dataset(self):
         dataset = dmr_to_dataset(self.res.text)
+        self.assertEqual(dataset.dimensions, {"phony_dim_0": 5, "phony_dim_1": 2})
         self.assertEqual(dataset["byte"].dtype, np.dtype("u1"))
         self.assertEqual(dataset["byte"].shape, (5,))
+        self.assertEqual(dataset["byte"].dims, ["/phony_dim_0"])
         self.assertEqual(dataset["string"].dtype, np.dtype("|S128"))
         self.assertEqual(dataset["string"].shape, (2,))
+        self.assertEqual(dataset["string"].dims, ["/phony_dim_1"])
+
+    def test_array_dimensions_are_named(self):
+        self.assertNotIn("<Dim size=", self.res.text)
+        self.assertIn('<Dimension name="phony_dim_0" size="5"/>', self.res.text)
+        self.assertIn('<Dim name="/phony_dim_0"/>', self.res.text)
+
+
+def test_dmr_names_missing_dimensions_in_group_scope():
+    body = b"".join(DMRResponse(DSUnDims)).decode("ascii")
+
+    root = ET.fromstring(body)
+    groups = {
+        child.attrib["name"]: child
+        for child in root
+        if child.tag.rsplit("}", 1)[-1] == "Group"
+    }
+
+    assert "<Dim size=" not in body
+    assert all(child.tag.rsplit("}", 1)[-1] != "Dimension" for child in root)
+
+    for group_name, var_name in [
+        ("Group1", "Temperature"),
+        ("Group2", "Salinity"),
+    ]:
+        group = groups[group_name]
+        dimensions = [
+            child for child in group if child.tag.rsplit("}", 1)[-1] == "Dimension"
+        ]
+        assert [dim.attrib["name"] for dim in dimensions] == [
+            "phony_dim_0",
+            "phony_dim_1",
+            "phony_dim_2",
+        ]
+        assert [dim.attrib["size"] for dim in dimensions] == ["1", "4", "4"]
+
+        variable = next(
+            child for child in group if child.attrib.get("name") == var_name
+        )
+        dims = [child for child in variable if child.tag.rsplit("}", 1)[-1] == "Dim"]
+        assert [dim.attrib["name"] for dim in dims] == [
+            f"/{group_name}/phony_dim_0",
+            f"/{group_name}/phony_dim_1",
+            f"/{group_name}/phony_dim_2",
+        ]
+
+    assert "/Group1/phony_dim_0" in body
+    assert "/Group2/phony_dim_0" in body
 
 
 def test_dmr_escapes_xml_names_and_attribute_values():

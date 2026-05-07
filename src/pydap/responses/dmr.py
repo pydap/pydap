@@ -7,6 +7,7 @@ clients to introspect the variables and request data as necessary.
 
 """
 
+from collections import OrderedDict
 from collections.abc import Iterable, Mapping
 from functools import singledispatch
 from xml.sax.saxutils import escape
@@ -111,6 +112,45 @@ def _dimensions(attributes):
     return attributes.get("dimensions", {})
 
 
+def _container_dimension_name(container, name):
+    if isinstance(container, DatasetType):
+        return "/" + name
+    path = container.attributes.get("path", "/")
+    if not path.endswith("/"):
+        path += "/"
+    return path + container.name + "/" + name
+
+
+def _next_phony_dimension_name(used_names):
+    index = 0
+    while True:
+        name = "phony_dim_{index}".format(index=index)
+        if name not in used_names:
+            used_names.add(name)
+            return name
+        index += 1
+
+
+def _container_dimension_context(var):
+    dimensions = OrderedDict(_dimensions(var.attributes))
+    phony_dimensions = {}
+    used_names = set(dimensions)
+
+    variables, _ = _children_by_declaration_order(var)
+    for child in variables:
+        if not isinstance(child, BaseType):
+            continue
+        shape = tuple(child.shape or ())
+        missing_dims = []
+        for size in shape[len(child.dims) :]:
+            name = _next_phony_dimension_name(used_names)
+            dimensions[name] = size
+            missing_dims.append(_container_dimension_name(var, name))
+        if missing_dims:
+            phony_dimensions[id(child)] = tuple(missing_dims)
+    return dimensions, phony_dimensions
+
+
 def _is_group(child):
     return isinstance(child, GroupType)
 
@@ -129,15 +169,14 @@ def _emit_dimensions(dimensions, level):
         )
 
 
-def _emit_variable_dimensions(var, level):
+def _emit_variable_dimensions(var, level, phony_dimensions=()):
     for dim in var.dims:
         yield '{indent}<Dim name="{name}"/>\n'.format(
             indent=level * INDENT, name=_xml_attr(dim)
         )
-    shape = tuple(var.shape or ())
-    for size in shape[len(var.dims) :]:
-        yield '{indent}<Dim size="{size}"/>\n'.format(
-            indent=level * INDENT, size=_xml_attr(size)
+    for dim in phony_dimensions:
+        yield '{indent}<Dim name="{name}"/>\n'.format(
+            indent=level * INDENT, name=_xml_attr(dim)
         )
 
 
@@ -172,10 +211,14 @@ def _emit_attribute(key, value, level):
     yield "{indent}</Attribute>\n".format(indent=indent)
 
 
-def _emit_child_variables(var, level):
+def _emit_child_variables(var, level, phony_dimensions=None):
+    if phony_dimensions is None:
+        phony_dimensions = {}
     variables, _ = _children_by_declaration_order(var)
     for child in variables:
-        for line in dmr(child, level):
+        for line in dmr(
+            child, level, phony_dimensions=phony_dimensions.get(id(child), ())
+        ):
             yield line
 
 
@@ -214,14 +257,15 @@ def dmr(var):
 
 
 @dmr.register(DatasetType)
-def _(var, level=0):
+def _(var, level=0, phony_dimensions=()):
     str0 = 'Dataset xmlns="{namespace}"'.format(namespace=namespace[""])
     str1 = ' xml:base="{url}"'.format(url=_xml_attr("http://localhost:8001"))
     str2 = ' dapVersion="4.0" dmrVersion="1.0"'
     str3 = ' name="{name}">\n'.format(name=_dataset_name_attr(var.name))
+    dimensions, child_phony_dimensions = _container_dimension_context(var)
     yield "<{indent}".format(indent=level * INDENT) + str0 + str1 + str2 + str3
-    yield from _emit_dimensions(_dimensions(var.attributes), level + 1)
-    yield from _emit_child_variables(var, level + 1)
+    yield from _emit_dimensions(dimensions, level + 1)
+    yield from _emit_child_variables(var, level + 1, child_phony_dimensions)
     yield from _emit_attributes(var.attributes, level + 1, excluded=("dimensions",))
     yield from _emit_child_groups(var, level + 1)
 
@@ -229,7 +273,7 @@ def _(var, level=0):
 
 
 @dmr.register(StructureType)
-def _structuretype(var, level=0):
+def _structuretype(var, level=0, phony_dimensions=()):
     yield '{indent}<Structure name="{name}">\n'.format(
         indent=level * INDENT, name=_xml_attr(var.name)
     )
@@ -242,7 +286,7 @@ def _structuretype(var, level=0):
 
 
 @dmr.register(SequenceType)
-def _sequencetype(var, level=0, sequence=0):
+def _sequencetype(var, level=0, sequence=0, phony_dimensions=()):
     yield '{indent}<Sequence name="{name}">\n'.format(
         indent=level * INDENT, name=_xml_attr(var.name)
     )
@@ -255,12 +299,13 @@ def _sequencetype(var, level=0, sequence=0):
 
 
 @dmr.register(GroupType)
-def _grouptype(var, level=0):
+def _grouptype(var, level=0, phony_dimensions=()):
+    dimensions, child_phony_dimensions = _container_dimension_context(var)
     yield '{indent}<Group name="{name}">\n'.format(
         indent=level * INDENT, name=_xml_attr(var.name)
     )
-    yield from _emit_dimensions(_dimensions(var.attributes), level + 1)
-    yield from _emit_child_variables(var, level + 1)
+    yield from _emit_dimensions(dimensions, level + 1)
+    yield from _emit_child_variables(var, level + 1, child_phony_dimensions)
     yield from _emit_attributes(
         var.attributes, level + 1, excluded=("dimensions", "path", "Maps")
     )
@@ -269,14 +314,14 @@ def _grouptype(var, level=0):
 
 
 @dmr.register(BaseType)
-def _basetype(var, level=0):
+def _basetype(var, level=0, phony_dimensions=()):
     _vartype = _dtype_to_dap4(var.dtype)
     yield '{indent}<{type} name="{name}">\n'.format(
         indent=level * INDENT,
         type=_vartype,
         name=_xml_attr(var.name),
     )
-    yield from _emit_variable_dimensions(var, level + 1)
+    yield from _emit_variable_dimensions(var, level + 1, phony_dimensions)
     yield from _emit_attributes(
         var.attributes, level + 1, excluded=("dims", "Maps", "path")
     )
