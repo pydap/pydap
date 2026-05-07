@@ -2,23 +2,36 @@
 <Dataset xmlns="http://xml.opendap.org/ns/DAP/4.0#" xml:base="http://localhost:8001" dapVersion="4.0" dmrVersion="1.0" name="example%20dataset">
     <Dimension name="time" size="1"/>
     <Dimension name="nv" size="2"/>
+    <Float32 name="time">
+        <Dim name="/time"/>
+        <Attribute name="standard_name" type="String">
+            <Value>time</Value>
+        </Attribute>
+        <Attribute name="bounds" type="String">
+            <Value>time_bnds</Value>
+        </Attribute>
+    </Float32>
+    <Float32 name="time_bnds">
+        <Dim name="/time"/>
+        <Dim name="/nv"/>
+    </Float32>
+    <Attribute name="Description" type="String">
+        <Value>A simple group for testing.</Value>
+    </Attribute>
     <Group name="SimpleGroup">
         <Dimension name="Y" size="4"/>
         <Dimension name="X" size="4"/>
-        <Attribute name="Description" type="str">
-            <Value>Test group with numerical data</Value>
-        </Attribute>
         <Float32 name="Temperature">
             <Dim name="/time"/>
             <Dim name="/SimpleGroup/Y"/>
             <Dim name="/SimpleGroup/X"/>
-            <Attribute name="units" type="str">
+            <Attribute name="units" type="String">
                 <Value>degrees_celsius</Value>
             </Attribute>
-            <Attribute name="_FillValue" type="float">
+            <Attribute name="_FillValue" type="Float64">
                 <Value>inf</Value>
             </Attribute>
-            <Attribute name="ValidRange" type="int">
+            <Attribute name="ValidRange" type="Int64">
                 <Value>-10</Value>
                 <Value>100</Value>
             </Attribute>
@@ -27,13 +40,13 @@
             <Dim name="/time"/>
             <Dim name="/SimpleGroup/Y"/>
             <Dim name="/SimpleGroup/X"/>
-            <Attribute name="units" type="str">
+            <Attribute name="units" type="String">
                 <Value>psu</Value>
             </Attribute>
-            <Attribute name="_FillValue" type="float">
+            <Attribute name="_FillValue" type="Float64">
                 <Value>nan</Value>
             </Attribute>
-            <Attribute name="ValidRange" type="float">
+            <Attribute name="ValidRange" type="Float64">
                 <Value>0.0</Value>
                 <Value>50.0</Value>
             </Attribute>
@@ -44,21 +57,8 @@
         <Int16 name="X">
             <Dim name="/SimpleGroup/X"/>
         </Int16>
+        <Attribute name="Description" type="String">
+            <Value>Test group with numerical data</Value>
+        </Attribute>
     </Group>
-    <Float32 name="time">
-        <Dim name="/time"/>
-        <Attribute name="standard_name" type="str">
-            <Value>time</Value>
-        </Attribute>
-        <Attribute name="bounds" type="str">
-            <Value>time_bnds</Value>
-        </Attribute>
-    </Float32>
-    <Float32 name="time_bnds">
-        <Dim name="/time"/>
-        <Dim name="/nv"/>
-    </Float32>
-    <Attribute name="Description" type="str">
-        <Value>A simple group for testing.</Value>
-    </Attribute>
 </Dataset>
