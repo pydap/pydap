@@ -4,6 +4,9 @@ channels:
 dependencies:
 - netcdf4
 - docopt-ng
+- pandas
+- openpyxl
+- xlrd
 - pip
 - pip:
   - pytest>=3.6
