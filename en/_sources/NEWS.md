@@ -1,6 +1,65 @@
 What's New
 ==========
 
+
+
+3.5.9
+------
+*Release date: 2026-March*
+
+* Update pre-commit hooks by @pre-commit-ci[bot] in #579
+* `get_cmr url`: enable seaching using version and shortname by @Mikejmnez in #580
+* Improve docs to use more Xarray and best practices by @Mikejmnez in #581
+* Minor fixes to docs by @Mikejmnez in #583
+* Replaces SimpleGroup.nc4.h5 testings with SimpleGroup3.nc4.h5 by @Mikejmnez in #585
+* Minor fix by @Mikejmnez in #586
+* skip tests for file no longer available on test server by @Mikejmnez in #588
+* No need to specify user_charset as encoding is part of dmr content by @Mikejmnez in #589
+* update how bytes are counted when deserializing String arrays by @Mikejmnez in #592
+* use some tds files for testing data with hierarchies by @Mikejmnez in #591
+* Update pre-commit hooks by @pre-commit-ci[bot] in #593
+* DMRPP parser to Pydap dataset model by @Mikejmnez in #594
+* add jinja2 to the list of dependencies by @malmans2 in #597
+* Deprecate batch=True|False when consolidating metadata by @Mikejmnez in #599
+* Bump actions/checkout from 5 to 6 by @dependabot[bot] in #600
+* Update pre-commit hooks by @pre-commit-ci[bot] in #601
+* Enable streaming a dap response into a netcdf4 by @Mikejmnez in #602
+* Add a retry when fetching dimension fails before returning error by @Mikejmnez in #604
+* Make sure workers are spawn as in macos and not forked as in Linu… by @Mikejmnez in #606
+* separate download of concat_dims before special key handling by @Mikejmnez in #610
+* Iss607 by @Mikejmnez in #608
+* Restore session and refactor by @Mikejmnez in #611
+* Change suffix of files to nc4 when storing dap responses as they deserialize by @Mikejmnez in #613
+* Enable passing keep_variables with no dim_slices defined by @Mikejmnez in #615
+* Update pre-commit hooks by @pre-commit-ci[bot] in #617
+* Enable initial support for structures and sequences in dap4 by @Mikejmnez in #618
+* bump up dmrVersion parsing to discern two deserialization approaches by @Mikejmnez in #619
+* fix issues with nested empty Groups by @Mikejmnez in #624
+* Enable phony dims when streaming data into file (netcdf4 requires named dims) by @Mikejmnez in #626
+* return unescaped variables by @Mikejmnez in #622
+* Static logo by @aaron-kaplan in #627
+* Set elements of valid_range to match those of ncvariable when writing a de-serialized dap response into a nc4 file by @Mikejmnez in #629
+* Iss630 by @Mikejmnez in #631
+* skip test by @Mikejmnez in #632
+* Remove warnings about how structures may be escaped/accessed in tree … by @Mikejmnez in #635
+* Iss620 by @Mikejmnez in #625
+* Update pre-commit hooks by @pre-commit-ci[bot] in #638
+* return groups with fqns when requested by @Mikejmnez in #640
+* Enable parsing Groups when no Variables (Atomic Types) are in the DMR by @Mikejmnez in #637
+* Pin jupyterbook by @Mikejmnez in #642
+* Restore using Processes when streaming dap responses in parallel by @Mikejmnez in #643
+* dmrpp: improvements by @Mikejmnez in #645
+* fix setting attrs to nc file by @Mikejmnez in #648
+* support inline/missing data value by @Mikejmnez in #649
+* Enable N dim_slices when streaming N dap responses by @Mikejmnez in #652
+* enable phony_dims within hierarchies / groups by @Mikejmnez in #654
+* Update pre-commit hooks by @pre-commit-ci[bot] in #655
+* fix: Force dmrVersion=2 for dap responses from Hyrax's ngap of a specific build when dmrpp is cached by @Mikejmnez in #657
+* Update dmrpp parser - bring contributions from virtualizarr by @Mikejmnez in #658
+* include inline entry to metadata dict only if there exist one by @Mikejmnez in #659
+* enable deserializing entire dap response with one or more String arrays by @Mikejmnez in #661
+
+
 3.5.8
 ------
 *Release date: 2025-Oct*

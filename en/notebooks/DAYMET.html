@@ -1,0 +1,923 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-EN2VD1J32L");
+</script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Access Precipitation data from DAYMET &#8212; PyDAP tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/DAYMET';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Access Land Surface Temperature Data From ECOSTRESS" href="Ecostress.html" />
+    <link rel="prev" title="Access Cloud and Aerosol Lidar CALIPSP Data from NASA Earthdata" href="CalipsoL2_access.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">How to install</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Get Started</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">5 Minute Tutorial</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="Authentication.html">Basic Authentication</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="netrc.html">Creating a .netrc file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="earthaccess.html">EDL Authentication via earthaccess</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalipsoL2_access.html">Access Cloud and Aerosol Lidar CALIPSP Data from NASA Earthdata</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Access Precipitation data from DAYMET</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="Ecostress.html">Access Land Surface Temperature Data From ECOSTRESS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPO_NRT.html">Access Near-Real-Time (NRT) Air Quality Data from TEMPO</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CMIP6.html">CMIP6</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MERRA2.html">MERRA-2 Data via NASA’s OPeNDAP in the Cloud.</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/download_speed.html">Pydap is slow. How can I improve the download time?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/diagnose_download_issues.html">How can I diagnose downloading issues?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">Is this a DAP2 or DAP4 URL?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_vs_dap4.html">Is there any benefit between requesting data via DAP4 over DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../PydapAsClient.html">PyDAP as a client</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DAP_Protocol.html">OPeNDAP DAP Protocol</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ConstraintExpressions.html">Constraint Expressions: Server-side Subsetting</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guide for Developer</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../guide_to_developer.html">Guide for new contributors</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/git.html">Guide to version control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_cod.html">Contributing to the code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_issues.html">Report Issues on GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_docs.html">Contributing to the documentation</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/DAYMET.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Access Precipitation data from DAYMET</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Access Precipitation data from DAYMET</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements"><span style="color:#ff6666"> <strong>Requirements</strong></span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives"><span style="color:#ff6666"><strong>Objectives</strong></span></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#subset-a-remote-file">Subset a remote file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#subset-multiple-remote-files">Subset multiple remote files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#references"><span style="color:#ff6666"> <strong>References</strong></span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#edl-authentication-via-earthaccess-and-opendap">EDL Authentication via earthaccess and OPeNDAP</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finding-opendap-urls">Finding OPeNDAP URLs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#query-opendap-urls-using-nasa-s-cmr-api">Query opendap urls using NASA’s CMR API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#further-filtering">Further filtering</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-metadata-only-with-pydap">Accessing Metadata-ONLY with PyDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatial-subset">Spatial Subset</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-pydap-download-data-from-one-file">Use PyDAP download data from One file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-the-indexes-that-define-the-area-of-interest">Find the indexes that define the area of interest</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#double-check-these-values-are-reasonable">Double check these values are reasonable</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-pydap-specific-parameters">Define pydap-specific parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#stream-and-deserialize-data">Stream and deserialize data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-data-locally">Inspect data locally</a></li>
+</ul>
+</li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="access-precipitation-data-from-daymet">
+<h1>Access Precipitation data from DAYMET<a class="headerlink" href="#access-precipitation-data-from-daymet" title="Link to this heading">#</a></h1>
+<p><img alt="daymet_diagram" src="../_images/OPeNDAP_Daymet_parallel.png" /></p>
+<p>This dataset provides annual climate summaries derived from Daymet Version 4 R1 daily data at a 1 km x 1 km spatial resolution for five Daymet variables: minimum and maximum temperature, precipitation, vapor pressure, and snow water equivalent. Annual averages are provided for minimum and maximum temperature, vapor pressure, and snow water equivalent, and annual totals are provided for the precipitation variable. The annual climatology files are derived from the larger datasets of daily weather parameters produced on a 1 km x 1 km grid for North America (including Canada, the United States, and Mexico), Hawaii, and Puerto Rico. Separate annual files are provided for the land areas of continental North America, Hawaii, and Puerto Rico. <strong>Source:</strong> <a class="reference external" href="https://www.earthdata.nasa.gov/data/catalog/ornl-cloud-daymet-annual-v4r1-2130-4.1">NASA Earthdata</a>.</p>
+<section id="requirements">
+<h2><span style='color:#ff6666'> <strong>Requirements</strong><a class="headerlink" href="#requirements" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>EDL authentication (username/password)</p></li>
+</ol>
+</section>
+<section id="objectives">
+<h2><span style='color:#ff6666'><strong>Objectives</strong><a class="headerlink" href="#objectives" title="Link to this heading">#</a></h2>
+<section id="subset-a-remote-file">
+<h3>Subset a remote file<a class="headerlink" href="#subset-a-remote-file" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>a)</strong> By Variables</p></li>
+<li><p><strong>b)</strong> By Spatial selection</p></li>
+</ul>
+</section>
+<section id="subset-multiple-remote-files">
+<h3>Subset multiple remote files<a class="headerlink" href="#subset-multiple-remote-files" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Stream subset of data</p></li>
+</ul>
+</section>
+<section id="references">
+<h3><span style='color:#ff6666'> <strong>References</strong><a class="headerlink" href="#references" title="Link to this heading">#</a></h3>
+<p><strong>Thornton, M. M., Shrestha, R., Wei, Y., Thornton, P. E., &amp; Kao, S.-C. (2022)</strong>. <i>Daymet: Annual Climate Summaries on a 1-km Grid for North America, Version 4 R1</i> (Version 4.1). ORNL Distributed Active Archive Center. <a class="reference external" href="https://doi.org/10.3334/ORNLDAAC/2130">https://doi.org/10.3334/ORNLDAAC/2130</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">earthaccess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># import pydap-specific tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_cmr_urls</span><span class="p">,</span> <span class="n">open_url</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_netcdf</span> <span class="k">as</span> <span class="n">dap_to_netcdf</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+</section>
+<section id="edl-authentication-via-earthaccess-and-opendap">
+<h3>EDL Authentication via earthaccess and OPeNDAP<a class="headerlink" href="#edl-authentication-via-earthaccess-and-opendap" title="Link to this heading">#</a></h3>
+<p>You can authenticate via earthaccess as demonstrated below. You must have a valid EDL account. There are two strategies for authenticating with <code class="docutils literal notranslate"><span class="pre">earthaccess</span></code>:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">strategy=&quot;interactive&quot;</span></code>. This will promt your edl username-password.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strategy=&quot;netrc&quot;</span></code>. Use this if the notebook is running on an environment where a <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> with your credentials is recoverable. T</p></li>
+</ol>
+<p>Below the default will be <code class="docutils literal notranslate"><span class="pre">netrc</span></code>, assuming the user has executed the notebook <strong>Authenticate.ipynb</strong>. If not, you can change the strategy to <code class="docutils literal notranslate"><span class="pre">&quot;interactive&quot;</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">earthaccess.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoginStrategyUnavailable</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">earthaccess</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;netrc&quot;</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># you will be promted to add your EDL credentials</span>
+<span class="k">except</span> <span class="n">LoginStrategyUnavailable</span><span class="p">:</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">earthaccess</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># pass Token Authorization to a new Session.</span>
+<span class="n">my_session</span> <span class="o">=</span> <span class="n">session</span><span class="o">=</span><span class="n">auth</span><span class="o">.</span><span class="n">get_session</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="finding-opendap-urls">
+<h2>Finding OPeNDAP URLs<a class="headerlink" href="#finding-opendap-urls" title="Link to this heading">#</a></h2>
+<section id="query-opendap-urls-using-nasa-s-cmr-api">
+<h3>Query opendap urls using NASA’s CMR API<a class="headerlink" href="#query-opendap-urls-using-nasa-s-cmr-api" title="Link to this heading">#</a></h3>
+<p>Must include:</p>
+<ul class="simple">
+<li><p>Concept collection ID of interest.</p></li>
+<li><p>Time range of interest (to filter from all possible results)</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">daymet_ccid</span> <span class="o">=</span> <span class="s2">&quot;C2531982907-ORNL_CLOUD&quot;</span> <span class="c1"># </span>
+<span class="n">time_range</span> <span class="o">=</span> <span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2014</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2024</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">15</span><span class="p">)]</span>
+
+<span class="n">cmr_urls</span> <span class="o">=</span> <span class="n">get_cmr_urls</span><span class="p">(</span><span class="n">ccid</span><span class="o">=</span><span class="n">daymet_ccid</span><span class="p">,</span> <span class="n">time_range</span><span class="o">=</span><span class="n">time_range</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="c1"># you can incread the limit of results</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;################################################ </span><span class="se">\n</span><span class="s2"> We found a total of &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cmr_urls</span><span class="p">),</span> <span class="s2">&quot;OPeNDAP URLS!!!</span><span class="se">\n</span><span class="s2">################################################&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>################################################ 
+ We found a total of  165 OPeNDAP URLS!!!
+################################################
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="further-filtering">
+<h3>Further filtering<a class="headerlink" href="#further-filtering" title="Link to this heading">#</a></h3>
+<p>The CMR returns all <code class="docutils literal notranslate"><span class="pre">precipitation</span></code> URLs from DAYMET. However, these are furthern split into three regions:</p>
+<ol class="arabic simple">
+<li><p>Hawaii</p></li>
+<li><p>Puerto Rico</p></li>
+<li><p>North America (Continental US).</p></li>
+</ol>
+<p>We need to further filter these opendap urls to only retain variables of interest. In this tutorial we are only interested in: <code class="docutils literal notranslate"><span class="pre">Continental</span> <span class="pre">US</span></code> we then need to select only the URLs ending with</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Daymet_Annual_V4R1.daymet_v4_prcp_annttl_na_</span></code></p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># filter url to only retain Annual Precip for North America</span>
+<span class="n">prcp_na_urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">url</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">cmr_urls</span> <span class="k">if</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.nc&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;Daymet_Annual_V4R1.daymet_v4_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;prcp_annttl_na&quot;</span><span class="p">)]</span>
+<span class="n">prcp_na_urls</span><span class="p">[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;https://opendap.earthdata.nasa.gov/collections/C2531982907-ORNL_CLOUD/granules/Daymet_Annual_V4R1.daymet_v4_prcp_annttl_na_2014.nc&#39;,
+ &#39;https://opendap.earthdata.nasa.gov/collections/C2531982907-ORNL_CLOUD/granules/Daymet_Annual_V4R1.daymet_v4_prcp_annttl_na_2015.nc&#39;,
+ &#39;https://opendap.earthdata.nasa.gov/collections/C2531982907-ORNL_CLOUD/granules/Daymet_Annual_V4R1.daymet_v4_prcp_annttl_na_2016.nc&#39;,
+ &#39;https://opendap.earthdata.nasa.gov/collections/C2531982907-ORNL_CLOUD/granules/Daymet_Annual_V4R1.daymet_v4_prcp_annttl_na_2017.nc&#39;,
+ &#39;https://opendap.earthdata.nasa.gov/collections/C2531982907-ORNL_CLOUD/granules/Daymet_Annual_V4R1.daymet_v4_prcp_annttl_na_2018.nc&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="accessing-metadata-only-with-pydap">
+<h2>Accessing Metadata-ONLY with PyDAP<a class="headerlink" href="#accessing-metadata-only-with-pydap" title="Link to this heading">#</a></h2>
+<p>We can access <span style='color:#ff6666'><strong>OPeNDAP</strong></span>-produced metadata to identify the variables of interest. In particular those associated with latitude and longitude values</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pyds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">prcp_na_urls</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;dap4&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">batch</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pyds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.daymet_v4_prcp_annttl_na_2014.nc
+├──y
+├──lon
+├──x
+├──time
+├──lat
+├──prcp
+├──time_bnds
+└──lambert_conformal_conic
+</pre></div>
+</div>
+</div>
+</div>
+<section id="spatial-subset">
+<h3>Spatial Subset<a class="headerlink" href="#spatial-subset" title="Link to this heading">#</a></h3>
+<p><font size="3.5"> WE are interested in a geographical area centered around MidAtlantic (US), defined by the bounding box</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bounding</span><span class="o">-</span><span class="n">box</span> <span class="o">=</span> <span class="p">[</span><span class="mf">36.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">80.3</span><span class="p">,</span> <span class="mf">40.5</span><span class="p">,</span> <span class="o">-</span><span class="mi">74</span><span class="p">]</span> <span class="c1"># Follows the format: [South, West, North, East]</span>
+</pre></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">lon_min</span><span class="p">,</span> <span class="n">lon_max</span> <span class="o">=</span> <span class="o">-</span><span class="mf">80.3</span><span class="p">,</span> <span class="o">-</span><span class="mi">74</span>
+<span class="n">lat_min</span><span class="p">,</span> <span class="n">lat_max</span> <span class="o">=</span> <span class="mf">36.5</span><span class="p">,</span> <span class="mf">40.5</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="use-pydap-download-data-from-one-file">
+<h2>Use PyDAP download data from One file<a class="headerlink" href="#use-pydap-download-data-from-one-file" title="Link to this heading">#</a></h2>
+<p><font size="3.5"> In the present case of Level 3 data, to identify the subset that defined our area of interest, it is sufficient to download the coordinate data from a single remote file. Below we use <strong>PyDAP</strong> to do that.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">time</span>
+<span class="n">lon</span> <span class="o">=</span> <span class="n">pyds</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span>
+<span class="n">lat</span> <span class="o">=</span> <span class="n">pyds</span><span class="p">[</span><span class="s2">&quot;lat&quot;</span><span class="p">][:]</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1e+03 ns, sys: 1 μs, total: 2 μs
+Wall time: 3.1 μs
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">lon</span><span class="p">,</span> <span class="n">lat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lon</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">lat</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 9.21 s, sys: 2.65 s, total: 11.9 s
+Wall time: 53.3 s
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;######################################## </span><span class="se">\n</span><span class="s2"> longitude array size:&quot;</span><span class="p">,</span> <span class="n">lon</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> ########################################&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>######################################## 
+ longitude array size: (8075, 7814) 
+ ########################################
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;######################################## </span><span class="se">\n</span><span class="s2"> latitude array size:&quot;</span><span class="p">,</span> <span class="n">lat</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> ########################################&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>######################################## 
+ latitude array size: (8075, 7814) 
+ ########################################
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="find-the-indexes-that-define-the-area-of-interest">
+<h2>Find the indexes that define the area of interest<a class="headerlink" href="#find-the-indexes-that-define-the-area-of-interest" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1) points that fall inside your lat/lon box</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="p">(</span><span class="n">lon</span> <span class="o">&gt;=</span> <span class="n">lon_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">lon</span> <span class="o">&lt;=</span> <span class="n">lon_max</span><span class="p">)</span> <span class="o">&amp;</span>
+    <span class="p">(</span><span class="n">lat</span> <span class="o">&gt;=</span> <span class="n">lat_min</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">lat</span> <span class="o">&lt;=</span> <span class="n">lat_max</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span>
+<span class="c1"># indexes below</span>
+<span class="n">y0</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">rows</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">rows</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+<span class="n">x0</span><span class="p">,</span> <span class="n">x1</span> <span class="o">=</span> <span class="n">cols</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">cols</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="double-check-these-values-are-reasonable">
+<h2>Double check these values are reasonable<a class="headerlink" href="#double-check-these-values-are-reasonable" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#################################################################################### </span><span class="se">\n</span><span class="s2"> Data download will span longitude values: [</span><span class="si">{</span><span class="n">lon</span><span class="p">[</span><span class="n">y0</span><span class="p">:</span><span class="n">y1</span><span class="p">,</span><span class="n">x0</span><span class="p">:</span><span class="n">x1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lon</span><span class="p">[</span><span class="n">y0</span><span class="p">:</span><span class="n">y1</span><span class="p">,</span><span class="n">x0</span><span class="p">:</span><span class="n">x1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s2">] </span><span class="se">\n</span><span class="s2">####################################################################################&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#################################################################################### 
+ Data download will span longitude values: [-81.41896057128906, -72.49678802490234] 
+####################################################################################
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;#################################################################################### </span><span class="se">\n</span><span class="s2"> Data download will span latitude values: [</span><span class="si">{</span><span class="n">lat</span><span class="p">[</span><span class="n">y0</span><span class="p">:</span><span class="n">y1</span><span class="p">,</span><span class="n">x0</span><span class="p">:</span><span class="n">x1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">min</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">lat</span><span class="p">[</span><span class="n">y0</span><span class="p">:</span><span class="n">y1</span><span class="p">,</span><span class="n">x0</span><span class="p">:</span><span class="n">x1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="si">}</span><span class="s2">] </span><span class="se">\n</span><span class="s2"> ####################################################################################&quot;</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>#################################################################################### 
+ Data download will span latitude values: [35.210548400878906, 41.76029968261719] 
+ ####################################################################################
+</pre></div>
+</div>
+</div>
+</div>
+<section id="define-pydap-specific-parameters">
+<h3>Define pydap-specific parameters<a class="headerlink" href="#define-pydap-specific-parameters" title="Link to this heading">#</a></h3>
+<p><font size="3.5"> These are needed to:</p>
+<ul class="simple">
+<li><p><font size="3.5"> Subset close to remote data (so only data of interest is downloaded)</p></li>
+<li><p><font size="3.5"> Define where to store data in local environment</p></li>
+</ul>
+<p><font size="3.5"> By default, if no parameter is defined, it will download the entire data and place it in the current directory</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dim_slices</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;/y&#39;</span><span class="p">:(</span><span class="n">y0</span><span class="p">,</span><span class="n">y1</span><span class="p">),</span> <span class="s1">&#39;/x&#39;</span><span class="p">:</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span><span class="n">x1</span><span class="p">)}</span> <span class="c1"># defines index to subset format: (first, last)</span>
+<span class="n">keep_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/time&quot;</span><span class="p">,</span> <span class="s2">&quot;/y&quot;</span><span class="p">,</span> <span class="s2">&quot;/x&quot;</span><span class="p">,</span> <span class="s2">&quot;/lon&quot;</span><span class="p">,</span> <span class="s2">&quot;/lat&quot;</span><span class="p">,</span> <span class="s2">&quot;/prcp&quot;</span><span class="p">]</span> <span class="c1"># variables to download</span>
+<span class="n">output_path</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="stream-and-deserialize-data">
+<h1>Stream and deserialize data<a class="headerlink" href="#stream-and-deserialize-data" title="Link to this heading">#</a></h1>
+<p><font size="3.5"> Pydap will store each remote file into is own individual file (each file will have the same name as that of the source file), instead of aggregating all the data. This is considerable safer (since not all data can be aggregated into single datacube), and enables parallelism.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">dap_to_netcdf</span><span class="p">(</span><span class="n">prcp_na_urls</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">output_path</span> <span class="o">=</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">dim_slices</span><span class="o">=</span><span class="n">dim_slices</span><span class="p">,</span> <span class="n">keep_variables</span><span class="o">=</span><span class="n">keep_vars</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 44.1 ms, sys: 104 ms, total: 148 ms
+Wall time: 10.7 s
+</pre></div>
+</div>
+</div>
+</div>
+<section id="inspect-data-locally">
+<h2>Inspect data locally<a class="headerlink" href="#inspect-data-locally" title="Link to this heading">#</a></h2>
+<p><font size="3.5"> Once in your local system, you can aggregate the files if needed. In this case all data can be aggregated and is considerable much easier to aggregate these locally, than remotely.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="s2">&quot;data/daymet_v4_prcp_annttl_na*&quot;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;nested&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 459 ms, sys: 157 ms, total: 616 ms
+Wall time: 638 ms
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;prcp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;matplotlib.collections.QuadMesh at 0x16adf7950&gt;
+</pre></div>
+</div>
+<img alt="../_images/1505d80ac4a3cb3d20bfff06e4b99e36e0a4d8e5a3c1f1e3e9ec305ee4fa06a5.png" src="../_images/1505d80ac4a3cb3d20bfff06e4b99e36e0a4d8e5a3c1f1e3e9ec305ee4fa06a5.png" />
+</div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="CalipsoL2_access.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Access Cloud and Aerosol Lidar CALIPSP Data from NASA Earthdata</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="Ecostress.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Access Land Surface Temperature Data From ECOSTRESS</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Access Precipitation data from DAYMET</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requirements"><span style="color:#ff6666"> <strong>Requirements</strong></span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objectives"><span style="color:#ff6666"><strong>Objectives</strong></span></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#subset-a-remote-file">Subset a remote file</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#subset-multiple-remote-files">Subset multiple remote files</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#references"><span style="color:#ff6666"> <strong>References</strong></span></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#edl-authentication-via-earthaccess-and-opendap">EDL Authentication via earthaccess and OPeNDAP</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#finding-opendap-urls">Finding OPeNDAP URLs</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#query-opendap-urls-using-nasa-s-cmr-api">Query opendap urls using NASA’s CMR API</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#further-filtering">Further filtering</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#accessing-metadata-only-with-pydap">Accessing Metadata-ONLY with PyDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatial-subset">Spatial Subset</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-pydap-download-data-from-one-file">Use PyDAP download data from One file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#find-the-indexes-that-define-the-area-of-interest">Find the indexes that define the area of interest</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#double-check-these-values-are-reasonable">Double check these values are reasonable</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#define-pydap-specific-parameters">Define pydap-specific parameters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#stream-and-deserialize-data">Stream and deserialize data</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspect-data-locally">Inspect data locally</a></li>
+</ul>
+</li>
+</ul>
+
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By OPeNDAP Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

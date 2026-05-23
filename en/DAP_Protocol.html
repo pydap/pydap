@@ -24,37 +24,40 @@ gtag("config", "G-EN2VD1J32L");
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -72,6 +75,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="prev" title="PyDAP as a client" href="PydapAsClient.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -87,19 +91,8 @@ gtag("config", "G-EN2VD1J32L");
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -107,7 +100,6 @@ gtag("config", "G-EN2VD1J32L");
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -115,8 +107,8 @@ gtag("config", "G-EN2VD1J32L");
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -132,7 +124,8 @@ gtag("config", "G-EN2VD1J32L");
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -162,21 +155,17 @@ gtag("config", "G-EN2VD1J32L");
     
     
     <img src="_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
-    <script>document.write(`<img src="_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+    <img src="_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
@@ -196,6 +185,11 @@ gtag("config", "G-EN2VD1J32L");
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CalipsoL2_access.html">Access Cloud and Aerosol Lidar CALIPSP Data from NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/DAYMET.html">Access Precipitation data from DAYMET</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Ecostress.html">Access Land Surface Temperature Data From ECOSTRESS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/TEMPO_NRT.html">Access Near-Real-Time (NRT) Air Quality Data from TEMPO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="notebooks/SWOT.html">SWOT</a></li>
@@ -246,9 +240,14 @@ gtag("config", "G-EN2VD1J32L");
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -331,7 +330,7 @@ gtag("config", "G-EN2VD1J32L");
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -345,25 +344,17 @@ gtag("config", "G-EN2VD1J32L");
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -450,6 +441,8 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
 </div>
 </div>
 <div class="cell docutils container">
@@ -653,8 +646,8 @@ check the names of the store variables like we would do with a Python dictionary
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 5.91 ms, sys: 3.43 ms, total: 9.33 ms
-Wall time: 267 ms
+CPU times: user 7.19 ms, sys: 2.68 ms, total: 9.88 ms
+Wall time: 225 ms
 </pre></div>
 </div>
 </div>
@@ -801,8 +794,8 @@ Wall time: 267 ms
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 7.36 ms, sys: 9.94 ms, total: 17.3 ms
-Wall time: 273 ms
+CPU times: user 10.3 ms, sys: 4.68 ms, total: 15 ms
+Wall time: 235 ms
 </pre></div>
 </div>
 </div>
@@ -833,8 +826,8 @@ Wall time: 273 ms
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 4.54 ms, sys: 3.51 ms, total: 8.05 ms
-Wall time: 170 ms
+CPU times: user 8.46 ms, sys: 1.77 ms, total: 10.2 ms
+Wall time: 186 ms
 </pre></div>
 </div>
 </div>
@@ -882,7 +875,7 @@ Wall time: 170 ms
    ├──Depth
    ├──Sea_Temp
    ├──Salinity
-   ├──DO%20
+   ├──DO 
    ├──pH
    ├──Turbidity
    ├──Air_Temp
@@ -918,72 +911,296 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.s
-├──trajectory
-├──wmo_id
-├──profile_id
-├──time
-├──latitude
-├──longitude
-├──depth
-├──conductivity
-├──conductivity_qc
-├──density
-├──density_qc
-├──depth_qc
-├──instrument_ctd
-├──lat_qc
-├──lat_uv
-├──lat_uv_qc
-├──lon_qc
-├──lon_uv
-├──lon_uv_qc
-├──platform_meta
-├──precise_lat
-├──precise_lon
-├──precise_time
-├──pressure
-├──pressure_qc
-├──profile_lat_qc
-├──profile_lon_qc
-├──profile_time_qc
-├──qartod_conductivity_flat_line_flag
-├──qartod_conductivity_gross_range_flag
-├──qartod_conductivity_primary_flag
-├──qartod_conductivity_rate_of_change_flag
-├──qartod_conductivity_spike_flag
-├──qartod_density_flat_line_flag
-├──qartod_density_gross_range_flag
-├──qartod_density_primary_flag
-├──qartod_density_rate_of_change_flag
-├──qartod_density_spike_flag
-├──qartod_location_test_flag
-├──qartod_pressure_flat_line_flag
-├──qartod_pressure_gross_range_flag
-├──qartod_pressure_primary_flag
-├──qartod_pressure_rate_of_change_flag
-├──qartod_pressure_spike_flag
-├──qartod_salinity_flat_line_flag
-├──qartod_salinity_gross_range_flag
-├──qartod_salinity_primary_flag
-├──qartod_salinity_rate_of_change_flag
-├──qartod_salinity_spike_flag
-├──qartod_temperature_flat_line_flag
-├──qartod_temperature_gross_range_flag
-├──qartod_temperature_primary_flag
-├──qartod_temperature_rate_of_change_flag
-├──qartod_temperature_spike_flag
-├──salinity
-├──salinity_qc
-├──temperature
-├──temperature_qc
-├──time_qc
-├──time_uv
-├──time_uv_qc
-├──u
-├──u_qc
-├──v
-└──v_qc
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyboardInterrupt</span><span class="g g-Whitespace">                         </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">27</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355&quot;</span><span class="p">)[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span> <span class="n">ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:179,</span> in <span class="ni">open_url</span><span class="nt">(url, application, session, output_grid, flat, timeout, verify, checksums, user_charset, protocol, batch, use_cache, session_kwargs, cache_kwargs, get_kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">172</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">session</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">173</span>     <span class="n">session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">174</span>         <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">175</span>         <span class="n">session_kwargs</span><span class="o">=</span><span class="n">session_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">176</span>         <span class="n">cache_kwargs</span><span class="o">=</span><span class="n">cache_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">177</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">179</span> <span class="n">handler</span> <span class="o">=</span> <span class="n">DAPHandler</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">180</span>     <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">181</span>     <span class="n">application</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">182</span>     <span class="n">session</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">183</span>     <span class="n">output_grid</span><span class="o">=</span><span class="n">output_grid</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">184</span>     <span class="n">flat</span><span class="o">=</span><span class="n">flat</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">185</span>     <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">186</span>     <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">187</span>     <span class="n">checksums</span><span class="o">=</span><span class="n">checksums</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">188</span>     <span class="n">user_charset</span><span class="o">=</span><span class="n">user_charset</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">189</span>     <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">190</span>     <span class="n">get_kwargs</span><span class="o">=</span><span class="n">get_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">191</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">192</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">handler</span><span class="o">.</span><span class="n">dataset</span>
+<span class="g g-Whitespace">    </span><span class="mi">193</span> <span class="n">dataset</span><span class="o">.</span><span class="n">_session</span> <span class="o">=</span> <span class="n">session</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/handlers/dap.py:163,</span> in <span class="ni">DAPHandler.__init__</span><span class="nt">(self, url, application, session, output_grid, flat, timeout, verify, checksums, user_charset, protocol, get_kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">154</span>     <span class="n">arg</span> <span class="o">=</span> <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">155</span>         <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">156</span>         <span class="bp">self</span><span class="o">.</span><span class="n">netloc</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">160</span>         <span class="bp">self</span><span class="o">.</span><span class="n">fragment</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">161</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">162</span>     <span class="bp">self</span><span class="o">.</span><span class="n">base_url</span> <span class="o">=</span> <span class="n">urlunparse</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">163</span>     <span class="bp">self</span><span class="o">.</span><span class="n">make_dataset</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">164</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_proxies</span><span class="p">()</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/handlers/dap.py:200,</span> in <span class="ni">DAPHandler.make_dataset</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">198</span>     <span class="bp">self</span><span class="o">.</span><span class="n">dataset_from_dap4</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">199</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">200</span>     <span class="bp">self</span><span class="o">.</span><span class="n">dataset_from_dap2</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">201</span>     <span class="bp">self</span><span class="o">.</span><span class="n">attach_das</span><span class="p">()</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/handlers/dap.py:241,</span> in <span class="ni">DAPHandler.dataset_from_dap2</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">229</span> <span class="k">def</span><span class="w"> </span><span class="nf">dataset_from_dap2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">230</span>     <span class="c1"># escape for certain characters</span>
+<span class="g g-Whitespace">    </span><span class="mi">231</span>     <span class="n">dds_url</span> <span class="o">=</span> <span class="n">urlunparse</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">232</span>         <span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">233</span>             <span class="bp">self</span><span class="o">.</span><span class="n">scheme</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">239</span>         <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">240</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">241</span>     <span class="n">r</span> <span class="o">=</span> <span class="n">GET</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">242</span>         <span class="n">dds_url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">243</span>         <span class="bp">self</span><span class="o">.</span><span class="n">application</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">244</span>         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">245</span>         <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">246</span>         <span class="n">verify</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">247</span>         <span class="n">get_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">248</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">250</span>     <span class="n">dds</span> <span class="o">=</span> <span class="n">safe_charset_text</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_charset</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">251</span>     <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dds_to_dataset</span><span class="p">(</span><span class="n">dds</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/net.py:74,</span> in <span class="ni">GET</span><span class="nt">(url, application, session, timeout, verify, use_cache, session_kwargs, cache_kwargs, get_kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">72</span>     <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">fragment</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">73</span>     <span class="n">url</span> <span class="o">=</span> <span class="n">urlunparse</span><span class="p">((</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">_quote</span><span class="p">(</span><span class="n">query</span><span class="p">),</span> <span class="n">fragment</span><span class="p">))</span>
+<span class="ne">---&gt; </span><span class="mi">74</span> <span class="n">res</span> <span class="o">=</span> <span class="n">create_request</span><span class="p">(</span>
+<span class="g g-Whitespace">     </span><span class="mi">75</span>     <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">76</span>     <span class="n">application</span><span class="o">=</span><span class="n">application</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">77</span>     <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">78</span>     <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">79</span>     <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">80</span>     <span class="n">session_kwargs</span><span class="o">=</span><span class="n">session_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">81</span>     <span class="n">cache_kwargs</span><span class="o">=</span><span class="n">cache_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">82</span>     <span class="n">get_kwargs</span><span class="o">=</span><span class="n">get_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">     </span><span class="mi">83</span> <span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">84</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">webob_Request</span><span class="p">):</span>
+<span class="g g-Whitespace">     </span><span class="mi">85</span>     <span class="n">res</span> <span class="o">=</span> <span class="n">get_response</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">application</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/net.py:172,</span> in <span class="ni">create_request</span><span class="nt">(url, application, timeout, verify, session, session_kwargs, cache_kwargs, get_kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">170</span> <span class="n">session_kwargs</span> <span class="o">=</span> <span class="n">session_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+<span class="g g-Whitespace">    </span><span class="mi">171</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">172</span>     <span class="n">req</span> <span class="o">=</span> <span class="n">get_request</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">173</span>         <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">174</span>         <span class="n">base_session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">175</span>         <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">176</span>         <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">177</span>         <span class="n">get_kwargs</span><span class="o">=</span><span class="n">get_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">178</span>         <span class="n">backend</span><span class="o">=</span><span class="n">cache_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;backend&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">179</span>         <span class="n">cache_name</span><span class="o">=</span><span class="n">cache_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;http-cache&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">180</span>         <span class="n">backend_options</span><span class="o">=</span><span class="n">cache_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;backend_options&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+<span class="g g-Whitespace">    </span><span class="mi">181</span>         <span class="n">cache_kwargs</span><span class="o">=</span><span class="n">cache_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">182</span>         <span class="n">session_kwargs</span><span class="o">=</span><span class="n">session_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">183</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">184</span>     <span class="n">req</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">185</span>     <span class="k">return</span> <span class="n">req</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/net.py:347,</span> in <span class="ni">get_request</span><span class="nt">(url, base_session, timeout, verify, get_kwargs, backend, cache_name, backend_options, cache_kwargs, session_kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">339</span>             <span class="n">req</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">340</span>                 <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">341</span>                 <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">344</span>                 <span class="o">**</span><span class="p">(</span><span class="n">get_kwargs</span> <span class="ow">or</span> <span class="p">{}),</span>
+<span class="g g-Whitespace">    </span><span class="mi">345</span>             <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">346</span>     <span class="k">else</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">347</span>         <span class="n">req</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">348</span>             <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">349</span>             <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">350</span>             <span class="n">verify</span><span class="o">=</span><span class="n">verify</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">351</span>             <span class="n">allow_redirects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">352</span>             <span class="o">**</span><span class="p">(</span><span class="n">get_kwargs</span> <span class="ow">or</span> <span class="p">{}),</span>
+<span class="g g-Whitespace">    </span><span class="mi">353</span>         <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">354</span> <span class="k">except</span> <span class="p">(</span><span class="ne">ConnectionError</span><span class="p">,</span> <span class="n">SSLError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">355</span>     <span class="c1"># some opendap servers do not support https, but they do support http.</span>
+<span class="g g-Whitespace">    </span><span class="mi">356</span>     <span class="n">parsed</span> <span class="o">=</span> <span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/sessions.py:671,</span> in <span class="ni">Session.get</span><span class="nt">(self, url, params, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">661</span><span class="w"> </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sends a GET request. Returns :class:`Response` object.</span>
+<span class="g g-Whitespace">    </span><span class="mi">662</span><span class="sd"> </span>
+<span class="g g-Whitespace">    </span><span class="mi">663</span><span class="sd"> :param url: URL for the new :class:`Request` object.</span>
+<span class="sd">   (...)    667 :rtype: requests.Response</span>
+<span class="g g-Whitespace">    </span><span class="mi">668</span><span class="sd"> &quot;&quot;&quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">670</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s2">&quot;allow_redirects&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">671</span> <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/sessions.py:651,</span> in <span class="ni">Session.request</span><span class="nt">(self, method, url, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)</span>
+<span class="g g-Whitespace">    </span><span class="mi">646</span> <span class="n">send_kwargs</span> <span class="o">=</span> <span class="p">{</span>
+<span class="g g-Whitespace">    </span><span class="mi">647</span>     <span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">648</span>     <span class="s2">&quot;allow_redirects&quot;</span><span class="p">:</span> <span class="n">allow_redirects</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">649</span> <span class="p">}</span>
+<span class="g g-Whitespace">    </span><span class="mi">650</span> <span class="n">send_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">651</span> <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">prep</span><span class="p">,</span> <span class="o">**</span><span class="n">send_kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">653</span> <span class="k">return</span> <span class="n">resp</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/sessions.py:784,</span> in <span class="ni">Session.send</span><span class="nt">(self, request, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">781</span> <span class="n">start</span> <span class="o">=</span> <span class="n">preferred_clock</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">783</span> <span class="c1"># Send the request</span>
+<span class="ne">--&gt; </span><span class="mi">784</span> <span class="n">r</span> <span class="o">=</span> <span class="n">adapter</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">786</span> <span class="c1"># Total elapsed time of the request (approximately)</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="n">elapsed</span> <span class="o">=</span> <span class="n">preferred_clock</span><span class="p">()</span> <span class="o">-</span> <span class="n">start</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/adapters.py:696,</span> in <span class="ni">HTTPAdapter.send</span><span class="nt">(self, request, stream, timeout, verify, cert, proxies)</span>
+<span class="g g-Whitespace">    </span><span class="mi">693</span>     <span class="n">resolved_timeout</span> <span class="o">=</span> <span class="n">TimeoutSauce</span><span class="p">(</span><span class="n">connect</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span> <span class="n">read</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">695</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">696</span>     <span class="n">resp</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">697</span>         <span class="n">method</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">698</span>         <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">699</span>         <span class="n">body</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]  # urllib3 stubs don&#39;t accept Iterable[bytes | str]</span>
+<span class="g g-Whitespace">    </span><span class="mi">700</span>         <span class="n">headers</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">,</span>  <span class="c1"># type: ignore[arg-type]  # urllib3#3072</span>
+<span class="g g-Whitespace">    </span><span class="mi">701</span>         <span class="n">redirect</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">702</span>         <span class="n">assert_same_host</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">703</span>         <span class="n">preload_content</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">704</span>         <span class="n">decode_content</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">705</span>         <span class="n">retries</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_retries</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">706</span>         <span class="n">timeout</span><span class="o">=</span><span class="n">resolved_timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">707</span>         <span class="n">chunked</span><span class="o">=</span><span class="n">chunked</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">708</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">710</span> <span class="k">except</span> <span class="p">(</span><span class="n">ProtocolError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">711</span>     <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="n">err</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/connectionpool.py:872,</span> in <span class="ni">HTTPConnectionPool.urlopen</span><span class="nt">(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)</span>
+<span class="g g-Whitespace">    </span><span class="mi">867</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">conn</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">868</span>     <span class="c1"># Try again</span>
+<span class="g g-Whitespace">    </span><span class="mi">869</span>     <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">870</span>         <span class="s2">&quot;Retrying (</span><span class="si">%r</span><span class="s2">) after connection broken by &#39;</span><span class="si">%r</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">retries</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">url</span>
+<span class="g g-Whitespace">    </span><span class="mi">871</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">872</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">873</span>         <span class="n">method</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">874</span>         <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">875</span>         <span class="n">body</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">876</span>         <span class="n">headers</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">877</span>         <span class="n">retries</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">878</span>         <span class="n">redirect</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">879</span>         <span class="n">assert_same_host</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">880</span>         <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">881</span>         <span class="n">pool_timeout</span><span class="o">=</span><span class="n">pool_timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">882</span>         <span class="n">release_conn</span><span class="o">=</span><span class="n">release_conn</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">883</span>         <span class="n">chunked</span><span class="o">=</span><span class="n">chunked</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">884</span>         <span class="n">body_pos</span><span class="o">=</span><span class="n">body_pos</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">885</span>         <span class="n">preload_content</span><span class="o">=</span><span class="n">preload_content</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">886</span>         <span class="n">decode_content</span><span class="o">=</span><span class="n">decode_content</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">887</span>         <span class="o">**</span><span class="n">response_kw</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">888</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">890</span> <span class="c1"># Handle redirect?</span>
+<span class="g g-Whitespace">    </span><span class="mi">891</span> <span class="n">redirect_location</span> <span class="o">=</span> <span class="n">redirect</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get_redirect_location</span><span class="p">()</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/connectionpool.py:872,</span> in <span class="ni">HTTPConnectionPool.urlopen</span><span class="nt">(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)</span>
+<span class="g g-Whitespace">    </span><span class="mi">867</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">conn</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">868</span>     <span class="c1"># Try again</span>
+<span class="g g-Whitespace">    </span><span class="mi">869</span>     <span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">870</span>         <span class="s2">&quot;Retrying (</span><span class="si">%r</span><span class="s2">) after connection broken by &#39;</span><span class="si">%r</span><span class="s2">&#39;: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">retries</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">url</span>
+<span class="g g-Whitespace">    </span><span class="mi">871</span>     <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">872</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">873</span>         <span class="n">method</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">874</span>         <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">875</span>         <span class="n">body</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">876</span>         <span class="n">headers</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">877</span>         <span class="n">retries</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">878</span>         <span class="n">redirect</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">879</span>         <span class="n">assert_same_host</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">880</span>         <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">881</span>         <span class="n">pool_timeout</span><span class="o">=</span><span class="n">pool_timeout</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">882</span>         <span class="n">release_conn</span><span class="o">=</span><span class="n">release_conn</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">883</span>         <span class="n">chunked</span><span class="o">=</span><span class="n">chunked</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">884</span>         <span class="n">body_pos</span><span class="o">=</span><span class="n">body_pos</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">885</span>         <span class="n">preload_content</span><span class="o">=</span><span class="n">preload_content</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">886</span>         <span class="n">decode_content</span><span class="o">=</span><span class="n">decode_content</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">887</span>         <span class="o">**</span><span class="n">response_kw</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">888</span>     <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">890</span> <span class="c1"># Handle redirect?</span>
+<span class="g g-Whitespace">    </span><span class="mi">891</span> <span class="n">redirect_location</span> <span class="o">=</span> <span class="n">redirect</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">get_redirect_location</span><span class="p">()</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/connectionpool.py:788,</span> in <span class="ni">HTTPConnectionPool.urlopen</span><span class="nt">(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)</span>
+<span class="g g-Whitespace">    </span><span class="mi">785</span> <span class="n">response_conn</span> <span class="o">=</span> <span class="n">conn</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">release_conn</span> <span class="k">else</span> <span class="kc">None</span>
+<span class="g g-Whitespace">    </span><span class="mi">787</span> <span class="c1"># Make the request on the HTTPConnection object</span>
+<span class="ne">--&gt; </span><span class="mi">788</span> <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_request</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">789</span>     <span class="n">conn</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">790</span>     <span class="n">method</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">791</span>     <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">792</span>     <span class="n">timeout</span><span class="o">=</span><span class="n">timeout_obj</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">793</span>     <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">794</span>     <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">795</span>     <span class="n">chunked</span><span class="o">=</span><span class="n">chunked</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">796</span>     <span class="n">retries</span><span class="o">=</span><span class="n">retries</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">797</span>     <span class="n">response_conn</span><span class="o">=</span><span class="n">response_conn</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">798</span>     <span class="n">preload_content</span><span class="o">=</span><span class="n">preload_content</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">799</span>     <span class="n">decode_content</span><span class="o">=</span><span class="n">decode_content</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">800</span>     <span class="o">**</span><span class="n">response_kw</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">801</span> <span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">803</span> <span class="c1"># Everything went great!</span>
+<span class="g g-Whitespace">    </span><span class="mi">804</span> <span class="n">clean_exit</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/connectionpool.py:534,</span> in <span class="ni">HTTPConnectionPool._make_request</span><span class="nt">(self, conn, method, url, body, headers, retries, timeout, chunked, response_conn, preload_content, decode_content, enforce_content_length)</span>
+<span class="g g-Whitespace">    </span><span class="mi">532</span> <span class="c1"># Receive the response from the server</span>
+<span class="g g-Whitespace">    </span><span class="mi">533</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">534</span>     <span class="n">response</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">535</span> <span class="k">except</span> <span class="p">(</span><span class="n">BaseSSLError</span><span class="p">,</span> <span class="ne">OSError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">536</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_raise_timeout</span><span class="p">(</span><span class="n">err</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">timeout_value</span><span class="o">=</span><span class="n">read_timeout</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/connection.py:571,</span> in <span class="ni">HTTPConnection.getresponse</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">568</span> <span class="n">_shutdown</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sock</span><span class="p">,</span> <span class="s2">&quot;shutdown&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">570</span> <span class="c1"># Get the response from http.client.HTTPConnection</span>
+<span class="ne">--&gt; </span><span class="mi">571</span> <span class="n">httplib_response</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">573</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">574</span>     <span class="n">assert_header_parsing</span><span class="p">(</span><span class="n">httplib_response</span><span class="o">.</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/http/client.py:1415,</span> in <span class="ni">HTTPConnection.getresponse</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1413</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1414</span>     <span class="k">try</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1415</span>         <span class="n">response</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1416</span>     <span class="k">except</span> <span class="ne">ConnectionError</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1417</span>         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/http/client.py:330,</span> in <span class="ni">HTTPResponse.begin</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">328</span> <span class="c1"># read until we get a non-100 response</span>
+<span class="g g-Whitespace">    </span><span class="mi">329</span> <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">330</span>     <span class="n">version</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">reason</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read_status</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">331</span>     <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">CONTINUE</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">332</span>         <span class="k">break</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/http/client.py:291,</span> in <span class="ni">HTTPResponse._read_status</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">290</span> <span class="k">def</span><span class="w"> </span><span class="nf">_read_status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">291</span>     <span class="n">line</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fp</span><span class="o">.</span><span class="n">readline</span><span class="p">(</span><span class="n">_MAXLINE</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;iso-8859-1&quot;</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">292</span>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_MAXLINE</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">293</span>         <span class="k">raise</span> <span class="n">LineTooLong</span><span class="p">(</span><span class="s2">&quot;status line&quot;</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/socket.py:718,</span> in <span class="ni">SocketIO.readinto</span><span class="nt">(self, b)</span>
+<span class="g g-Whitespace">    </span><span class="mi">716</span> <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">717</span>     <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">718</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sock</span><span class="o">.</span><span class="n">recv_into</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">719</span>     <span class="k">except</span> <span class="n">timeout</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">720</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_timeout_occurred</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/ssl.py:1314,</span> in <span class="ni">SSLSocket.recv_into</span><span class="nt">(self, buffer, nbytes, flags)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1310</span>     <span class="k">if</span> <span class="n">flags</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1311</span>         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+<span class="g g-Whitespace">   </span><span class="mi">1312</span>           <span class="s2">&quot;non-zero flags not allowed in calls to recv_into() on </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span>
+<span class="g g-Whitespace">   </span><span class="mi">1313</span>           <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+<span class="ne">-&gt; </span><span class="mi">1314</span>     <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">nbytes</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1315</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1316</span>     <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">recv_into</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">nbytes</span><span class="p">,</span> <span class="n">flags</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/ssl.py:1166,</span> in <span class="ni">SSLSocket.read</span><span class="nt">(self, len, buffer)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1164</span> <span class="k">try</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1165</span>     <span class="k">if</span> <span class="n">buffer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1166</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sslobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">len</span><span class="p">,</span> <span class="n">buffer</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1167</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1168</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sslobj</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="nb">len</span><span class="p">)</span>
+
+<span class="ne">KeyboardInterrupt</span>: 
 </pre></div>
 </div>
 </div>
@@ -995,209 +1212,11 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pydap.model.SequenceType
-</pre></div>
-</div>
-</div>
 </div>
 <p>We can further identify each individual glider data by looking at <code class="docutils literal notranslate"><span class="pre">profile_id</span></code>, a value that is unique for each of them. You can inspect the raw values are follows</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="nb">id</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iterdata</span><span class="p">()]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int32(1),
- np.int32(2),
- np.int32(3),
- np.int32(4),
- np.int32(5),
- np.int32(6),
- np.int32(7),
- np.int32(8),
- np.int32(9),
- np.int32(10),
- np.int32(11),
- np.int32(12),
- np.int32(13),
- np.int32(14),
- np.int32(15),
- np.int32(16),
- np.int32(17),
- np.int32(18),
- np.int32(19),
- np.int32(20),
- np.int32(21),
- np.int32(22),
- np.int32(23),
- np.int32(24),
- np.int32(25),
- np.int32(26),
- np.int32(27),
- np.int32(28),
- np.int32(29),
- np.int32(30),
- np.int32(31),
- np.int32(32),
- np.int32(33),
- np.int32(34),
- np.int32(35),
- np.int32(36),
- np.int32(37),
- np.int32(38),
- np.int32(39),
- np.int32(40),
- np.int32(41),
- np.int32(42),
- np.int32(43),
- np.int32(44),
- np.int32(45),
- np.int32(46),
- np.int32(47),
- np.int32(48),
- np.int32(49),
- np.int32(50),
- np.int32(51),
- np.int32(52),
- np.int32(53),
- np.int32(54),
- np.int32(55),
- np.int32(56),
- np.int32(57),
- np.int32(58),
- np.int32(59),
- np.int32(60),
- np.int32(61),
- np.int32(62),
- np.int32(63),
- np.int32(64),
- np.int32(65),
- np.int32(66),
- np.int32(67),
- np.int32(68),
- np.int32(69),
- np.int32(70),
- np.int32(71),
- np.int32(72),
- np.int32(73),
- np.int32(74),
- np.int32(75),
- np.int32(76),
- np.int32(77),
- np.int32(78),
- np.int32(79),
- np.int32(80),
- np.int32(81),
- np.int32(82),
- np.int32(83),
- np.int32(84),
- np.int32(85),
- np.int32(86),
- np.int32(87),
- np.int32(88),
- np.int32(89),
- np.int32(90),
- np.int32(91),
- np.int32(92),
- np.int32(93),
- np.int32(94),
- np.int32(95),
- np.int32(96),
- np.int32(97),
- np.int32(98),
- np.int32(99),
- np.int32(100),
- np.int32(101),
- np.int32(102),
- np.int32(103),
- np.int32(104),
- np.int32(105),
- np.int32(106),
- np.int32(107),
- np.int32(108),
- np.int32(109),
- np.int32(110),
- np.int32(111),
- np.int32(112),
- np.int32(113),
- np.int32(114),
- np.int32(115),
- np.int32(116),
- np.int32(117),
- np.int32(118),
- np.int32(119),
- np.int32(120),
- np.int32(121),
- np.int32(122),
- np.int32(123),
- np.int32(124),
- np.int32(125),
- np.int32(126),
- np.int32(127),
- np.int32(128),
- np.int32(129),
- np.int32(130),
- np.int32(131),
- np.int32(132),
- np.int32(133),
- np.int32(134),
- np.int32(135),
- np.int32(136),
- np.int32(137),
- np.int32(138),
- np.int32(139),
- np.int32(140),
- np.int32(141),
- np.int32(142),
- np.int32(143),
- np.int32(144),
- np.int32(145),
- np.int32(146),
- np.int32(147),
- np.int32(148),
- np.int32(149),
- np.int32(150),
- np.int32(151),
- np.int32(152),
- np.int32(153),
- np.int32(154),
- np.int32(155),
- np.int32(156),
- np.int32(157),
- np.int32(158),
- np.int32(159),
- np.int32(160),
- np.int32(161),
- np.int32(162),
- np.int32(163),
- np.int32(164),
- np.int32(165),
- np.int32(166),
- np.int32(167),
- np.int32(168),
- np.int32(169),
- np.int32(170),
- np.int32(171),
- np.int32(172),
- np.int32(173),
- np.int32(174),
- np.int32(175),
- np.int32(176),
- np.int32(177),
- np.int32(178),
- np.int32(179),
- np.int32(180),
- np.int32(181),
- np.int32(182),
- np.int32(183),
- np.int32(184),
- np.int32(185),
- np.int32(186),
- np.int32(187),
- np.int32(188),
- np.int32(189)]
 </pre></div>
 </div>
 </div>
@@ -1213,18 +1232,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_FillValue&#39;: -1,
- &#39;actual_range&#39;: [1, 189],
- &#39;cf_role&#39;: &#39;profile_id&#39;,
- &#39;comment&#39;: &#39;Sequential profile number within the trajectory.  This value is unique in each file that is part of a single trajectory/deployment.&#39;,
- &#39;ioos_category&#39;: &#39;Identifier&#39;,
- &#39;long_name&#39;: &#39;Profile ID&#39;,
- &#39;valid_max&#39;: 2147483647,
- &#39;valid_min&#39;: 1}
-</pre></div>
-</div>
-</div>
 </div>
 <p>The first thing we’d like to do is limit our very simple analysis. We consider only a single glider and only inspect the variables <code class="docutils literal notranslate"><span class="pre">depth</span></code> and <code class="docutils literal notranslate"><span class="pre">temperature</span></code>. This is simlar to <code class="docutils literal notranslate"><span class="pre">column-wise</span> <span class="pre">selection</span></code>.</p>
 <p>To accomplish that we use pydap’s simple logic as follows</p>
@@ -1233,15 +1240,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seq</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)]</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
 <span class="n">seq</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;pydap.model.SequenceType&#39;&gt;
-.s
-├──profile_id
-├──depth
-└──temperature
 </pre></div>
 </div>
 </div>
@@ -1255,11 +1253,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">glid5</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)][</span><span class="n">seq</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">==</span><span class="mi">5</span><span class="p">]</span>
 <span class="n">glid5</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;SequenceType with children &#39;profile_id&#39;, &#39;depth&#39;, &#39;temperature&#39;&gt;
 </pre></div>
 </div>
 </div>
@@ -1293,9 +1286,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/bbf620bf4240db25c29c8c64221eee4b8addb8b3fd829588cd75b67dd1c65dbf.png" src="_images/bbf620bf4240db25c29c8c64221eee4b8addb8b3fd829588cd75b67dd1c65dbf.png" />
 </div>
 </div>
 <div class="admonition warning">
@@ -1422,14 +1412,16 @@ like in the <a class="reference internal" href="#cas"><span class="xref myst">CA
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#groups">Groups</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arrays-grids">Arrays / Grids</a><ul class="nav section-nav flex-column">
@@ -1491,8 +1483,8 @@ By OPeNDAP Community
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

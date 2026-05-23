@@ -24,37 +24,40 @@ gtag("config", "G-EN2VD1J32L");
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="../_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="../_static/doctools.js?v=9a2dae69"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../_static/copybutton.js?v=f281be69"></script>
-    <script src="../_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -72,6 +75,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="prev" title="ECCOv4 access via NASA’s OPeNDAP in the Cloud." href="ECCO.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -87,19 +91,8 @@ gtag("config", "G-EN2VD1J32L");
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="../search.html"
       method="get">
@@ -107,7 +100,6 @@ gtag("config", "G-EN2VD1J32L");
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -115,8 +107,8 @@ gtag("config", "G-EN2VD1J32L");
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -132,7 +124,8 @@ gtag("config", "G-EN2VD1J32L");
       
       
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -162,21 +155,17 @@ gtag("config", "G-EN2VD1J32L");
     
     
     <img src="../_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
-    <script>document.write(`<img src="../_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
@@ -196,6 +185,11 @@ gtag("config", "G-EN2VD1J32L");
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalipsoL2_access.html">Access Cloud and Aerosol Lidar CALIPSP Data from NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DAYMET.html">Access Precipitation data from DAYMET</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="Ecostress.html">Access Land Surface Temperature Data From ECOSTRESS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPO_NRT.html">Access Near-Real-Time (NRT) Air Quality Data from TEMPO</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ECCO.html">ECCOv4 access via NASA’s OPeNDAP in the Cloud.</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">PACE Chlorophyll A data over a region in the NorthAtlantic Ocean</a></li>
 <li class="toctree-l1"><a class="reference internal" href="SWOT.html">SWOT</a></li>
@@ -246,9 +240,14 @@ gtag("config", "G-EN2VD1J32L");
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -331,7 +330,7 @@ gtag("config", "G-EN2VD1J32L");
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -345,25 +344,17 @@ gtag("config", "G-EN2VD1J32L");
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -388,7 +379,6 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-a-session-as-a-metadata-database-and-authentication">Use a Session as a Metadata Database and Authentication</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#query-cmr-for-opendap-urls">Query CMR for OPeNDAP URLs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consolidate-metadata-aggregation">Consolidate metadata aggregation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-single-dataset-object">Create a single Dataset object</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-proximate-subsetting-how-to-with-opendap-pydap-and-xarray">Data-proximate subsetting: How to with OPeNDAP, Pydap, and Xarray?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#identify-spatial-subset">Identify spatial subset</a></li>
@@ -454,7 +444,7 @@ document.write(`
 <p>Below we initialize the session, inheriting auth credentials from earthaccess, and point to local database <code class="docutils literal notranslate"><span class="pre">PACE.sqlite</span></code> store in the <code class="docutils literal notranslate"><span class="pre">/data</span></code> folder</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">auth</span> <span class="o">=</span> <span class="n">earthaccess</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">auth</span> <span class="o">=</span> <span class="n">earthaccess</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;netrc&quot;</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">earthaccess</span><span class="o">.</span><span class="n">get_requests_https_session</span><span class="p">(),</span> <span class="n">cache_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cache_name&#39;</span><span class="p">:</span> <span class="s1">&#39;data/PACE&#39;</span><span class="p">})</span>
 <span class="n">session</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 </pre></div>
@@ -519,28 +509,9 @@ document.write(`
 </div>
 </div>
 </div>
-</section>
-<section id="consolidate-metadata-aggregation">
-<h2>Consolidate metadata aggregation<a class="headerlink" href="#consolidate-metadata-aggregation" title="Link to this heading">#</a></h2>
-<p>In here, the dimensions and some metadata is eagerly download. This step is not necessary but provides a major boost in the performance when using pydap  as a backend of xarray.</p>
-<p>The metadata is stored as sqlite, and can persist through sessions.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This collection only defines the time dimension (or coordinate) in the metadata. Because there is no  variable in the remote file associated with the time coordinate, there is no need to define a concatenating dimension (<code class="docutils literal notranslate"><span class="pre">concat_dim</span></code>) when running the code below. Almost always there is a <code class="docutils literal notranslate"><span class="pre">concat_dim</span></code>, but not in this special case.</p>
-</div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
-<span class="n">consolidate_metadata</span><span class="p">(</span><span class="n">pace_urls</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>datacube has dimensions [&#39;lat[0:1:4319]&#39;, &#39;lon[0:1:8639]&#39;] , and concat dim: `None`
-</pre></div>
-</div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 742 ms, sys: 133 ms, total: 875 ms
-Wall time: 2.34 s
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">session</span><span class="o">=</span><span class="n">create_session</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -564,8 +535,8 @@ Wall time: 2.34 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.09 s, sys: 403 ms, total: 1.49 s
-Wall time: 1.85 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.88 s, sys: 239 ms, total: 2.12 s
+Wall time: 6.09 s
 </pre></div>
 </div>
 </div>
@@ -592,9 +563,7 @@ Wall time: 1.85 s
 </symbol>
 </defs>
 </svg>
-<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
- *
- */
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
 
 :root {
   --xr-font-color0: var(
@@ -673,6 +642,8 @@ body.vscode-dark {
   display: block !important;
   min-width: 300px;
   max-width: 700px;
+  line-height: 1.6;
+  padding-bottom: 4px;
 }
 
 .xr-text-repr-fallback {
@@ -683,8 +654,11 @@ body.vscode-dark {
 .xr-header {
   padding-top: 6px;
   padding-bottom: 6px;
-  margin-bottom: 4px;
+}
+
+.xr-header {
   border-bottom: solid 1px var(--xr-border-color);
+  margin-bottom: 4px;
 }
 
 .xr-header > div,
@@ -695,46 +669,62 @@ body.vscode-dark {
 }
 
 .xr-obj-type,
-.xr-array-name {
+.xr-obj-name {
   margin-left: 2px;
   margin-right: 10px;
 }
 
-.xr-obj-type {
+.xr-obj-type,
+.xr-group-box-contents > label {
   color: var(--xr-font-color2);
+  display: block;
 }
 
 .xr-sections {
   padding-left: 0 !important;
   display: grid;
   grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 .xr-section-item {
   display: contents;
 }
 
-.xr-section-item input {
-  display: inline-block;
+.xr-section-item > input,
+.xr-group-box-contents > input,
+.xr-array-wrap > input {
+  display: block;
   opacity: 0;
   height: 0;
+  margin: 0;
 }
 
-.xr-section-item input + label {
+.xr-section-item > input + label,
+.xr-var-item > input + label {
   color: var(--xr-disabled-color);
-  border: 2px solid transparent !important;
 }
 
-.xr-section-item input:enabled + label {
+.xr-section-item > input:enabled + label,
+.xr-var-item > input:enabled + label,
+.xr-array-wrap > input:enabled + label,
+.xr-group-box-contents > input:enabled + label {
   cursor: pointer;
   color: var(--xr-font-color2);
 }
 
-.xr-section-item input:focus + label {
-  border: 2px solid var(--xr-font-color0) !important;
+.xr-section-item > input:focus-visible + label,
+.xr-var-item > input:focus-visible + label,
+.xr-array-wrap > input:focus-visible + label,
+.xr-group-box-contents > input:focus-visible + label {
+  outline: auto;
 }
 
-.xr-section-item input:enabled + label:hover {
+.xr-section-item > input:enabled + label:hover,
+.xr-var-item > input:enabled + label:hover,
+.xr-array-wrap > input:enabled + label:hover,
+.xr-group-box-contents > input:enabled + label:hover {
   color: var(--xr-font-color0);
 }
 
@@ -742,11 +732,25 @@ body.vscode-dark {
   grid-column: 1;
   color: var(--xr-font-color2);
   font-weight: 500;
+  white-space: nowrap;
+}
+
+.xr-section-summary > em {
+  font-weight: normal;
+}
+
+.xr-span-grid {
+  grid-column-end: -1;
 }
 
 .xr-section-summary > span {
   display: inline-block;
-  padding-left: 0.5em;
+  padding-left: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label > span {
+  display: inline-block;
+  padding-left: 0.6em;
 }
 
 .xr-section-summary-in:disabled + label {
@@ -774,9 +778,9 @@ body.vscode-dark {
 }
 
 .xr-section-summary,
-.xr-section-inline-details {
+.xr-section-inline-details,
+.xr-group-box-contents > label {
   padding-top: 4px;
-  padding-bottom: 4px;
 }
 
 .xr-section-inline-details {
@@ -784,13 +788,79 @@ body.vscode-dark {
 }
 
 .xr-section-details {
-  display: none;
   grid-column: 1 / -1;
+  margin-top: 4px;
   margin-bottom: 5px;
+}
+
+.xr-section-summary-in ~ .xr-section-details {
+  display: none;
 }
 
 .xr-section-summary-in:checked ~ .xr-section-details {
   display: contents;
+}
+
+.xr-children {
+  display: inline-grid;
+  grid-template-columns: 100%;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 30px auto;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 26px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+  padding-bottom: 4px;
+}
+
+.xr-group-box-contents > label::before {
+  content: "📂";
+  padding-right: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label::before {
+  content: "📁";
+}
+
+.xr-group-box-contents > input:checked + label {
+  padding-bottom: 0px;
+}
+
+.xr-group-box-contents > input:checked ~ .xr-sections {
+  display: none;
+}
+
+.xr-group-box-contents > input + label > span {
+  display: none;
+}
+
+.xr-group-box-ellipsis {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--xr-font-color2);
+  letter-spacing: 0.15em;
+  cursor: default;
 }
 
 .xr-array-wrap {
@@ -1041,9 +1111,9 @@ Attributes: (12/64)
     keywords_vocabulary:               NASA Global Change Master Directory (G...
     data_bins:                         Attribute elided: Unsupported attribut...
     data_minimum:                      0.0134539828
-    data_maximum:                      15.9237003</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-921fe676-501f-4733-8645-6e5cc32e5c7a' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-921fe676-501f-4733-8645-6e5cc32e5c7a' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>time</span>: 32</li><li><span class='xr-has-index'>lat</span>: 4320</li><li><span class='xr-has-index'>lon</span>: 8640</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-b77f5fc7-0a37-4059-8a38-9fbba5bc0514' class='xr-section-summary-in' type='checkbox'  checked><label for='section-b77f5fc7-0a37-4059-8a38-9fbba5bc0514' class='xr-section-summary' >Coordinates: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>89.98 89.94 89.9 ... -89.94 -89.98</div><input id='attrs-1c6cdd90-e376-4583-8ff1-7ce1b5aab603' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1c6cdd90-e376-4583-8ff1-7ce1b5aab603' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6cf143f8-7e71-4c45-8d32-e8edbc6478ef' class='xr-var-data-in' type='checkbox'><label for='data-6cf143f8-7e71-4c45-8d32-e8edbc6478ef' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>valid_min :</span></dt><dd>-90.0</dd><dt><span>valid_max :</span></dt><dd>90.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 89.979164,  89.9375  ,  89.895836, ..., -89.895836, -89.93751 ,
-       -89.97917 ], shape=(4320,), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-180.0 -179.9 ... 179.9 180.0</div><input id='attrs-1ffb5ac1-8236-4997-811f-4836af7b26a8' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1ffb5ac1-8236-4997-811f-4836af7b26a8' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e2c3c8f6-8f18-4ead-b8ff-a1c76ac69d74' class='xr-var-data-in' type='checkbox'><label for='data-e2c3c8f6-8f18-4ead-b8ff-a1c76ac69d74' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>valid_min :</span></dt><dd>-180.0</dd><dt><span>valid_max :</span></dt><dd>180.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-179.97917, -179.9375 , -179.89583, ...,  179.89584,  179.93752,
-        179.97917], shape=(8640,), dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-c3ce698d-aa8e-4fb8-8f2c-bdf61d6d86c5' class='xr-section-summary-in' type='checkbox'  checked><label for='section-c3ce698d-aa8e-4fb8-8f2c-bdf61d6d86c5' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>chlor_a</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1, 4320, 8640), meta=np.ndarray&gt;</div><input id='attrs-a0bf220f-75c9-488b-b0ff-37f732c7a6bf' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-a0bf220f-75c9-488b-b0ff-37f732c7a6bf' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-260685f3-8790-43ab-b081-c34457c3c40a' class='xr-var-data-in' type='checkbox'><label for='data-260685f3-8790-43ab-b081-c34457c3c40a' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Chlorophyll Concentration, OCI Algorithm</dd><dt><span>units :</span></dt><dd>mg m^-3</dd><dt><span>standard_name :</span></dt><dd>mass_concentration_of_chlorophyll_in_sea_water</dd><dt><span>valid_min :</span></dt><dd>0.00100000005</dd><dt><span>valid_max :</span></dt><dd>100.0</dd><dt><span>reference :</span></dt><dd>Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.</dd><dt><span>display_scale :</span></dt><dd>log</dd><dt><span>display_min :</span></dt><dd>0.00999999978</dd><dt><span>display_max :</span></dt><dd>20.0</dd><dt><span>Maps :</span></dt><dd>(&#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><table>
+    data_maximum:                      15.9237003</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-6282ec7b-5b00-414c-ab5d-f119572d31e9' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-6282ec7b-5b00-414c-ab5d-f119572d31e9' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>time</span>: 32</li><li><span class='xr-has-index'>lat</span>: 4320</li><li><span class='xr-has-index'>lon</span>: 8640</li></ul></div></li><li class='xr-section-item'><input id='section-b7a9a391-c668-4054-8810-4d3d393fab86' class='xr-section-summary-in' type='checkbox' checked /><label for='section-b7a9a391-c668-4054-8810-4d3d393fab86' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>89.98 89.94 89.9 ... -89.94 -89.98</div><input id='attrs-f68898fc-3bec-4948-bcd0-91cee7cd7da0' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f68898fc-3bec-4948-bcd0-91cee7cd7da0' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e0ac6fc9-1c06-4c81-91c5-61c297ee513c' class='xr-var-data-in' type='checkbox'><label for='data-e0ac6fc9-1c06-4c81-91c5-61c297ee513c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>valid_min :</span></dt><dd>-90.0</dd><dt><span>valid_max :</span></dt><dd>90.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 89.979164,  89.9375  ,  89.895836, ..., -89.895836, -89.93751 ,
+       -89.97917 ], shape=(4320,), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-180.0 -179.9 ... 179.9 180.0</div><input id='attrs-64e35b21-dcf8-41b2-b0f4-6f01397ce64e' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-64e35b21-dcf8-41b2-b0f4-6f01397ce64e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-314bbef6-9241-43ed-a0eb-6cb1cdd17716' class='xr-var-data-in' type='checkbox'><label for='data-314bbef6-9241-43ed-a0eb-6cb1cdd17716' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>valid_min :</span></dt><dd>-180.0</dd><dt><span>valid_max :</span></dt><dd>180.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-179.97917, -179.9375 , -179.89583, ...,  179.89584,  179.93752,
+        179.97917], shape=(8640,), dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-c0b09dcd-caca-4af0-a268-f8e1d28377b6' class='xr-section-summary-in' type='checkbox' checked /><label for='section-c0b09dcd-caca-4af0-a268-f8e1d28377b6' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>chlor_a</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1, 4320, 8640), meta=np.ndarray&gt;</div><input id='attrs-01916963-9893-45eb-b6ef-6fa4aceb0c30' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-01916963-9893-45eb-b6ef-6fa4aceb0c30' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-9e83a6e7-6b5b-4d9c-bea4-e0d9fd350a4f' class='xr-var-data-in' type='checkbox'><label for='data-9e83a6e7-6b5b-4d9c-bea4-e0d9fd350a4f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Chlorophyll Concentration, OCI Algorithm</dd><dt><span>units :</span></dt><dd>mg m^-3</dd><dt><span>standard_name :</span></dt><dd>mass_concentration_of_chlorophyll_in_sea_water</dd><dt><span>valid_min :</span></dt><dd>0.00100000005</dd><dt><span>valid_max :</span></dt><dd>100.0</dd><dt><span>reference :</span></dt><dd>Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.</dd><dt><span>display_scale :</span></dt><dd>log</dd><dt><span>display_min :</span></dt><dd>0.00999999978</dd><dt><span>display_max :</span></dt><dd>20.0</dd><dt><span>Maps :</span></dt><dd>(&#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -1151,31 +1221,13 @@ Attributes: (12/64)
   <polygon points="24.9485979497544,14.948597949754403 144.9485979497544,14.948597949754403 144.9485979497544,74.9485979497544 24.9485979497544,74.9485979497544" style="fill:#ECB172A0;stroke-width:0"/>
 
   <!-- Text -->
-  <text x="84.948598" y="94.948598" font-size="1.0rem" font-weight="100" text-anchor="middle" >8640</text>
-  <text x="164.948598" y="44.948598" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,164.948598,44.948598)">4320</text>
-  <text x="7.474299" y="87.474299" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,7.474299,87.474299)">32</text>
+  <text x="84.9485979497544" y="94.9485979497544" font-size="1.0rem" font-weight="100" text-anchor="middle" >8640</text>
+  <text x="164.9485979497544" y="44.9485979497544" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,164.9485979497544,44.9485979497544)">4320</text>
+  <text x="7.4742989748772" y="87.4742989748772" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,7.4742989748772,87.4742989748772)">32</text>
 </svg>
         </td>
     </tr>
-</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-ab895f85-fadc-4f77-8f7a-012592f4066c' class='xr-section-summary-in' type='checkbox'  ><label for='section-ab895f85-fadc-4f77-8f7a-012592f4066c' class='xr-section-summary' >Indexes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-0e16a265-666e-4693-80ef-e147d7c2b1b1' class='xr-index-data-in' type='checkbox'/><label for='index-0e16a265-666e-4693-80ef-e147d7c2b1b1' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 89.97916412353516,            89.9375,  89.89583587646484,
-        89.85416412353516,            89.8125,  89.77083587646484,
-        89.72916412353516,            89.6875,  89.64583587646484,
-        89.60416412353516,
-       ...
-       -89.60417175292969, -89.64583587646484, -89.68750762939453,
-       -89.72917175292969, -89.77083587646484, -89.81250762939453,
-       -89.85417175292969, -89.89583587646484, -89.93750762939453,
-       -89.97917175292969],
-      dtype=&#x27;float32&#x27;, name=&#x27;lat&#x27;, length=4320))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-1ac91395-471a-4fef-85e5-7cf6f8ce80ad' class='xr-index-data-in' type='checkbox'/><label for='index-1ac91395-471a-4fef-85e5-7cf6f8ce80ad' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([-179.9791717529297,          -179.9375, -179.8958282470703,
-       -179.8541717529297,          -179.8125, -179.7708282470703,
-       -179.7291717529297,          -179.6875, -179.6458282470703,
-       -179.6041717529297,
-       ...
-        179.6041717529297, 179.64584350585938, 179.68751525878906,
-        179.7291717529297, 179.77084350585938, 179.81251525878906,
-        179.8541717529297, 179.89584350585938, 179.93751525878906,
-        179.9791717529297],
-      dtype=&#x27;float32&#x27;, name=&#x27;lon&#x27;, length=8640))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-821c6a8a-92e9-4ffc-9f53-fa47c0d3192d' class='xr-section-summary-in' type='checkbox'  ><label for='section-821c6a8a-92e9-4ffc-9f53-fa47c0d3192d' class='xr-section-summary' >Attributes: <span>(64)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>product_name :</span></dt><dd>PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc</dd><dt><span>instrument :</span></dt><dd>OCI</dd><dt><span>title :</span></dt><dd>OCI Level-3 Standard Mapped Image</dd><dt><span>project :</span></dt><dd>Ocean Biology Processing Group (NASA/GSFC/OBPG)</dd><dt><span>platform :</span></dt><dd>PACE</dd><dt><span>source :</span></dt><dd>satellite observations from OCI-PACE</dd><dt><span>temporal_range :</span></dt><dd>2-hour</dd><dt><span>processing_version :</span></dt><dd>3.1</dd><dt><span>date_created :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>history :</span></dt><dd>l3mapgen par=PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc.param </dd><dt><span>l2_flag_names :</span></dt><dd>ATMFAIL,LAND,HILT,HISATZEN,STRAYLIGHT,CLDICE,COCCOLITH,LOWLW,CHLWARN,CHLFAIL,NAVWARN,MAXAERITER,HISOLZEN,NAVFAIL,FILTER,HIGLINT</dd><dt><span>time_coverage_start :</span></dt><dd>2025-07-02T00:26:40.570Z</dd><dt><span>time_coverage_end :</span></dt><dd>2025-07-02T02:14:56.912Z</dd><dt><span>start_orbit_number :</span></dt><dd>0</dd><dt><span>end_orbit_number :</span></dt><dd>0</dd><dt><span>map_projection :</span></dt><dd>Equidistant Cylindrical</dd><dt><span>latitude_units :</span></dt><dd>degrees_north</dd><dt><span>longitude_units :</span></dt><dd>degrees_east</dd><dt><span>northernmost_latitude :</span></dt><dd>90.0</dd><dt><span>southernmost_latitude :</span></dt><dd>-90.0</dd><dt><span>westernmost_longitude :</span></dt><dd>-180.0</dd><dt><span>easternmost_longitude :</span></dt><dd>180.0</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>latitude_step :</span></dt><dd>0.0416666679</dd><dt><span>longitude_step :</span></dt><dd>0.0416666679</dd><dt><span>sw_point_latitude :</span></dt><dd>-89.9791641</dd><dt><span>sw_point_longitude :</span></dt><dd>-179.979172</dd><dt><span>spatialResolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>number_of_lines :</span></dt><dd>4320</dd><dt><span>number_of_columns :</span></dt><dd>8640</dd><dt><span>measure :</span></dt><dd>Mean</dd><dt><span>suggested_image_scaling_minimum :</span></dt><dd>0.00999999978</dd><dt><span>suggested_image_scaling_maximum :</span></dt><dd>20.0</dd><dt><span>suggested_image_scaling_type :</span></dt><dd>LOG</dd><dt><span>suggested_image_scaling_applied :</span></dt><dd>No</dd><dt><span>_lastModified :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>Conventions :</span></dt><dd>CF-1.6 ACDD-1.3</dd><dt><span>institution :</span></dt><dd>NASA Goddard Space Flight Center, Ocean Ecology Laboratory, Ocean Biology Processing Group</dd><dt><span>standard_name_vocabulary :</span></dt><dd>CF Standard Name Table v36</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.gsfc.sci.oceandata</dd><dt><span>id :</span></dt><dd>3.1/L3/PACE_OCI.20250701.L3b.DAY.CHL.V3_1.NRT.nc</dd><dt><span>license :</span></dt><dd>https://science.nasa.gov/earth-science/earth-science-data/data-information-policy/</dd><dt><span>creator_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>publisher_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>creator_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>publisher_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>creator_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>publisher_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>processing_level :</span></dt><dd>L3 Mapped</dd><dt><span>cdm_data_type :</span></dt><dd>grid</dd><dt><span>identifier_product_doi_authority :</span></dt><dd>http://dx.doi.org</dd><dt><span>identifier_product_doi :</span></dt><dd>10.5067/PACE/OCI/L3M/CHL/3.1</dd><dt><span>keywords :</span></dt><dd>Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Pigments &gt; Chlorophyll; Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Chlorophyll</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>data_bins :</span></dt><dd>Attribute elided: Unsupported attribute type (NC_INT64)</dd><dt><span>data_minimum :</span></dt><dd>0.0134539828</dd><dt><span>data_maximum :</span></dt><dd>15.9237003</dd></dl></div></li></ul></div></div></div></div>
+</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-8ade1836-bb02-4ddd-bfd5-5eabeee2a60a' class='xr-section-summary-in' type='checkbox' /><label for='section-8ade1836-bb02-4ddd-bfd5-5eabeee2a60a' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(64)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>product_name :</span></dt><dd>PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc</dd><dt><span>instrument :</span></dt><dd>OCI</dd><dt><span>title :</span></dt><dd>OCI Level-3 Standard Mapped Image</dd><dt><span>project :</span></dt><dd>Ocean Biology Processing Group (NASA/GSFC/OBPG)</dd><dt><span>platform :</span></dt><dd>PACE</dd><dt><span>source :</span></dt><dd>satellite observations from OCI-PACE</dd><dt><span>temporal_range :</span></dt><dd>2-hour</dd><dt><span>processing_version :</span></dt><dd>3.1</dd><dt><span>date_created :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>history :</span></dt><dd>l3mapgen par=PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc.param </dd><dt><span>l2_flag_names :</span></dt><dd>ATMFAIL,LAND,HILT,HISATZEN,STRAYLIGHT,CLDICE,COCCOLITH,LOWLW,CHLWARN,CHLFAIL,NAVWARN,MAXAERITER,HISOLZEN,NAVFAIL,FILTER,HIGLINT</dd><dt><span>time_coverage_start :</span></dt><dd>2025-07-02T00:26:40.570Z</dd><dt><span>time_coverage_end :</span></dt><dd>2025-07-02T02:14:56.912Z</dd><dt><span>start_orbit_number :</span></dt><dd>0</dd><dt><span>end_orbit_number :</span></dt><dd>0</dd><dt><span>map_projection :</span></dt><dd>Equidistant Cylindrical</dd><dt><span>latitude_units :</span></dt><dd>degrees_north</dd><dt><span>longitude_units :</span></dt><dd>degrees_east</dd><dt><span>northernmost_latitude :</span></dt><dd>90.0</dd><dt><span>southernmost_latitude :</span></dt><dd>-90.0</dd><dt><span>westernmost_longitude :</span></dt><dd>-180.0</dd><dt><span>easternmost_longitude :</span></dt><dd>180.0</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>latitude_step :</span></dt><dd>0.0416666679</dd><dt><span>longitude_step :</span></dt><dd>0.0416666679</dd><dt><span>sw_point_latitude :</span></dt><dd>-89.9791641</dd><dt><span>sw_point_longitude :</span></dt><dd>-179.979172</dd><dt><span>spatialResolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>number_of_lines :</span></dt><dd>4320</dd><dt><span>number_of_columns :</span></dt><dd>8640</dd><dt><span>measure :</span></dt><dd>Mean</dd><dt><span>suggested_image_scaling_minimum :</span></dt><dd>0.00999999978</dd><dt><span>suggested_image_scaling_maximum :</span></dt><dd>20.0</dd><dt><span>suggested_image_scaling_type :</span></dt><dd>LOG</dd><dt><span>suggested_image_scaling_applied :</span></dt><dd>No</dd><dt><span>_lastModified :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>Conventions :</span></dt><dd>CF-1.6 ACDD-1.3</dd><dt><span>institution :</span></dt><dd>NASA Goddard Space Flight Center, Ocean Ecology Laboratory, Ocean Biology Processing Group</dd><dt><span>standard_name_vocabulary :</span></dt><dd>CF Standard Name Table v36</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.gsfc.sci.oceandata</dd><dt><span>id :</span></dt><dd>3.1/L3/PACE_OCI.20250701.L3b.DAY.CHL.V3_1.NRT.nc</dd><dt><span>license :</span></dt><dd>https://science.nasa.gov/earth-science/earth-science-data/data-information-policy/</dd><dt><span>creator_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>publisher_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>creator_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>publisher_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>creator_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>publisher_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>processing_level :</span></dt><dd>L3 Mapped</dd><dt><span>cdm_data_type :</span></dt><dd>grid</dd><dt><span>identifier_product_doi_authority :</span></dt><dd>http://dx.doi.org</dd><dt><span>identifier_product_doi :</span></dt><dd>10.5067/PACE/OCI/L3M/CHL/3.1</dd><dt><span>keywords :</span></dt><dd>Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Pigments &gt; Chlorophyll; Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Chlorophyll</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>data_bins :</span></dt><dd>Attribute elided: Unsupported attribute type (NC_INT64)</dd><dt><span>data_minimum :</span></dt><dd>0.0134539828</dd><dt><span>data_maximum :</span></dt><dd>15.9237003</dd></dl></div></li></ul></div></div></div></div>
 </div>
 <p>The dataset above represent a metadata representation of the entire data of interest. It is chunked, and only the dimensions lat and lon have been downloaded.</p>
 <div class="admonition note">
@@ -1271,8 +1323,8 @@ Attributes: (12/64)
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 272 ms, sys: 101 ms, total: 373 ms
-Wall time: 280 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1.38 s, sys: 158 ms, total: 1.54 s
+Wall time: 4.46 s
 </pre></div>
 </div>
 <div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
@@ -1290,9 +1342,7 @@ Wall time: 280 ms
 </symbol>
 </defs>
 </svg>
-<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
- *
- */
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
 
 :root {
   --xr-font-color0: var(
@@ -1371,6 +1421,8 @@ body.vscode-dark {
   display: block !important;
   min-width: 300px;
   max-width: 700px;
+  line-height: 1.6;
+  padding-bottom: 4px;
 }
 
 .xr-text-repr-fallback {
@@ -1381,8 +1433,11 @@ body.vscode-dark {
 .xr-header {
   padding-top: 6px;
   padding-bottom: 6px;
-  margin-bottom: 4px;
+}
+
+.xr-header {
   border-bottom: solid 1px var(--xr-border-color);
+  margin-bottom: 4px;
 }
 
 .xr-header > div,
@@ -1393,46 +1448,62 @@ body.vscode-dark {
 }
 
 .xr-obj-type,
-.xr-array-name {
+.xr-obj-name {
   margin-left: 2px;
   margin-right: 10px;
 }
 
-.xr-obj-type {
+.xr-obj-type,
+.xr-group-box-contents > label {
   color: var(--xr-font-color2);
+  display: block;
 }
 
 .xr-sections {
   padding-left: 0 !important;
   display: grid;
   grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 .xr-section-item {
   display: contents;
 }
 
-.xr-section-item input {
-  display: inline-block;
+.xr-section-item > input,
+.xr-group-box-contents > input,
+.xr-array-wrap > input {
+  display: block;
   opacity: 0;
   height: 0;
+  margin: 0;
 }
 
-.xr-section-item input + label {
+.xr-section-item > input + label,
+.xr-var-item > input + label {
   color: var(--xr-disabled-color);
-  border: 2px solid transparent !important;
 }
 
-.xr-section-item input:enabled + label {
+.xr-section-item > input:enabled + label,
+.xr-var-item > input:enabled + label,
+.xr-array-wrap > input:enabled + label,
+.xr-group-box-contents > input:enabled + label {
   cursor: pointer;
   color: var(--xr-font-color2);
 }
 
-.xr-section-item input:focus + label {
-  border: 2px solid var(--xr-font-color0) !important;
+.xr-section-item > input:focus-visible + label,
+.xr-var-item > input:focus-visible + label,
+.xr-array-wrap > input:focus-visible + label,
+.xr-group-box-contents > input:focus-visible + label {
+  outline: auto;
 }
 
-.xr-section-item input:enabled + label:hover {
+.xr-section-item > input:enabled + label:hover,
+.xr-var-item > input:enabled + label:hover,
+.xr-array-wrap > input:enabled + label:hover,
+.xr-group-box-contents > input:enabled + label:hover {
   color: var(--xr-font-color0);
 }
 
@@ -1440,11 +1511,25 @@ body.vscode-dark {
   grid-column: 1;
   color: var(--xr-font-color2);
   font-weight: 500;
+  white-space: nowrap;
+}
+
+.xr-section-summary > em {
+  font-weight: normal;
+}
+
+.xr-span-grid {
+  grid-column-end: -1;
 }
 
 .xr-section-summary > span {
   display: inline-block;
-  padding-left: 0.5em;
+  padding-left: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label > span {
+  display: inline-block;
+  padding-left: 0.6em;
 }
 
 .xr-section-summary-in:disabled + label {
@@ -1472,9 +1557,9 @@ body.vscode-dark {
 }
 
 .xr-section-summary,
-.xr-section-inline-details {
+.xr-section-inline-details,
+.xr-group-box-contents > label {
   padding-top: 4px;
-  padding-bottom: 4px;
 }
 
 .xr-section-inline-details {
@@ -1482,13 +1567,79 @@ body.vscode-dark {
 }
 
 .xr-section-details {
-  display: none;
   grid-column: 1 / -1;
+  margin-top: 4px;
   margin-bottom: 5px;
+}
+
+.xr-section-summary-in ~ .xr-section-details {
+  display: none;
 }
 
 .xr-section-summary-in:checked ~ .xr-section-details {
   display: contents;
+}
+
+.xr-children {
+  display: inline-grid;
+  grid-template-columns: 100%;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 30px auto;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 26px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+  padding-bottom: 4px;
+}
+
+.xr-group-box-contents > label::before {
+  content: "📂";
+  padding-right: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label::before {
+  content: "📁";
+}
+
+.xr-group-box-contents > input:checked + label {
+  padding-bottom: 0px;
+}
+
+.xr-group-box-contents > input:checked ~ .xr-sections {
+  display: none;
+}
+
+.xr-group-box-contents > input + label > span {
+  display: none;
+}
+
+.xr-group-box-ellipsis {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--xr-font-color2);
+  letter-spacing: 0.15em;
+  cursor: default;
 }
 
 .xr-array-wrap {
@@ -1739,9 +1890,9 @@ Attributes: (12/64)
     keywords_vocabulary:               NASA Global Change Master Directory (G...
     data_bins:                         Attribute elided: Unsupported attribut...
     data_minimum:                      0.0134539828
-    data_maximum:                      15.9237003</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-5f043ad9-09c6-4100-9c5a-7b9207513525' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-5f043ad9-09c6-4100-9c5a-7b9207513525' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>time</span>: 32</li><li><span class='xr-has-index'>lat</span>: 4320</li><li><span class='xr-has-index'>lon</span>: 8640</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-44a76703-de2d-4ded-8f87-b750e6ffa03f' class='xr-section-summary-in' type='checkbox'  checked><label for='section-44a76703-de2d-4ded-8f87-b750e6ffa03f' class='xr-section-summary' >Coordinates: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>89.98 89.94 89.9 ... -89.94 -89.98</div><input id='attrs-66493590-25c0-46bb-8d54-f02468ae1309' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-66493590-25c0-46bb-8d54-f02468ae1309' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-117476a5-2b3f-4e2c-8dae-a8b2ae7d7f48' class='xr-var-data-in' type='checkbox'><label for='data-117476a5-2b3f-4e2c-8dae-a8b2ae7d7f48' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>valid_min :</span></dt><dd>-90.0</dd><dt><span>valid_max :</span></dt><dd>90.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 89.979164,  89.9375  ,  89.895836, ..., -89.895836, -89.93751 ,
-       -89.97917 ], shape=(4320,), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-180.0 -179.9 ... 179.9 180.0</div><input id='attrs-300337b5-3b86-4750-a1ac-5646ce1960e1' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-300337b5-3b86-4750-a1ac-5646ce1960e1' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-d73949ec-ff30-427a-973e-b660ff7af795' class='xr-var-data-in' type='checkbox'><label for='data-d73949ec-ff30-427a-973e-b660ff7af795' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>valid_min :</span></dt><dd>-180.0</dd><dt><span>valid_max :</span></dt><dd>180.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-179.97917, -179.9375 , -179.89583, ...,  179.89584,  179.93752,
-        179.97917], shape=(8640,), dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-c0eee07e-f371-443d-a912-0dc93c3cf1f9' class='xr-section-summary-in' type='checkbox'  checked><label for='section-c0eee07e-f371-443d-a912-0dc93c3cf1f9' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>chlor_a</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1, 1536, 2544), meta=np.ndarray&gt;</div><input id='attrs-08321325-7e42-4f8d-a61d-2096e24703ea' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-08321325-7e42-4f8d-a61d-2096e24703ea' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4a5e1b23-d20b-4856-b8ee-c13611a6b4dd' class='xr-var-data-in' type='checkbox'><label for='data-4a5e1b23-d20b-4856-b8ee-c13611a6b4dd' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Chlorophyll Concentration, OCI Algorithm</dd><dt><span>units :</span></dt><dd>mg m^-3</dd><dt><span>standard_name :</span></dt><dd>mass_concentration_of_chlorophyll_in_sea_water</dd><dt><span>valid_min :</span></dt><dd>0.00100000005</dd><dt><span>valid_max :</span></dt><dd>100.0</dd><dt><span>reference :</span></dt><dd>Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.</dd><dt><span>display_scale :</span></dt><dd>log</dd><dt><span>display_min :</span></dt><dd>0.00999999978</dd><dt><span>display_max :</span></dt><dd>20.0</dd><dt><span>Maps :</span></dt><dd>(&#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><table>
+    data_maximum:                      15.9237003</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-b79ee5e4-9daa-4cac-aef6-a4d57192346d' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-b79ee5e4-9daa-4cac-aef6-a4d57192346d' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>time</span>: 32</li><li><span class='xr-has-index'>lat</span>: 4320</li><li><span class='xr-has-index'>lon</span>: 8640</li></ul></div></li><li class='xr-section-item'><input id='section-2ac201ba-caf1-4d4d-acdb-9e4838d6d0bc' class='xr-section-summary-in' type='checkbox' checked /><label for='section-2ac201ba-caf1-4d4d-acdb-9e4838d6d0bc' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>89.98 89.94 89.9 ... -89.94 -89.98</div><input id='attrs-8d5a0d69-aff0-401e-8365-0103383938fe' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-8d5a0d69-aff0-401e-8365-0103383938fe' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-2095d555-4eb1-4a0a-a94d-71b7afa13fb8' class='xr-var-data-in' type='checkbox'><label for='data-2095d555-4eb1-4a0a-a94d-71b7afa13fb8' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>valid_min :</span></dt><dd>-90.0</dd><dt><span>valid_max :</span></dt><dd>90.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 89.979164,  89.9375  ,  89.895836, ..., -89.895836, -89.93751 ,
+       -89.97917 ], shape=(4320,), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-180.0 -179.9 ... 179.9 180.0</div><input id='attrs-10d9d881-37dd-4e33-b7e2-04e2f8cfb948' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-10d9d881-37dd-4e33-b7e2-04e2f8cfb948' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5a4d02b0-26f3-4f98-b0f3-84e9b1d737e2' class='xr-var-data-in' type='checkbox'><label for='data-5a4d02b0-26f3-4f98-b0f3-84e9b1d737e2' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>valid_min :</span></dt><dd>-180.0</dd><dt><span>valid_max :</span></dt><dd>180.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-179.97917, -179.9375 , -179.89583, ...,  179.89584,  179.93752,
+        179.97917], shape=(8640,), dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-3de03800-b1af-435e-b41a-2aee69563be4' class='xr-section-summary-in' type='checkbox' checked /><label for='section-3de03800-b1af-435e-b41a-2aee69563be4' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>chlor_a</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(1, 1536, 2544), meta=np.ndarray&gt;</div><input id='attrs-0a517f41-a0de-481e-afc6-d66e07822780' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-0a517f41-a0de-481e-afc6-d66e07822780' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-31a9667f-de3e-4776-a143-bca1e19650f1' class='xr-var-data-in' type='checkbox'><label for='data-31a9667f-de3e-4776-a143-bca1e19650f1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Chlorophyll Concentration, OCI Algorithm</dd><dt><span>units :</span></dt><dd>mg m^-3</dd><dt><span>standard_name :</span></dt><dd>mass_concentration_of_chlorophyll_in_sea_water</dd><dt><span>valid_min :</span></dt><dd>0.00100000005</dd><dt><span>valid_max :</span></dt><dd>100.0</dd><dt><span>reference :</span></dt><dd>Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.</dd><dt><span>display_scale :</span></dt><dd>log</dd><dt><span>display_min :</span></dt><dd>0.00999999978</dd><dt><span>display_max :</span></dt><dd>20.0</dd><dt><span>Maps :</span></dt><dd>(&#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -1859,31 +2010,13 @@ Attributes: (12/64)
   <polygon points="24.9485979497544,14.948597949754403 144.9485979497544,14.948597949754403 144.9485979497544,74.9485979497544 24.9485979497544,74.9485979497544" style="fill:#ECB172A0;stroke-width:0"/>
 
   <!-- Text -->
-  <text x="84.948598" y="94.948598" font-size="1.0rem" font-weight="100" text-anchor="middle" >8640</text>
-  <text x="164.948598" y="44.948598" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,164.948598,44.948598)">4320</text>
-  <text x="7.474299" y="87.474299" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,7.474299,87.474299)">32</text>
+  <text x="84.9485979497544" y="94.9485979497544" font-size="1.0rem" font-weight="100" text-anchor="middle" >8640</text>
+  <text x="164.9485979497544" y="44.9485979497544" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,164.9485979497544,44.9485979497544)">4320</text>
+  <text x="7.4742989748772" y="87.4742989748772" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,7.4742989748772,87.4742989748772)">32</text>
 </svg>
         </td>
     </tr>
-</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-f7bffbe8-5dfa-4c2f-a9b7-5ec21af23b0a' class='xr-section-summary-in' type='checkbox'  ><label for='section-f7bffbe8-5dfa-4c2f-a9b7-5ec21af23b0a' class='xr-section-summary' >Indexes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-57bf494e-c76f-4d0d-a6a8-3b37a9de2b0d' class='xr-index-data-in' type='checkbox'/><label for='index-57bf494e-c76f-4d0d-a6a8-3b37a9de2b0d' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 89.97916412353516,            89.9375,  89.89583587646484,
-        89.85416412353516,            89.8125,  89.77083587646484,
-        89.72916412353516,            89.6875,  89.64583587646484,
-        89.60416412353516,
-       ...
-       -89.60417175292969, -89.64583587646484, -89.68750762939453,
-       -89.72917175292969, -89.77083587646484, -89.81250762939453,
-       -89.85417175292969, -89.89583587646484, -89.93750762939453,
-       -89.97917175292969],
-      dtype=&#x27;float32&#x27;, name=&#x27;lat&#x27;, length=4320))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-a1e660e9-373d-45de-9acd-7252bac680c9' class='xr-index-data-in' type='checkbox'/><label for='index-a1e660e9-373d-45de-9acd-7252bac680c9' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([-179.9791717529297,          -179.9375, -179.8958282470703,
-       -179.8541717529297,          -179.8125, -179.7708282470703,
-       -179.7291717529297,          -179.6875, -179.6458282470703,
-       -179.6041717529297,
-       ...
-        179.6041717529297, 179.64584350585938, 179.68751525878906,
-        179.7291717529297, 179.77084350585938, 179.81251525878906,
-        179.8541717529297, 179.89584350585938, 179.93751525878906,
-        179.9791717529297],
-      dtype=&#x27;float32&#x27;, name=&#x27;lon&#x27;, length=8640))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-d4b16445-6836-4530-ab9e-adf1db60ff98' class='xr-section-summary-in' type='checkbox'  ><label for='section-d4b16445-6836-4530-ab9e-adf1db60ff98' class='xr-section-summary' >Attributes: <span>(64)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>product_name :</span></dt><dd>PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc</dd><dt><span>instrument :</span></dt><dd>OCI</dd><dt><span>title :</span></dt><dd>OCI Level-3 Standard Mapped Image</dd><dt><span>project :</span></dt><dd>Ocean Biology Processing Group (NASA/GSFC/OBPG)</dd><dt><span>platform :</span></dt><dd>PACE</dd><dt><span>source :</span></dt><dd>satellite observations from OCI-PACE</dd><dt><span>temporal_range :</span></dt><dd>2-hour</dd><dt><span>processing_version :</span></dt><dd>3.1</dd><dt><span>date_created :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>history :</span></dt><dd>l3mapgen par=PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc.param </dd><dt><span>l2_flag_names :</span></dt><dd>ATMFAIL,LAND,HILT,HISATZEN,STRAYLIGHT,CLDICE,COCCOLITH,LOWLW,CHLWARN,CHLFAIL,NAVWARN,MAXAERITER,HISOLZEN,NAVFAIL,FILTER,HIGLINT</dd><dt><span>time_coverage_start :</span></dt><dd>2025-07-02T00:26:40.570Z</dd><dt><span>time_coverage_end :</span></dt><dd>2025-07-02T02:14:56.912Z</dd><dt><span>start_orbit_number :</span></dt><dd>0</dd><dt><span>end_orbit_number :</span></dt><dd>0</dd><dt><span>map_projection :</span></dt><dd>Equidistant Cylindrical</dd><dt><span>latitude_units :</span></dt><dd>degrees_north</dd><dt><span>longitude_units :</span></dt><dd>degrees_east</dd><dt><span>northernmost_latitude :</span></dt><dd>90.0</dd><dt><span>southernmost_latitude :</span></dt><dd>-90.0</dd><dt><span>westernmost_longitude :</span></dt><dd>-180.0</dd><dt><span>easternmost_longitude :</span></dt><dd>180.0</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>latitude_step :</span></dt><dd>0.0416666679</dd><dt><span>longitude_step :</span></dt><dd>0.0416666679</dd><dt><span>sw_point_latitude :</span></dt><dd>-89.9791641</dd><dt><span>sw_point_longitude :</span></dt><dd>-179.979172</dd><dt><span>spatialResolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>number_of_lines :</span></dt><dd>4320</dd><dt><span>number_of_columns :</span></dt><dd>8640</dd><dt><span>measure :</span></dt><dd>Mean</dd><dt><span>suggested_image_scaling_minimum :</span></dt><dd>0.00999999978</dd><dt><span>suggested_image_scaling_maximum :</span></dt><dd>20.0</dd><dt><span>suggested_image_scaling_type :</span></dt><dd>LOG</dd><dt><span>suggested_image_scaling_applied :</span></dt><dd>No</dd><dt><span>_lastModified :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>Conventions :</span></dt><dd>CF-1.6 ACDD-1.3</dd><dt><span>institution :</span></dt><dd>NASA Goddard Space Flight Center, Ocean Ecology Laboratory, Ocean Biology Processing Group</dd><dt><span>standard_name_vocabulary :</span></dt><dd>CF Standard Name Table v36</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.gsfc.sci.oceandata</dd><dt><span>id :</span></dt><dd>3.1/L3/PACE_OCI.20250701.L3b.DAY.CHL.V3_1.NRT.nc</dd><dt><span>license :</span></dt><dd>https://science.nasa.gov/earth-science/earth-science-data/data-information-policy/</dd><dt><span>creator_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>publisher_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>creator_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>publisher_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>creator_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>publisher_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>processing_level :</span></dt><dd>L3 Mapped</dd><dt><span>cdm_data_type :</span></dt><dd>grid</dd><dt><span>identifier_product_doi_authority :</span></dt><dd>http://dx.doi.org</dd><dt><span>identifier_product_doi :</span></dt><dd>10.5067/PACE/OCI/L3M/CHL/3.1</dd><dt><span>keywords :</span></dt><dd>Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Pigments &gt; Chlorophyll; Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Chlorophyll</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>data_bins :</span></dt><dd>Attribute elided: Unsupported attribute type (NC_INT64)</dd><dt><span>data_minimum :</span></dt><dd>0.0134539828</dd><dt><span>data_maximum :</span></dt><dd>15.9237003</dd></dl></div></li></ul></div></div></div></div>
+</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-519c7d0e-731c-4bcf-b15b-fc92f64f2142' class='xr-section-summary-in' type='checkbox' /><label for='section-519c7d0e-731c-4bcf-b15b-fc92f64f2142' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(64)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>product_name :</span></dt><dd>PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc</dd><dt><span>instrument :</span></dt><dd>OCI</dd><dt><span>title :</span></dt><dd>OCI Level-3 Standard Mapped Image</dd><dt><span>project :</span></dt><dd>Ocean Biology Processing Group (NASA/GSFC/OBPG)</dd><dt><span>platform :</span></dt><dd>PACE</dd><dt><span>source :</span></dt><dd>satellite observations from OCI-PACE</dd><dt><span>temporal_range :</span></dt><dd>2-hour</dd><dt><span>processing_version :</span></dt><dd>3.1</dd><dt><span>date_created :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>history :</span></dt><dd>l3mapgen par=PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc.param </dd><dt><span>l2_flag_names :</span></dt><dd>ATMFAIL,LAND,HILT,HISATZEN,STRAYLIGHT,CLDICE,COCCOLITH,LOWLW,CHLWARN,CHLFAIL,NAVWARN,MAXAERITER,HISOLZEN,NAVFAIL,FILTER,HIGLINT</dd><dt><span>time_coverage_start :</span></dt><dd>2025-07-02T00:26:40.570Z</dd><dt><span>time_coverage_end :</span></dt><dd>2025-07-02T02:14:56.912Z</dd><dt><span>start_orbit_number :</span></dt><dd>0</dd><dt><span>end_orbit_number :</span></dt><dd>0</dd><dt><span>map_projection :</span></dt><dd>Equidistant Cylindrical</dd><dt><span>latitude_units :</span></dt><dd>degrees_north</dd><dt><span>longitude_units :</span></dt><dd>degrees_east</dd><dt><span>northernmost_latitude :</span></dt><dd>90.0</dd><dt><span>southernmost_latitude :</span></dt><dd>-90.0</dd><dt><span>westernmost_longitude :</span></dt><dd>-180.0</dd><dt><span>easternmost_longitude :</span></dt><dd>180.0</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>latitude_step :</span></dt><dd>0.0416666679</dd><dt><span>longitude_step :</span></dt><dd>0.0416666679</dd><dt><span>sw_point_latitude :</span></dt><dd>-89.9791641</dd><dt><span>sw_point_longitude :</span></dt><dd>-179.979172</dd><dt><span>spatialResolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>number_of_lines :</span></dt><dd>4320</dd><dt><span>number_of_columns :</span></dt><dd>8640</dd><dt><span>measure :</span></dt><dd>Mean</dd><dt><span>suggested_image_scaling_minimum :</span></dt><dd>0.00999999978</dd><dt><span>suggested_image_scaling_maximum :</span></dt><dd>20.0</dd><dt><span>suggested_image_scaling_type :</span></dt><dd>LOG</dd><dt><span>suggested_image_scaling_applied :</span></dt><dd>No</dd><dt><span>_lastModified :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>Conventions :</span></dt><dd>CF-1.6 ACDD-1.3</dd><dt><span>institution :</span></dt><dd>NASA Goddard Space Flight Center, Ocean Ecology Laboratory, Ocean Biology Processing Group</dd><dt><span>standard_name_vocabulary :</span></dt><dd>CF Standard Name Table v36</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.gsfc.sci.oceandata</dd><dt><span>id :</span></dt><dd>3.1/L3/PACE_OCI.20250701.L3b.DAY.CHL.V3_1.NRT.nc</dd><dt><span>license :</span></dt><dd>https://science.nasa.gov/earth-science/earth-science-data/data-information-policy/</dd><dt><span>creator_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>publisher_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>creator_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>publisher_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>creator_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>publisher_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>processing_level :</span></dt><dd>L3 Mapped</dd><dt><span>cdm_data_type :</span></dt><dd>grid</dd><dt><span>identifier_product_doi_authority :</span></dt><dd>http://dx.doi.org</dd><dt><span>identifier_product_doi :</span></dt><dd>10.5067/PACE/OCI/L3M/CHL/3.1</dd><dt><span>keywords :</span></dt><dd>Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Pigments &gt; Chlorophyll; Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Chlorophyll</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>data_bins :</span></dt><dd>Attribute elided: Unsupported attribute type (NC_INT64)</dd><dt><span>data_minimum :</span></dt><dd>0.0134539828</dd><dt><span>data_maximum :</span></dt><dd>15.9237003</dd></dl></div></li></ul></div></div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -1907,9 +2040,7 @@ Attributes: (12/64)
 </symbol>
 </defs>
 </svg>
-<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
- *
- */
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
 
 :root {
   --xr-font-color0: var(
@@ -1988,6 +2119,8 @@ body.vscode-dark {
   display: block !important;
   min-width: 300px;
   max-width: 700px;
+  line-height: 1.6;
+  padding-bottom: 4px;
 }
 
 .xr-text-repr-fallback {
@@ -1998,8 +2131,11 @@ body.vscode-dark {
 .xr-header {
   padding-top: 6px;
   padding-bottom: 6px;
-  margin-bottom: 4px;
+}
+
+.xr-header {
   border-bottom: solid 1px var(--xr-border-color);
+  margin-bottom: 4px;
 }
 
 .xr-header > div,
@@ -2010,46 +2146,62 @@ body.vscode-dark {
 }
 
 .xr-obj-type,
-.xr-array-name {
+.xr-obj-name {
   margin-left: 2px;
   margin-right: 10px;
 }
 
-.xr-obj-type {
+.xr-obj-type,
+.xr-group-box-contents > label {
   color: var(--xr-font-color2);
+  display: block;
 }
 
 .xr-sections {
   padding-left: 0 !important;
   display: grid;
   grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 .xr-section-item {
   display: contents;
 }
 
-.xr-section-item input {
-  display: inline-block;
+.xr-section-item > input,
+.xr-group-box-contents > input,
+.xr-array-wrap > input {
+  display: block;
   opacity: 0;
   height: 0;
+  margin: 0;
 }
 
-.xr-section-item input + label {
+.xr-section-item > input + label,
+.xr-var-item > input + label {
   color: var(--xr-disabled-color);
-  border: 2px solid transparent !important;
 }
 
-.xr-section-item input:enabled + label {
+.xr-section-item > input:enabled + label,
+.xr-var-item > input:enabled + label,
+.xr-array-wrap > input:enabled + label,
+.xr-group-box-contents > input:enabled + label {
   cursor: pointer;
   color: var(--xr-font-color2);
 }
 
-.xr-section-item input:focus + label {
-  border: 2px solid var(--xr-font-color0) !important;
+.xr-section-item > input:focus-visible + label,
+.xr-var-item > input:focus-visible + label,
+.xr-array-wrap > input:focus-visible + label,
+.xr-group-box-contents > input:focus-visible + label {
+  outline: auto;
 }
 
-.xr-section-item input:enabled + label:hover {
+.xr-section-item > input:enabled + label:hover,
+.xr-var-item > input:enabled + label:hover,
+.xr-array-wrap > input:enabled + label:hover,
+.xr-group-box-contents > input:enabled + label:hover {
   color: var(--xr-font-color0);
 }
 
@@ -2057,11 +2209,25 @@ body.vscode-dark {
   grid-column: 1;
   color: var(--xr-font-color2);
   font-weight: 500;
+  white-space: nowrap;
+}
+
+.xr-section-summary > em {
+  font-weight: normal;
+}
+
+.xr-span-grid {
+  grid-column-end: -1;
 }
 
 .xr-section-summary > span {
   display: inline-block;
-  padding-left: 0.5em;
+  padding-left: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label > span {
+  display: inline-block;
+  padding-left: 0.6em;
 }
 
 .xr-section-summary-in:disabled + label {
@@ -2089,9 +2255,9 @@ body.vscode-dark {
 }
 
 .xr-section-summary,
-.xr-section-inline-details {
+.xr-section-inline-details,
+.xr-group-box-contents > label {
   padding-top: 4px;
-  padding-bottom: 4px;
 }
 
 .xr-section-inline-details {
@@ -2099,13 +2265,79 @@ body.vscode-dark {
 }
 
 .xr-section-details {
-  display: none;
   grid-column: 1 / -1;
+  margin-top: 4px;
   margin-bottom: 5px;
+}
+
+.xr-section-summary-in ~ .xr-section-details {
+  display: none;
 }
 
 .xr-section-summary-in:checked ~ .xr-section-details {
   display: contents;
+}
+
+.xr-children {
+  display: inline-grid;
+  grid-template-columns: 100%;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 30px auto;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 26px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+  padding-bottom: 4px;
+}
+
+.xr-group-box-contents > label::before {
+  content: "📂";
+  padding-right: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label::before {
+  content: "📁";
+}
+
+.xr-group-box-contents > input:checked + label {
+  padding-bottom: 0px;
+}
+
+.xr-group-box-contents > input:checked ~ .xr-sections {
+  display: none;
+}
+
+.xr-group-box-contents > input + label > span {
+  display: none;
+}
+
+.xr-group-box-ellipsis {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--xr-font-color2);
+  letter-spacing: 0.15em;
+  cursor: default;
 }
 
 .xr-array-wrap {
@@ -2351,7 +2583,7 @@ Attributes:
     display_scale:  log
     display_min:    0.00999999978
     display_max:    20.0
-    Maps:           (&#x27;/lat&#x27;, &#x27;/lon&#x27;)</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-array-name'>'chlor_a'</div><ul class='xr-dim-list'><li><span>time</span>: 32</li><li><span class='xr-has-index'>lat</span>: 4320</li><li><span class='xr-has-index'>lon</span>: 8640</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-f6a231a7-92f7-4d74-9fdd-67d7c8cf5a63' class='xr-array-in' type='checkbox' checked><label for='section-f6a231a7-92f7-4d74-9fdd-67d7c8cf5a63' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>dask.array&lt;chunksize=(1, 1536, 2544), meta=np.ndarray&gt;</span></div><div class='xr-array-data'><table>
+    Maps:           (&#x27;/lat&#x27;, &#x27;/lon&#x27;)</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataArray</div><div class='xr-obj-name'>&#x27;chlor_a&#x27;</div><ul class='xr-dim-list'><li><span>time</span>: 32</li><li><span class='xr-has-index'>lat</span>: 4320</li><li><span class='xr-has-index'>lon</span>: 8640</li></ul></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-array-wrap'><input id='section-00385b4b-0d71-48f9-8755-8e3cd3de9454' class='xr-array-in' type='checkbox' checked><label for='section-00385b4b-0d71-48f9-8755-8e3cd3de9454' title='Show/hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-array-preview xr-preview'><span>dask.array&lt;chunksize=(1, 1536, 2544), meta=np.ndarray&gt;</span></div><div class='xr-array-data'><table>
     <tr>
         <td>
             <table style="border-collapse: collapse;">
@@ -2469,33 +2701,15 @@ Attributes:
   <polygon points="24.9485979497544,14.948597949754403 144.9485979497544,14.948597949754403 144.9485979497544,74.9485979497544 24.9485979497544,74.9485979497544" style="fill:#ECB172A0;stroke-width:0"/>
 
   <!-- Text -->
-  <text x="84.948598" y="94.948598" font-size="1.0rem" font-weight="100" text-anchor="middle" >8640</text>
-  <text x="164.948598" y="44.948598" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,164.948598,44.948598)">4320</text>
-  <text x="7.474299" y="87.474299" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,7.474299,87.474299)">32</text>
+  <text x="84.9485979497544" y="94.9485979497544" font-size="1.0rem" font-weight="100" text-anchor="middle" >8640</text>
+  <text x="164.9485979497544" y="44.9485979497544" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,164.9485979497544,44.9485979497544)">4320</text>
+  <text x="7.4742989748772" y="87.4742989748772" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,7.4742989748772,87.4742989748772)">32</text>
 </svg>
         </td>
     </tr>
-</table></div></div></li><li class='xr-section-item'><input id='section-5ab2d29b-6c0c-4d34-8ba3-d6f90a96ebe7' class='xr-section-summary-in' type='checkbox'  checked><label for='section-5ab2d29b-6c0c-4d34-8ba3-d6f90a96ebe7' class='xr-section-summary' >Coordinates: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>89.98 89.94 89.9 ... -89.94 -89.98</div><input id='attrs-16d7fb87-b124-4962-87b6-dd2d135d37d4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-16d7fb87-b124-4962-87b6-dd2d135d37d4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ad2aa525-40f9-4f83-a950-afd2f80a0253' class='xr-var-data-in' type='checkbox'><label for='data-ad2aa525-40f9-4f83-a950-afd2f80a0253' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>valid_min :</span></dt><dd>-90.0</dd><dt><span>valid_max :</span></dt><dd>90.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 89.979164,  89.9375  ,  89.895836, ..., -89.895836, -89.93751 ,
-       -89.97917 ], shape=(4320,), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-180.0 -179.9 ... 179.9 180.0</div><input id='attrs-927b6ccf-d5be-4ccd-8e00-15c384381e81' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-927b6ccf-d5be-4ccd-8e00-15c384381e81' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4b716aca-8bbc-4b04-8897-fad1db1201e7' class='xr-var-data-in' type='checkbox'><label for='data-4b716aca-8bbc-4b04-8897-fad1db1201e7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>valid_min :</span></dt><dd>-180.0</dd><dt><span>valid_max :</span></dt><dd>180.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-179.97917, -179.9375 , -179.89583, ...,  179.89584,  179.93752,
-        179.97917], shape=(8640,), dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-f6059a51-754c-4711-ba42-84bf5f5528db' class='xr-section-summary-in' type='checkbox'  ><label for='section-f6059a51-754c-4711-ba42-84bf5f5528db' class='xr-section-summary' >Indexes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-9e45348d-40a1-4063-8ae7-67a0920bebd4' class='xr-index-data-in' type='checkbox'/><label for='index-9e45348d-40a1-4063-8ae7-67a0920bebd4' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 89.97916412353516,            89.9375,  89.89583587646484,
-        89.85416412353516,            89.8125,  89.77083587646484,
-        89.72916412353516,            89.6875,  89.64583587646484,
-        89.60416412353516,
-       ...
-       -89.60417175292969, -89.64583587646484, -89.68750762939453,
-       -89.72917175292969, -89.77083587646484, -89.81250762939453,
-       -89.85417175292969, -89.89583587646484, -89.93750762939453,
-       -89.97917175292969],
-      dtype=&#x27;float32&#x27;, name=&#x27;lat&#x27;, length=4320))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-810c42a4-2e94-4d65-b9c7-08b10404637a' class='xr-index-data-in' type='checkbox'/><label for='index-810c42a4-2e94-4d65-b9c7-08b10404637a' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([-179.9791717529297,          -179.9375, -179.8958282470703,
-       -179.8541717529297,          -179.8125, -179.7708282470703,
-       -179.7291717529297,          -179.6875, -179.6458282470703,
-       -179.6041717529297,
-       ...
-        179.6041717529297, 179.64584350585938, 179.68751525878906,
-        179.7291717529297, 179.77084350585938, 179.81251525878906,
-        179.8541717529297, 179.89584350585938, 179.93751525878906,
-        179.9791717529297],
-      dtype=&#x27;float32&#x27;, name=&#x27;lon&#x27;, length=8640))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-b2a512f5-f564-4b7a-a567-8a42d5834d32' class='xr-section-summary-in' type='checkbox'  ><label for='section-b2a512f5-f564-4b7a-a567-8a42d5834d32' class='xr-section-summary' >Attributes: <span>(10)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Chlorophyll Concentration, OCI Algorithm</dd><dt><span>units :</span></dt><dd>mg m^-3</dd><dt><span>standard_name :</span></dt><dd>mass_concentration_of_chlorophyll_in_sea_water</dd><dt><span>valid_min :</span></dt><dd>0.00100000005</dd><dt><span>valid_max :</span></dt><dd>100.0</dd><dt><span>reference :</span></dt><dd>Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.</dd><dt><span>display_scale :</span></dt><dd>log</dd><dt><span>display_min :</span></dt><dd>0.00999999978</dd><dt><span>display_max :</span></dt><dd>20.0</dd><dt><span>Maps :</span></dt><dd>(&#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div></li></ul></div></div></div></div>
+</table></div></div></li><li class='xr-section-item'><input id='section-6235e447-863e-4a87-a48b-385145553793' class='xr-section-summary-in' type='checkbox' checked /><label for='section-6235e447-863e-4a87-a48b-385145553793' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>89.98 89.94 89.9 ... -89.94 -89.98</div><input id='attrs-eb5a230c-de85-4c25-b488-95e935da50d1' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-eb5a230c-de85-4c25-b488-95e935da50d1' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6a0e2fb7-83f7-4742-83d6-b2ebcb7a35f7' class='xr-var-data-in' type='checkbox'><label for='data-6a0e2fb7-83f7-4742-83d6-b2ebcb7a35f7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>valid_min :</span></dt><dd>-90.0</dd><dt><span>valid_max :</span></dt><dd>90.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([ 89.979164,  89.9375  ,  89.895836, ..., -89.895836, -89.93751 ,
+       -89.97917 ], shape=(4320,), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-180.0 -179.9 ... 179.9 180.0</div><input id='attrs-31fad892-7040-4d0b-b7c2-d8dc815b3014' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-31fad892-7040-4d0b-b7c2-d8dc815b3014' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-8d0b2f9e-15eb-4054-b970-88073700c2cd' class='xr-var-data-in' type='checkbox'><label for='data-8d0b2f9e-15eb-4054-b970-88073700c2cd' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>valid_min :</span></dt><dd>-180.0</dd><dt><span>valid_max :</span></dt><dd>180.0</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-179.97917, -179.9375 , -179.89583, ...,  179.89584,  179.93752,
+        179.97917], shape=(8640,), dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-4f6e397a-6b12-41dd-944f-9e3d60680044' class='xr-section-summary-in' type='checkbox' /><label for='section-4f6e397a-6b12-41dd-944f-9e3d60680044' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(10)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Chlorophyll Concentration, OCI Algorithm</dd><dt><span>units :</span></dt><dd>mg m^-3</dd><dt><span>standard_name :</span></dt><dd>mass_concentration_of_chlorophyll_in_sea_water</dd><dt><span>valid_min :</span></dt><dd>0.00100000005</dd><dt><span>valid_max :</span></dt><dd>100.0</dd><dt><span>reference :</span></dt><dd>Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.</dd><dt><span>display_scale :</span></dt><dd>log</dd><dt><span>display_min :</span></dt><dd>0.00999999978</dd><dt><span>display_max :</span></dt><dd>20.0</dd><dt><span>Maps :</span></dt><dd>(&#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div></li></ul></div></div></div></div>
 </div>
 <p>We now ensure <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> will treat this subset as an individual chunk (per variable)</p>
 <div class="cell docutils container">
@@ -2521,8 +2735,8 @@ Attributes:
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 8.65 s, sys: 7.2 s, total: 15.8 s
-Wall time: 51.3 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 10.8 s, sys: 6.84 s, total: 17.6 s
+Wall time: 21.8 s
 </pre></div>
 </div>
 </div>
@@ -2553,9 +2767,7 @@ Wall time: 51.3 s
 </symbol>
 </defs>
 </svg>
-<style>/* CSS stylesheet for displaying xarray objects in jupyterlab.
- *
- */
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
 
 :root {
   --xr-font-color0: var(
@@ -2634,6 +2846,8 @@ body.vscode-dark {
   display: block !important;
   min-width: 300px;
   max-width: 700px;
+  line-height: 1.6;
+  padding-bottom: 4px;
 }
 
 .xr-text-repr-fallback {
@@ -2644,8 +2858,11 @@ body.vscode-dark {
 .xr-header {
   padding-top: 6px;
   padding-bottom: 6px;
-  margin-bottom: 4px;
+}
+
+.xr-header {
   border-bottom: solid 1px var(--xr-border-color);
+  margin-bottom: 4px;
 }
 
 .xr-header > div,
@@ -2656,46 +2873,62 @@ body.vscode-dark {
 }
 
 .xr-obj-type,
-.xr-array-name {
+.xr-obj-name {
   margin-left: 2px;
   margin-right: 10px;
 }
 
-.xr-obj-type {
+.xr-obj-type,
+.xr-group-box-contents > label {
   color: var(--xr-font-color2);
+  display: block;
 }
 
 .xr-sections {
   padding-left: 0 !important;
   display: grid;
   grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
 }
 
 .xr-section-item {
   display: contents;
 }
 
-.xr-section-item input {
-  display: inline-block;
+.xr-section-item > input,
+.xr-group-box-contents > input,
+.xr-array-wrap > input {
+  display: block;
   opacity: 0;
   height: 0;
+  margin: 0;
 }
 
-.xr-section-item input + label {
+.xr-section-item > input + label,
+.xr-var-item > input + label {
   color: var(--xr-disabled-color);
-  border: 2px solid transparent !important;
 }
 
-.xr-section-item input:enabled + label {
+.xr-section-item > input:enabled + label,
+.xr-var-item > input:enabled + label,
+.xr-array-wrap > input:enabled + label,
+.xr-group-box-contents > input:enabled + label {
   cursor: pointer;
   color: var(--xr-font-color2);
 }
 
-.xr-section-item input:focus + label {
-  border: 2px solid var(--xr-font-color0) !important;
+.xr-section-item > input:focus-visible + label,
+.xr-var-item > input:focus-visible + label,
+.xr-array-wrap > input:focus-visible + label,
+.xr-group-box-contents > input:focus-visible + label {
+  outline: auto;
 }
 
-.xr-section-item input:enabled + label:hover {
+.xr-section-item > input:enabled + label:hover,
+.xr-var-item > input:enabled + label:hover,
+.xr-array-wrap > input:enabled + label:hover,
+.xr-group-box-contents > input:enabled + label:hover {
   color: var(--xr-font-color0);
 }
 
@@ -2703,11 +2936,25 @@ body.vscode-dark {
   grid-column: 1;
   color: var(--xr-font-color2);
   font-weight: 500;
+  white-space: nowrap;
+}
+
+.xr-section-summary > em {
+  font-weight: normal;
+}
+
+.xr-span-grid {
+  grid-column-end: -1;
 }
 
 .xr-section-summary > span {
   display: inline-block;
-  padding-left: 0.5em;
+  padding-left: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label > span {
+  display: inline-block;
+  padding-left: 0.6em;
 }
 
 .xr-section-summary-in:disabled + label {
@@ -2735,9 +2982,9 @@ body.vscode-dark {
 }
 
 .xr-section-summary,
-.xr-section-inline-details {
+.xr-section-inline-details,
+.xr-group-box-contents > label {
   padding-top: 4px;
-  padding-bottom: 4px;
 }
 
 .xr-section-inline-details {
@@ -2745,13 +2992,79 @@ body.vscode-dark {
 }
 
 .xr-section-details {
-  display: none;
   grid-column: 1 / -1;
+  margin-top: 4px;
   margin-bottom: 5px;
+}
+
+.xr-section-summary-in ~ .xr-section-details {
+  display: none;
 }
 
 .xr-section-summary-in:checked ~ .xr-section-details {
   display: contents;
+}
+
+.xr-children {
+  display: inline-grid;
+  grid-template-columns: 100%;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 30px auto;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 26px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+  padding-bottom: 4px;
+}
+
+.xr-group-box-contents > label::before {
+  content: "📂";
+  padding-right: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label::before {
+  content: "📁";
+}
+
+.xr-group-box-contents > input:checked + label {
+  padding-bottom: 0px;
+}
+
+.xr-group-box-contents > input:checked ~ .xr-sections {
+  display: none;
+}
+
+.xr-group-box-contents > input + label > span {
+  display: none;
+}
+
+.xr-group-box-ellipsis {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--xr-font-color2);
+  letter-spacing: 0.15em;
+  cursor: default;
 }
 
 .xr-array-wrap {
@@ -3002,27 +3315,9 @@ Attributes: (12/64)
     keywords_vocabulary:               NASA Global Change Master Directory (G...
     data_bins:                         Attribute elided: Unsupported attribut...
     data_minimum:                      0.0134539828
-    data_maximum:                      15.9237003</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-c13400f9-9f8d-4818-bbf0-f5756cb8b7ca' class='xr-section-summary-in' type='checkbox' disabled ><label for='section-c13400f9-9f8d-4818-bbf0-f5756cb8b7ca' class='xr-section-summary'  title='Expand/collapse section'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>time</span>: 32</li><li><span class='xr-has-index'>lat</span>: 1536</li><li><span class='xr-has-index'>lon</span>: 2544</li></ul></div><div class='xr-section-details'></div></li><li class='xr-section-item'><input id='section-460a1160-55bd-4584-9ee6-5c0c8b51a0fd' class='xr-section-summary-in' type='checkbox'  checked><label for='section-460a1160-55bd-4584-9ee6-5c0c8b51a0fd' class='xr-section-summary' >Coordinates: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>69.98 69.94 69.9 ... 6.062 6.021</div><input id='attrs-0f36bc53-e06a-4351-b2ba-63344cbe04e2' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-0f36bc53-e06a-4351-b2ba-63344cbe04e2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-31d56632-e721-4f03-8662-e4b4988e706f' class='xr-var-data-in' type='checkbox'><label for='data-31d56632-e721-4f03-8662-e4b4988e706f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>valid_min :</span></dt><dd>-90.0</dd><dt><span>valid_max :</span></dt><dd>90.0</dd><dt><span>Maps :</span></dt><dd>[]</dd></dl></div><div class='xr-var-data'><pre>array([69.979164, 69.9375  , 69.895836, ...,  6.104164,  6.062498,  6.020831],
-      shape=(1536,), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-95.98 -95.94 -95.9 ... 9.938 9.979</div><input id='attrs-01eb85e8-10fc-4112-9674-74f3eb32a32e' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-01eb85e8-10fc-4112-9674-74f3eb32a32e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a71dbce4-13fa-4f04-9516-c9b9c9f2ffbd' class='xr-var-data-in' type='checkbox'><label for='data-a71dbce4-13fa-4f04-9516-c9b9c9f2ffbd' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>valid_min :</span></dt><dd>-180.0</dd><dt><span>valid_max :</span></dt><dd>180.0</dd><dt><span>Maps :</span></dt><dd>[]</dd></dl></div><div class='xr-var-data'><pre>array([-95.979164, -95.9375  , -95.89583 , ...,   9.895839,   9.937506,
-         9.979173], shape=(2544,), dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-82fe9c0a-4242-407c-a593-73c7855290f5' class='xr-section-summary-in' type='checkbox'  checked><label for='section-82fe9c0a-4242-407c-a593-73c7855290f5' class='xr-section-summary' >Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>chlor_a</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-4590f1e7-bfc3-4ed1-9b3f-a9469fdd7522' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-4590f1e7-bfc3-4ed1-9b3f-a9469fdd7522' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-902a8410-d217-48e6-a288-c797964b2e98' class='xr-var-data-in' type='checkbox'><label for='data-902a8410-d217-48e6-a288-c797964b2e98' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Chlorophyll Concentration, OCI Algorithm</dd><dt><span>units :</span></dt><dd>mg m^-3</dd><dt><span>standard_name :</span></dt><dd>mass_concentration_of_chlorophyll_in_sea_water</dd><dt><span>valid_min :</span></dt><dd>0.00100000005</dd><dt><span>valid_max :</span></dt><dd>100.0</dd><dt><span>reference :</span></dt><dd>Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.</dd><dt><span>display_scale :</span></dt><dd>log</dd><dt><span>display_min :</span></dt><dd>0.00999999978</dd><dt><span>display_max :</span></dt><dd>20.0</dd><dt><span>Maps :</span></dt><dd>[&#x27;/lat&#x27;, &#x27;/lon&#x27;]</dd></dl></div><div class='xr-var-data'><pre>[125042688 values with dtype=float32]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-05965972-161f-42f6-9109-aac80ab88040' class='xr-section-summary-in' type='checkbox'  ><label for='section-05965972-161f-42f6-9109-aac80ab88040' class='xr-section-summary' >Indexes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-index-name'><div>lat</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-9c506455-8ff0-4090-a021-5cad4f74dbe7' class='xr-index-data-in' type='checkbox'/><label for='index-9c506455-8ff0-4090-a021-5cad4f74dbe7' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([ 69.97916412353516,            69.9375,  69.89583587646484,
-        69.85416412353516,            69.8125,  69.77083587646484,
-        69.72916412353516,            69.6875,  69.64583587646484,
-        69.60416412353516,
-       ...
-       6.3958306312561035,  6.354164123535156,  6.312497615814209,
-       6.2708306312561035,  6.229164123535156,  6.187497615814209,
-       6.1458306312561035,  6.104164123535156,  6.062497615814209,
-       6.0208306312561035],
-      dtype=&#x27;float32&#x27;, name=&#x27;lat&#x27;, length=1536))</pre></div></li><li class='xr-var-item'><div class='xr-index-name'><div>lon</div></div><div class='xr-index-preview'>PandasIndex</div><input type='checkbox' disabled/><label></label><input id='index-e75ff738-1813-4e1a-a91d-6eb2800e9bb2' class='xr-index-data-in' type='checkbox'/><label for='index-e75ff738-1813-4e1a-a91d-6eb2800e9bb2' title='Show/Hide index repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-index-data'><pre>PandasIndex(Index([-95.97916412353516,           -95.9375, -95.89582824707031,
-       -95.85416412353516,           -95.8125, -95.77082824707031,
-       -95.72916412353516,           -95.6875, -95.64582824707031,
-       -95.60416412353516,
-       ...
-        9.604172706604004,  9.645838737487793,  9.687505722045898,
-        9.729172706604004,  9.770838737487793,  9.812505722045898,
-        9.854172706604004,  9.895838737487793,  9.937505722045898,
-        9.979172706604004],
-      dtype=&#x27;float32&#x27;, name=&#x27;lon&#x27;, length=2544))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-4a40fbaa-d70d-4588-b6ad-3af72d77f2fe' class='xr-section-summary-in' type='checkbox'  ><label for='section-4a40fbaa-d70d-4588-b6ad-3af72d77f2fe' class='xr-section-summary' >Attributes: <span>(64)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>product_name :</span></dt><dd>PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc</dd><dt><span>instrument :</span></dt><dd>OCI</dd><dt><span>title :</span></dt><dd>OCI Level-3 Standard Mapped Image</dd><dt><span>project :</span></dt><dd>Ocean Biology Processing Group (NASA/GSFC/OBPG)</dd><dt><span>platform :</span></dt><dd>PACE</dd><dt><span>source :</span></dt><dd>satellite observations from OCI-PACE</dd><dt><span>temporal_range :</span></dt><dd>2-hour</dd><dt><span>processing_version :</span></dt><dd>3.1</dd><dt><span>date_created :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>history :</span></dt><dd>l3mapgen par=PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc.param </dd><dt><span>l2_flag_names :</span></dt><dd>ATMFAIL,LAND,HILT,HISATZEN,STRAYLIGHT,CLDICE,COCCOLITH,LOWLW,CHLWARN,CHLFAIL,NAVWARN,MAXAERITER,HISOLZEN,NAVFAIL,FILTER,HIGLINT</dd><dt><span>time_coverage_start :</span></dt><dd>2025-07-02T00:26:40.570Z</dd><dt><span>time_coverage_end :</span></dt><dd>2025-07-02T02:14:56.912Z</dd><dt><span>start_orbit_number :</span></dt><dd>0</dd><dt><span>end_orbit_number :</span></dt><dd>0</dd><dt><span>map_projection :</span></dt><dd>Equidistant Cylindrical</dd><dt><span>latitude_units :</span></dt><dd>degrees_north</dd><dt><span>longitude_units :</span></dt><dd>degrees_east</dd><dt><span>northernmost_latitude :</span></dt><dd>90.0</dd><dt><span>southernmost_latitude :</span></dt><dd>-90.0</dd><dt><span>westernmost_longitude :</span></dt><dd>-180.0</dd><dt><span>easternmost_longitude :</span></dt><dd>180.0</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>latitude_step :</span></dt><dd>0.0416666679</dd><dt><span>longitude_step :</span></dt><dd>0.0416666679</dd><dt><span>sw_point_latitude :</span></dt><dd>-89.9791641</dd><dt><span>sw_point_longitude :</span></dt><dd>-179.979172</dd><dt><span>spatialResolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>number_of_lines :</span></dt><dd>4320</dd><dt><span>number_of_columns :</span></dt><dd>8640</dd><dt><span>measure :</span></dt><dd>Mean</dd><dt><span>suggested_image_scaling_minimum :</span></dt><dd>0.00999999978</dd><dt><span>suggested_image_scaling_maximum :</span></dt><dd>20.0</dd><dt><span>suggested_image_scaling_type :</span></dt><dd>LOG</dd><dt><span>suggested_image_scaling_applied :</span></dt><dd>No</dd><dt><span>_lastModified :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>Conventions :</span></dt><dd>CF-1.6 ACDD-1.3</dd><dt><span>institution :</span></dt><dd>NASA Goddard Space Flight Center, Ocean Ecology Laboratory, Ocean Biology Processing Group</dd><dt><span>standard_name_vocabulary :</span></dt><dd>CF Standard Name Table v36</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.gsfc.sci.oceandata</dd><dt><span>id :</span></dt><dd>3.1/L3/PACE_OCI.20250701.L3b.DAY.CHL.V3_1.NRT.nc</dd><dt><span>license :</span></dt><dd>https://science.nasa.gov/earth-science/earth-science-data/data-information-policy/</dd><dt><span>creator_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>publisher_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>creator_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>publisher_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>creator_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>publisher_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>processing_level :</span></dt><dd>L3 Mapped</dd><dt><span>cdm_data_type :</span></dt><dd>grid</dd><dt><span>identifier_product_doi_authority :</span></dt><dd>http://dx.doi.org</dd><dt><span>identifier_product_doi :</span></dt><dd>10.5067/PACE/OCI/L3M/CHL/3.1</dd><dt><span>keywords :</span></dt><dd>Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Pigments &gt; Chlorophyll; Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Chlorophyll</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>data_bins :</span></dt><dd>Attribute elided: Unsupported attribute type (NC_INT64)</dd><dt><span>data_minimum :</span></dt><dd>0.0134539828</dd><dt><span>data_maximum :</span></dt><dd>15.9237003</dd></dl></div></li></ul></div></div></div></div>
+    data_maximum:                      15.9237003</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-d8812a68-e21a-4260-9b88-6725950274fb' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-d8812a68-e21a-4260-9b88-6725950274fb' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>time</span>: 32</li><li><span class='xr-has-index'>lat</span>: 1536</li><li><span class='xr-has-index'>lon</span>: 2544</li></ul></div></li><li class='xr-section-item'><input id='section-75c92c54-e3e0-4946-980e-bab7f8029bc7' class='xr-section-summary-in' type='checkbox' checked /><label for='section-75c92c54-e3e0-4946-980e-bab7f8029bc7' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>69.98 69.94 69.9 ... 6.062 6.021</div><input id='attrs-7d166fc4-a77f-4390-a155-edc585b48a44' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-7d166fc4-a77f-4390-a155-edc585b48a44' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5d6d5bec-d839-4e67-acdf-92f32a06d8db' class='xr-var-data-in' type='checkbox'><label for='data-5d6d5bec-d839-4e67-acdf-92f32a06d8db' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>valid_min :</span></dt><dd>-90.0</dd><dt><span>valid_max :</span></dt><dd>90.0</dd><dt><span>Maps :</span></dt><dd>[]</dd></dl></div><div class='xr-var-data'><pre>array([69.979164, 69.9375  , 69.895836, ...,  6.104164,  6.062498,  6.020831],
+      shape=(1536,), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-95.98 -95.94 -95.9 ... 9.938 9.979</div><input id='attrs-347daa29-86de-4bec-9854-aac9e5ee1c4e' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-347daa29-86de-4bec-9854-aac9e5ee1c4e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0f344b5e-8328-419f-af46-3f8cc7aafc32' class='xr-var-data-in' type='checkbox'><label for='data-0f344b5e-8328-419f-af46-3f8cc7aafc32' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>valid_min :</span></dt><dd>-180.0</dd><dt><span>valid_max :</span></dt><dd>180.0</dd><dt><span>Maps :</span></dt><dd>[]</dd></dl></div><div class='xr-var-data'><pre>array([-95.979164, -95.9375  , -95.89583 , ...,   9.895839,   9.937506,
+         9.979173], shape=(2544,), dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-ef8c834c-7111-4c7b-99d6-7244f586d63a' class='xr-section-summary-in' type='checkbox' checked /><label for='section-ef8c834c-7111-4c7b-99d6-7244f586d63a' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>chlor_a</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-5a270774-6ea8-4cb1-8318-8310ac48d10c' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-5a270774-6ea8-4cb1-8318-8310ac48d10c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e8a151b5-edfe-4117-86e0-6272237f8067' class='xr-var-data-in' type='checkbox'><label for='data-e8a151b5-edfe-4117-86e0-6272237f8067' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>Chlorophyll Concentration, OCI Algorithm</dd><dt><span>units :</span></dt><dd>mg m^-3</dd><dt><span>standard_name :</span></dt><dd>mass_concentration_of_chlorophyll_in_sea_water</dd><dt><span>valid_min :</span></dt><dd>0.00100000005</dd><dt><span>valid_max :</span></dt><dd>100.0</dd><dt><span>reference :</span></dt><dd>Hu, C., Lee Z., and Franz, B.A. (2012). Chlorophyll-a algorithms for oligotrophic oceans: A novel approach based on three-band reflectance difference, J. Geophys. Res., 117, C01011, doi:10.1029/2011JC007395.</dd><dt><span>display_scale :</span></dt><dd>log</dd><dt><span>display_min :</span></dt><dd>0.00999999978</dd><dt><span>display_max :</span></dt><dd>20.0</dd><dt><span>Maps :</span></dt><dd>[&#x27;/lat&#x27;, &#x27;/lon&#x27;]</dd></dl></div><div class='xr-var-data'><pre>[125042688 values with dtype=float32]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-5061cb76-dfdb-45cb-9e57-76e78ab4de83' class='xr-section-summary-in' type='checkbox' /><label for='section-5061cb76-dfdb-45cb-9e57-76e78ab4de83' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(64)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>product_name :</span></dt><dd>PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc</dd><dt><span>instrument :</span></dt><dd>OCI</dd><dt><span>title :</span></dt><dd>OCI Level-3 Standard Mapped Image</dd><dt><span>project :</span></dt><dd>Ocean Biology Processing Group (NASA/GSFC/OBPG)</dd><dt><span>platform :</span></dt><dd>PACE</dd><dt><span>source :</span></dt><dd>satellite observations from OCI-PACE</dd><dt><span>temporal_range :</span></dt><dd>2-hour</dd><dt><span>processing_version :</span></dt><dd>3.1</dd><dt><span>date_created :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>history :</span></dt><dd>l3mapgen par=PACE_OCI.20250701.L3m.DAY.CHL.V3_1.chlor_a.4km.NRT.nc.param </dd><dt><span>l2_flag_names :</span></dt><dd>ATMFAIL,LAND,HILT,HISATZEN,STRAYLIGHT,CLDICE,COCCOLITH,LOWLW,CHLWARN,CHLFAIL,NAVWARN,MAXAERITER,HISOLZEN,NAVFAIL,FILTER,HIGLINT</dd><dt><span>time_coverage_start :</span></dt><dd>2025-07-02T00:26:40.570Z</dd><dt><span>time_coverage_end :</span></dt><dd>2025-07-02T02:14:56.912Z</dd><dt><span>start_orbit_number :</span></dt><dd>0</dd><dt><span>end_orbit_number :</span></dt><dd>0</dd><dt><span>map_projection :</span></dt><dd>Equidistant Cylindrical</dd><dt><span>latitude_units :</span></dt><dd>degrees_north</dd><dt><span>longitude_units :</span></dt><dd>degrees_east</dd><dt><span>northernmost_latitude :</span></dt><dd>90.0</dd><dt><span>southernmost_latitude :</span></dt><dd>-90.0</dd><dt><span>westernmost_longitude :</span></dt><dd>-180.0</dd><dt><span>easternmost_longitude :</span></dt><dd>180.0</dd><dt><span>geospatial_lat_max :</span></dt><dd>90.0</dd><dt><span>geospatial_lat_min :</span></dt><dd>-90.0</dd><dt><span>geospatial_lon_max :</span></dt><dd>180.0</dd><dt><span>geospatial_lon_min :</span></dt><dd>-180.0</dd><dt><span>latitude_step :</span></dt><dd>0.0416666679</dd><dt><span>longitude_step :</span></dt><dd>0.0416666679</dd><dt><span>sw_point_latitude :</span></dt><dd>-89.9791641</dd><dt><span>sw_point_longitude :</span></dt><dd>-179.979172</dd><dt><span>spatialResolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lon_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_resolution :</span></dt><dd>4.638312 km</dd><dt><span>geospatial_lat_units :</span></dt><dd>degrees_north</dd><dt><span>geospatial_lon_units :</span></dt><dd>degrees_east</dd><dt><span>number_of_lines :</span></dt><dd>4320</dd><dt><span>number_of_columns :</span></dt><dd>8640</dd><dt><span>measure :</span></dt><dd>Mean</dd><dt><span>suggested_image_scaling_minimum :</span></dt><dd>0.00999999978</dd><dt><span>suggested_image_scaling_maximum :</span></dt><dd>20.0</dd><dt><span>suggested_image_scaling_type :</span></dt><dd>LOG</dd><dt><span>suggested_image_scaling_applied :</span></dt><dd>No</dd><dt><span>_lastModified :</span></dt><dd>2025-08-12T07:29:41.000Z</dd><dt><span>Conventions :</span></dt><dd>CF-1.6 ACDD-1.3</dd><dt><span>institution :</span></dt><dd>NASA Goddard Space Flight Center, Ocean Ecology Laboratory, Ocean Biology Processing Group</dd><dt><span>standard_name_vocabulary :</span></dt><dd>CF Standard Name Table v36</dd><dt><span>naming_authority :</span></dt><dd>gov.nasa.gsfc.sci.oceandata</dd><dt><span>id :</span></dt><dd>3.1/L3/PACE_OCI.20250701.L3b.DAY.CHL.V3_1.NRT.nc</dd><dt><span>license :</span></dt><dd>https://science.nasa.gov/earth-science/earth-science-data/data-information-policy/</dd><dt><span>creator_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>publisher_name :</span></dt><dd>NASA/GSFC/OBPG</dd><dt><span>creator_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>publisher_email :</span></dt><dd>data@oceancolor.gsfc.nasa.gov</dd><dt><span>creator_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>publisher_url :</span></dt><dd>https://oceandata.sci.gsfc.nasa.gov</dd><dt><span>processing_level :</span></dt><dd>L3 Mapped</dd><dt><span>cdm_data_type :</span></dt><dd>grid</dd><dt><span>identifier_product_doi_authority :</span></dt><dd>http://dx.doi.org</dd><dt><span>identifier_product_doi :</span></dt><dd>10.5067/PACE/OCI/L3M/CHL/3.1</dd><dt><span>keywords :</span></dt><dd>Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Pigments &gt; Chlorophyll; Earth Science &gt; Oceans &gt; Ocean Chemistry &gt; Chlorophyll</dd><dt><span>keywords_vocabulary :</span></dt><dd>NASA Global Change Master Directory (GCMD) Science Keywords</dd><dt><span>data_bins :</span></dt><dd>Attribute elided: Unsupported attribute type (NC_INT64)</dd><dt><span>data_minimum :</span></dt><dd>0.0134539828</dd><dt><span>data_maximum :</span></dt><dd>15.9237003</dd></dl></div></li></ul></div></div></div></div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -3094,18 +3389,19 @@ Attributes: (12/64)
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-a-session-as-a-metadata-database-and-authentication">Use a Session as a Metadata Database and Authentication</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#query-cmr-for-opendap-urls">Query CMR for OPeNDAP URLs</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#consolidate-metadata-aggregation">Consolidate metadata aggregation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-a-single-dataset-object">Create a single Dataset object</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-proximate-subsetting-how-to-with-opendap-pydap-and-xarray">Data-proximate subsetting: How to with OPeNDAP, Pydap, and Xarray?</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#identify-spatial-subset">Identify spatial subset</a></li>
@@ -3161,8 +3457,8 @@ By OPeNDAP Community
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>

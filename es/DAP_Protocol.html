@@ -24,37 +24,40 @@ gtag("config", "G-EN2VD1J32L");
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-
-  
-  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=eba8b062" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/mystnb.8ecb98da25f57f5357bf6f572d296f466b2cfe2517ffebfabe82451661e28f02.css" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
   
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
-  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="_static/documentation_options.js?v=9eb32ce0"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
-    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
     <script>let toggleHintShow = 'Click to show';</script>
     <script>let toggleHintHide = 'Click to hide';</script>
     <script>let toggleOpenOnPrint = 'true';</script>
@@ -70,6 +73,7 @@ gtag("config", "G-EN2VD1J32L");
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
   </head>
   
   
@@ -85,19 +89,8 @@ gtag("config", "G-EN2VD1J32L");
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-primary-sidebar-checkbox"/>
-  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          id="pst-secondary-sidebar-checkbox"/>
-  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
+  <dialog id="pst-search-dialog">
+    
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -105,7 +98,6 @@ gtag("config", "G-EN2VD1J32L");
   <input type="search"
          class="form-control"
          name="q"
-         id="search-input"
          placeholder="Search..."
          aria-label="Search..."
          autocomplete="off"
@@ -113,8 +105,8 @@ gtag("config", "G-EN2VD1J32L");
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
-  </div>
+</form>
+  </dialog>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -132,7 +124,8 @@ gtag("config", "G-EN2VD1J32L");
       
         
       
-      <div class="bd-sidebar-primary bd-sidebar">
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
 
   
@@ -162,21 +155,17 @@ gtag("config", "G-EN2VD1J32L");
     
     
     <img src="_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
-    <script>document.write(`<img src="_static/PyDAP_logo.png" class="logo__image only-dark" alt="PyDAP tutorial - Home"/>`);</script>
+    <img src="_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
   
   
 </a></div>
         <div class="sidebar-primary-item">
 
- <script>
- document.write(`
-   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass"></i>
-    <span class="search-button__default-text">Search</span>
-    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-   </button>
- `);
- </script></div>
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
         <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
@@ -211,9 +200,14 @@ gtag("config", "G-EN2VD1J32L");
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -296,7 +290,7 @@ gtag("config", "G-EN2VD1J32L");
 
 
 <button onclick="toggleFullScreen()"
-  class="btn btn-sm btn-fullscreen-button"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
   title="Fullscreen mode"
   data-bs-placement="bottom" data-bs-toggle="tooltip"
 >
@@ -310,25 +304,17 @@ gtag("config", "G-EN2VD1J32L");
 
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
-    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
-    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
-  </button>
-`);
-</script>
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
 
 
-<script>
-document.write(`
-  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <span class="fa-solid fa-list"></span>
 </button>
 </div></div>
@@ -423,6 +409,8 @@ document.write(`
 <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 </pre></div>
 </div>
+</div>
+<div class="cell_output docutils container">
 </div>
 </div>
 <div class="cell docutils container">
@@ -554,7 +542,38 @@ document.write(`
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;DatasetType with children &#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;&gt;
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+
+  <span class="n">File</span> <span class="o">~/</span><span class="n">mambaforge</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">pydap_docs</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.11</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">IPython</span><span class="o">/</span><span class="n">core</span><span class="o">/</span><span class="n">interactiveshell</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">3748</span> <span class="ow">in</span> <span class="n">run_code</span>
+    <span class="n">exec</span><span class="p">(</span><span class="n">code_obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_global_ns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_ns</span><span class="p">)</span>
+
+  <span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">9</span><span class="p">],</span> <span class="n">line</span> <span class="mi">1</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap4&#39;</span><span class="p">)</span> <span class="c1"># dap2 is the default</span>
+
+  <span class="n">File</span> <span class="o">~/</span><span class="n">mambaforge</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">pydap_docs</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.11</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">pydap</span><span class="o">/</span><span class="n">client</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">179</span> <span class="ow">in</span> <span class="n">open_url</span>
+    <span class="n">handler</span> <span class="o">=</span> <span class="n">DAPHandler</span><span class="p">(</span>
+
+  <span class="n">File</span> <span class="o">~/</span><span class="n">mambaforge</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">pydap_docs</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.11</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">pydap</span><span class="o">/</span><span class="n">handlers</span><span class="o">/</span><span class="n">dap</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">163</span> <span class="ow">in</span> <span class="fm">__init__</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">make_dataset</span><span class="p">()</span>
+
+  <span class="n">File</span> <span class="o">~/</span><span class="n">mambaforge</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">pydap_docs</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.11</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">pydap</span><span class="o">/</span><span class="n">handlers</span><span class="o">/</span><span class="n">dap</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">198</span> <span class="ow">in</span> <span class="n">make_dataset</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">dataset_from_dap4</span><span class="p">()</span>
+
+  <span class="n">File</span> <span class="o">~/</span><span class="n">mambaforge</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">pydap_docs</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.11</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">pydap</span><span class="o">/</span><span class="n">handlers</span><span class="o">/</span><span class="n">dap</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">227</span> <span class="ow">in</span> <span class="n">dataset_from_dap4</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">dmr_to_dataset</span><span class="p">(</span><span class="n">dmr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">flat</span><span class="p">)</span>
+
+  <span class="n">File</span> <span class="o">~/</span><span class="n">mambaforge</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">pydap_docs</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.11</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">pydap</span><span class="o">/</span><span class="n">parsers</span><span class="o">/</span><span class="n">dmr</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">257</span> <span class="ow">in</span> <span class="n">dmr_to_dataset</span>
+    <span class="n">dom_et</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">DMRParser</span><span class="p">(</span><span class="n">dmr</span><span class="p">,</span> <span class="n">dmrVersion</span><span class="o">=</span><span class="n">dmrVersion</span><span class="p">)</span><span class="o">.</span><span class="n">node</span><span class="p">)</span>
+
+  <span class="n">File</span> <span class="o">~/</span><span class="n">mambaforge</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">pydap_docs</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.11</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">pydap</span><span class="o">/</span><span class="n">parsers</span><span class="o">/</span><span class="n">dmr</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">413</span> <span class="ow">in</span> <span class="fm">__init__</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">ET</span><span class="o">.</span><span class="n">fromstring</span><span class="p">(</span><span class="n">_dmr</span><span class="p">)</span>
+
+  <span class="n">File</span> <span class="o">~/</span><span class="n">mambaforge</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">pydap_docs</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="mf">.11</span><span class="o">/</span><span class="n">xml</span><span class="o">/</span><span class="n">etree</span><span class="o">/</span><span class="n">ElementTree</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">1351</span> <span class="ow">in</span> <span class="n">XML</span>
+    <span class="k">return</span> <span class="n">parser</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+  <span class="n">File</span> <span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span>
+    
+<span class="ne">ParseError</span>: no element found: line 1, column 0
 </pre></div>
 </div>
 </div>
@@ -566,18 +585,6 @@ check the names of the store variables like we would do with a Python dictionary
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.coads_climatology.nc
-├──COADSX
-├──COADSY
-├──TIME
-├──SST
-├──AIRT
-├──UWND
-└──VWND
 </pre></div>
 </div>
 </div>
@@ -593,25 +600,10 @@ check the names of the store variables like we would do with a Python dictionary
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;missing_value&#39;: -9.99999979e+33,
- &#39;_FillValue&#39;: -9.99999979e+33,
- &#39;long_name&#39;: &#39;SEA SURFACE TEMPERATURE&#39;,
- &#39;history&#39;: &#39;From coads_climatology&#39;,
- &#39;units&#39;: &#39;Deg C&#39;,
- &#39;Maps&#39;: (&#39;/TIME&#39;, &#39;/COADSY&#39;, &#39;/COADSX&#39;)}
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;/SST&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dimensions</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;/TIME&#39;, &#39;/COADSY&#39;, &#39;/COADSX&#39;)
 </pre></div>
 </div>
 </div>
@@ -621,13 +613,6 @@ check the names of the store variables like we would do with a Python dictionary
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
 <span class="n">sst</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;SST&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span> <span class="mi">45</span><span class="p">:</span><span class="mi">125</span><span class="p">]</span>
 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Type of object: &#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="p">))</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 4.91 ms, sys: 3.2 ms, total: 8.11 ms
-Wall time: 172 ms
 </pre></div>
 </div>
 </div>
@@ -642,43 +627,10 @@ Wall time: 172 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;DatasetType with children &#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;&gt;
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.coads_climatology.nc
-├──COADSX
-├──COADSY
-├──TIME
-├──SST
-│  ├──SST
-│  ├──TIME
-│  ├──COADSY
-│  └──COADSX
-├──AIRT
-│  ├──AIRT
-│  ├──TIME
-│  ├──COADSY
-│  └──COADSX
-├──UWND
-│  ├──UWND
-│  ├──TIME
-│  ├──COADSY
-│  └──COADSX
-└──VWND
-   ├──VWND
-   ├──TIME
-   ├──COADSY
-   └──COADSX
 </pre></div>
 </div>
 </div>
@@ -690,21 +642,11 @@ Wall time: 172 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;GridType with array &#39;SST&#39; and maps &#39;TIME&#39;, &#39;COADSY&#39;, &#39;COADSX&#39;&gt;
-</pre></div>
-</div>
-</div>
 </div>
 <p>Note that the variable is of type <code class="docutils literal notranslate"><span class="pre">GridType</span></code>, a multidimensional array with specific axes defining each of its dimensions:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">dimensions</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(&#39;TIME&#39;, &#39;COADSY&#39;, &#39;COADSX&#39;)
 </pre></div>
 </div>
 </div>
@@ -715,20 +657,10 @@ Wall time: 172 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(12, 90, 180)
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">sst</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>4
 </pre></div>
 </div>
 </div>
@@ -742,11 +674,6 @@ Wall time: 172 ms
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">,</span> <span class="n">output_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="n">dataset</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;DatasetType with children &#39;COADSX&#39;, &#39;COADSY&#39;, &#39;TIME&#39;, &#39;SST&#39;, &#39;AIRT&#39;, &#39;UWND&#39;, &#39;VWND&#39;&gt;
 </pre></div>
 </div>
 </div>
@@ -772,22 +699,10 @@ Wall time: 172 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 6.24 ms, sys: 10.4 ms, total: 16.6 ms
-Wall time: 231 ms
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">sst</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>numpy.ndarray
 </pre></div>
 </div>
 </div>
@@ -804,22 +719,10 @@ Wall time: 231 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 4.33 ms, sys: 2.86 ms, total: 7.2 ms
-Wall time: 166 ms
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 35, 80)
 </pre></div>
 </div>
 </div>
@@ -848,32 +751,10 @@ Wall time: 166 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.gsodock1.dat
-└──URI_GSO-Dock
-   ├──Time
-   ├──Depth
-   ├──Sea_Temp
-   ├──Salinity
-   ├──DO%20
-   ├──pH
-   ├──Turbidity
-   ├──Air_Temp
-   ├──Wind_Speed
-   ├──Wind_Direction
-   └──Barometric_Pres
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;URI_GSO-Dock&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;SequenceType with children &#39;Time&#39;, &#39;Depth&#39;, &#39;Sea_Temp&#39;, &#39;Salinity&#39;, &#39;DO%20&#39;, &#39;pH&#39;, &#39;Turbidity&#39;, &#39;Air_Temp&#39;, &#39;Wind_Speed&#39;, &#39;Wind_Direction&#39;, &#39;Barometric_Pres&#39;&gt;
 </pre></div>
 </div>
 </div>
@@ -890,76 +771,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.s
-├──trajectory
-├──wmo_id
-├──profile_id
-├──time
-├──latitude
-├──longitude
-├──depth
-├──conductivity
-├──conductivity_qc
-├──density
-├──density_qc
-├──depth_qc
-├──instrument_ctd
-├──lat_qc
-├──lat_uv
-├──lat_uv_qc
-├──lon_qc
-├──lon_uv
-├──lon_uv_qc
-├──platform_meta
-├──precise_lat
-├──precise_lon
-├──precise_time
-├──pressure
-├──pressure_qc
-├──profile_lat_qc
-├──profile_lon_qc
-├──profile_time_qc
-├──qartod_conductivity_flat_line_flag
-├──qartod_conductivity_gross_range_flag
-├──qartod_conductivity_primary_flag
-├──qartod_conductivity_rate_of_change_flag
-├──qartod_conductivity_spike_flag
-├──qartod_density_flat_line_flag
-├──qartod_density_gross_range_flag
-├──qartod_density_primary_flag
-├──qartod_density_rate_of_change_flag
-├──qartod_density_spike_flag
-├──qartod_location_test_flag
-├──qartod_pressure_flat_line_flag
-├──qartod_pressure_gross_range_flag
-├──qartod_pressure_primary_flag
-├──qartod_pressure_rate_of_change_flag
-├──qartod_pressure_spike_flag
-├──qartod_salinity_flat_line_flag
-├──qartod_salinity_gross_range_flag
-├──qartod_salinity_primary_flag
-├──qartod_salinity_rate_of_change_flag
-├──qartod_salinity_spike_flag
-├──qartod_temperature_flat_line_flag
-├──qartod_temperature_gross_range_flag
-├──qartod_temperature_primary_flag
-├──qartod_temperature_rate_of_change_flag
-├──qartod_temperature_spike_flag
-├──salinity
-├──salinity_qc
-├──temperature
-├──temperature_qc
-├──time_qc
-├──time_uv
-├──time_uv_qc
-├──u
-├──u_qc
-├──v
-└──v_qc
-</pre></div>
-</div>
-</div>
 </div>
 <p>Where the variables <code class="docutils literal notranslate"><span class="pre">s</span></code> identifies the sequential data.</p>
 <div class="cell docutils container">
@@ -968,209 +779,11 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>pydap.model.SequenceType
-</pre></div>
-</div>
-</div>
 </div>
 <p>We can further identify each individual glider data by looking at <code class="docutils literal notranslate"><span class="pre">profile_id</span></code>, a value that is unique for each of them. You can inspect the raw values are follows</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="nb">id</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iterdata</span><span class="p">()]</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[np.int32(1),
- np.int32(2),
- np.int32(3),
- np.int32(4),
- np.int32(5),
- np.int32(6),
- np.int32(7),
- np.int32(8),
- np.int32(9),
- np.int32(10),
- np.int32(11),
- np.int32(12),
- np.int32(13),
- np.int32(14),
- np.int32(15),
- np.int32(16),
- np.int32(17),
- np.int32(18),
- np.int32(19),
- np.int32(20),
- np.int32(21),
- np.int32(22),
- np.int32(23),
- np.int32(24),
- np.int32(25),
- np.int32(26),
- np.int32(27),
- np.int32(28),
- np.int32(29),
- np.int32(30),
- np.int32(31),
- np.int32(32),
- np.int32(33),
- np.int32(34),
- np.int32(35),
- np.int32(36),
- np.int32(37),
- np.int32(38),
- np.int32(39),
- np.int32(40),
- np.int32(41),
- np.int32(42),
- np.int32(43),
- np.int32(44),
- np.int32(45),
- np.int32(46),
- np.int32(47),
- np.int32(48),
- np.int32(49),
- np.int32(50),
- np.int32(51),
- np.int32(52),
- np.int32(53),
- np.int32(54),
- np.int32(55),
- np.int32(56),
- np.int32(57),
- np.int32(58),
- np.int32(59),
- np.int32(60),
- np.int32(61),
- np.int32(62),
- np.int32(63),
- np.int32(64),
- np.int32(65),
- np.int32(66),
- np.int32(67),
- np.int32(68),
- np.int32(69),
- np.int32(70),
- np.int32(71),
- np.int32(72),
- np.int32(73),
- np.int32(74),
- np.int32(75),
- np.int32(76),
- np.int32(77),
- np.int32(78),
- np.int32(79),
- np.int32(80),
- np.int32(81),
- np.int32(82),
- np.int32(83),
- np.int32(84),
- np.int32(85),
- np.int32(86),
- np.int32(87),
- np.int32(88),
- np.int32(89),
- np.int32(90),
- np.int32(91),
- np.int32(92),
- np.int32(93),
- np.int32(94),
- np.int32(95),
- np.int32(96),
- np.int32(97),
- np.int32(98),
- np.int32(99),
- np.int32(100),
- np.int32(101),
- np.int32(102),
- np.int32(103),
- np.int32(104),
- np.int32(105),
- np.int32(106),
- np.int32(107),
- np.int32(108),
- np.int32(109),
- np.int32(110),
- np.int32(111),
- np.int32(112),
- np.int32(113),
- np.int32(114),
- np.int32(115),
- np.int32(116),
- np.int32(117),
- np.int32(118),
- np.int32(119),
- np.int32(120),
- np.int32(121),
- np.int32(122),
- np.int32(123),
- np.int32(124),
- np.int32(125),
- np.int32(126),
- np.int32(127),
- np.int32(128),
- np.int32(129),
- np.int32(130),
- np.int32(131),
- np.int32(132),
- np.int32(133),
- np.int32(134),
- np.int32(135),
- np.int32(136),
- np.int32(137),
- np.int32(138),
- np.int32(139),
- np.int32(140),
- np.int32(141),
- np.int32(142),
- np.int32(143),
- np.int32(144),
- np.int32(145),
- np.int32(146),
- np.int32(147),
- np.int32(148),
- np.int32(149),
- np.int32(150),
- np.int32(151),
- np.int32(152),
- np.int32(153),
- np.int32(154),
- np.int32(155),
- np.int32(156),
- np.int32(157),
- np.int32(158),
- np.int32(159),
- np.int32(160),
- np.int32(161),
- np.int32(162),
- np.int32(163),
- np.int32(164),
- np.int32(165),
- np.int32(166),
- np.int32(167),
- np.int32(168),
- np.int32(169),
- np.int32(170),
- np.int32(171),
- np.int32(172),
- np.int32(173),
- np.int32(174),
- np.int32(175),
- np.int32(176),
- np.int32(177),
- np.int32(178),
- np.int32(179),
- np.int32(180),
- np.int32(181),
- np.int32(182),
- np.int32(183),
- np.int32(184),
- np.int32(185),
- np.int32(186),
- np.int32(187),
- np.int32(188),
- np.int32(189)]
 </pre></div>
 </div>
 </div>
@@ -1186,18 +799,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_FillValue&#39;: -1,
- &#39;actual_range&#39;: [1, 189],
- &#39;cf_role&#39;: &#39;profile_id&#39;,
- &#39;comment&#39;: &#39;Sequential profile number within the trajectory.  This value is unique in each file that is part of a single trajectory/deployment.&#39;,
- &#39;ioos_category&#39;: &#39;Identifier&#39;,
- &#39;long_name&#39;: &#39;Profile ID&#39;,
- &#39;valid_max&#39;: 2147483647,
- &#39;valid_min&#39;: 1}
-</pre></div>
-</div>
-</div>
 </div>
 <p>The first thing we’d like to do is limit our very simple analysis. We consider only a single glider and only inspect the variables <code class="docutils literal notranslate"><span class="pre">depth</span></code> and <code class="docutils literal notranslate"><span class="pre">temperature</span></code>. This is simlar to <code class="docutils literal notranslate"><span class="pre">column-wise</span> <span class="pre">selection</span></code>.</p>
 <p>To accomplish that we use pydap’s simple logic as follows</p>
@@ -1206,15 +807,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seq</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)]</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">seq</span><span class="p">))</span>
 <span class="n">seq</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;pydap.model.SequenceType&#39;&gt;
-.s
-├──profile_id
-├──depth
-└──temperature
 </pre></div>
 </div>
 </div>
@@ -1228,11 +820,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">glid5</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)][</span><span class="n">seq</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">==</span><span class="mi">5</span><span class="p">]</span>
 <span class="n">glid5</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;SequenceType with children &#39;profile_id&#39;, &#39;depth&#39;, &#39;temperature&#39;&gt;
 </pre></div>
 </div>
 </div>
@@ -1266,9 +853,6 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mf">12.5</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">);</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="_images/bbf620bf4240db25c29c8c64221eee4b8addb8b3fd829588cd75b67dd1c65dbf.png" src="_images/bbf620bf4240db25c29c8c64221eee4b8addb8b3fd829588cd75b67dd1c65dbf.png" />
 </div>
 </div>
 </section>
@@ -1457,14 +1041,16 @@ like in the <a class="reference internal" href="#cas"><span class="xref myst">CA
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
 
-  <div class="sidebar-secondary-item">
-  <div class="page-toc tocsection onthispage">
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> Contents
   </div>
-  <nav class="bd-toc-nav page-toc">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#groups">Groups</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arrays-grids">Arrays / Grids</a><ul class="nav section-nav flex-column">
@@ -1534,8 +1120,8 @@ By OPeNDAP Community
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
 
   <footer class="bd-footer">
   </footer>
