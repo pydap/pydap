@@ -3,7 +3,30 @@
 # <font size="7"><span style='color:#0066cc'> **Welcome to pydap**<font size="3">
 
 
-`pydap` is a Python implementation of the **Data Access Protocol** (**DAP**), also known as [OPeNDAP](http://www.opendap.org/). You can use `pydap` as a client to access thousands of scientific datasets available via OPeNDAP servers in a secure, transparent, and efficient way through the internet, or you can set up `pydap` as a server to make your data available through the internet via a URL.
+`pydap` is a Python implementation of the **Data Access Protocol** (**DAP**), also known as [OPeNDAP](http://www.opendap.org/). Pydap's client now offers robust `DAP4` support, enabling data users to access thousands of scientific datasets available via OPeNDAP servers in a secure, transparent, and efficient way through the internet, or you can set up `pydap` as a server to make your data available through the internet via a URL.
+
+## <font size="5.5"><span style='color:#ff6666'>**Pydap now supports DAP4 data access in a much performant way!**<font size="3">
+
+
+| ![WhyPydap](/images/benchmark1.png) |
+|:--:|
+| *Figure 1. Benchmarks comparing data streaming using Xarray (with pydap as backend engine) and pydap-only new streaming API. Non-supported implies data cannot be aggregated directly with Xarray* |
+
+| ![WhyPydap](/images/benchmark2.png) |
+|:--:|
+| *Figure 2. Benchmarks comparing data streaming using Xarray (with pydap as backend) and pydap-only new streaming API. Non-supported implies data cannot be aggregated directly with Xarray* |
+
+To read more about benchmarks displayed above, and the specifics on how pydap's performance has been improved over the past year, check out [this free zenodo resource](https://zenodo.org/records/19372926)
+
+The following tutorials show `pydap-only` streaming  workflows from NASA Earthdata:
+
+- [Access Calipso L2 data](./notebooks/CalipsoL2_access)
+- [Access TEMPO Near-Real-Time data](./notebooks/TEMPO_NRT)
+- [Access Ecostress data](./notebooks/Ecostress)
+- [Access DAYMET data](./notebooks/DAYMET)
+
+Dive into the documentation to learn best practices for accessing remote data on OPeNDAP servers.
+
 
 ## <font size="5.5"><span style='color:#ff6666'>**Why OPeNDAP?**<font size="3">
 
@@ -18,35 +41,6 @@ Beginner OPeNDAP users may rapidly find themselves spending the time to better u
 3. Differences between DAP2 / DAP4 protocol.
 
 
-## <font size="5.5"><span style='color:#ff6666'>**Why Pydap?**<font size="3">
-
-
-| ![WhyPydap](/images/WhyPydap.png) |
-|:--:|
-| *Figure 1. Comparison of 3 ways to download a subset of a remote file exposed by an OPeNDAP server. In this example, the data covers the globe, and a Pydap user downloads a subset by slicing the pydap array. To use Pydap via Xarray, one can specify `engine='pydap'` (`Note` the scheme change to the URL). A traditional OPeNDAP native approach is to use a `Data Request Form` to manually construct the URL along with its Constraint Expression.* |
-
-
-`Pydap` enables access to data on OPeNDAP servers in a pythonic way, and enables interactive and exploratory subsetting of remote datasets. To summarize `pydap`:
-
-1. Builds Contraint Expression for the user. This is done by slicing an array (See [Figure 1](WhyPydap)).
-2. Escapes URL parameters to safely transmit data use over the internet.
-3. Can fetch binary data from DAP2 (`.dods`) and DAP4 (`.dap`) data servers, turning it to a numerical `numpy` array.
-4. Covers the DAP2 and (*Most*) of the DAP4 data model.
-5. Is being developed and maintained by members of the OPeNDAP team, with open communication with Unidata.
-
-
-```{note}
-Knowledge of how to construct URLs with Constraint Expressions remains important, as this can speed up (`Pydap`'s) dataset creation and therefore data exploration.
-```
-
-## <font size="5.5"><span style='color:#ff6666'>**What Pydap is not**<font size="3">
-
-`Pydap` is very lightweight, which is great! However, as a result it offers little parallelism, compute or plotting. Most of that is enabled by external Python libraries. However, `Pydap` remains a `backend engine for xarray`, which fosters a growing community of users and developers, and `xarray` can add parallelism via `Dask` / `Coiled` and plotting via its own use of `matplotlib`.
-
-That said, we recognize that `pydap` native approaches may provide boost in performance, before using the resulting pydap dataset to create `xarray` dataset. And so `pydap` remains under development! See the [What's New](NEWS) section If you would like to contribute, head to the [issue tracker](https://github.com/pydap/pydap/issues). We welcome contributions! You can pick an existing issue, open a new one. You can contribute to improve our code base, or you can also help improve our documentation with a tutorial example!
-
-
-Dive into the documentation to learn best practices for accessing remote data on OPeNDAP servers.
 
 ```{tableofcontents}
 ```
