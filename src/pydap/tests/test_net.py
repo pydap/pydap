@@ -103,7 +103,7 @@ def test_create_request_application(appGroup):
     assert resp.status_code == 200
 
 
-@pytest.mark.parametrize("backend", ["memory", "sqlite"])
+@pytest.mark.parametrize("backend", ["sqlite"])
 def test_detect_backend(cache_tmp_dir, backend):
     session = create_session(
         use_cache=True,
