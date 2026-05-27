@@ -1,0 +1,111 @@
+Traceback (most recent call last):
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1323, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+%%time
+theta_salt_ds = xr.open_mfdataset(
+    Temp_2017, 
+    engine='pydap',
+    session=cache_session, 
+    parallel=True, 
+    combine='nested', 
+    concat_dim='time',
+)
+------------------
+
+----- stdout -----
+CPU times: user 901 ms, sys: 121 ms, total: 1.02 s
+Wall time: 5.69 s
+------------------
+
+Traceback [36m(most recent call last)[39m:
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/IPython/core/interactiveshell.py:3748[39m in [95mrun_code[39m
+    exec(code_obj, self.user_global_ns, self.user_ns)
+
+  Cell [92mIn[21][39m[92m, line 1[39m
+    get_ipython().run_cell_magic('time', '', "theta_salt_ds = xr.open_mfdataset(\n    Temp_2017, \n    engine='pydap',\n    session=cache_session, \n    parallel=True, \n    combine='nested', \n    concat_dim='time',\n)\n")
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/IPython/core/interactiveshell.py:2594[39m in [95mrun_cell_magic[39m
+    result = fn(*args, **kwargs)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/IPython/core/magics/execution.py:1448[39m in [95mtime[39m
+    raise captured_exception
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/IPython/core/magics/execution.py:1412[39m in [95mtime[39m
+    exec(code, glob, local_ns)
+
+  File [92m<timed exec>:1[39m
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/api.py:1662[39m in [95mopen_mfdataset[39m
+    datasets, closers = dask.compute(datasets, closers)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/dask/base.py:685[39m in [95mcompute[39m
+    results = schedule(expr, keys, **kwargs)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/api.py:607[39m in [95mopen_dataset[39m
+    backend_ds = backend.open_dataset(
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:292[39m in [95mopen_dataset[39m
+    ds = store_entrypoint.open_dataset(
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/store.py:42[39m in [95mopen_dataset[39m
+    vars, attrs = filename_or_obj.load()
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/common.py:370[39m in [95mload[39m
+    (_decode_variable_name(k), v) for k, v in self.get_variables().items()
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:194[39m in [95mget_variables[39m
+    return FrozenDict((k, self.open_store_variable(self.ds[k])) for k in _vars)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/core/utils.py:522[39m in [95mFrozenDict[39m
+    return Frozen(dict(*args, **kwargs))
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:194[39m in [95m<genexpr>[39m
+    return FrozenDict((k, self.open_store_variable(self.ds[k])) for k in _vars)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:169[39m in [95mopen_store_variable[39m
+    data_array = self._get_data_array(var)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:228[39m in [95m_get_data_array[39m
+    get_batch_data(var, checksums=self._checksums)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1265[39m in [95mget_batch_data[39m
+    fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1427[39m in [95mfetch_consolidated[39m
+    pyds = UNPACKDAP4DATA(r, checksums=checksums).dataset
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/handlers/dap.py:1079[39m in [95m__init__[39m
+    dataset = dmr_to_dataset(self.dmr, dmrVersion=self.dmrVersion)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/parsers/dmr.py:257[39m in [95mdmr_to_dataset[39m
+    dom_et = copy.deepcopy(DMRParser(dmr, dmrVersion=dmrVersion).node)
+
+  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/parsers/dmr.py:413[39m in [95m__init__[39m
+    self.node = ET.fromstring(_dmr)
+
+[36m  [39m[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/xml/etree/ElementTree.py:1350[39m[36m in [39m[35mXML[39m
+[31m    [39m[31mparser.feed(text)[39m
+
+  [36mFile [39m[32m<string>[39m
+[31m    [39m
+[31mParseError[39m[31m:[39m syntax error: line 1, column 0
+
+

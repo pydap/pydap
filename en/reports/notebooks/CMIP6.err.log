@@ -1,0 +1,99 @@
+Traceback (most recent call last):
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
+    executenb(
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1323, in execute
+    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
+    return loop.run_until_complete(inner)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
+    return future.result()
+           ^^^^^^^^^^^^^^^
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
+    await self.async_execute_cell(
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
+    await self._check_raise_for_error(cell, cell_index, exec_reply)
+  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
+    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
+nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
+------------------
+# download the entire GridType, single snapshot
+GTS = ds['ts'][0, :, :]
+GTS
+------------------
+
+
+[31m---------------------------------------------------------------------------[39m
+[31mProtocolError[39m                             Traceback (most recent call last)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/models.py:937[39m, in [36mResponse.iter_content.<locals>.generate[39m[34m()[39m
+[32m    936[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m937[39m     [38;5;28;01myield from[39;00m [38;5;28mself[39m.raw.stream(chunk_size, decode_content=[38;5;28;01mTrue[39;00m)
+[32m    938[39m [38;5;28;01mexcept[39;00m ProtocolError [38;5;28;01mas[39;00m e:
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/response.py:1260[39m, in [36mHTTPResponse.stream[39m[34m(self, amt, decode_content)[39m
+[32m   1259[39m [38;5;28;01mif[39;00m [38;5;28mself[39m.chunked [38;5;129;01mand[39;00m [38;5;28mself[39m.supports_chunked_reads():
+[32m-> [39m[32m1260[39m     [38;5;28;01myield from[39;00m [38;5;28mself[39m.read_chunked(amt, decode_content=decode_content)
+[32m   1261[39m [38;5;28;01melse[39;00m:
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/response.py:1430[39m, in [36mHTTPResponse.read_chunked[39m[34m(self, amt, decode_content)[39m
+[32m   1429[39m [38;5;28;01melse[39;00m:
+[32m-> [39m[32m1430[39m     [30;43mself[39;49m[30;43m.[39;49m[30;43m_update_chunk_length[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m   1431[39m     [38;5;28mself[39m._uncached_read_occurred = [38;5;28;01mTrue[39;00m
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/response.py:1354[39m, in [36mHTTPResponse._update_chunk_length[39m[34m(self)[39m
+[32m   1352[39m [38;5;28;01melse[39;00m:
+[32m   1353[39m     [38;5;66;03m# Truncated at start of next chunk[39;00m
+[32m-> [39m[32m1354[39m     [38;5;28;01mraise[39;00m ProtocolError([33m"[39m[33mResponse ended prematurely[39m[33m"[39m) [38;5;28;01mfrom[39;00m[38;5;250m [39m[38;5;28;01mNone[39;00m
+
+[31mProtocolError[39m: Response ended prematurely
+
+During handling of the above exception, another exception occurred:
+
+[31mChunkedEncodingError[39m                      Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[10][39m[32m, line 2[39m
+[32m      1[39m [38;5;66;03m# download the entire GridType, single snapshot[39;00m
+[32m----> [39m[32m2[39m GTS = ds[[33m'ts'[39m][[32m0[39m, :, :]
+[32m      3[39m GTS
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:1475[39m, in [36mGridType.__getitem__[39m[34m(self, key)[39m
+[32m   1473[39m     [38;5;28;01mif[39;00m [38;5;28mtype[39m([38;5;28mself[39m.data).[34m__name__[39m == [33m"[39m[33mBaseProxyDap4[39m[33m"[39m:
+[32m   1474[39m         [38;5;28;01mpass[39;00m
+[32m-> [39m[32m1475[39m     var.data = [30;43mself[39;49m[30;43m[[39;49m[30;43mvar[39;49m[30;43m.[39;49m[30;43mname[39;49m[30;43m][39;49m[30;43m.[39;49m[30;43mdata[39;49m[30;43m[[39;49m[30;43mslice_[39;49m[30;43m][39;49m
+[32m   1476[39m [38;5;28;01mreturn[39;00m out
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/handlers/dap.py:490[39m, in [36mBaseProxyDap2.__getitem__[39m[34m(self, index)[39m
+[32m    480[39m logger.info([33m"[39m[33mFetching URL: [39m[38;5;132;01m%s[39;00m[33m"[39m % url)
+[32m    481[39m r = GET(
+[32m    482[39m     url,
+[32m    483[39m     [38;5;28mself[39m.application,
+[32m   (...)[39m[32m    487[39m     get_kwargs=[38;5;28mself[39m.get_kwargs,
+[32m    488[39m )
+[32m--> [39m[32m490[39m dds, data = [30;43msafe_dds_and_data[39;49m[30;43m([39;49m[30;43mr[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43muser_charset[39;49m[30;43m)[39;49m
+[32m    492[39m [38;5;66;03m# Parse received dataset:[39;00m
+[32m    493[39m dataset = dds_to_dataset(dds)
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/handlers/dap.py:419[39m, in [36msafe_dds_and_data[39m[34m(r, user_charset)[39m
+[32m    417[39m     dds = _dds.decode(get_charset(r, user_charset))
+[32m    418[39m [38;5;28;01melif[39;00m [38;5;28misinstance[39m(r, requests.Response):
+[32m--> [39m[32m419[39m     raw = [30;43mr[39;49m[30;43m.[39;49m[30;43mcontent[39;49m
+[32m    420[39m     _dds, data = raw.split([33mb[39m[33m"[39m[38;5;130;01m\n[39;00m[33mData:[39m[38;5;130;01m\n[39;00m[33m"[39m, [32m1[39m)
+[32m    421[39m     dds = _dds.decode(user_charset)
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/models.py:1042[39m, in [36mResponse.content[39m[34m(self)[39m
+[32m   1040[39m         [38;5;28mself[39m._content = [38;5;28;01mNone[39;00m
+[32m   1041[39m     [38;5;28;01melse[39;00m:
+[32m-> [39m[32m1042[39m         [38;5;28mself[39m._content = [30;43mb[39;49m[30;43m"[39;49m[30;43m"[39;49m[30;43m.[39;49m[30;43mjoin[39;49m[30;43m([39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43miter_content[39;49m[30;43m([39;49m[30;43mCONTENT_CHUNK_SIZE[39;49m[30;43m)[39;49m[30;43m)[39;49m [38;5;129;01mor[39;00m [33mb[39m[33m"[39m[33m"[39m
+[32m   1044[39m [38;5;28mself[39m._content_consumed = [38;5;28;01mTrue[39;00m
+[32m   1045[39m [38;5;66;03m# don't need to release the connection; that's been handled by urllib3[39;00m
+[32m   1046[39m [38;5;66;03m# since we exhausted the data.[39;00m
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/models.py:939[39m, in [36mResponse.iter_content.<locals>.generate[39m[34m()[39m
+[32m    937[39m     [38;5;28;01myield from[39;00m [38;5;28mself[39m.raw.stream(chunk_size, decode_content=[38;5;28;01mTrue[39;00m)
+[32m    938[39m [38;5;28;01mexcept[39;00m ProtocolError [38;5;28;01mas[39;00m e:
+[32m--> [39m[32m939[39m     [38;5;28;01mraise[39;00m ChunkedEncodingError(e)
+[32m    940[39m [38;5;28;01mexcept[39;00m DecodeError [38;5;28;01mas[39;00m e:
+[32m    941[39m     [38;5;28;01mraise[39;00m ContentDecodingError(e)
+
+[31mChunkedEncodingError[39m: Response ended prematurely
+

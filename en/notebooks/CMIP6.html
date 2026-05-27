@@ -185,7 +185,7 @@ gtag("config", "G-EN2VD1J32L");
 </ul>
 </details></li>
 <li class="toctree-l1"><a class="reference internal" href="GetCMRURLS.html">Discovering OPeNDAP URLs from NASA’s Earthdata</a></li>
-<li class="toctree-l1"><a class="reference internal" href="CalipsoL2_access.html">Access Cloud and Aerosol Lidar CALIPSP Data from NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalipsoL2_access.html">Access Cloud and Aerosol Lidar CALIPSO Data from NASA Earthdata</a></li>
 <li class="toctree-l1"><a class="reference internal" href="DAYMET.html">Access Precipitation data from DAYMET</a></li>
 
 <li class="toctree-l1"><a class="reference internal" href="Ecostress.html">Access Land Surface Temperature Data From ECOSTRESS</a></li>
@@ -435,8 +435,8 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 56.5 ms, sys: 6.91 ms, total: 63.4 ms
-Wall time: 664 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 58.2 ms, sys: 6.3 ms, total: 64.5 ms
+Wall time: 688 ms
 </pre></div>
 </div>
 </div>
@@ -572,7 +572,78 @@ Wall time: 664 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;GridType with array &#39;ts&#39; and maps &#39;time&#39;, &#39;lat&#39;, &#39;lon&#39;&gt;
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ProtocolError</span><span class="g g-Whitespace">                             </span>Traceback (most recent call last)
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/models.py:937,</span> in <span class="ni">Response.iter_content.&lt;locals&gt;.generate</span><span class="nt">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">936</span> <span class="k">try</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">937</span>     <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">decode_content</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">938</span> <span class="k">except</span> <span class="n">ProtocolError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/response.py:1260,</span> in <span class="ni">HTTPResponse.stream</span><span class="nt">(self, amt, decode_content)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1259</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chunked</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">supports_chunked_reads</span><span class="p">():</span>
+<span class="ne">-&gt; </span><span class="mi">1260</span>     <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_chunked</span><span class="p">(</span><span class="n">amt</span><span class="p">,</span> <span class="n">decode_content</span><span class="o">=</span><span class="n">decode_content</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1261</span> <span class="k">else</span><span class="p">:</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/response.py:1430,</span> in <span class="ni">HTTPResponse.read_chunked</span><span class="nt">(self, amt, decode_content)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1429</span> <span class="k">else</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1430</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_update_chunk_length</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1431</span>     <span class="bp">self</span><span class="o">.</span><span class="n">_uncached_read_occurred</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/response.py:1354,</span> in <span class="ni">HTTPResponse._update_chunk_length</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1352</span> <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1353</span>     <span class="c1"># Truncated at start of next chunk</span>
+<span class="ne">-&gt; </span><span class="mi">1354</span>     <span class="k">raise</span> <span class="n">ProtocolError</span><span class="p">(</span><span class="s2">&quot;Response ended prematurely&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
+
+<span class="ne">ProtocolError</span>: Response ended prematurely
+
+<span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="ne">ChunkedEncodingError</span><span class="g g-Whitespace">                      </span>Traceback (most recent call last)
+<span class="n">Cell</span> <span class="n">In</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">line</span> <span class="mi">2</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="c1"># download the entire GridType, single snapshot</span>
+<span class="ne">----&gt; </span><span class="mi">2</span> <span class="n">GTS</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;ts&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> <span class="n">GTS</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/model.py:1475,</span> in <span class="ni">GridType.__getitem__</span><span class="nt">(self, key)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1473</span>     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;BaseProxyDap4&quot;</span><span class="p">:</span>
+<span class="g g-Whitespace">   </span><span class="mi">1474</span>         <span class="k">pass</span>
+<span class="ne">-&gt; </span><span class="mi">1475</span>     <span class="n">var</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">slice_</span><span class="p">]</span>
+<span class="g g-Whitespace">   </span><span class="mi">1476</span> <span class="k">return</span> <span class="n">out</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/handlers/dap.py:490,</span> in <span class="ni">BaseProxyDap2.__getitem__</span><span class="nt">(self, index)</span>
+<span class="g g-Whitespace">    </span><span class="mi">480</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Fetching URL: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">url</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">481</span> <span class="n">r</span> <span class="o">=</span> <span class="n">GET</span><span class="p">(</span>
+<span class="g g-Whitespace">    </span><span class="mi">482</span>     <span class="n">url</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">483</span>     <span class="bp">self</span><span class="o">.</span><span class="n">application</span><span class="p">,</span>
+   <span class="p">(</span><span class="o">...</span><span class="p">)</span>    <span class="mi">487</span>     <span class="n">get_kwargs</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_kwargs</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">488</span> <span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">490</span> <span class="n">dds</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">safe_dds_and_data</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">user_charset</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">492</span> <span class="c1"># Parse received dataset:</span>
+<span class="g g-Whitespace">    </span><span class="mi">493</span> <span class="n">dataset</span> <span class="o">=</span> <span class="n">dds_to_dataset</span><span class="p">(</span><span class="n">dds</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/handlers/dap.py:419,</span> in <span class="ni">safe_dds_and_data</span><span class="nt">(r, user_charset)</span>
+<span class="g g-Whitespace">    </span><span class="mi">417</span>     <span class="n">dds</span> <span class="o">=</span> <span class="n">_dds</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">get_charset</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">user_charset</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">418</span> <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">requests</span><span class="o">.</span><span class="n">Response</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">419</span>     <span class="n">raw</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">content</span>
+<span class="g g-Whitespace">    </span><span class="mi">420</span>     <span class="n">_dds</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">b</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Data:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">421</span>     <span class="n">dds</span> <span class="o">=</span> <span class="n">_dds</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">user_charset</span><span class="p">)</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/models.py:1042,</span> in <span class="ni">Response.content</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1040</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_content</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="g g-Whitespace">   </span><span class="mi">1041</span>     <span class="k">else</span><span class="p">:</span>
+<span class="ne">-&gt; </span><span class="mi">1042</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_content</span> <span class="o">=</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter_content</span><span class="p">(</span><span class="n">CONTENT_CHUNK_SIZE</span><span class="p">))</span> <span class="ow">or</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span>
+<span class="g g-Whitespace">   </span><span class="mi">1044</span> <span class="bp">self</span><span class="o">.</span><span class="n">_content_consumed</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="g g-Whitespace">   </span><span class="mi">1045</span> <span class="c1"># don&#39;t need to release the connection; that&#39;s been handled by urllib3</span>
+<span class="g g-Whitespace">   </span><span class="mi">1046</span> <span class="c1"># since we exhausted the data.</span>
+
+<span class="nn">File ~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/models.py:939,</span> in <span class="ni">Response.iter_content.&lt;locals&gt;.generate</span><span class="nt">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">937</span>     <span class="k">yield from</span> <span class="bp">self</span><span class="o">.</span><span class="n">raw</span><span class="o">.</span><span class="n">stream</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">decode_content</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">938</span> <span class="k">except</span> <span class="n">ProtocolError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">939</span>     <span class="k">raise</span> <span class="n">ChunkedEncodingError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">940</span> <span class="k">except</span> <span class="n">DecodeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">941</span>     <span class="k">raise</span> <span class="n">ContentDecodingError</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<span class="ne">ChunkedEncodingError</span>: Response ended prematurely
 </pre></div>
 </div>
 </div>
@@ -583,21 +654,6 @@ Wall time: 664 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;standard_name&#39;: &#39;surface_temperature&#39;,
- &#39;long_name&#39;: &#39;Surface Temperature&#39;,
- &#39;comment&#39;: &#39;Temperature of the lower boundary of the atmosphere&#39;,
- &#39;units&#39;: &#39;K&#39;,
- &#39;original_name&#39;: &#39;GT&#39;,
- &#39;cell_methods&#39;: &#39;area: time: mean&#39;,
- &#39;cell_measures&#39;: &#39;area: areacella&#39;,
- &#39;history&#39;: &#39;2019-08-20T21:03:55Z altered by CMOR: Reordered dimensions, original order: lat lon time. 2019-08-20T21:03:55Z altered by CMOR: replaced missing value flag (1e+38) and corresponding data with standard missing value (1e+20).&#39;,
- &#39;missing_value&#39;: 1e+20,
- &#39;_FillValue&#39;: 1e+20,
- &#39;_ChunkSizes&#39;: [1, 64, 128]}
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -605,20 +661,10 @@ Wall time: 664 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, 64, 128)
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">GTS</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">GTS</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(4, list)
 </pre></div>
 </div>
 </div>
@@ -642,12 +688,6 @@ Wall time: 664 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 45.8 ms, sys: 4.78 ms, total: 50.6 ms
-Wall time: 643 ms
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -657,20 +697,10 @@ Wall time: 643 ms
 </pre></div>
 </div>
 </div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;BaseType with data array(shape=(1, 64, 128), dtype=&gt;f4)&gt;
-</pre></div>
-</div>
-</div>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">TS</span><span class="o">.</span><span class="n">data</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">TS</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>(1, numpy.ndarray)
 </pre></div>
 </div>
 </div>
@@ -701,9 +731,6 @@ Wall time: 643 ms
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-</div>
-<div class="cell_output docutils container">
-<img alt="../_images/bc82be18934e8eb4b353ee3bce2ef55b061fb2b6eee636004a3533271a6be783.png" src="../_images/bc82be18934e8eb4b353ee3bce2ef55b061fb2b6eee636004a3533271a6be783.png" />
 </div>
 </div>
 <p><strong>Fig 1</strong>. Global Near surface temperature on a (longitude)-periodic domain.</p>
