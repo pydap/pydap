@@ -5,7 +5,7 @@ import json
 import numpy as np
 import pytest
 
-from pydap.handlers.sequence_handler import (
+from pydap.handlers.tabular_handler import (
     SequenceHandler,
     _reader_spec_for_path,
     dataframe_to_dataset,
