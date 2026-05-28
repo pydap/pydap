@@ -30,82 +30,330 @@ theta_salt_ds = xr.open_mfdataset(
 ------------------
 
 ----- stdout -----
-CPU times: user 901 ms, sys: 121 ms, total: 1.02 s
-Wall time: 5.69 s
+CPU times: user 1.05 s, sys: 141 ms, total: 1.19 s
+Wall time: 8.46 s
 ------------------
 
-Traceback [36m(most recent call last)[39m:
+[31m---------------------------------------------------------------------------[39m
+[31mResponseError[39m                             Traceback (most recent call last)
+[31mResponseError[39m: too many 500 error responses
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/IPython/core/interactiveshell.py:3748[39m in [95mrun_code[39m
-    exec(code_obj, self.user_global_ns, self.user_ns)
+The above exception was the direct cause of the following exception:
 
-  Cell [92mIn[21][39m[92m, line 1[39m
-    get_ipython().run_cell_magic('time', '', "theta_salt_ds = xr.open_mfdataset(\n    Temp_2017, \n    engine='pydap',\n    session=cache_session, \n    parallel=True, \n    combine='nested', \n    concat_dim='time',\n)\n")
+[31mMaxRetryError[39m                             Traceback (most recent call last)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/adapters.py:696[39m, in [36mHTTPAdapter.send[39m[34m(self, request, stream, timeout, verify, cert, proxies)[39m
+[32m    695[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m696[39m     resp = [30;43mconn[39;49m[30;43m.[39;49m[30;43murlopen[39;49m[30;43m([39;49m
+[32m    697[39m [30;43m        [39;49m[30;43mmethod[39;49m[30;43m=[39;49m[30;43mrequest[39;49m[30;43m.[39;49m[30;43mmethod[39;49m[30;43m,[39;49m
+[32m    698[39m [30;43m        [39;49m[30;43murl[39;49m[30;43m=[39;49m[30;43murl[39;49m[30;43m,[39;49m
+[32m    699[39m [30;43m        [39;49m[30;43mbody[39;49m[30;43m=[39;49m[30;43mrequest[39;49m[30;43m.[39;49m[30;43mbody[39;49m[30;43m,[39;49m[30;43m  [39;49m[30;43;03m# type: ignore[arg-type]  # urllib3 stubs don't accept Iterable[bytes | str][39;49;00m
+[32m    700[39m [30;43m        [39;49m[30;43mheaders[39;49m[30;43m=[39;49m[30;43mrequest[39;49m[30;43m.[39;49m[30;43mheaders[39;49m[30;43m,[39;49m[30;43m  [39;49m[30;43;03m# type: ignore[arg-type]  # urllib3#3072[39;49;00m
+[32m    701[39m [30;43m        [39;49m[30;43mredirect[39;49m[30;43m=[39;49m[30;43;01mFalse[39;49;00m[30;43m,[39;49m
+[32m    702[39m [30;43m        [39;49m[30;43massert_same_host[39;49m[30;43m=[39;49m[30;43;01mFalse[39;49;00m[30;43m,[39;49m
+[32m    703[39m [30;43m        [39;49m[30;43mpreload_content[39;49m[30;43m=[39;49m[30;43;01mFalse[39;49;00m[30;43m,[39;49m
+[32m    704[39m [30;43m        [39;49m[30;43mdecode_content[39;49m[30;43m=[39;49m[30;43;01mFalse[39;49;00m[30;43m,[39;49m
+[32m    705[39m [30;43m        [39;49m[30;43mretries[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mmax_retries[39;49m[30;43m,[39;49m
+[32m    706[39m [30;43m        [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mresolved_timeout[39;49m[30;43m,[39;49m
+[32m    707[39m [30;43m        [39;49m[30;43mchunked[39;49m[30;43m=[39;49m[30;43mchunked[39;49m[30;43m,[39;49m
+[32m    708[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    710[39m [38;5;28;01mexcept[39;00m (ProtocolError, [38;5;167;01mOSError[39;00m) [38;5;28;01mas[39;00m err:
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/IPython/core/interactiveshell.py:2594[39m in [95mrun_cell_magic[39m
-    result = fn(*args, **kwargs)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/connectionpool.py:955[39m, in [36mHTTPConnectionPool.urlopen[39m[34m(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)[39m
+[32m    954[39m     log.debug([33m"[39m[33mRetry: [39m[38;5;132;01m%s[39;00m[33m"[39m, url)
+[32m--> [39m[32m955[39m     [38;5;28;01mreturn[39;00m [30;43mself[39;49m[30;43m.[39;49m[30;43murlopen[39;49m[30;43m([39;49m
+[32m    956[39m [30;43m        [39;49m[30;43mmethod[39;49m[30;43m,[39;49m
+[32m    957[39m [30;43m        [39;49m[30;43murl[39;49m[30;43m,[39;49m
+[32m    958[39m [30;43m        [39;49m[30;43mbody[39;49m[30;43m,[39;49m
+[32m    959[39m [30;43m        [39;49m[30;43mheaders[39;49m[30;43m,[39;49m
+[32m    960[39m [30;43m        [39;49m[30;43mretries[39;49m[30;43m=[39;49m[30;43mretries[39;49m[30;43m,[39;49m
+[32m    961[39m [30;43m        [39;49m[30;43mredirect[39;49m[30;43m=[39;49m[30;43mredirect[39;49m[30;43m,[39;49m
+[32m    962[39m [30;43m        [39;49m[30;43massert_same_host[39;49m[30;43m=[39;49m[30;43massert_same_host[39;49m[30;43m,[39;49m
+[32m    963[39m [30;43m        [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout[39;49m[30;43m,[39;49m
+[32m    964[39m [30;43m        [39;49m[30;43mpool_timeout[39;49m[30;43m=[39;49m[30;43mpool_timeout[39;49m[30;43m,[39;49m
+[32m    965[39m [30;43m        [39;49m[30;43mrelease_conn[39;49m[30;43m=[39;49m[30;43mrelease_conn[39;49m[30;43m,[39;49m
+[32m    966[39m [30;43m        [39;49m[30;43mchunked[39;49m[30;43m=[39;49m[30;43mchunked[39;49m[30;43m,[39;49m
+[32m    967[39m [30;43m        [39;49m[30;43mbody_pos[39;49m[30;43m=[39;49m[30;43mbody_pos[39;49m[30;43m,[39;49m
+[32m    968[39m [30;43m        [39;49m[30;43mpreload_content[39;49m[30;43m=[39;49m[30;43mpreload_content[39;49m[30;43m,[39;49m
+[32m    969[39m [30;43m        [39;49m[30;43mdecode_content[39;49m[30;43m=[39;49m[30;43mdecode_content[39;49m[30;43m,[39;49m
+[32m    970[39m [30;43m        [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mresponse_kw[39;49m[30;43m,[39;49m
+[32m    971[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    973[39m [38;5;28;01mreturn[39;00m response
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/IPython/core/magics/execution.py:1448[39m in [95mtime[39m
-    raise captured_exception
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/connectionpool.py:955[39m, in [36mHTTPConnectionPool.urlopen[39m[34m(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)[39m
+[32m    954[39m     log.debug([33m"[39m[33mRetry: [39m[38;5;132;01m%s[39;00m[33m"[39m, url)
+[32m--> [39m[32m955[39m     [38;5;28;01mreturn[39;00m [30;43mself[39;49m[30;43m.[39;49m[30;43murlopen[39;49m[30;43m([39;49m
+[32m    956[39m [30;43m        [39;49m[30;43mmethod[39;49m[30;43m,[39;49m
+[32m    957[39m [30;43m        [39;49m[30;43murl[39;49m[30;43m,[39;49m
+[32m    958[39m [30;43m        [39;49m[30;43mbody[39;49m[30;43m,[39;49m
+[32m    959[39m [30;43m        [39;49m[30;43mheaders[39;49m[30;43m,[39;49m
+[32m    960[39m [30;43m        [39;49m[30;43mretries[39;49m[30;43m=[39;49m[30;43mretries[39;49m[30;43m,[39;49m
+[32m    961[39m [30;43m        [39;49m[30;43mredirect[39;49m[30;43m=[39;49m[30;43mredirect[39;49m[30;43m,[39;49m
+[32m    962[39m [30;43m        [39;49m[30;43massert_same_host[39;49m[30;43m=[39;49m[30;43massert_same_host[39;49m[30;43m,[39;49m
+[32m    963[39m [30;43m        [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout[39;49m[30;43m,[39;49m
+[32m    964[39m [30;43m        [39;49m[30;43mpool_timeout[39;49m[30;43m=[39;49m[30;43mpool_timeout[39;49m[30;43m,[39;49m
+[32m    965[39m [30;43m        [39;49m[30;43mrelease_conn[39;49m[30;43m=[39;49m[30;43mrelease_conn[39;49m[30;43m,[39;49m
+[32m    966[39m [30;43m        [39;49m[30;43mchunked[39;49m[30;43m=[39;49m[30;43mchunked[39;49m[30;43m,[39;49m
+[32m    967[39m [30;43m        [39;49m[30;43mbody_pos[39;49m[30;43m=[39;49m[30;43mbody_pos[39;49m[30;43m,[39;49m
+[32m    968[39m [30;43m        [39;49m[30;43mpreload_content[39;49m[30;43m=[39;49m[30;43mpreload_content[39;49m[30;43m,[39;49m
+[32m    969[39m [30;43m        [39;49m[30;43mdecode_content[39;49m[30;43m=[39;49m[30;43mdecode_content[39;49m[30;43m,[39;49m
+[32m    970[39m [30;43m        [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mresponse_kw[39;49m[30;43m,[39;49m
+[32m    971[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    973[39m [38;5;28;01mreturn[39;00m response
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/IPython/core/magics/execution.py:1412[39m in [95mtime[39m
-    exec(code, glob, local_ns)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/connectionpool.py:945[39m, in [36mHTTPConnectionPool.urlopen[39m[34m(self, method, url, body, headers, retries, redirect, assert_same_host, timeout, pool_timeout, release_conn, chunked, body_pos, preload_content, decode_content, **response_kw)[39m
+[32m    944[39m [38;5;28;01mtry[39;00m:
+[32m--> [39m[32m945[39m     retries = [30;43mretries[39;49m[30;43m.[39;49m[30;43mincrement[39;49m[30;43m([39;49m[30;43mmethod[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43murl[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mresponse[39;49m[30;43m=[39;49m[30;43mresponse[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m_pool[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m)[39;49m
+[32m    946[39m [38;5;28;01mexcept[39;00m MaxRetryError:
 
-  File [92m<timed exec>:1[39m
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/urllib3/util/retry.py:543[39m, in [36mRetry.increment[39m[34m(self, method, url, response, error, _pool, _stacktrace)[39m
+[32m    542[39m     reason = error [38;5;129;01mor[39;00m ResponseError(cause)
+[32m--> [39m[32m543[39m     [38;5;28;01mraise[39;00m MaxRetryError(_pool, url, reason) [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mreason[39;00m  [38;5;66;03m# type: ignore[arg-type][39;00m
+[32m    545[39m log.debug([33m"[39m[33mIncremented Retry for (url=[39m[33m'[39m[38;5;132;01m%s[39;00m[33m'[39m[33m): [39m[38;5;132;01m%r[39;00m[33m"[39m, url, new_retry)
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/api.py:1662[39m in [95mopen_mfdataset[39m
-    datasets, closers = dask.compute(datasets, closers)
+[31mMaxRetryError[39m: HTTPSConnectionPool(host='opendap.earthdata.nasa.gov', port=443): Max retries exceeded with url: /providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.dap?dap4.ce=i%5B0%3A1%3A89%5D%3Bj%5B0%3A1%3A89%5D%3Bk%5B0%3A1%3A49%5D%3Btile%5B0%3A1%3A12%5D&dap4.checksum=true (Caused by ResponseError('too many 500 error responses'))
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/dask/base.py:685[39m in [95mcompute[39m
-    results = schedule(expr, keys, **kwargs)
+During handling of the above exception, another exception occurred:
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/api.py:607[39m in [95mopen_dataset[39m
-    backend_ds = backend.open_dataset(
+[31mRetryError[39m                                Traceback (most recent call last)
+[36mCell[39m[36m [39m[32mIn[21][39m[32m, line 1[39m
+[32m----> [39m[32m1[39m get_ipython().run_cell_magic([33m'time'[39m, [33m''[39m, [33m"theta_salt_ds = xr.open_mfdataset(\n    Temp_2017, \n    engine='pydap',\n    session=cache_session, \n    parallel=True, \n    combine='nested', \n    concat_dim='time',\n)\n"[39m)
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:292[39m in [95mopen_dataset[39m
-    ds = store_entrypoint.open_dataset(
+[36mFile [39m[32m<timed exec>:1[39m
+[32m----> [39m[32m1[39m [33m'Could not get source, probably due dynamically evaluated source code.'[39m
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/store.py:42[39m in [95mopen_dataset[39m
-    vars, attrs = filename_or_obj.load()
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/api.py:1662[39m, in [36mopen_mfdataset[39m[34m(paths, chunks, concat_dim, compat, preprocess, engine, data_vars, coords, combine, parallel, join, attrs_file, combine_attrs, errors, **kwargs)[39m
+[32m   1657[39m     datasets = [preprocess(ds) [38;5;28;01mfor[39;00m ds [38;5;129;01min[39;00m datasets]
+[32m   1659[39m [38;5;28;01mif[39;00m parallel:
+[32m   1660[39m     [38;5;66;03m# calling compute here will return the datasets/file_objs lists,[39;00m
+[32m   1661[39m     [38;5;66;03m# the underlying datasets will still be stored as dask arrays[39;00m
+[32m-> [39m[32m1662[39m     datasets, closers = [30;43mdask[39;49m[30;43m.[39;49m[30;43mcompute[39;49m[30;43m([39;49m[30;43mdatasets[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mclosers[39;49m[30;43m)[39;49m
+[32m   1664[39m [38;5;66;03m# Combine all datasets, closing them in case of a ValueError[39;00m
+[32m   1665[39m [38;5;28;01mtry[39;00m:
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/common.py:370[39m in [95mload[39m
-    (_decode_variable_name(k), v) for k, v in self.get_variables().items()
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/dask/base.py:685[39m, in [36mcompute[39m[34m(traverse, optimize_graph, scheduler, get, *args, **kwargs)[39m
+[32m    682[39m     expr = expr.optimize()
+[32m    683[39m     keys = [38;5;28mlist[39m(flatten(expr.__dask_keys__()))
+[32m--> [39m[32m685[39m     results = [30;43mschedule[39;49m[30;43m([39;49m[30;43mexpr[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mkeys[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m    687[39m [38;5;28;01mreturn[39;00m repack(results)
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:194[39m in [95mget_variables[39m
-    return FrozenDict((k, self.open_store_variable(self.ds[k])) for k in _vars)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/api.py:607[39m, in [36mopen_dataset[39m[34m(filename_or_obj, engine, chunks, cache, decode_cf, mask_and_scale, decode_times, decode_timedelta, use_cftime, concat_characters, decode_coords, drop_variables, create_default_indexes, inline_array, chunked_array_type, from_array_kwargs, backend_kwargs, **kwargs)[39m
+[32m    595[39m decoders = _resolve_decoders_kwargs(
+[32m    596[39m     decode_cf,
+[32m    597[39m     open_backend_dataset_parameters=backend.open_dataset_parameters,
+[32m   (...)[39m[32m    603[39m     decode_coords=decode_coords,
+[32m    604[39m )
+[32m    606[39m overwrite_encoded_chunks = kwargs.pop([33m"[39m[33moverwrite_encoded_chunks[39m[33m"[39m, [38;5;28;01mNone[39;00m)
+[32m--> [39m[32m607[39m backend_ds = [30;43mbackend[39;49m[30;43m.[39;49m[30;43mopen_dataset[39;49m[30;43m([39;49m
+[32m    608[39m [30;43m    [39;49m[30;43mfilename_or_obj[39;49m[30;43m,[39;49m
+[32m    609[39m [30;43m    [39;49m[30;43mdrop_variables[39;49m[30;43m=[39;49m[30;43mdrop_variables[39;49m[30;43m,[39;49m
+[32m    610[39m [30;43m    [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mdecoders[39;49m[30;43m,[39;49m
+[32m    611[39m [30;43m    [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m,[39;49m
+[32m    612[39m [30;43m[39;49m[30;43m)[39;49m
+[32m    613[39m ds = _dataset_from_backend_dataset(
+[32m    614[39m     backend_ds,
+[32m    615[39m     filename_or_obj,
+[32m   (...)[39m[32m    626[39m     **kwargs,
+[32m    627[39m )
+[32m    628[39m [38;5;28;01mreturn[39;00m ds
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/core/utils.py:522[39m in [95mFrozenDict[39m
-    return Frozen(dict(*args, **kwargs))
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:292[39m, in [36mPydapBackendEntrypoint.open_dataset[39m[34m(self, filename_or_obj, mask_and_scale, decode_times, concat_characters, decode_coords, drop_variables, use_cftime, decode_timedelta, group, application, session, output_grid, timeout, verify, user_charset, checksums)[39m
+[32m    290[39m store_entrypoint = StoreBackendEntrypoint()
+[32m    291[39m [38;5;28;01mwith[39;00m close_on_error(store):
+[32m--> [39m[32m292[39m     ds = [30;43mstore_entrypoint[39;49m[30;43m.[39;49m[30;43mopen_dataset[39;49m[30;43m([39;49m
+[32m    293[39m [30;43m        [39;49m[30;43mstore[39;49m[30;43m,[39;49m
+[32m    294[39m [30;43m        [39;49m[30;43mmask_and_scale[39;49m[30;43m=[39;49m[30;43mmask_and_scale[39;49m[30;43m,[39;49m
+[32m    295[39m [30;43m        [39;49m[30;43mdecode_times[39;49m[30;43m=[39;49m[30;43mdecode_times[39;49m[30;43m,[39;49m
+[32m    296[39m [30;43m        [39;49m[30;43mconcat_characters[39;49m[30;43m=[39;49m[30;43mconcat_characters[39;49m[30;43m,[39;49m
+[32m    297[39m [30;43m        [39;49m[30;43mdecode_coords[39;49m[30;43m=[39;49m[30;43mdecode_coords[39;49m[30;43m,[39;49m
+[32m    298[39m [30;43m        [39;49m[30;43mdrop_variables[39;49m[30;43m=[39;49m[30;43mdrop_variables[39;49m[30;43m,[39;49m
+[32m    299[39m [30;43m        [39;49m[30;43muse_cftime[39;49m[30;43m=[39;49m[30;43muse_cftime[39;49m[30;43m,[39;49m
+[32m    300[39m [30;43m        [39;49m[30;43mdecode_timedelta[39;49m[30;43m=[39;49m[30;43mdecode_timedelta[39;49m[30;43m,[39;49m
+[32m    301[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    302[39m     [38;5;28;01mreturn[39;00m ds
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:194[39m in [95m<genexpr>[39m
-    return FrozenDict((k, self.open_store_variable(self.ds[k])) for k in _vars)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/store.py:42[39m, in [36mStoreBackendEntrypoint.open_dataset[39m[34m(self, filename_or_obj, mask_and_scale, decode_times, concat_characters, decode_coords, drop_variables, set_indexes, use_cftime, decode_timedelta)[39m
+[32m     27[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mopen_dataset[39m(
+[32m     28[39m     [38;5;28mself[39m,
+[32m     29[39m     filename_or_obj: T_PathFileOrDataStore,
+[32m   (...)[39m[32m     38[39m     decode_timedelta=[38;5;28;01mNone[39;00m,
+[32m     39[39m ) -> Dataset:
+[32m     40[39m     [38;5;28;01massert[39;00m [38;5;28misinstance[39m(filename_or_obj, AbstractDataStore)
+[32m---> [39m[32m42[39m     [38;5;28mvars[39m, attrs = [30;43mfilename_or_obj[39;49m[30;43m.[39;49m[30;43mload[39;49m[30;43m([39;49m[30;43m)[39;49m
+[32m     43[39m     encoding = filename_or_obj.get_encoding()
+[32m     45[39m     [38;5;28mvars[39m, attrs, coord_names = conventions.decode_cf_variables(
+[32m     46[39m         [38;5;28mvars[39m,
+[32m     47[39m         attrs,
+[32m   (...)[39m[32m     54[39m         decode_timedelta=decode_timedelta,
+[32m     55[39m     )
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:169[39m in [95mopen_store_variable[39m
-    data_array = self._get_data_array(var)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/common.py:370[39m, in [36mAbstractDataStore.load[39m[34m(self)[39m
+[32m    351[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mload[39m([38;5;28mself[39m):
+[32m    352[39m [38;5;250m    [39m[33;03m"""[39;00m
+[32m    353[39m [33;03m    This loads the variables and attributes simultaneously.[39;00m
+[32m    354[39m [33;03m    A centralized loading function makes it easier to create[39;00m
+[32m   (...)[39m[32m    367[39m [33;03m    are requested, so care should be taken to make sure its fast.[39;00m
+[32m    368[39m [33;03m    """[39;00m
+[32m    369[39m     variables = FrozenDict(
+[32m--> [39m[32m370[39m         (_decode_variable_name(k), v) [38;5;28;01mfor[39;00m k, v [38;5;129;01min[39;00m [30;43mself[39;49m[30;43m.[39;49m[30;43mget_variables[39;49m[30;43m([39;49m[30;43m)[39;49m.items()
+[32m    371[39m     )
+[32m    372[39m     attributes = FrozenDict([38;5;28mself[39m.get_attrs())
+[32m    373[39m     [38;5;28;01mreturn[39;00m variables, attributes
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:228[39m in [95m_get_data_array[39m
-    get_batch_data(var, checksums=self._checksums)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:194[39m, in [36mPydapDataStore.get_variables[39m[34m(self)[39m
+[32m    185[39m     [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mpydap[39;00m[34;01m.[39;00m[34;01mmodel[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m GroupType
+[32m    187[39m     _vars = [
+[32m    188[39m         var
+[32m    189[39m         [38;5;28;01mfor[39;00m var [38;5;129;01min[39;00m [38;5;28mself[39m.ds.keys()
+[32m    190[39m         [38;5;66;03m# check the key is not a BaseType or GridType[39;00m
+[32m    191[39m         [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m [38;5;28misinstance[39m([38;5;28mself[39m.ds[var], GroupType)
+[32m    192[39m     ]
+[32m--> [39m[32m194[39m [38;5;28;01mreturn[39;00m [30;43mFrozenDict[39;49m[30;43m([39;49m[30;43m([39;49m[30;43mk[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mopen_store_variable[39;49m[30;43m([39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mds[39;49m[30;43m[[39;49m[30;43mk[39;49m[30;43m][39;49m[30;43m)[39;49m[30;43m)[39;49m[30;43m [39;49m[30;43;01mfor[39;49;00m[30;43m [39;49m[30;43mk[39;49m[30;43m [39;49m[30;43;01min[39;49;00m[30;43m [39;49m[30;43m_vars[39;49m[30;43m)[39;49m
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1265[39m in [95mget_batch_data[39m
-    fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/core/utils.py:522[39m, in [36mFrozenDict[39m[34m(*args, **kwargs)[39m
+[32m    521[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mFrozenDict[39m(*args, **kwargs) -> Frozen:
+[32m--> [39m[32m522[39m     [38;5;28;01mreturn[39;00m Frozen([30;43mdict[39;49m[30;43m([39;49m[30;43m*[39;49m[30;43margs[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m)
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1427[39m in [95mfetch_consolidated[39m
-    pyds = UNPACKDAP4DATA(r, checksums=checksums).dataset
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:194[39m, in [36m<genexpr>[39m[34m(.0)[39m
+[32m    185[39m     [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mpydap[39;00m[34;01m.[39;00m[34;01mmodel[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m GroupType
+[32m    187[39m     _vars = [
+[32m    188[39m         var
+[32m    189[39m         [38;5;28;01mfor[39;00m var [38;5;129;01min[39;00m [38;5;28mself[39m.ds.keys()
+[32m    190[39m         [38;5;66;03m# check the key is not a BaseType or GridType[39;00m
+[32m    191[39m         [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m [38;5;28misinstance[39m([38;5;28mself[39m.ds[var], GroupType)
+[32m    192[39m     ]
+[32m--> [39m[32m194[39m [38;5;28;01mreturn[39;00m FrozenDict((k, [30;43mself[39;49m[30;43m.[39;49m[30;43mopen_store_variable[39;49m[30;43m([39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43mds[39;49m[30;43m[[39;49m[30;43mk[39;49m[30;43m][39;49m[30;43m)[39;49m) [38;5;28;01mfor[39;00m k [38;5;129;01min[39;00m _vars)
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/handlers/dap.py:1079[39m in [95m__init__[39m
-    dataset = dmr_to_dataset(self.dmr, dmrVersion=self.dmrVersion)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:169[39m, in [36mPydapDataStore.open_store_variable[39m[34m(self, var)[39m
+[32m    163[39m [38;5;28;01mif[39;00m (
+[32m    164[39m     [38;5;28mself[39m._protocol == [33m"[39m[33mdap4[39m[33m"[39m
+[32m    165[39m     [38;5;129;01mand[39;00m var.name [38;5;129;01min[39;00m dimensions
+[32m    166[39m     [38;5;129;01mand[39;00m [38;5;28mhasattr[39m(var, [33m"[39m[33mdataset[39m[33m"[39m)  [38;5;66;03m# only True for pydap>3.5.5[39;00m
+[32m    167[39m ):
+[32m    168[39m     var.dataset.enable_batch_mode()
+[32m--> [39m[32m169[39m     data_array = [30;43mself[39;49m[30;43m.[39;49m[30;43m_get_data_array[39;49m[30;43m([39;49m[30;43mvar[39;49m[30;43m)[39;49m
+[32m    170[39m     data = indexing.LazilyIndexedArray(data_array)
+[32m    171[39m     var.dataset.disable_batch_mode()
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/parsers/dmr.py:257[39m in [95mdmr_to_dataset[39m
-    dom_et = copy.deepcopy(DMRParser(dmr, dmrVersion=dmrVersion).node)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/xarray/backends/pydap_.py:228[39m, in [36mPydapDataStore._get_data_array[39m[34m(self, var)[39m
+[32m    223[39m [38;5;28;01mfrom[39;00m[38;5;250m [39m[34;01mpydap[39;00m[34;01m.[39;00m[34;01mclient[39;00m[38;5;250m [39m[38;5;28;01mimport[39;00m get_batch_data
+[32m    225[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m var._is_data_loaded():
+[32m    226[39m     [38;5;66;03m# data has not been deserialized yet[39;00m
+[32m    227[39m     [38;5;66;03m# runs only once per store/hierarchy[39;00m
+[32m--> [39m[32m228[39m     [30;43mget_batch_data[39;49m[30;43m([39;49m[30;43mvar[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mchecksums[39;49m[30;43m=[39;49m[30;43mself[39;49m[30;43m.[39;49m[30;43m_checksums[39;49m[30;43m)[39;49m
+[32m    230[39m [38;5;28;01mreturn[39;00m [38;5;28mself[39m.dataset[var.id].data
 
-  File [92m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/parsers/dmr.py:413[39m in [95m__init__[39m
-    self.node = ET.fromstring(_dmr)
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1265[39m, in [36mget_batch_data[39m[34m(array, cache_urls, checksums, key)[39m
+[32m   1261[39m [38;5;28;01mtry[39;00m:
+[32m   1262[39m     [38;5;28;01mif[39;00m [33m"[39m[33mconsolidated[39m[33m"[39m [38;5;129;01min[39;00m ds.dataset.session.headers [38;5;129;01mand[39;00m set_dims:
+[32m   1263[39m         [38;5;66;03m# need to add a check that consolidated has[39;00m
+[32m   1264[39m         [38;5;66;03m# been performed on that collection.[39;00m
+[32m-> [39m[32m1265[39m         [30;43mfetch_consolidated[39;49m[30;43m([39;49m[30;43mds[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mcache_urls[39;49m[30;43m=[39;49m[30;43mcache_urls[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mchecksums[39;49m[30;43m=[39;49m[30;43mchecksums[39;49m[30;43m)[39;49m
+[32m   1266[39m     [38;5;28;01melse[39;00m:
+[32m   1267[39m         dataset = ds.dataset
 
-[36m  [39m[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/xml/etree/ElementTree.py:1350[39m[36m in [39m[35mXML[39m
-[31m    [39m[31mparser.feed(text)[39m
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1422[39m, in [36mfetch_consolidated[39m[34m(ds, cache_urls, checksums)[39m
+[32m   1420[39m [38;5;28;01mfor[39;00m URL [38;5;129;01min[39;00m [38;5;28mset[39m(dap_urls):
+[32m   1421[39m     [38;5;28;01mtry[39;00m:
+[32m-> [39m[32m1422[39m         r = [30;43msession[39;49m[30;43m.[39;49m[30;43mget[39;49m[30;43m([39;49m[30;43mURL[39;49m[30;43m)[39;49m
+[32m   1423[39m     [38;5;28;01mexcept[39;00m (sqlite3.InterfaceError, [38;5;167;01mEOFError[39;00m):
+[32m   1424[39m         [38;5;28;01mwith[39;00m session.cache_disabled():
 
-  [36mFile [39m[32m<string>[39m
-[31m    [39m
-[31mParseError[39m[31m:[39m syntax error: line 1, column 0
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests_cache/session.py:133[39m, in [36mCacheMixin.get[39m[34m(self, url, params, **kwargs)[39m
+[32m    131[39m [38;5;28;01mdef[39;00m[38;5;250m [39m[34mget[39m([38;5;28mself[39m, url: [38;5;28mstr[39m, params=[38;5;28;01mNone[39;00m, **kwargs) -> AnyResponse:  [38;5;66;03m# type: ignore[39;00m
+[32m    132[39m     kwargs.setdefault([33m'[39m[33mallow_redirects[39m[33m'[39m, [38;5;28;01mTrue[39;00m)
+[32m--> [39m[32m133[39m     [38;5;28;01mreturn[39;00m [30;43mself[39;49m[30;43m.[39;49m[30;43mrequest[39;49m[30;43m([39;49m[30;43m'[39;49m[30;43mGET[39;49m[30;43m'[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43murl[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mparams[39;49m[30;43m=[39;49m[30;43mparams[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
 
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests_cache/session.py:189[39m, in [36mCacheMixin.request[39m[34m(self, method, url, headers, expire_after, only_if_cached, refresh, force_refresh, *args, **kwargs)[39m
+[32m    187[39m headers = set_request_headers(headers, expire_after, only_if_cached, refresh, force_refresh)
+[32m    188[39m [38;5;28;01mwith[39;00m patch_form_boundary() [38;5;28;01mif[39;00m kwargs.get([33m'[39m[33mfiles[39m[33m'[39m) [38;5;28;01melse[39;00m nullcontext():
+[32m--> [39m[32m189[39m     [38;5;28;01mreturn[39;00m [30;43msuper[39;49m[30;43m([39;49m[30;43m)[39;49m[30;43m.[39;49m[30;43mrequest[39;49m[30;43m([39;49m[30;43mmethod[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43murl[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43margs[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mheaders[39;49m[30;43m=[39;49m[30;43mheaders[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/sessions.py:651[39m, in [36mSession.request[39m[34m(self, method, url, params, data, headers, cookies, files, auth, timeout, allow_redirects, proxies, hooks, stream, verify, cert, json)[39m
+[32m    646[39m send_kwargs = {
+[32m    647[39m     [33m"[39m[33mtimeout[39m[33m"[39m: timeout,
+[32m    648[39m     [33m"[39m[33mallow_redirects[39m[33m"[39m: allow_redirects,
+[32m    649[39m }
+[32m    650[39m send_kwargs.update(settings)
+[32m--> [39m[32m651[39m resp = [30;43mself[39;49m[30;43m.[39;49m[30;43msend[39;49m[30;43m([39;49m[30;43mprep[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43msend_kwargs[39;49m[30;43m)[39;49m
+[32m    653[39m [38;5;28;01mreturn[39;00m resp
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests_cache/session.py:255[39m, in [36mCacheMixin.send[39m[34m(self, request, expire_after, only_if_cached, refresh, force_refresh, **kwargs)[39m
+[32m    253[39m     response = [38;5;28mself[39m._resend(request, actions, cached_response, **kwargs)  [38;5;66;03m# type: ignore[39;00m
+[32m    254[39m [38;5;28;01melif[39;00m actions.send_request:
+[32m--> [39m[32m255[39m     response = [30;43mself[39;49m[30;43m.[39;49m[30;43m_send_and_cache[39;49m[30;43m([39;49m[30;43mrequest[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mactions[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mcached_response[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m    256[39m [38;5;28;01melse[39;00m:
+[32m    257[39m     response = cached_response  [38;5;66;03m# type: ignore  # Guaranteed to be non-None by this point[39;00m
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests_cache/session.py:279[39m, in [36mCacheMixin._send_and_cache[39m[34m(self, request, actions, cached_response, **kwargs)[39m
+[32m    275[39m [38;5;250m[39m[33;03m"""Send a request and cache the response, unless disabled by settings or headers.[39;00m
+[32m    276[39m [33;03mIf applicable, also handle conditional requests.[39;00m
+[32m    277[39m [33;03m"""[39;00m
+[32m    278[39m request = actions.update_request(request)
+[32m--> [39m[32m279[39m response = [30;43msuper[39;49m[30;43m([39;49m[30;43m)[39;49m[30;43m.[39;49m[30;43msend[39;49m[30;43m([39;49m[30;43mrequest[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m    280[39m actions.update_from_response(response)
+[32m    282[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m actions.skip_write:
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/sessions.py:805[39m, in [36mSession.send[39m[34m(self, request, **kwargs)[39m
+[32m    802[39m [38;5;28;01mif[39;00m allow_redirects:
+[32m    803[39m     [38;5;66;03m# Redirect resolving generator.[39;00m
+[32m    804[39m     gen = [38;5;28mself[39m.resolve_redirects(r, request, **kwargs)
+[32m--> [39m[32m805[39m     history = [30;43m[[39;49m[30;43mresp[39;49m[30;43m [39;49m[30;43;01mfor[39;49;00m[30;43m [39;49m[30;43mresp[39;49m[30;43m [39;49m[30;43;01min[39;49;00m[30;43m [39;49m[30;43mgen[39;49m[30;43m][39;49m
+[32m    806[39m [38;5;28;01melse[39;00m:
+[32m    807[39m     history = []
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/sessions.py:805[39m, in [36m<listcomp>[39m[34m(.0)[39m
+[32m    802[39m [38;5;28;01mif[39;00m allow_redirects:
+[32m    803[39m     [38;5;66;03m# Redirect resolving generator.[39;00m
+[32m    804[39m     gen = [38;5;28mself[39m.resolve_redirects(r, request, **kwargs)
+[32m--> [39m[32m805[39m     history = [30;43m[[39;49m[30;43mresp[39;49m[30;43m [39;49m[30;43;01mfor[39;49;00m[30;43m [39;49m[30;43mresp[39;49m[30;43m [39;49m[30;43;01min[39;49;00m[30;43m [39;49m[30;43mgen[39;49m[30;43m][39;49m
+[32m    806[39m [38;5;28;01melse[39;00m:
+[32m    807[39m     history = []
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/sessions.py:292[39m, in [36mSessionRedirectMixin.resolve_redirects[39m[34m(self, resp, req, stream, timeout, verify, cert, proxies, yield_requests, **adapter_kwargs)[39m
+[32m    290[39m     [38;5;28;01myield[39;00m req  [38;5;66;03m# type: ignore[misc]  # Internal use only, returns PreparedRequest[39;00m
+[32m    291[39m [38;5;28;01melse[39;00m:
+[32m--> [39m[32m292[39m     resp = [30;43mself[39;49m[30;43m.[39;49m[30;43msend[39;49m[30;43m([39;49m
+[32m    293[39m [30;43m        [39;49m[30;43mreq[39;49m[30;43m,[39;49m
+[32m    294[39m [30;43m        [39;49m[30;43mstream[39;49m[30;43m=[39;49m[30;43mstream[39;49m[30;43m,[39;49m
+[32m    295[39m [30;43m        [39;49m[30;43mtimeout[39;49m[30;43m=[39;49m[30;43mtimeout[39;49m[30;43m,[39;49m
+[32m    296[39m [30;43m        [39;49m[30;43mverify[39;49m[30;43m=[39;49m[30;43mverify[39;49m[30;43m,[39;49m
+[32m    297[39m [30;43m        [39;49m[30;43mcert[39;49m[30;43m=[39;49m[30;43mcert[39;49m[30;43m,[39;49m
+[32m    298[39m [30;43m        [39;49m[30;43mproxies[39;49m[30;43m=[39;49m[30;43mproxies[39;49m[30;43m,[39;49m
+[32m    299[39m [30;43m        [39;49m[30;43mallow_redirects[39;49m[30;43m=[39;49m[30;43;01mFalse[39;49;00m[30;43m,[39;49m
+[32m    300[39m [30;43m        [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43madapter_kwargs[39;49m[30;43m,[39;49m
+[32m    301[39m [30;43m    [39;49m[30;43m)[39;49m
+[32m    303[39m     extract_cookies_to_jar([38;5;28mself[39m.cookies, prepared_request, resp.raw)
+[32m    305[39m     [38;5;66;03m# extract redirect url, if any, for the next loop[39;00m
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests_cache/session.py:255[39m, in [36mCacheMixin.send[39m[34m(self, request, expire_after, only_if_cached, refresh, force_refresh, **kwargs)[39m
+[32m    253[39m     response = [38;5;28mself[39m._resend(request, actions, cached_response, **kwargs)  [38;5;66;03m# type: ignore[39;00m
+[32m    254[39m [38;5;28;01melif[39;00m actions.send_request:
+[32m--> [39m[32m255[39m     response = [30;43mself[39;49m[30;43m.[39;49m[30;43m_send_and_cache[39;49m[30;43m([39;49m[30;43mrequest[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mactions[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mcached_response[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m    256[39m [38;5;28;01melse[39;00m:
+[32m    257[39m     response = cached_response  [38;5;66;03m# type: ignore  # Guaranteed to be non-None by this point[39;00m
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests_cache/session.py:279[39m, in [36mCacheMixin._send_and_cache[39m[34m(self, request, actions, cached_response, **kwargs)[39m
+[32m    275[39m [38;5;250m[39m[33;03m"""Send a request and cache the response, unless disabled by settings or headers.[39;00m
+[32m    276[39m [33;03mIf applicable, also handle conditional requests.[39;00m
+[32m    277[39m [33;03m"""[39;00m
+[32m    278[39m request = actions.update_request(request)
+[32m--> [39m[32m279[39m response = [30;43msuper[39;49m[30;43m([39;49m[30;43m)[39;49m[30;43m.[39;49m[30;43msend[39;49m[30;43m([39;49m[30;43mrequest[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m    280[39m actions.update_from_response(response)
+[32m    282[39m [38;5;28;01mif[39;00m [38;5;129;01mnot[39;00m actions.skip_write:
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/sessions.py:784[39m, in [36mSession.send[39m[34m(self, request, **kwargs)[39m
+[32m    781[39m start = preferred_clock()
+[32m    783[39m [38;5;66;03m# Send the request[39;00m
+[32m--> [39m[32m784[39m r = [30;43madapter[39;49m[30;43m.[39;49m[30;43msend[39;49m[30;43m([39;49m[30;43mrequest[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43m*[39;49m[30;43m*[39;49m[30;43mkwargs[39;49m[30;43m)[39;49m
+[32m    786[39m [38;5;66;03m# Total elapsed time of the request (approximately)[39;00m
+[32m    787[39m elapsed = preferred_clock() - start
+
+[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/requests/adapters.py:720[39m, in [36mHTTPAdapter.send[39m[34m(self, request, stream, timeout, verify, cert, proxies)[39m
+[32m    717[39m         [38;5;28;01mraise[39;00m ConnectTimeout(e, request=request)
+[32m    719[39m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(e.reason, ResponseError):
+[32m--> [39m[32m720[39m     [38;5;28;01mraise[39;00m RetryError(e, request=request)
+[32m    722[39m [38;5;28;01mif[39;00m [38;5;28misinstance[39m(e.reason, _ProxyError):
+[32m    723[39m     [38;5;28;01mraise[39;00m ProxyError(e, request=request)
+
+[31mRetryError[39m: HTTPSConnectionPool(host='opendap.earthdata.nasa.gov', port=443): Max retries exceeded with url: /providers/POCLOUD/collections/ECCO%20Ocean%20Temperature%20and%20Salinity%20-%20Monthly%20Mean%20llc90%20Grid%20(Version%204%20Release%204)/granules/OCEAN_TEMPERATURE_SALINITY_mon_mean_2017-01_ECCO_V4r4_native_llc0090.dap?dap4.ce=i%5B0%3A1%3A89%5D%3Bj%5B0%3A1%3A89%5D%3Bk%5B0%3A1%3A49%5D%3Btile%5B0%3A1%3A12%5D&dap4.checksum=true (Caused by ResponseError('too many 500 error responses'))
 

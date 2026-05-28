@@ -1,266 +1,0 @@
-Traceback (most recent call last):
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
-    executenb(
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1323, in execute
-    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
-    return loop.run_until_complete(inner)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
-    return future.result()
-           ^^^^^^^^^^^^^^^
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
-    await self.async_execute_cell(
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
-    await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
-    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
-nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
-------------------
-%%time
-dap_to_netcdf(cmr_urls, session=my_session, output_path = output_path, 
-              keep_variables=["/L2 LSTE Metadata/QAPercentCloudCover", 
-                              "/L2 LSTE Metadata/QAPercentGoodQuality",
-                              "/StandardMetadata/DayNightFlag"]
-             )
-------------------
-
------ stderr -----
-Downloading (188 remote files):   0%|                                                                    | 0/188 [00:00<?, ?url/s]
------ stderr -----
-Downloading (188 remote files):   1%|▎                                                           | 1/188 [00:04<15:07,  4.85s/url]
------ stderr -----
-Downloading (188 remote files):   1%|▋                                                           | 2/188 [00:05<06:53,  2.22s/url]
------ stderr -----
-Downloading (188 remote files):   2%|▉                                                           | 3/188 [00:05<04:06,  1.33s/url]
------ stderr -----
-Downloading (188 remote files):   2%|█▎                                                          | 4/188 [00:05<02:36,  1.18url/s]
------ stderr -----
-Downloading (188 remote files):   3%|█▉                                                          | 6/188 [00:05<01:21,  2.23url/s]
------ stderr -----
-Downloading (188 remote files):   4%|██▏                                                         | 7/188 [00:06<01:16,  2.35url/s]
------ stderr -----
-Downloading (188 remote files):   4%|██▌                                                         | 8/188 [00:06<01:01,  2.94url/s]
------ stderr -----
-Downloading (188 remote files):   6%|███▍                                                       | 11/188 [00:06<00:31,  5.67url/s]
------ stderr -----
-Downloading (188 remote files):  10%|█████▉                                                     | 19/188 [00:06<00:11, 15.22url/s]
------ stderr -----
-Downloading (188 remote files):  15%|████████▊                                                  | 28/188 [00:06<00:05, 26.73url/s]
------ stderr -----
-Downloading (188 remote files):  18%|██████████▋                                                | 34/188 [00:10<00:33,  4.65url/s]
------ stderr -----
-Downloading (188 remote files):  20%|███████████▉                                               | 38/188 [00:10<00:26,  5.66url/s]
------ stderr -----
-Downloading (188 remote files):  22%|████████████▊                                              | 41/188 [00:10<00:21,  6.76url/s]
------ stderr -----
-Downloading (188 remote files):  23%|█████████████▊                                             | 44/188 [00:10<00:19,  7.32url/s]
------ stderr -----
-Downloading (188 remote files):  25%|██████████████▊                                            | 47/188 [00:10<00:17,  8.19url/s]
------ stderr -----
-Downloading (188 remote files):  27%|███████████████▋                                           | 50/188 [00:11<00:19,  7.07url/s]
------ stderr -----
-Downloading (188 remote files):  28%|████████████████▎                                          | 52/188 [00:11<00:17,  7.87url/s]
------ stderr -----
-Downloading (188 remote files):  30%|█████████████████▉                                         | 57/188 [00:11<00:10, 11.94url/s]
------ stderr -----
-Downloading (188 remote files):  32%|██████████████████▊                                        | 60/188 [00:11<00:10, 12.79url/s]
------ stderr -----
-Downloading (188 remote files):  34%|███████████████████▊                                       | 63/188 [00:12<00:13,  9.14url/s]
------ stderr -----
-Downloading (188 remote files):  35%|████████████████████▍                                      | 65/188 [00:12<00:15,  7.78url/s]
------ stderr -----
-Downloading (188 remote files):  36%|█████████████████████                                      | 67/188 [00:13<00:21,  5.52url/s]
------ stderr -----
-Downloading (188 remote files):  37%|█████████████████████▋                                     | 69/188 [00:13<00:21,  5.54url/s]
------ stderr -----
-Downloading (188 remote files):  37%|█████████████████████▉                                     | 70/188 [00:14<00:20,  5.82url/s]
------ stderr -----
-Downloading (188 remote files):  38%|██████████████████████▌                                    | 72/188 [00:14<00:16,  6.88url/s]
------ stderr -----
-Downloading (188 remote files):  39%|██████████████████████▉                                    | 73/188 [00:14<00:21,  5.32url/s]
------ stderr -----
-Downloading (188 remote files):  40%|███████████████████████▌                                   | 75/188 [00:14<00:18,  6.05url/s]
------ stderr -----
-Downloading (188 remote files):  41%|████████████████████████▏                                  | 77/188 [00:15<00:19,  5.80url/s]
------ stderr -----
-Downloading (188 remote files):  41%|████████████████████████▍                                  | 78/188 [00:15<00:19,  5.61url/s]
------ stderr -----
-
------ stderr -----
-
------ stderr -----
-Downloading (188 remote files):  42%|████████████████████████▊                                  | 79/188 [00:15<00:19,  5.61url/s]
------ stderr -----
-Downloading (188 remote files):  43%|█████████████████████████                                  | 80/188 [00:15<00:14,  7.39url/s]
------ stderr -----
-Downloading (188 remote files):  45%|██████████████████████████▎                                | 84/188 [00:15<00:08, 11.84url/s]
------ stdout -----
-FAILED: https://opendap.earthdata.nasa.gov/collections/C2076114664-LPCLOUD/granules/ECOv002_L2_LSTE_37937_007_20250316T021148_0713_01 → HTTPError: 401 Client Error:  for url: https://opendap.earthdata.nasa.gov/collections/C2076114664-LPCLOUD/granules/ECOv002_L2_LSTE_37937_007_20250316T021148_0713_01.dap?dap4.ce=/L2%20LSTE%20Metadata/QAPercentCloudCover;/L2%20LSTE%20Metadata/QAPercentGoodQuality;/StandardMetadata/DayNightFlag&dap4.checksum=true
------ stderr -----
-Downloading (188 remote files):  46%|██████████████████████████▉                                | 86/188 [00:15<00:08, 11.41url/s]
------ stderr -----
-Downloading (188 remote files):  47%|███████████████████████████▌                               | 88/188 [00:16<00:10,  9.97url/s]
------ stderr -----
-Downloading (188 remote files):  48%|████████████████████████████▌                              | 91/188 [00:16<00:08, 11.26url/s]
------ stderr -----
-
------ stderr -----
-
------ stderr -----
-Downloading (188 remote files):  48%|████████████████████████████▌                              | 91/188 [00:16<00:08, 11.26url/s]
------ stderr -----
-Downloading (188 remote files):  49%|█████████████████████████████▏                             | 93/188 [00:16<00:08, 10.98url/s]
------ stdout -----
-FAILED: https://opendap.earthdata.nasa.gov/collections/C2076114664-LPCLOUD/granules/ECOv002_L2_LSTE_37953_005_20250317T025859_0713_01 → HTTPError: 401 Client Error:  for url: https://opendap.earthdata.nasa.gov/collections/C2076114664-LPCLOUD/granules/ECOv002_L2_LSTE_37953_005_20250317T025859_0713_01.dap?dap4.ce=/L2%20LSTE%20Metadata/QAPercentCloudCover;/L2%20LSTE%20Metadata/QAPercentGoodQuality;/StandardMetadata/DayNightFlag&dap4.checksum=true
------ stderr -----
-Downloading (188 remote files):  51%|█████████████████████████████▊                             | 95/188 [00:17<00:11,  8.12url/s]
------ stderr -----
-Downloading (188 remote files):  52%|██████████████████████████████▊                            | 98/188 [00:17<00:09,  9.39url/s]
------ stderr -----
-Downloading (188 remote files):  53%|██████████████████████████████▊                           | 100/188 [00:17<00:08, 10.08url/s]
------ stderr -----
-Downloading (188 remote files):  54%|███████████████████████████████▍                          | 102/188 [00:17<00:10,  8.34url/s]
------ stderr -----
-Downloading (188 remote files):  55%|███████████████████████████████▊                          | 103/188 [00:18<00:12,  6.85url/s]
------ stderr -----
-Downloading (188 remote files):  55%|████████████████████████████████                          | 104/188 [00:18<00:18,  4.66url/s]
------ stderr -----
-Downloading (188 remote files):  56%|████████████████████████████████▋                         | 106/188 [00:18<00:12,  6.36url/s]
------ stderr -----
-
------ stderr -----
-
------ stderr -----
-Downloading (188 remote files):  57%|█████████████████████████████████                         | 107/188 [00:19<00:12,  6.36url/s]
------ stderr -----
-Downloading (188 remote files):  57%|█████████████████████████████████▎                        | 108/188 [00:19<00:13,  5.78url/s]
------ stderr -----
-Downloading (188 remote files):  58%|█████████████████████████████████▋                        | 109/188 [00:19<00:12,  6.23url/s]
------ stdout -----
-FAILED: https://opendap.earthdata.nasa.gov/collections/C2076114664-LPCLOUD/granules/ECOv002_L2_LSTE_38029_007_20250322T003639_0713_01 → HTTPError: 401 Client Error:  for url: https://opendap.earthdata.nasa.gov/collections/C2076114664-LPCLOUD/granules/ECOv002_L2_LSTE_38029_007_20250322T003639_0713_01.dap?dap4.ce=/L2%20LSTE%20Metadata/QAPercentCloudCover;/L2%20LSTE%20Metadata/QAPercentGoodQuality;/StandardMetadata/DayNightFlag&dap4.checksum=true
------ stderr -----
-Downloading (188 remote files):  59%|█████████████████████████████████▉                        | 110/188 [00:19<00:13,  5.92url/s]
------ stderr -----
-Downloading (188 remote files):  59%|██████████████████████████████████▏                       | 111/188 [00:19<00:11,  6.47url/s]
------ stderr -----
-Downloading (188 remote files):  62%|███████████████████████████████████▊                      | 116/188 [00:19<00:05, 13.74url/s]
------ stderr -----
-Downloading (188 remote files):  63%|████████████████████████████████████▍                     | 118/188 [00:19<00:05, 12.40url/s]
------ stderr -----
-Downloading (188 remote files):  64%|█████████████████████████████████████                     | 120/188 [00:20<00:06, 10.59url/s]
------ stderr -----
-Downloading (188 remote files):  65%|█████████████████████████████████████▋                    | 122/188 [00:20<00:08,  7.96url/s]
------ stderr -----
-Downloading (188 remote files):  66%|██████████████████████████████████████▎                   | 124/188 [00:20<00:07,  8.58url/s]
------ stderr -----
-Downloading (188 remote files):  67%|██████████████████████████████████████▊                   | 126/188 [00:20<00:06,  9.41url/s]
------ stderr -----
-Downloading (188 remote files):  68%|███████████████████████████████████████▍                  | 128/188 [00:21<00:07,  8.07url/s]
------ stderr -----
-Downloading (188 remote files):  69%|████████████████████████████████████████                  | 130/188 [00:21<00:06,  9.41url/s]
------ stderr -----
-Downloading (188 remote files):  70%|████████████████████████████████████████▋                 | 132/188 [00:21<00:06,  8.82url/s]
------ stderr -----
-Downloading (188 remote files):  71%|█████████████████████████████████████████▎                | 134/188 [00:21<00:05,  9.94url/s]
------ stderr -----
-Downloading (188 remote files):  72%|█████████████████████████████████████████▉                | 136/188 [00:21<00:04, 10.79url/s]
------ stderr -----
-Downloading (188 remote files):  73%|██████████████████████████████████████████▌               | 138/188 [00:22<00:05,  9.85url/s]
------ stderr -----
-Downloading (188 remote files):  74%|███████████████████████████████████████████▏              | 140/188 [00:22<00:04,  9.91url/s]
------ stderr -----
-Downloading (188 remote files):  76%|████████████████████████████████████████████              | 143/188 [00:22<00:06,  7.31url/s]
------ stderr -----
-Downloading (188 remote files):  77%|████████████████████████████████████████████▍             | 144/188 [00:22<00:05,  7.49url/s]
------ stderr -----
-Downloading (188 remote files):  77%|████████████████████████████████████████████▋             | 145/188 [00:23<00:07,  5.50url/s]
------ stderr -----
-Downloading (188 remote files):  80%|██████████████████████████████████████████████▎           | 150/188 [00:23<00:03, 10.40url/s]
------ stderr -----
-Downloading (188 remote files):  81%|██████████████████████████████████████████████▉           | 152/188 [00:23<00:03,  9.09url/s]
------ stderr -----
-Downloading (188 remote files):  83%|████████████████████████████████████████████████▏         | 156/188 [00:23<00:02, 13.03url/s]
------ stderr -----
-Downloading (188 remote files):  84%|████████████████████████████████████████████████▋         | 158/188 [00:24<00:02, 11.25url/s]
------ stderr -----
-
------ stderr -----
-
------ stderr -----
-Downloading (188 remote files):  85%|█████████████████████████████████████████████████         | 159/188 [00:24<00:02, 11.25url/s]
------ stderr -----
-Downloading (188 remote files):  85%|█████████████████████████████████████████████████▎        | 160/188 [00:24<00:02, 12.45url/s]
------ stderr -----
-Downloading (188 remote files):  86%|█████████████████████████████████████████████████▉        | 162/188 [00:24<00:02, 12.12url/s]
------ stdout -----
-FAILED: https://opendap.earthdata.nasa.gov/collections/C2076114664-LPCLOUD/granules/ECOv002_L2_LSTE_38136_006_20250328T220952_0713_01 → HTTPError: 401 Client Error:  for url: https://opendap.earthdata.nasa.gov/collections/C2076114664-LPCLOUD/granules/ECOv002_L2_LSTE_38136_006_20250328T220952_0713_01.dap?dap4.ce=/L2%20LSTE%20Metadata/QAPercentCloudCover;/L2%20LSTE%20Metadata/QAPercentGoodQuality;/StandardMetadata/DayNightFlag&dap4.checksum=true
------ stderr -----
-Downloading (188 remote files):  88%|██████████████████████████████████████████████████▉       | 165/188 [00:24<00:01, 15.13url/s]
------ stderr -----
-Downloading (188 remote files):  89%|███████████████████████████████████████████████████▌      | 167/188 [00:24<00:02, 10.03url/s]
------ stderr -----
-Downloading (188 remote files):  90%|████████████████████████████████████████████████████▍     | 170/188 [00:25<00:01, 10.80url/s]
------ stderr -----
-Downloading (188 remote files):  91%|█████████████████████████████████████████████████████     | 172/188 [00:25<00:01,  9.12url/s]
------ stderr -----
-Downloading (188 remote files):  93%|█████████████████████████████████████████████████████▉    | 175/188 [00:25<00:01, 10.77url/s]
------ stderr -----
-Downloading (188 remote files):  94%|██████████████████████████████████████████████████████▌   | 177/188 [00:25<00:01, 10.56url/s]
------ stderr -----
-Downloading (188 remote files):  95%|███████████████████████████████████████████████████████▏  | 179/188 [00:26<00:00, 11.68url/s]
------ stderr -----
-Downloading (188 remote files):  97%|████████████████████████████████████████████████████████▏ | 182/188 [00:26<00:00, 12.67url/s]
------ stderr -----
-Downloading (188 remote files):  98%|████████████████████████████████████████████████████████▊ | 184/188 [00:26<00:00,  7.42url/s]
------ stderr -----
-Downloading (188 remote files):  99%|█████████████████████████████████████████████████████████▍| 186/188 [00:27<00:00,  5.17url/s]
------ stderr -----
-Downloading (188 remote files): 100%|██████████████████████████████████████████████████████████| 188/188 [00:29<00:00,  2.71url/s]
------ stderr -----
-Downloading (188 remote files): 100%|██████████████████████████████████████████████████████████| 188/188 [00:29<00:00,  6.43url/s]
------ stderr -----
-
------ stdout -----
-CPU times: user 285 ms, sys: 303 ms, total: 588 ms
-Wall time: 31 s
-------------------
-
-[31m---------------------------------------------------------------------------[39m
-[31mRuntimeError[39m                              Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[6][39m[32m, line 1[39m
-[32m----> [39m[32m1[39m get_ipython().run_cell_magic([33m'time'[39m, [33m''[39m, [33m'dap_to_netcdf(cmr_urls, session=my_session, output_path = output_path, \n              keep_variables=["/L2 LSTE Metadata/QAPercentCloudCover", \n                              "/L2 LSTE Metadata/QAPercentGoodQuality",\n                              "/StandardMetadata/DayNightFlag"]\n             )\n'[39m)
-
-[36mFile [39m[32m<timed eval>:1[39m
-[32m----> [39m[32m1[39m [33m'Could not get source, probably due dynamically evaluated source code.'[39m
-
-[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1991[39m, in [36mto_netcdf[39m[34m(urls, session, output_path, keep_variables, dim_slices)[39m
-[32m   1988[39m max_workers = [38;5;28mmin[39m([38;5;28mlen[39m(urls), [32m32[39m)
-[32m   1990[39m [38;5;66;03m# Multi-URL case:[39;00m
-[32m-> [39m[32m1991[39m [30;43m_download_with_retries_process[39;49m[30;43m([39;49m
-[32m   1992[39m [30;43m    [39;49m[30;43murls[39;49m[30;43m,[39;49m
-[32m   1993[39m [30;43m    [39;49m[30;43msession_state[39;49m[30;43m=[39;49m[30;43msession_state[39;49m[30;43m,[39;49m[30;43m  [39;49m[30;43;03m# or derive from session[39;49;00m
-[32m   1994[39m [30;43m    [39;49m[30;43moutput_path[39;49m[30;43m=[39;49m[30;43moutput_path[39;49m[30;43m,[39;49m
-[32m   1995[39m [30;43m    [39;49m[30;43mkeep_variables[39;49m[30;43m=[39;49m[30;43mkeep_variables[39;49m[30;43m,[39;49m
-[32m   1996[39m [30;43m    [39;49m[30;43mdim_slices[39;49m[30;43m=[39;49m[30;43mdim_slices[39;49m[30;43m,[39;49m
-[32m   1997[39m [30;43m    [39;49m[30;43mdmrVersion[39;49m[30;43m=[39;49m[30;43mdmrVersion[39;49m[30;43m,[39;49m
-[32m   1998[39m [30;43m    [39;49m[30;43mmax_attempts[39;49m[30;43m=[39;49m[30;43m2[39;49m[30;43m,[39;49m
-[32m   1999[39m [30;43m    [39;49m[30;43mmax_workers_first[39;49m[30;43m=[39;49m[30;43mmax_workers[39;49m[30;43m,[39;49m
-[32m   2000[39m [30;43m    [39;49m[30;43mmax_workers_retry[39;49m[30;43m=[39;49m[30;43m8[39;49m[30;43m,[39;49m
-[32m   2001[39m [30;43m    [39;49m[30;43mbackoff_seconds[39;49m[30;43m=[39;49m[30;43m10.0[39;49m[30;43m,[39;49m
-[32m   2002[39m [30;43m[39;49m[30;43m)[39;49m
-
-[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1902[39m, in [36m_download_with_retries_process[39m[34m(urls, session_state, output_path, keep_variables, dim_slices, dmrVersion, max_attempts, max_workers_first, max_workers_retry, backoff_seconds)[39m
-[32m   1899[39m [38;5;28;01mif[39;00m non_retryable:
-[32m   1900[39m     [38;5;66;03m# Keep message short but actionable[39;00m
-[32m   1901[39m     sample = non_retryable[:[32m10[39m]
-[32m-> [39m[32m1902[39m     [38;5;28;01mraise[39;00m [38;5;167;01mRuntimeError[39;00m(
-[32m   1903[39m         [33mf[39m[33m"[39m[38;5;132;01m{[39;00m[38;5;28mlen[39m(non_retryable)[38;5;132;01m}[39;00m[33m non-retryable failures encountered[39m[33m"[39m
-[32m   1904[39m         [33mf[39m[33m"[39m[33m (e.g. [39m[38;5;132;01m{[39;00msample[[32m0[39m][38;5;132;01m}[39;00m[33m). Aborting without further retries.[39m[33m"[39m
-[32m   1905[39m     )
-[32m   1907[39m remaining = retry_urls
-[32m   1908[39m [38;5;28;01mif[39;00m remaining [38;5;129;01mand[39;00m attempt < max_attempts [38;5;129;01mand[39;00m backoff_seconds > [32m0[39m:
-
-[31mRuntimeError[39m: 4 non-retryable failures encountered (e.g. https://opendap.earthdata.nasa.gov/collections/C2076114664-LPCLOUD/granules/ECOv002_L2_LSTE_37937_007_20250316T021148_0713_01). Aborting without further retries.
-
