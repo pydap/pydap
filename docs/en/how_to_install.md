@@ -36,7 +36,7 @@ We recommend to use package installation managers like `conda`/`mamba`. This app
 ### Minimal Required
 The following are required to run `pydap` as a client.
 
-- `python>=3.10`
+- `python>=3.11`
 - `numpy`
 - `scipy`
 - `requests`
@@ -52,7 +52,7 @@ These are install with every `pydap` installation.
 You can easily use conda to install `pydap` or `pydap-server`, along with any optional packages for sharing a reproducible workflow. For example:
 
 ```shell
-    $ conda create -n pydap_env -c conda-forge python=3.11 pydap-server
+    $ conda create -n pydap_env -c conda-forge python=3.12 pydap
     $ conda activate pydap_env
 ```
 
