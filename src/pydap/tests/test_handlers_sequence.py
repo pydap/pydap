@@ -5,6 +5,7 @@ import json
 import numpy as np
 import pytest
 
+from pydap.handlers.dap import DAPHandler
 from pydap.handlers.tabular_handler import (
     SequenceHandler,
     _reader_spec_for_path,
@@ -36,6 +37,17 @@ def tabular_csv(tmp_path, pd):
     filepath = tmp_path / "simple_data.csv"
     dataframe.to_csv(filepath, index=False)
     return filepath
+
+
+@pytest.fixture(scope="session")
+def simple_data():
+    data = [
+        (10, 15.2, "Diamond_St"),
+        (11, 13.1, "Blacktail_Loop"),
+        (12, 13.3, "Platinum_St"),
+        (13, 12.1, "Kodiak_Trail"),
+    ]
+    return data
 
 
 def test_csv_file_becomes_single_sequence_dataset(tabular_csv):
@@ -141,3 +153,43 @@ def test_explicit_reader_supports_other_pandas_compatible_extensions(tmp_path, p
     sequence = SequenceHandler(str(filepath), reader="read_csv").dataset["sequence"]
 
     assert list(sequence) == [(1, "A"), (2, "B")]
+
+
+def test_open(simple_data, tabular_csv):
+    """Test that dataset has the correct data proxies for grids."""
+    dataset = DAPHandler("http://localhost:8001/", SequenceHandler(tabular_csv)).dataset
+    seq = dataset["sequence"]
+    dtype = [("index", "<i4"), ("temperature", "<f8"), ("site", "S40")]
+    retrieved_data = [line for line in seq]
+
+    np.testing.assert_array_equal(
+        np.array(retrieved_data, dtype=dtype), np.array(simple_data, dtype=dtype)
+    )
+
+
+def test_combined_slice(simple_data, tabular_csv):
+    """Test that dataset has the correct data proxies for grids."""
+    dataset = SequenceHandler(tabular_csv).dataset
+    seq = dataset["sequence"]
+    retrieved_data = [line for line in seq[["temperature", "site"]][seq["index"] > 10]]
+
+    dtype = [("temperature", "<f8"), ("site", "S40")]
+
+    np.testing.assert_array_equal(
+        np.array(retrieved_data, dtype=dtype),
+        np.array([item[1:] for item in simple_data[1:]], dtype=dtype),
+    )
+
+
+def test_constrained(simple_data, tabular_csv):
+    """Test that dataset has the correct data proxies for grids."""
+    dataset = SequenceHandler(tabular_csv).dataset
+    seq = dataset["sequence"]
+    retrieved_data = [line for line in seq[seq["index"] > 10]["site"][::2]]
+
+    dtype = "S40"
+
+    np.testing.assert_array_equal(
+        np.array(retrieved_data, dtype=dtype),
+        np.array([simple_data[idx][-1] for idx in [1, 3]], dtype=dtype),
+    )
