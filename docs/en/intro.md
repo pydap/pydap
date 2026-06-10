@@ -5,7 +5,7 @@
 
 `pydap` is a Python implementation of the **Data Access Protocol** (**DAP**), also known as [OPeNDAP](http://www.opendap.org/). Pydap's client now offers robust `DAP4` support, enabling data users to access thousands of scientific datasets available via OPeNDAP servers in a secure, transparent, and efficient way through the internet, or you can set up `pydap` as a server to make your data available through the internet via a URL.
 
-## <font size="5.5"><span style='color:#ff6666'>**Pydap now supports DAP4 data access in a much performant way!**<font size="3">
+## <font size="5.5"><span style='color:#ff6666'>**Pydap now supports DAP4 data access in a much more performant way!**<font size="3">
 
 
 | ![WhyPydap](/images/benchmark1.png) |
