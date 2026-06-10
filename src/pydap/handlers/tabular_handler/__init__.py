@@ -4,9 +4,8 @@ import copy
 import json
 import os
 import re
-import time
 from collections.abc import Mapping
-from email.utils import formatdate
+from datetime import datetime, timezone
 from pathlib import Path
 from stat import ST_MTIME
 
@@ -21,35 +20,14 @@ _COMPRESSION_EXTENSIONS = frozenset((".bz2", ".gz", ".xz", ".zip", ".zst"))
 _PANDAS_READERS = {
     ".csv": ("read_csv", {}),
     ".tsv": ("read_csv", {"sep": "\t"}),
-    ".tab": ("read_csv", {"sep": "\t"}),
     ".txt": ("read_csv", {}),
-    ".fwf": ("read_fwf", {}),
     ".xls": ("read_excel", {}),
     ".xlsx": ("read_excel", {}),
     ".xlsm": ("read_excel", {}),
-    ".xlsb": ("read_excel", {}),
-    ".ods": ("read_excel", {}),
-    ".odf": ("read_excel", {}),
     ".json": ("read_json", {}),
-    ".jsonl": ("read_json", {"lines": True}),
-    ".ndjson": ("read_json", {"lines": True}),
-    ".html": ("read_html", {}),
-    ".htm": ("read_html", {}),
     ".xml": ("read_xml", {}),
     ".parquet": ("read_parquet", {}),
     ".pq": ("read_parquet", {}),
-    ".feather": ("read_feather", {}),
-    ".ft": ("read_feather", {}),
-    ".orc": ("read_orc", {}),
-    ".h5": ("read_hdf", {}),
-    ".hdf": ("read_hdf", {}),
-    ".hdf5": ("read_hdf", {}),
-    ".dta": ("read_stata", {}),
-    ".sas7bdat": ("read_sas", {}),
-    ".xpt": ("read_sas", {}),
-    ".xport": ("read_sas", {}),
-    ".pkl": ("read_pickle", {}),
-    ".pickle": ("read_pickle", {}),
 }
 _EXTENSION_PATTERN = "|".join(
     re.escape(extension.lstrip("."))
@@ -87,7 +65,7 @@ class SequenceHandler(BaseHandler):
         self.additional_headers.append(
             (
                 "Last-modified",
-                (formatdate(time.mktime(time.localtime(os.stat(filepath)[ST_MTIME])))),
+                _last_modified_header(filepath),
             )
         )
 
@@ -227,6 +205,11 @@ def _load_pandas():
         )
         raise OpenFileError(message) from exc
     return pd
+
+
+def _last_modified_header(filepath):
+    modified = datetime.fromtimestamp(os.stat(filepath)[ST_MTIME], tz=timezone.utc)
+    return modified.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
 
 def _resolve_reader(pd, filepath, reader):

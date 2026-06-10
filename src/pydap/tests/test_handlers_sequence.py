@@ -1,18 +1,35 @@
 """Tests for the pandas-backed sequence handler."""
 
+import importlib.util
 import json
+from pathlib import Path
 
 import numpy as np
 import pytest
 
+from pydap.exceptions import OpenFileError
 from pydap.handlers.dap import DAPHandler
 from pydap.handlers.tabular_handler import (
+    _PANDAS_READERS,
     SequenceHandler,
-    _reader_spec_for_path,
     dataframe_to_dataset,
 )
 from pydap.model import DatasetType, SequenceType
 from pydap.responses.dmr import DMRResponse
+
+_FORMAT_DEPENDENCIES = {
+    ".csv": (),
+    ".json": (),
+    ".parquet": (("pyarrow", "fastparquet"),),
+    ".pq": (("pyarrow", "fastparquet"),),
+    ".tsv": (),
+    ".txt": (),
+    ".xls": ("xlrd",),
+    ".xlsm": ("openpyxl",),
+    ".xlsx": ("openpyxl",),
+    ".xml": ("lxml",),
+}
+_TEST_DATA = Path(__file__).with_name("data")
 
 
 @pytest.fixture
@@ -130,6 +147,35 @@ def test_nullable_pandas_values_iterate_as_none(pd):
     assert list(sequence) == [(1, "one"), (None, None), (3, "three")]
 
 
+def test_supported_tabular_formats_have_dependency_rules():
+    assert set(_FORMAT_DEPENDENCIES) == set(_PANDAS_READERS)
+
+
+@pytest.mark.parametrize("extension", sorted(_PANDAS_READERS))
+def test_supported_tabular_formats_become_single_sequence_dataset(
+    tmp_path, pd, extension
+):
+    dataframe = pd.DataFrame(
+        {
+            "record": [0, 1, 2, 3],
+            "depth_m": [0, 10, 25, 50],
+            "temperature_c": [22.5, 21.8, 19.2, 15.1],
+            "salinity_psu": [34.2, 34.25, 34.4, 34.5],
+        }
+    )
+
+    if extension == ".xls":
+        _assert_xls_fixture_reads_or_reports_missing_xlrd(dataframe)
+        return
+
+    _require_format_dependencies(extension)
+    filepath = tmp_path / "simple_data{0}".format(extension)
+    _write_tabular_fixture(dataframe, filepath, extension)
+    sequence = SequenceHandler(str(filepath)).dataset["sequence"]
+
+    _assert_sequence_matches_dataframe(sequence, dataframe)
+
+
 def test_excel_file_becomes_single_sequence_dataset(tmp_path, pd):
     pytest.importorskip("openpyxl")
     dataframe = pd.DataFrame({"index": [1, 2], "site": ["A", "B"]})
@@ -142,8 +188,24 @@ def test_excel_file_becomes_single_sequence_dataset(tmp_path, pd):
     assert list(sequence) == [(1, "A"), (2, "B")]
 
 
-def test_xls_extension_uses_excel_reader():
-    assert _reader_spec_for_path("simple_data.xls")[0] == "read_excel"
+def test_missing_xls_dependency_reports_helpful_error(monkeypatch, pd):
+    filepath = _TEST_DATA / "simple_data.xls"
+    assert filepath.exists()
+
+    def missing_xlrd(*args, **kwargs):
+        raise ImportError(
+            "Missing optional dependency 'xlrd'. Install xlrd to read .xls files."
+        )
+
+    monkeypatch.setattr(pd, "read_excel", missing_xlrd)
+
+    with pytest.raises(OpenFileError) as excinfo:
+        SequenceHandler(str(filepath))
+
+    message = str(excinfo.value)
+    assert "Unable to open file" in message
+    assert "xlrd" in message
+    assert "Install xlrd" in message
 
 
 def test_explicit_reader_supports_other_pandas_compatible_extensions(tmp_path, pd):
@@ -193,3 +255,57 @@ def test_constrained(simple_data, tabular_csv):
         np.array(retrieved_data, dtype=dtype),
         np.array([simple_data[idx][-1] for idx in [1, 3]], dtype=dtype),
     )
+
+
+def _require_format_dependencies(extension):
+    for dependency in _FORMAT_DEPENDENCIES[extension]:
+        if isinstance(dependency, tuple):
+            if any(importlib.util.find_spec(name) for name in dependency):
+                continue
+            pytest.skip(
+                "{0} requires one of: {1}".format(extension, ", ".join(dependency))
+            )
+        pytest.importorskip(
+            dependency,
+            reason="{0} requires {1}".format(extension, dependency),
+        )
+
+
+def _write_tabular_fixture(dataframe, filepath, extension):
+    if extension in (".csv", ".txt"):
+        dataframe.to_csv(filepath, index=False)
+    elif extension == ".tsv":
+        dataframe.to_csv(filepath, index=False, sep="\t")
+    elif extension == ".json":
+        dataframe.to_json(filepath, orient="records")
+    elif extension == ".xml":
+        dataframe.to_xml(filepath, index=False)
+    elif extension in (".xlsx", ".xlsm"):
+        dataframe.to_excel(filepath, index=False, engine="openpyxl")
+    elif extension in (".parquet", ".pq"):
+        dataframe.to_parquet(filepath, index=False, compression=None)
+    else:
+        raise AssertionError("No fixture writer for {0}".format(extension))
+
+
+def _assert_xls_fixture_reads_or_reports_missing_xlrd(dataframe):
+    filepath = _TEST_DATA / "simple_data.xls"
+    assert filepath.exists()
+
+    if importlib.util.find_spec("xlrd"):
+        sequence = SequenceHandler(str(filepath)).dataset["sequence"]
+        _assert_sequence_matches_dataframe(sequence, dataframe)
+        return
+
+    with pytest.raises(OpenFileError) as excinfo:
+        SequenceHandler(str(filepath))
+
+    message = str(excinfo.value)
+    assert "Unable to open file" in message
+    assert "xlrd" in message
+    assert "install" in message.lower()
+
+
+def _assert_sequence_matches_dataframe(sequence, dataframe):
+    assert list(sequence.keys()) == list(dataframe.columns)
+    np.testing.assert_allclose(list(sequence), dataframe.to_numpy())
