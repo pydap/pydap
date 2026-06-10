@@ -47,8 +47,8 @@ density = "pydap.wsgi.functions:density"
 mean = "pydap.wsgi.functions:mean"
 
 [project.entry-points."pydap.handler"]
-csv = "pydap.handlers.csv_handler:CSVHandler"
 nc = "pydap.handlers.netcdf_handler:NetCDFHandler"
+seq = "pydap.handlers.tabular_handler:SequenceHandler"
 
 [project.entry-points."pydap.response"]
 asc = "pydap.responses.ascii:ASCIIResponse"
@@ -63,7 +63,7 @@ ver = "pydap.responses.version:VersionResponse"
 [project.optional-dependencies]
 docs = ['Sphinx', 'Pygments', "pandoc", "sphinx_rtd_theme", "nbsphinx", "numpydoc"]
 netcdf = ['netCDF4']
-server = ['werkzeug>=2.2.2', 'gunicorn', 'PasteDeploy', 'docopt-ng', 'cryptography', 'gsw', 'coards']
+server = ['werkzeug>=2.2.2', 'gunicorn', 'PasteDeploy', 'docopt-ng', 'cryptography', 'gsw', 'coards', 'pandas', 'openpyxl', 'fastparquet']
 
 [tool.isort]
 profile = "black"

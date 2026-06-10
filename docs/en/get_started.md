@@ -8,14 +8,14 @@ For a very brief overview of `pydap` as a client, check this [5 minute tutorial]
 :gutter: 3
 
 :::{grid-item-card}
-:link: notebooks/ECCO
+:link: notebooks/DAYMET
 :link-type: doc
 :class-header: bg-light
 
-ECCOv4 via EarthData
+Daymet via Earthdata NASA
 ^^^
 
-```{image} https://github.com/OPENDAP/ESIP2024/blob/main/binder/img/ECCO_native.png?raw=true
+```{image} images/OPeNDAP_Daymet_parallel.png
 :height: 200
 ```
 
@@ -26,24 +26,24 @@ ECCOv4 via EarthData
 :link-type: doc
 :class-header: bg-light
 
-PACE via EarthData
+PACE via Earthdata NASA
 ^^^
 
-```{image} https://github.com/OPENDAP/ESIP2024/blob/main/binder/img/pace_subset.png?raw=true
+```{image} images/pace_diagram.png
 :height: 200
 ```
 
 :::
 
 :::{grid-item-card}
-:link: notebooks/CMIP6
+:link: notebooks/Ecostress
 :link-type: doc
 :class-header: bg-light
 
-CMIP6 via ESGF
+Ecostress via Earthdata NASA
 ^^^
 
-```{image} https://github.com/OPENDAP/ESIP2024/blob/main/binder/img/Surface_Temperature.png?raw=true
+```{image} images/ecostress_diagram.png
 :height: 200
 ```
 :::
