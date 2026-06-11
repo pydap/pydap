@@ -1,184 +1,0 @@
-Traceback (most recent call last):
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/jupyter_cache/executors/utils.py", line 58, in single_nb_execution
-    executenb(
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1323, in execute
-    return NotebookClient(nb=nb, resources=resources, km=km, **kwargs).execute()
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/jupyter_core/utils/__init__.py", line 165, in wrapped
-    return loop.run_until_complete(inner)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/asyncio/base_events.py", line 654, in run_until_complete
-    return future.result()
-           ^^^^^^^^^^^^^^^
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 709, in async_execute
-    await self.async_execute_cell(
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 1062, in async_execute_cell
-    await self._check_raise_for_error(cell, cell_index, exec_reply)
-  File "/Users/miguelangeljimenezurias/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/nbclient/client.py", line 918, in _check_raise_for_error
-    raise CellExecutionError.from_cell_and_msg(cell, exec_reply_content)
-nbclient.exceptions.CellExecutionError: An error occurred while executing the following cell:
-------------------
-%%time
-dap_to_netcdf(cmr_urls, session=my_session, 
-              keep_variables= dims + [
-                                      "/geolocation/time",
-                                      "/geolocation/longitude",
-                                      "/geolocation/latitude", 
-              ],
-              output_path=output_path)
-------------------
-
------ stderr -----
-Downloading (73 remote files):   0%|                                                                      | 0/73 [00:00<?, ?url/s]
------ stderr -----
-Downloading (73 remote files):   1%|▊                                                             | 1/73 [00:03<04:22,  3.65s/url]
------ stderr -----
-Downloading (73 remote files):   3%|█▋                                                            | 2/73 [00:04<02:03,  1.74s/url]
------ stderr -----
-Downloading (73 remote files):   4%|██▌                                                           | 3/73 [00:04<01:10,  1.01s/url]
------ stderr -----
-Downloading (73 remote files):   5%|███▍                                                          | 4/73 [00:04<00:45,  1.53url/s]
------ stderr -----
-Downloading (73 remote files):   8%|█████                                                         | 6/73 [00:05<00:37,  1.78url/s]
------ stderr -----
-Downloading (73 remote files):  10%|█████▉                                                        | 7/73 [00:05<00:31,  2.09url/s]
------ stderr -----
-Downloading (73 remote files):  11%|██████▊                                                       | 8/73 [00:05<00:24,  2.62url/s]
------ stderr -----
-Downloading (73 remote files):  16%|██████████                                                   | 12/73 [00:05<00:11,  5.38url/s]
------ stderr -----
-Downloading (73 remote files):  18%|██████████▊                                                  | 13/73 [00:06<00:11,  5.39url/s]
------ stderr -----
-Downloading (73 remote files):  19%|███████████▋                                                 | 14/73 [00:06<00:11,  4.93url/s]
------ stderr -----
-Downloading (73 remote files):  21%|████████████▌                                                | 15/73 [00:06<00:15,  3.68url/s]
------ stderr -----
-Downloading (73 remote files):  23%|██████████████▏                                              | 17/73 [00:07<00:11,  4.71url/s]
------ stderr -----
-
------ stderr -----
-
------ stderr -----
-Downloading (73 remote files):  23%|██████████████▏                                              | 17/73 [00:07<00:11,  4.71url/s]
------ stderr -----
-Downloading (73 remote files):  25%|███████████████                                              | 18/73 [00:07<00:17,  3.21url/s]
------ stdout -----
-FAILED: https://opendap.earthdata.nasa.gov/collections/C3685896872-LARC_CLOUD/granules/TEMPO_NO2_L2_V04_20251005T171712Z_S007G08.nc → HTTPError: 401 Client Error:  for url: https://opendap.earthdata.nasa.gov/collections/C3685896872-LARC_CLOUD/granules/TEMPO_NO2_L2_V04_20251005T171712Z_S007G08.nc.dap?dap4.ce=/mirror_step;/xtrack;/geolocation/time;/geolocation/longitude;/geolocation/latitude&dap4.checksum=true
------ stderr -----
-Downloading (73 remote files):  26%|███████████████▉                                             | 19/73 [00:08<00:15,  3.42url/s]
------ stderr -----
-Downloading (73 remote files):  27%|████████████████▋                                            | 20/73 [00:08<00:13,  3.80url/s]
------ stderr -----
-Downloading (73 remote files):  30%|██████████████████▍                                          | 22/73 [00:08<00:09,  5.49url/s]
------ stderr -----
-Downloading (73 remote files):  32%|███████████████████▏                                         | 23/73 [00:08<00:09,  5.55url/s]
------ stderr -----
-Downloading (73 remote files):  34%|████████████████████▉                                        | 25/73 [00:08<00:06,  7.25url/s]
------ stderr -----
-Downloading (73 remote files):  36%|█████████████████████▋                                       | 26/73 [00:08<00:06,  7.04url/s]
------ stderr -----
-Downloading (73 remote files):  37%|██████████████████████▌                                      | 27/73 [00:09<00:07,  6.36url/s]
------ stderr -----
-Downloading (73 remote files):  38%|███████████████████████▍                                     | 28/73 [00:09<00:07,  5.89url/s]
------ stderr -----
-Downloading (73 remote files):  40%|████████████████████████▏                                    | 29/73 [00:09<00:07,  6.17url/s]
------ stderr -----
-Downloading (73 remote files):  44%|██████████████████████████▋                                  | 32/73 [00:09<00:04,  9.14url/s]
------ stderr -----
-
------ stderr -----
-
------ stderr -----
-Downloading (73 remote files):  49%|██████████████████████████████                               | 36/73 [00:09<00:04,  9.14url/s]
------ stderr -----
-Downloading (73 remote files):  51%|██████████████████████████████▉                              | 37/73 [00:09<00:02, 16.77url/s]
------ stdout -----
-FAILED: https://opendap.earthdata.nasa.gov/collections/C3685896872-LARC_CLOUD/granules/TEMPO_NO2_L2_V04_20251001T181426Z_S008G08.nc → HTTPError: 401 Client Error:  for url: https://opendap.earthdata.nasa.gov/collections/C3685896872-LARC_CLOUD/granules/TEMPO_NO2_L2_V04_20251001T181426Z_S008G08.nc.dap?dap4.ce=/mirror_step;/xtrack;/geolocation/time;/geolocation/longitude;/geolocation/latitude&dap4.checksum=true
------ stderr -----
-Downloading (73 remote files):  55%|█████████████████████████████████▍                           | 40/73 [00:10<00:03, 10.17url/s]
------ stderr -----
-Downloading (73 remote files):  58%|███████████████████████████████████                          | 42/73 [00:10<00:03,  9.85url/s]
------ stderr -----
-Downloading (73 remote files):  60%|████████████████████████████████████▊                        | 44/73 [00:10<00:02, 10.21url/s]
------ stderr -----
-Downloading (73 remote files):  63%|██████████████████████████████████████▍                      | 46/73 [00:10<00:02,  9.10url/s]
------ stderr -----
-Downloading (73 remote files):  66%|████████████████████████████████████████                     | 48/73 [00:11<00:02,  8.48url/s]
------ stderr -----
-Downloading (73 remote files):  68%|█████████████████████████████████████████▊                   | 50/73 [00:11<00:02,  9.67url/s]
------ stderr -----
-Downloading (73 remote files):  71%|███████████████████████████████████████████▍                 | 52/73 [00:11<00:02,  8.58url/s]
------ stderr -----
-Downloading (73 remote files):  74%|█████████████████████████████████████████████                | 54/73 [00:11<00:02,  9.17url/s]
------ stderr -----
-Downloading (73 remote files):  77%|██████████████████████████████████████████████▊              | 56/73 [00:11<00:01, 10.48url/s]
------ stderr -----
-Downloading (73 remote files):  82%|██████████████████████████████████████████████████▏          | 60/73 [00:12<00:00, 13.96url/s]
------ stderr -----
-Downloading (73 remote files):  86%|████████████████████████████████████████████████████▋        | 63/73 [00:12<00:00, 16.34url/s]
------ stderr -----
-Downloading (73 remote files):  89%|██████████████████████████████████████████████████████▎      | 65/73 [00:12<00:00, 13.77url/s]
------ stderr -----
-Downloading (73 remote files):  92%|███████████████████████████████████████████████████████▉     | 67/73 [00:12<00:00, 13.60url/s]
------ stderr -----
-Downloading (73 remote files):  95%|█████████████████████████████████████████████████████████▋   | 69/73 [00:13<00:00,  8.59url/s]
------ stderr -----
-Downloading (73 remote files):  97%|███████████████████████████████████████████████████████████▎ | 71/73 [00:13<00:00,  5.68url/s]
------ stderr -----
-Downloading (73 remote files):  99%|████████████████████████████████████████████████████████████▏| 72/73 [00:15<00:00,  2.08url/s]
------ stderr -----
-
------ stderr -----
-
------ stderr -----
-Downloading (73 remote files):  99%|████████████████████████████████████████████████████████████▏| 72/73 [00:18<00:00,  2.08url/s]
------ stderr -----
-Downloading (73 remote files): 100%|█████████████████████████████████████████████████████████████| 73/73 [00:18<00:00,  1.16url/s]
------ stderr -----
-Downloading (73 remote files): 100%|█████████████████████████████████████████████████████████████| 73/73 [00:18<00:00,  4.01url/s]
------ stderr -----
-
------ stdout -----
-FAILED: https://opendap.earthdata.nasa.gov/collections/C3685896872-LARC_CLOUD/granules/TEMPO_NO2_L2_V04_20251003T161749Z_S006G08.nc → HTTPError: 401 Client Error:  for url: https://opendap.earthdata.nasa.gov/collections/C3685896872-LARC_CLOUD/granules/TEMPO_NO2_L2_V04_20251003T161749Z_S006G08.nc.dap?dap4.ce=/mirror_step;/xtrack;/geolocation/time;/geolocation/longitude;/geolocation/latitude&dap4.checksum=true
------ stdout -----
-CPU times: user 129 ms, sys: 234 ms, total: 362 ms
-Wall time: 19.9 s
-------------------
-
-[31m---------------------------------------------------------------------------[39m
-[31mRuntimeError[39m                              Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[9][39m[32m, line 1[39m
-[32m----> [39m[32m1[39m get_ipython().run_cell_magic([33m'time'[39m, [33m''[39m, [33m'dap_to_netcdf(cmr_urls, session=my_session, \n              keep_variables= dims + [\n                                      "/geolocation/time",\n                                      "/geolocation/longitude",\n                                      "/geolocation/latitude", \n              ],\n              output_path=output_path)\n'[39m)
-
-[36mFile [39m[32m<timed eval>:1[39m
-[32m----> [39m[32m1[39m [33m'Could not get source, probably due dynamically evaluated source code.'[39m
-
-[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1991[39m, in [36mto_netcdf[39m[34m(urls, session, output_path, keep_variables, dim_slices)[39m
-[32m   1988[39m max_workers = [38;5;28mmin[39m([38;5;28mlen[39m(urls), [32m32[39m)
-[32m   1990[39m [38;5;66;03m# Multi-URL case:[39;00m
-[32m-> [39m[32m1991[39m [30;43m_download_with_retries_process[39;49m[30;43m([39;49m
-[32m   1992[39m [30;43m    [39;49m[30;43murls[39;49m[30;43m,[39;49m
-[32m   1993[39m [30;43m    [39;49m[30;43msession_state[39;49m[30;43m=[39;49m[30;43msession_state[39;49m[30;43m,[39;49m[30;43m  [39;49m[30;43;03m# or derive from session[39;49;00m
-[32m   1994[39m [30;43m    [39;49m[30;43moutput_path[39;49m[30;43m=[39;49m[30;43moutput_path[39;49m[30;43m,[39;49m
-[32m   1995[39m [30;43m    [39;49m[30;43mkeep_variables[39;49m[30;43m=[39;49m[30;43mkeep_variables[39;49m[30;43m,[39;49m
-[32m   1996[39m [30;43m    [39;49m[30;43mdim_slices[39;49m[30;43m=[39;49m[30;43mdim_slices[39;49m[30;43m,[39;49m
-[32m   1997[39m [30;43m    [39;49m[30;43mdmrVersion[39;49m[30;43m=[39;49m[30;43mdmrVersion[39;49m[30;43m,[39;49m
-[32m   1998[39m [30;43m    [39;49m[30;43mmax_attempts[39;49m[30;43m=[39;49m[30;43m2[39;49m[30;43m,[39;49m
-[32m   1999[39m [30;43m    [39;49m[30;43mmax_workers_first[39;49m[30;43m=[39;49m[30;43mmax_workers[39;49m[30;43m,[39;49m
-[32m   2000[39m [30;43m    [39;49m[30;43mmax_workers_retry[39;49m[30;43m=[39;49m[30;43m8[39;49m[30;43m,[39;49m
-[32m   2001[39m [30;43m    [39;49m[30;43mbackoff_seconds[39;49m[30;43m=[39;49m[30;43m10.0[39;49m[30;43m,[39;49m
-[32m   2002[39m [30;43m[39;49m[30;43m)[39;49m
-
-[36mFile [39m[32m~/mambaforge/envs/pydap_docs/lib/python3.11/site-packages/pydap/client.py:1902[39m, in [36m_download_with_retries_process[39m[34m(urls, session_state, output_path, keep_variables, dim_slices, dmrVersion, max_attempts, max_workers_first, max_workers_retry, backoff_seconds)[39m
-[32m   1899[39m [38;5;28;01mif[39;00m non_retryable:
-[32m   1900[39m     [38;5;66;03m# Keep message short but actionable[39;00m
-[32m   1901[39m     sample = non_retryable[:[32m10[39m]
-[32m-> [39m[32m1902[39m     [38;5;28;01mraise[39;00m [38;5;167;01mRuntimeError[39;00m(
-[32m   1903[39m         [33mf[39m[33m"[39m[38;5;132;01m{[39;00m[38;5;28mlen[39m(non_retryable)[38;5;132;01m}[39;00m[33m non-retryable failures encountered[39m[33m"[39m
-[32m   1904[39m         [33mf[39m[33m"[39m[33m (e.g. [39m[38;5;132;01m{[39;00msample[[32m0[39m][38;5;132;01m}[39;00m[33m). Aborting without further retries.[39m[33m"[39m
-[32m   1905[39m     )
-[32m   1907[39m remaining = retry_urls
-[32m   1908[39m [38;5;28;01mif[39;00m remaining [38;5;129;01mand[39;00m attempt < max_attempts [38;5;129;01mand[39;00m backoff_seconds > [32m0[39m:
-
-[31mRuntimeError[39m: 3 non-retryable failures encountered (e.g. https://opendap.earthdata.nasa.gov/collections/C3685896872-LARC_CLOUD/granules/TEMPO_NO2_L2_V04_20251005T171712Z_S007G08.nc). Aborting without further retries.
-
