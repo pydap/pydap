@@ -24,8 +24,6 @@ parts:
   - file: notebooks/TEMPO_NRT
   - file: notebooks/ECCO
   - file: notebooks/PACE
-  - file: notebooks/SWOT
-  - file: notebooks/CMIP6
   - file: notebooks/MERRA2
 
 - caption: Frequently Asked Questions
