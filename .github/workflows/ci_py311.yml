@@ -1,4 +1,4 @@
-name: Python 3.11 CI
+name: CI
 on:
   push:
     branches:
