@@ -64,7 +64,7 @@ ver = "pydap.responses.version:VersionResponse"
 docs = ['Sphinx', 'Pygments', "pandoc", "sphinx_rtd_theme", "nbsphinx", "numpydoc"]
 netcdf = ['netCDF4']
 server = ['werkzeug>=2.2.2', 'gunicorn', 'PasteDeploy', 'docopt-ng', 'cryptography', 'gsw', 'coards', 'pandas', 'openpyxl', 'fastparquet']
-virtualizarr = ["virtualizarr>=2.6", "zarr>=3.1.1", "obstore"]
+virtualizarr = ["virtualizarr>=2.6", "zarr>=3.1.1", "obstore", "obspec_utils>=0.9.0"]
 
 [tool.isort]
 profile = "black"
