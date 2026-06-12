@@ -1,4 +1,6 @@
+import importlib.util
 import os
+import sys
 import textwrap
 from contextlib import nullcontext
 from pathlib import Path
@@ -25,6 +27,19 @@ DMRPPTest_file3 = os.path.join(
 DMRPPTest_file4 = os.path.join(os.path.dirname(__file__), "data/dmrs/air.nc.dmrpp")
 DMRPPTest_file5 = os.path.join(
     os.path.dirname(__file__), "data/dmrs/air_groups.nc.dmrpp"
+)
+
+
+def _has_module(name):
+    return importlib.util.find_spec(name) is not None
+
+
+requires_virtualizarr = pytest.mark.skipif(
+    sys.version_info < (3, 12)
+    or not all(
+        _has_module(name) for name in ("virtualizarr", "obspec_utils", "obstore")
+    ),
+    reason="requires Python >=3.12 and pydap[virtualizarr]",
 )
 
 
@@ -997,6 +1012,8 @@ def test_parse_attribute(attr_path, expected):
 @pytest.mark.xfail(
     reason="See https://github.com/zarr-developers/VirtualiZarr/issues/904.",
 )
+@pytest.mark.virtualizarr
+@requires_virtualizarr
 @pytest.mark.parametrize(
     "group,warns",
     [

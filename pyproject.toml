@@ -71,6 +71,9 @@ profile = "black"
 
 [tool.pytest.ini_options]
 addopts = "-v --cov"
+markers = [
+  "virtualizarr: tests requiring Python >=3.12 and pydap[virtualizarr]"
+]
 testpaths = ["/src/pydap/tests"]
 
 [tool.setuptools]
