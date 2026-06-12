@@ -1,27 +1,56 @@
 """Virtualizarr parser for dmrpp sidecar files produces by Hyrax"""
 
+from __future__ import annotations
+
 import base64
+import sys
 import warnings
 from pathlib import Path
-from typing import Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable
 from xml.etree import ElementTree as ET
 
 import numpy as np
 
-# import obstore
-from obspec_utils.protocols import ReadableStore
-from obspec_utils.registry import ObjectStoreRegistry
-from virtualizarr.manifests import (
-    ChunkManifest,
-    ManifestArray,
-    ManifestGroup,
-    ManifestStore,
-)
-from virtualizarr.manifests.utils import create_v3_array_metadata
-from virtualizarr.parsers.utils import encode_cf_fill_value
-
 import pydap.model
 from pydap.parsers.dmr import DummyData
+
+if TYPE_CHECKING:
+    from obspec_utils.protocols import ReadableStore
+    from virtualizarr.manifests import ManifestStore
+
+
+def _require_virtualizarr():
+    if sys.version_info < (3, 12):
+        raise ImportError(
+            "pydap.virtualizarr requires Python >=3.12 and the "
+            "'virtualizarr' extra. Install it with: pip install 'pydap[virtualizarr]'"
+        )
+
+    try:
+        from obspec_utils.registry import ObjectStoreRegistry
+        from virtualizarr.manifests import (
+            ChunkManifest,
+            ManifestArray,
+            ManifestGroup,
+            ManifestStore,
+        )
+        from virtualizarr.manifests.utils import create_v3_array_metadata
+        from virtualizarr.parsers.utils import encode_cf_fill_value
+    except ImportError as exc:
+        raise ImportError(
+            "pydap.virtualizarr requires the 'virtualizarr' extra. "
+            "Install it with: pip install 'pydap[virtualizarr]'"
+        ) from exc
+
+    return (
+        ChunkManifest,
+        ManifestArray,
+        ManifestGroup,
+        ManifestStore,
+        ObjectStoreRegistry,
+        create_v3_array_metadata,
+        encode_cf_fill_value,
+    )
 
 
 class DMRParser:
@@ -81,9 +110,9 @@ class DMRParser:
 
     def parse_dataset(
         self,
-        object_store: ReadableStore,
+        object_store: "ReadableStore",
         group: str | None = None,
-    ) -> ManifestStore:
+    ) -> "ManifestStore":
         """
         Parses the given file and creates a ManifestStore.
 
@@ -103,6 +132,17 @@ class DMRParser:
         --------
         Open a sample DMR++ file and parse the dataset
         """
+
+        (
+            ChunkManifest,
+            ManifestArray,
+            ManifestGroup,
+            ManifestStore,
+            ObjectStoreRegistry,
+            create_v3_array_metadata,
+            encode_cf_fill_value,
+        ) = _require_virtualizarr()
+
         group = group or "/"
         ngroups = len(self.root.findall("dap:Group", self._NS))
 
