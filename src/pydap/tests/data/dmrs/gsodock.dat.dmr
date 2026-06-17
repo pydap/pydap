@@ -1,0 +1,91 @@
+<Dataset xml:base="http://test.opendap.org:8080/opendap/data/ff/gsodock.dat" dapVersion="4.0" dmrVersion="1.0" name="gsodock.dat">
+    <Sequence name="URI_GSO-Dock">
+        <Float64 name="Time">
+            <Attribute name="units" type="String">
+                <Value>Days since 1/1/1900</Value>
+            </Attribute>
+            <Attribute name="min" type="Float64">
+                <Value>35234.0</Value>
+            </Attribute>
+            <Attribute name="max" type="Float64">
+                <Value>35235.0</Value>
+            </Attribute>
+        </Float64>
+        <Float32 name="Depth">
+            <Attribute name="units" type="String">
+                <Value>m</Value>
+            </Attribute>
+        </Float32>
+        <Float32 name="Sea_Temp">
+            <Attribute name="units" type="String">
+                <Value>degC</Value>
+            </Attribute>
+        </Float32>
+        <Float32 name="Salinity">
+            <Attribute name="units" type="String">
+                <Value>psu</Value>
+            </Attribute>
+        </Float32>
+        <Float32 name="DO_percent"/>
+        <Float32 name="pH">
+            <Attribute name="units" type="String">
+                <Value>pct</Value>
+            </Attribute>
+        </Float32>
+        <Float32 name="Turbidity">
+            <Attribute name="units" type="String">
+                <Value>FTU</Value>
+            </Attribute>
+        </Float32>
+        <Float32 name="Air_Temp">
+            <Attribute name="units" type="String">
+                <Value>degC</Value>
+            </Attribute>
+        </Float32>
+        <Float32 name="Wind_Speed">
+            <Attribute name="units" type="String">
+                <Value>m/s</Value>
+            </Attribute>
+        </Float32>
+        <Float32 name="Wind_Direction">
+            <Attribute name="units" type="String">
+                <Value>deg</Value>
+            </Attribute>
+        </Float32>
+        <Float32 name="Barometric_Pres">
+            <Attribute name="units" type="String">
+                <Value>mbar</Value>
+            </Attribute>
+        </Float32>
+        <Float32 name="Solar_Radiation">
+            <Attribute name="units" type="String">
+                <Value>W/m^2</Value>
+            </Attribute>
+        </Float32>
+    </Sequence>
+    <Attribute name="FF_GLOBAL" type="Container">
+        <Attribute name="Server" type="String">
+            <Value>DODS FreeFrom based on FFND release 4.2.3</Value>
+        </Attribute>
+        <Attribute name="text" type="String">
+            <Value>Time Dep Temp Sal DO% pH Turb AirT WndSpd WndDir Baro Solar</Value>
+        </Attribute>
+        <Attribute name="location" type="String">
+            <Value>University of Rhode Island/Oceanography School dock</Value>
+        </Attribute>
+        <Attribute name="latitude" type="Float32">
+            <Value>41.4926</Value>
+        </Attribute>
+        <Attribute name="longitude" type="Float32">
+            <Value>-71.4201</Value>
+        </Attribute>
+        <Attribute name="start_date" type="String">
+            <Value>19 June 1996</Value>
+        </Attribute>
+    </Attribute>
+    <Attribute name="DO " type="Container">
+        <Attribute name="units" type="String">
+            <Value>pct</Value>
+        </Attribute>
+    </Attribute>
+</Dataset>
