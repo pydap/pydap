@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import base64
+import io
 import sys
 import warnings
 from pathlib import Path
@@ -15,7 +16,7 @@ import pydap.model
 from pydap.parsers.dmr import DummyData
 
 if TYPE_CHECKING:
-    from obspec_utils.protocols import ReadableStore
+    from obspec_utils.registry import ObjectStoreRegistry
     from virtualizarr.manifests import ManifestStore
 
 
@@ -27,6 +28,7 @@ def _require_virtualizarr():
         )
 
     try:
+        from obspec_utils.readers import EagerStoreReader
         from obspec_utils.registry import ObjectStoreRegistry
         from virtualizarr.manifests import (
             ChunkManifest,
@@ -43,6 +45,7 @@ def _require_virtualizarr():
         ) from exc
 
     return (
+        EagerStoreReader,
         ChunkManifest,
         ManifestArray,
         ManifestGroup,
@@ -75,8 +78,8 @@ class DMRParser:
 
     def __init__(
         self,
-        root: ET.Element,
-        data_filepath: str | None = None,
+        url: str,
+        object_store: "ObjectStoreRegistry",
         skip_variables: Iterable[str] | None = None,
     ):
         """
@@ -85,18 +88,31 @@ class DMRParser:
 
         Parameters
         ----------
-        root
-            Root of the xml tree structure of a DMR++ file.
-        data_filepath
-            The path to the actual data file that will be set in the chunk manifests.
-            If None, the data file path is taken from the DMR++ file.
+        url
+            The URL of the DMR++ file.
+        object_store
+            The object store to use for reading data.
+        skip_variables
+            A list of variable names to skip during parsing.
         """
-        self.root = root
-        self.data_filepath = (
-            data_filepath if data_filepath is not None else self.root.attrib["name"]
-        )
+
+        EagerStoreReader, *_ = _require_virtualizarr()
+
+        store, path_in_store = object_store.resolve(url)
+        reader = EagerStoreReader(store=store, path=path_in_store)
+        file_bytes = reader.readall()
+        stream = io.BytesIO(file_bytes)
+
+        self.root = ET.parse(stream).getroot()
+        self.object_store = store
         self.skip_variables = skip_variables or ()
         self._validation_issues: list[str] = []
+        self.data_filepath = (
+            url.removesuffix(".dap.dmrpp")
+            if url.endswith(".dap.dmrpp")
+            else url.removesuffix(".dmrpp")
+        )
+        # self.data_filepath = self.root.attrib["name"]
 
     def dmrparser(self):
         """Exposes the _DMRParser to external use (avoids breaking changes)"""
@@ -110,7 +126,6 @@ class DMRParser:
 
     def parse_dataset(
         self,
-        object_store: "ReadableStore",
         group: str | None = None,
     ) -> "ManifestStore":
         """
@@ -134,6 +149,7 @@ class DMRParser:
         """
 
         (
+            EagerStoreReader,
             ChunkManifest,
             ManifestArray,
             ManifestGroup,
@@ -206,7 +222,7 @@ class DMRParser:
 
         manifest_group = ManifestGroup(arrays=manifest_dict, attributes=attrs)
         registry: ObjectStoreRegistry = ObjectStoreRegistry()
-        registry.register(self.data_filepath, object_store)
+        registry.register(self.data_filepath, self.object_store)
 
         return ManifestStore(registry=registry, group=manifest_group)
 
