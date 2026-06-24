@@ -97,22 +97,30 @@ class DMRParser:
         """
 
         EagerStoreReader, *_ = _require_virtualizarr()
+        try:
+            store, path_in_store = object_store.resolve(url)
+            reader = EagerStoreReader(store=store, path=path_in_store)
+            file_bytes = reader.readall()
+            stream = io.BytesIO(file_bytes)
+            self.root = ET.parse(stream).getroot()
+            self.data_filepath = (
+                url.removesuffix(".dap.dmrpp")
+                if url.endswith(".dap.dmrpp")
+                else url.removesuffix(".dmrpp")
+            )
+        except AttributeError:
+            # object_store is a LocalStore (no .resolve method); url is either
+            # a path to a local .dmr/.dmrpp file or a raw XML string.
+            try:
+                self.root = ET.fromstring(open(url).read())
+            except OSError:
+                self.root = ET.fromstring(url)
+            self.data_filepath = f"file:///{self.root.attrib['name']}"
+            store = object_store
 
-        store, path_in_store = object_store.resolve(url)
-        reader = EagerStoreReader(store=store, path=path_in_store)
-        file_bytes = reader.readall()
-        stream = io.BytesIO(file_bytes)
-
-        self.root = ET.parse(stream).getroot()
         self.object_store = store
         self.skip_variables = skip_variables or ()
         self._validation_issues: list[str] = []
-        self.data_filepath = (
-            url.removesuffix(".dap.dmrpp")
-            if url.endswith(".dap.dmrpp")
-            else url.removesuffix(".dmrpp")
-        )
-        # self.data_filepath = self.root.attrib["name"]
 
     def dmrparser(self):
         """Exposes the _DMRParser to external use (avoids breaking changes)"""

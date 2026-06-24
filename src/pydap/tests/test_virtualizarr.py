@@ -43,11 +43,13 @@ requires_virtualizarr = pytest.mark.skipif(
 )
 
 
-def dmrparser(dmrpp_xml_str: str, filepath: str) -> DMRParser:
+@requires_virtualizarr
+def dmrparser(url: str, filepath: str) -> DMRParser:
     # TODO we should actually create a dmrpp file in a temporary directory
     # this would avoid the need to pass tmp_path separately
+    from virtualizarr.tests.utils import obstore_local
 
-    return DMRParser(root=ET.fromstring(dmrpp_xml_str), data_filepath=filepath)
+    return DMRParser(url=url, object_store=obstore_local(filepath))
 
 
 # This DMRPP was created following the instructions from
@@ -454,6 +456,7 @@ def test_datafile_path(filepath, expected):
     """Test that when filepath not given, extract the filepath from the DMRpp. But if
     filepath is given, user provided filepath takes precedence.
     """
+
     dmrpp_instance = DMRPPParser(
         root=ET.fromstring(open(DMRPPTest_file).read()), data_filepath=filepath
     )
@@ -1012,8 +1015,6 @@ def test_parse_attribute(attr_path, expected):
 @pytest.mark.xfail(
     reason="See https://github.com/zarr-developers/VirtualiZarr/issues/904.",
 )
-@pytest.mark.virtualizarr
-@requires_virtualizarr
 @pytest.mark.parametrize(
     "group,warns",
     [
