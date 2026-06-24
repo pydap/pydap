@@ -3,6 +3,9 @@
 # C extensions
 *.so
 
+# Claud
+.claude/plans/*
+
 # no chached sessions
 *.sqlite
 # Packages
