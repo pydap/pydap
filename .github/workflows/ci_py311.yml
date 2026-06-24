@@ -1,4 +1,4 @@
-name: Ubuntu CI
+name: CI
 on:
   push:
     branches:
@@ -13,11 +13,11 @@ defaults:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: ['3.11', '3.12', '3.13']
-    name: ubuntu-latest Python ${{ matrix.python-version }}
+        os: ['ubuntu-latest', 'macos-latest']
+    name: ${{ matrix.os }} Python 3.11
     steps:
     - uses: actions/checkout@v6
 
@@ -27,7 +27,7 @@ jobs:
         environment-file: ci/environment.yml
         environment-name: pydap_tests
         create-args: >-
-          python=${{ matrix.python-version }}
+          python=3.11
           conda
         cache-environment: true
 

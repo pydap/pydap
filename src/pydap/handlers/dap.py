@@ -21,7 +21,6 @@ import warnings
 from io import BufferedReader, BytesIO
 from itertools import chain
 from pathlib import Path
-from xml.etree import ElementTree as ET
 
 import numpy
 import requests
@@ -58,8 +57,11 @@ from pydap.net import GET
 from pydap.parsers import parse_ce
 from pydap.parsers.das import add_attributes, parse_das
 from pydap.parsers.dds import dds_to_dataset
-from pydap.parsers.dmr import DMRPPParser, dmr_to_dataset
+from pydap.parsers.dmr import dmr_to_dataset
 from pydap.responses.dods import DAP2_response_dtypemap
+
+# from xml.etree import ElementTree as ET
+
 
 try:
     import httpx
@@ -107,60 +109,38 @@ class DAPHandler(BaseHandler):
         self.checksums = checksums
         self.user_charset = user_charset
         self.get_kwargs = get_kwargs or {}
-
-        if url.endswith(".dmrpp") and not url.startswith("dap4"):
-            self.protocol = "dap4"
-            if url.startswith("http://") or url.startswith("https://"):
-                r = session.get(url, stream=True)
-                dmrpp = io.BytesIO(r.content)
-                dmrpp_instance = DMRPPParser(root=ET.parse(dmrpp).getroot())
-            else:
-                dmrpp = open(url).read()
-                dmrpp_instance = DMRPPParser(root=ET.fromstring(dmrpp))
-            self.projection = []
-            self.dataset = dmrpp_instance.to_dataset()
-            self.base_url = dmrpp_instance.opendap_url
-
-            if not self.base_url:
-                # some dmrpps do not have the opendap url embedded in their
-                if url.endswith(".dap.dmrpp"):
-                    self.base_url = url.removesuffix(".dap.dmrpp")
-                else:
-                    self.base_url = url.removesuffix(".dmrpp")
+        self.url = url
+        # urlparse returns an additional var compared to
+        # urlsplit: `param`. Will toss it.
+        scheme, netloc, path, _, query, fragment = urlparse(self.url)
+        self.scheme = scheme
+        self.netloc = netloc
+        self.path = path
+        self.query = query
+        self.fragment = fragment
+        if protocol:
+            if protocol not in ["dap2", "dap4"]:
+                raise TypeError("protocol must be one of `dap2` or `dap4")
+            self.protocol = protocol
+            if self.scheme == protocol:
+                # the other alternative occurs during testing
+                # the server - only when protocol and scheme match,
+                # should pydap change the scheme provided by user
+                self.scheme = "https"
         else:
-            self.url = url
-            # urlparse returns an additional var compared to
-            # urlsplit: `param`. Will toss it.
-            scheme, netloc, path, _, query, fragment = urlparse(self.url)
-            self.scheme = scheme
-            self.netloc = netloc
-            self.path = path
-            self.query = query
-            self.fragment = fragment
+            self.protocol = self.determine_protocol()
 
-            if protocol:
-                if protocol not in ["dap2", "dap4"]:
-                    raise TypeError("protocol must be one of `dap2` or `dap4")
-                self.protocol = protocol
-                if self.scheme == protocol:
-                    # the other alternative occurs during testing
-                    # the server - only when protocol and scheme match,
-                    # should pydap change the scheme provided by user
-                    self.scheme = "https"
-            else:
-                self.protocol = self.determine_protocol()
-
-            self.projection, self.selection = parse_ce(self.query, self.protocol)
-            arg = (
-                self.scheme,
-                self.netloc,
-                self.path,
-                "",
-                "&".join(self.selection),
-                self.fragment,
-            )
-            self.base_url = urlunparse(arg)
-            self.make_dataset()
+        self.projection, self.selection = parse_ce(self.query, self.protocol)
+        arg = (
+            self.scheme,
+            self.netloc,
+            self.path,
+            "",
+            "&".join(self.selection),
+            self.fragment,
+        )
+        self.base_url = urlunparse(arg)
+        self.make_dataset()
         self.add_proxies()
 
     def determine_protocol(self):
