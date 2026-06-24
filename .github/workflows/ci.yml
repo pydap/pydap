@@ -20,7 +20,7 @@ jobs:
         python-version: ['3.12', '3.13']
     name: ${{ matrix.os }} Python ${{ matrix.python-version }}
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Install Conda environment with Micromamba
       uses: mamba-org/setup-micromamba@v3
