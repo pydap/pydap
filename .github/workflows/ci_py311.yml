@@ -19,7 +19,7 @@ jobs:
         os: ['ubuntu-latest', 'macos-latest']
     name: ${{ matrix.os }} Python 3.11
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Install Conda environment with Micromamba
       uses: mamba-org/setup-micromamba@v3
