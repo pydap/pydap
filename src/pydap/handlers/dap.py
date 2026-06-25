@@ -757,6 +757,144 @@ class SequenceProxy(object):
         return ConstraintExpression("%s<%s" % (self.id, encode(other)))
 
 
+class SequenceDAP4Proxy(SequenceProxy):
+    """A proxy for remote sequences.
+
+    This class behaves like a Numpy structured array, proxying the data from a
+    sequence on a remote dataset. The data is streamed from the dataset,
+    meaning it can be treated one record at a time before the whole data is
+    downloaded.
+    """
+
+    def __init__(
+        self,
+        baseurl,
+        sequence,  # sequencetype
+        selection=None,
+        slice_=None,
+        application=None,
+        session=None,
+        timeout=DEFAULT_TIMEOUT,
+        verify=True,
+        get_kwargs=None,
+    ):
+        self.baseurl = baseurl
+        self.sequence = sequence
+        self.selection = selection or []
+        self.slice = slice_ or (slice(None),)
+        self.application = application
+        self.session = session
+        self.timeout = timeout
+        self.get_kwargs = get_kwargs or {}
+
+    @property
+    def dtype(self):
+        return self.sequence.dtype
+
+    def __repr__(self):
+        return "SequenceProxy(%s)" % ", ".join(
+            map(repr, [self.baseurl, self.sequence, self.selection, self.slice])
+        )
+
+    def __copy__(self):
+        """Return a lightweight copy of the object."""
+        return self.__class__(
+            self.baseurl,
+            self.template,
+            self.selection[:],
+            self.slice[:],
+            self.application,
+        )
+
+    def __getitem__(self, key):
+        """Return a new object representing a subset of the data."""
+        out = copy.copy(self)
+
+        # return the data for a children
+        if isinstance(key, str):
+            out.sequence = out.sequence[key]
+
+        # return a new object with requested columns
+        elif isinstance(key, list):
+            out.sub_children = True
+            out.sequence._visible_keys = key
+
+        # # return a copy with the added constraints
+        # elif isinstance(key, ConstraintExpression):
+        #     out.selection.extend(str(key).split("&"))
+
+        # # slice data
+        else:
+            if isinstance(key, int):
+                key = slice(key, key + 1)
+            out.slice = combine_slices(self.slice, (key,))
+
+        return out
+
+    @property
+    def url(self):
+        """Return url from where data is fetched.
+        TO: needs testing that CE is properly generated
+        acorting to the dap4 spec, which is different from dap2.
+
+        """
+        scheme, netloc, path, params, query, fragment = urlparse(self.baseurl)
+        url = urlunparse(
+            (
+                scheme,
+                netloc,
+                path + ".dap",
+                "?dap4.ce=",
+                self.id + hyperslab(self.slice) + "&" + "&".join(self.selection),
+                fragment,
+            )
+        ).rstrip("&")
+
+        return url
+
+    @property
+    def id(self):
+        """Return the id of this sequence."""
+        if self.sub_children:
+            id_ = ";".join(child.id for child in self.sequence.children())
+        else:
+            id_ = self.sequence.id
+        return id_
+
+    def __iter__(self):
+        # download and unpack data
+        r = GET(
+            self.url,
+            self.application,
+            self.session,
+            timeout=self.timeout,
+            get_kwargs=self.get_kwargs,
+        )
+
+        assert isinstance(r, requests.Response)  # better way to do this
+
+        i = r.iter_content()
+        # First chunk is the DMR. Need to separate it to build a pydap dataset
+        # and then to unpack the binary data that follows it.
+
+        pattern = b"Data:\n"
+        last_chunk = find_pattern_in_string_iter(pattern, i)
+
+        if last_chunk is None:
+            raise ValueError(
+                "Could not find data segment in response from {}".format(self.url)
+            )
+
+        # Then construct a stream consisting of everything from
+        # 'Data:\n' to the end of the chunk + the rest of the stream
+        def stream_start():
+            yield last_chunk
+
+        stream = StreamReader(chain(stream_start(), i))
+
+        return unpack_sequence(stream, self.template)
+
+
 def unpack_sequence(stream, template):
     """Unpack data from a sequence, yielding records."""
     # is this a sequence or a base type?
@@ -1011,6 +1149,27 @@ def get_endianness(chunk_header):
     return endian
 
 
+def split_dmr_and_data(raw):
+    """
+    Splits the dap response (.dap) into the dmr (metadata), and the raw
+    (binary) data. It also computes the endianness of the data.
+    Returns:
+        dmr, data, endianness
+    """
+    # decode the first 4 bytes are CRLF
+    chunk_header = numpy.frombuffer(raw.read(4), dtype=">u4")[0]
+    dmr_length = chunk_header & 0x00FFFFFF
+    chunk_type = (chunk_header >> 24) & 0xFF
+    dmr = raw.read(dmr_length)
+    # figure out encoding defined in the xml header
+    match = re.search(rb'encoding=["\']([^"\']+)["\']', dmr)
+    encoding = match.group(1).decode("ascii")
+    dmr = dmr.decode(encoding)
+    # get endianness from first chunk
+    _, _, endianness = decode_chunktype(chunk_type)
+    return dmr, raw, endianness
+
+
 class UNPACKDAP4DATA(object):
     """
     Unpacks DAP4 response, remote or local, which is split into chunks. The
@@ -1054,8 +1213,9 @@ class UNPACKDAP4DATA(object):
                     if chunk:  # filter out keep-alive chunks
                         tmp.write(chunk)
                 tmp.seek(0)
-                self.raw = BytesReader(tmp)
-                self.dmr, self.endianness = self.safe_dmr_and_data()
+                self.dmr, self.raw, self.endianness = split_dmr_and_data(
+                    BytesReader(tmp)
+                )
                 dataset = dmr_to_dataset(self.dmr, dmrVersion=self.dmrVersion)
                 if self.output_path is not None:
                     if not HAVE_NETCDF4:
