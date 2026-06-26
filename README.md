@@ -1,9 +1,7 @@
 pydap
 =====
-[![Ubuntu CI](https://github.com/pydap/pydap/actions/workflows/run_tests_ubuntu.yml/badge.svg
-)](https://github.com/pydap/pydap/actions/workflows/run_tests_ubuntu.yml)
-[![MacOS CI](https://github.com/pydap/pydap/actions/workflows/run_tests_macos.yml/badge.svg
-)](https://github.com/pydap/pydap/actions/workflows/run_tests_macos.yml)
+[![CI](https://github.com/pydap/pydap/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pydap/pydap/actions/workflows/ci.yml)
+
 [![Python](https://img.shields.io/pypi/pyversions/pydap.svg)](https://pypi.python.org/pypi/pydap/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/pydap/)
 [![conda forge](https://anaconda.org/conda-forge/pydap/badges/version.svg)](https://anaconda.org/conda-forge/pydap)
@@ -33,7 +31,7 @@ This will install pydap together with all the required dependencies.
 `pydap` is also available through [Anaconda](https://www.anaconda.com/). Below we install `pydap` and its required dependencies, along with common additional packages in a fresh conda environment named `"pydap"`:
 
 ```bash
-    $ conda create -n pydap -c conda-forge python=3.11 pydap numpy jupyterlab ipython netCDF4 scipy matplotlib
+    $ conda create -n pydap -c conda-forge python=3.12 pydap numpy jupyterlab ipython netCDF4 scipy matplotlib
 ```
 Now you simply activate the pydap environment:
 ```bash
