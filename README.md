@@ -4,7 +4,8 @@ pydap
 [![Python](https://img.shields.io/pypi/pyversions/pydap.svg)](https://pypi.python.org/pypi/pydap/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/pydap/)
 [![PyPI - Downloads](https://img.shields.io/pypi/dm/pydap)](https://pypistats.org/packages/pydap)
-[![conda forge](https://anaconda.org/conda-forge/pydap/badges/version.svg)](https://anaconda.org/conda-forge/pydap)
+[![conda-forge](https://anaconda.org/conda-forge/pydap/badges/version.svg)](https://anaconda.org/conda-forge/pydap)
+[![conda-forge Downloads](https://anaconda.org/conda-forge/pydap/badges/downloads.svg)](https://anaconda.org/channels/conda-forge/packages/pydap/overview)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/pydap/pydap)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/pydap/pydap/main.svg)](https://results.pre-commit.ci/latest/github/pydap/pydap/main)
@@ -13,7 +14,7 @@ pydap
 
 What is pydap?
 ----------
-[pydap](https://pydap.github.io/pydap/) is an open-source implementation of the OPeNDAP protocol, written from scratch in pure Python. You can use `pydap` to access scientific data available on the many OPeNDAP servers publicly-available through the internet. Because pydap supports remote and lazy evaluation, you can access the data without having to download it; Instead, you work with special array and iterable objects that download data on-the-fly as necessary, saving bandwidth and time. The module also comes with a robust-but-lightweight OPeNDAP server, implemented as a WSGI application.
+[pydap](https://pydap.github.io/pydap/en/intro.html) is an open-source implementation of the OPeNDAP protocol, written from scratch in pure Python. You can use `pydap` to access scientific data available on the many OPeNDAP servers publicly-available through the internet. Because pydap supports remote and lazy evaluation, you can access the data without having to download it; Instead, you work with special array and iterable objects that download data on-the-fly as necessary, saving bandwidth and time. The module also comes with a robust-but-lightweight OPeNDAP server, implemented as a WSGI application.
 
 Why pydap?
 ----------
@@ -92,8 +93,8 @@ The [server documentation](https://pydap.github.io/pydap/server.html) has more i
 
 ## Documentation
 
-For more information, see [the pydap documentation](https://pydap.github.io/pydap/).
+For more information, see [the pydap documentation](https://pydap.github.io/pydap/en/intro.html).
 
 ## Help and Community
 
-If you need any help with `pydap`, open an issue in this repository. You can also email the [mailing list](http://groups.google.com/group/pydap/). Finally, if you have a broader OPeNDAP access question, you can reach the OPeNDAP team on the [OPeNDAP Discourse](https://opendap.discourse.group/)!
+If you need any help with `pydap`, open an issue in this repository. You can also email the [mailing list](http://groups.google.com/group/pydap/).
