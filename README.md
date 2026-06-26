@@ -1,9 +1,9 @@
 pydap
 =====
 [![CI](https://github.com/pydap/pydap/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pydap/pydap/actions/workflows/ci.yml)
-
 [![Python](https://img.shields.io/pypi/pyversions/pydap.svg)](https://pypi.python.org/pypi/pydap/)
 [![PyPI](https://img.shields.io/pypi/v/pydap.svg?maxAge=2592000?style=plastic)](https://pypi.python.org/pypi/pydap/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/pydap)](https://pypistats.org/packages/pydap)
 [![conda forge](https://anaconda.org/conda-forge/pydap/badges/version.svg)](https://anaconda.org/conda-forge/pydap)
 [![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/pydap/pydap)
