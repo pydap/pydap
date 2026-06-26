@@ -25,10 +25,10 @@ jobs:
     - name: Checkout pydap repository
       uses: actions/checkout@v7
 
-    - name: Setup Python 3.11
+    - name: Setup Python 3.12
       uses: actions/setup-python@v6
       with:
-        python-version: '3.11'
+        python-version: '3.12'
 
     - name: Get tags
       run: git fetch --depth=1 origin +refs/tags/*:refs/tags/*
