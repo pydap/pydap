@@ -1,15 +1,12 @@
 # How to install
 
-Starting with the latest release `3.5.1`, the installation of `pydap` is now split into two possible options:
-
-## 1. Client-only
-To install `pydap` to use only as a client API, you can do:
+Recent releases of `pydap` may require upgrading Python versions. The latest version of `pydap` requires `Python=>3.12`. `Pydap` can be installed via PyPI as follows:
 
 ```shell
     $ pip install pydap
 ```
-or:
 
+or in the case you are using Anaconda:
 ```shell
     $ conda install pydap
 ```
@@ -17,39 +14,16 @@ or:
 ```{note}
 If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
 ```
+
 This installation of `pydap` will include the minimal dependencies to allow users to subset remote data on OPeNDAP servers.
-
-## 2. Complete installation
-To recover the full installation of `pydap`, which includes the packages for using pydap as a client and as a server, run:
-
-```shell
-    $ conda install pydap-server
-```
-
-This installation of `pydap` will include the dependencies to allow users to: a) subset remote data on OPeNDAP servers; and b) use `pydap`'s server to make data available.
 
 ```{note}
 We recommend to use package installation managers like `conda`/`mamba`. This approach requires having an installation of [Miniconda](https://docs.anaconda.com/miniconda/) or [Anaconda](https://docs.anaconda.com/anaconda/install/).
 ```
 
-## Dependencies
-### Minimal Required
-The following are required to run `pydap` as a client.
-
-- `python>=3.11`
-- `numpy`
-- `scipy`
-- `requests`
-- `requests_cache`
-- `beautifulsoup4`
-- `lxml`
-- `Webob`
-
-These are install with every `pydap` installation.
-
 ## Reproducible (conda) environments
 
-You can easily use conda to install `pydap` or `pydap-server`, along with any optional packages for sharing a reproducible workflow. For example:
+You can easily use conda to install `pydap` and any optional packages for sharing a reproducible workflow. For example:
 
 ```shell
     $ conda create -n pydap_env -c conda-forge python=3.12 pydap

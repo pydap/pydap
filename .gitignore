@@ -32,6 +32,15 @@ pip-log.txt
 # setuptools-scm
 _version.py
 
+# ignore any request-cache sqlite obj
+*.sqlite
+docs/en/notebooks/data/*.sqlite
+docs/es/notebooks/data/*.sqlite
+
+# ignore any nc4 file
+docs/en/notebooks/data/*.nc4
+docs/es/notebooks/data/*.nc4
+
 # Sphinx documentation
 docs/_build/*
 docs/_build/.*
