@@ -872,27 +872,25 @@ class SequenceDAP4Proxy(SequenceProxy):
         )
 
         assert isinstance(r, requests.Response)  # better way to do this
+        # r??
+        # iterator = self.iter_body()
+        iterator = r.iter_content()
+        CHUNK_SIZE = 1048576
+        # remote dataset
+        with tempfile.TemporaryFile() as tmp:
+            # write the response to a temporary file
+            # so that we can read it in chunks
+            for chunk in iterator(chunk_size=CHUNK_SIZE):
+                if chunk:  # filter out keep-alive chunks
+                    tmp.write(chunk)
+            tmp.seek(0)
+            dmr, rawdata = safe_dmr_and_data(BytesReader(tmp))
+            dataset = dmr_to_dataset(dmr, flat=False)
 
-        i = r.iter_content()
-        # First chunk is the DMR. Need to separate it to build a pydap dataset
-        # and then to unpack the binary data that follows it.
+            # stream = StreamReader(chain(stream_start(), iterator))
 
-        pattern = b"Data:\n"
-        last_chunk = find_pattern_in_string_iter(pattern, i)
-
-        if last_chunk is None:
-            raise ValueError(
-                "Could not find data segment in response from {}".format(self.url)
-            )
-
-        # Then construct a stream consisting of everything from
-        # 'Data:\n' to the end of the chunk + the rest of the stream
-        def stream_start():
-            yield last_chunk
-
-        stream = StreamReader(chain(stream_start(), i))
-
-        return unpack_sequence(stream, self.template)
+            # return unpack_sequence(rawdata, self.template)
+            return None
 
 
 def unpack_sequence(stream, template):
