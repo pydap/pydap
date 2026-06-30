@@ -1,7 +1,6 @@
-# Guide for new contributors
+# Guía para nuevos contribuidores
 
-Thanks for contributing to `PyDAP`! There are many ways to contribute, and here we
-provide steps to cover some of the most straightforward ways to contribute.
+Gracias por contribuir a `PyDAP`. Hay muchas formas de contribuir, y aquí proporcionamos pasos para cubrir algunas de las maneras más directas de hacerlo.
 
 ```{tableofcontents}
 

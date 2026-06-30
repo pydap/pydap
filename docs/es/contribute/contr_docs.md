@@ -1,68 +1,71 @@
-# Contributing to the documentation
+# Contribuir a la documentación
 
-Your contributions are welcome! There are many ways to contribute to the documentation:
+Tus contribuciones son bienvenidas. Hay muchas formas de contribuir a la documentación:
 
-1. Identify and correct typos.
-2. Improve the description of `PyDAP` and overall the DAP model.
-3. Cookbooks! We want to know how `PyDAP` and [OPeNDAP](https://www.opendap.org/) are being used, i.e. what kind of questions / problems is helping solve? what is the domains of expertise?
-4. Demostrate an optimization to access patterns, i.e. a benchmark.
-5. An `OPeNDAP` URL! We want to learn more about available OPeNDAP data urls, and make them accessible to the broad community of PyDAP users. We are strong proponents of `data democratization` and `open science`, and these begin by making your data `Findable`.
+1. Identificar y corregir errores tipográficos.
+2. Mejorar la descripción de `PyDAP` y, en general, del modelo DAP.
+3. Recetas. Queremos saber cómo se están usando `PyDAP` y [OPeNDAP](https://www.opendap.org/), es decir, qué tipo de preguntas o problemas ayudan a resolver y cuáles son los dominios de experiencia.
+4. Demostrar una optimización en los patrones de acceso, por ejemplo una comparativa de rendimiento.
+5. Una URL de `OPeNDAP`. Queremos aprender más sobre URLs de datos OPeNDAP disponibles y hacerlas accesibles a la comunidad amplia de usuarios de PyDAP. Somos firmes defensores de la `democratización de datos` y la `ciencia abierta`, y ambas comienzan haciendo que tus datos sean `encontrables`.
 
 
-The documentation was built using [jupyter-book](https://jupyterbook.org/en/stable/intro.html), which supports different types of files. Here we use `rst` and `ipynb` (executable notebooks).
+La documentación se construyó con [jupyter-book](https://jupyterbook.org/en/stable/intro.html), que admite distintos tipos de archivos. Aquí usamos `rst` e `ipynb` (notebooks ejecutables).
 
-## How to contribute to the documentation?
-To add/edit the documentation, we recommend you follow the previous guides on version control, forking, and branching. That said, you can follow the steps:
+## ¿Cómo contribuir a la documentación?
+Para agregar o editar la documentación, recomendamos seguir las guías previas sobre control de versiones, forks y ramas. Dicho eso, puedes seguir estos pasos:
 
-1. Navitate to the cloned repository
+1. Navega al repositorio clonado en tu máquina local.
 
-2. Create/activate the conda environment.
+2. Crea o activa el entorno conda.
 ```shell
 conda env create -f docs/environment.yml
 conda activate pydap_docs
 ```
 ```{note}
-If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
+Si ya tienes `mamba` instalado, puedes reemplazar `conda` por `mamba` en todos los comandos.
 ```
-
-The `docs/environment.yml` file provides a ready-to-use environment (it installs `pydap-server`). However, if you have made new changes to the code, we recommend installing pydap in `dev` mode and making sure that all notebooks properly build.
+3. Instala `pydap` en modo `developer`, para asegurarte de que todos los notebooks se construyan correctamente. Para instalar en modo de desarrollo, ejecuta:
 
 ```shell
 pip install -e .
 ```
-or to install directly from the main branch:
 
-```shell
-pip install --upgrade git+https://github.com/pydap/pydap.git
-```
+4. Crea una rama nueva, configura su upstream y usa git (consulta los [pasos 3 y 4 de contribuir al código](contr_cod.md)).
 
-3. Create a new branch, and set its upstream and use git (see [steps 3 and 4 from contributing to the code](contr_cod.md))
+5. La documentación ahora está dividida en dos fuentes: una en inglés (la puedes encontrar en `docs/en`) y otra en español (la puedes encontrar en `docs/es`). Dependiendo de la versión de la documentación a la que contribuyas, puedes modificar los archivos fuente.
 
-4. Clean any previous built html and build the documentation using the provided shell script in the `docs` folder. Note that to support both English and Spanish languagues, you may need to build these individually. FOr example, to build the documentation in English:
-```shell
-jupyter-book clean docs/en --all
-jupyter-book build docs/en
-```
-
-5. `optional`: The repo a shell script which you may execute to automatically clean and build the documentation
+6. Una vez que hayas hecho cambios en los archivos fuente de la documentación (ya sea en `docs/en` o `docs/es`), usa `build.sh` para limpiar y construir los archivos de documentación `html` (puede que necesites hacer que `build.sh` sea ejecutable con `chmod +x`).
 ```shell
 cd docs
+chmod +x build.sh
 ./build.sh
 ```
-You may need to change the `mode` of the shell script to an executable. This is `chmod +x build.sh`. The shell script will automatically clean and build the documentation.
 
-6. Once the build process is finished (with the `build.sh` script), you can inspect the locally built html files by running:
+```{warning}
+Muchos ejemplos tutoriales de la documentación requieren autenticación EDL mediante un archivo local `.netrc`. Asegúrate de tener uno con credenciales válidas. Consulta [Authentication](../notebooks/Authentication).
+```
+Dependiendo de cuántos cambios hayas hecho en la documentación, este último paso puede tardar un tiempo. También depende del tipo de archivos agregados a la documentación (`ipynb` tarda más en construirse).
+
+7. Una vez terminado el proceso de construcción, puedes inspeccionar los archivos html generados localmente. `build.sh` crea una redirección en la base de los archivos html construidos. Por lo tanto, para abrir la documentación en inglés ejecuta:
 ```shell
-open docs/_build/html/en/index.html
+open _build/html/index.html
+```
+La redirección significa que la versión en inglés de la documentación es la predeterminada. Para abrir la versión en español, ejecuta:
+```shell
+open _build/html/es/intro.html
+```
+
+```{warning}
+Asegúrate de comprobar que **TODOS** los notebooks se construyeron correctamente.
 ```
 
 ```{note}
-Make sure to check that **ALL** notebooks were successfully built. This step is important because some of the notebooks require authentications. For testing the documentation it is OK to include passwords/tokens, but when you are getting ready to submit your PR for review, do not include these in the final version of your PR.
+La documentación tendrá un selector para alternar manualmente entre las versiones en inglés y español.
 ```
 
-7. Push all changes and create a PR. `PyDAP` follows the recommendations of keeping the `source` files on `main`, and the `build` files on the `gh-pages` branch.
+8. Sube todos los cambios y crea un PR. `PyDAP` sigue la recomendación de mantener los archivos `source` en `main` y los archivos `build` en la rama `gh-pages`.
 ```{note}
-Do not include passwords or tokens. You are only submitting `source` files.
+No incluyas contraseñas ni tokens. Solo estás enviando archivos `source`.
 ```
 
-8. Once a maintaner of `PyDAP` has approved your PR it will get merged into `main`. The maintainer of `PyDAP` can publish the documentation and update the `gh-pages` branch. Broadly, the steps to publish the documentation (i.e. rebuild the `gh-pages` branch) are detailed and described here: https://jupyterbook.org/en/stable/start/publish.html.
+9. Una vez que una persona mantenedora de `PyDAP` apruebe tu PR, este se fusionará en `main`. La persona mantenedora de `PyDAP` puede publicar la documentación y actualizar la rama `gh-pages`. En términos generales, los pasos para publicar la documentación (es decir, reconstruir la rama `gh-pages`) están detallados y descritos aquí: https://jupyterbook.org/en/stable/start/publish.html.

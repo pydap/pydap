@@ -4,24 +4,55 @@
 format: jb-book
 root: intro
 parts:
-- caption: Quickstart
+- caption: Inicio rápido
   chapters:
   - file: how_to_install
   - file: get_started
     sections:
     - file: 5_minute_tutorial
   - file: NEWS
-- caption: Examples
+- caption: Ejemplos
   chapters:
   - file: notebooks/Authentication
     sections:
     - file: notebooks/netrc
+    - file: notebooks/earthaccess
+  - file: notebooks/GetCMRURLS
+  - file: notebooks/CalipsoL2_access
+  - file: notebooks/DAYMET
+  - file: notebooks/Ecostress
+  - file: notebooks/TEMPO_NRT
   - file: notebooks/ECCO
   - file: notebooks/PACE
-  - file: notebooks/SWOT
-  - file: notebooks/CMIP6
-- caption: Frequently Asked Questions
+  - file: notebooks/MERRA2
+
+- caption: Preguntas frecuentes
   chapters:
   - file: faqs/faqs
     sections:
+    - file: faqs/download_speed
+    - file: faqs/diagnose_download_issues
     - file: faqs/dap2_or_dap4_url
+    - file: faqs/dap2_vs_dap4
+- caption: Documentación
+  chapters:
+  - file: PydapAsClient
+    sections:
+    - file: DAP_Protocol
+    - file: ConstraintExpressions
+  - file: responses.rst
+  - file: server.rst
+  - file: handlers.rst
+- caption: Guía para desarrolladores
+  chapters:
+  - file: developer/data_model.rst
+  - file: developer/handlers.rst
+  - file: developer/responses.rst
+- caption: Contribuir
+  chapters:
+  - file: guide_to_developer
+    sections:
+    - file: contribute/git
+    - file: contribute/contr_cod
+    - file: contribute/contr_issues
+    - file: contribute/contr_docs

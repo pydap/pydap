@@ -2,7 +2,7 @@
 
 1. Install `PyDAP` within a containerized testing environment.
 ```shell
-conda create -n pydap_tests -c conda-forge python=3.10
+conda create -n pydap_tests -c conda-forge python=3.12
 conda env update -n pydap_tests -f ci/environment.yml
 conda activate pydap_tests
 pip install -e .
