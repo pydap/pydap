@@ -3,7 +3,7 @@
 # <font size="7"><span style='color:#0066cc'> **Bienvenido a pydap**<font size="3">
 
 
-`pydap` es una implementación en Python del **Data Access Protocol** (**DAP**), también conocido como [OPeNDAP](http://www.opendap.org/). `Pydap` ahora es compatible con el protocolo `DAP4`, lo que permite acceder de forma segura, transparente, y eficiente, a millones de archivos científicos disponibles mediante servidores OPeNDAP a traves de la conexion de internet, o por medio de la `Nube`. 
+`pydap` es una implementación en Python del **Data Access Protocol** (**DAP**), también conocido como [OPeNDAP](http://www.opendap.org/). `Pydap` ahora es compatible con el protocolo `DAP4`, lo que permite acceder de forma segura, transparente, y eficiente, a millones de archivos científicos disponibles mediante servidores OPeNDAP a traves de la conexion de internet, o por medio de la `Nube`.
 
 ## <font size="5.5"><span style='color:#ff6666'>**Pydap ahora permite accesso con mucho mejor rendimiento por medio del protocolo de  DAP4.**<font size="3">
 
