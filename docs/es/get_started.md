@@ -1,7 +1,7 @@
 # Comenzar
 
 
-Para una visión muy breve de `pydap` como cliente, consulta este [tutorial de 5 minutos](5_minute_tutorial.ipynb). También puedes ir a los siguientes ejemplos:
+Para una intrudiction muy breve de `pydap`, consulta este [tutorial de 5 minutos](5_minute_tutorial.ipynb). También puedes ir a los siguientes ejemplos:
 
 ::::{grid} 1 1 1 3
 :class-container: text-center

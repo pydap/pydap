@@ -18,7 +18,7 @@ If you already have `mamba` installed, you can replace all `conda` in the comman
 This installation of `pydap` will include the minimal dependencies to allow users to subset remote data on OPeNDAP servers.
 
 ```{note}
-We recommend to use package installation managers like `conda`/`mamba`. This approach requires having an installation of [Miniconda](https://docs.anaconda.com/miniconda/) or [Anaconda](https://docs.anaconda.com/anaconda/install/).
+We recommend to use package installation managers like `conda`/`mamba`. This requires the installation of [Miniforge](https://conda-forge.org/download/)
 ```
 
 ## Reproducible (conda) environments
@@ -39,6 +39,7 @@ If you already have `mamba` installed, you can replace all `conda` in the comman
 - `jupyterlab`
 - `cartopy`
 - `xarray`
+- `earthaccess`
 
 To install the latest `pydap` version (client-only), directly from the GitHub repository, run:
 
@@ -46,6 +47,6 @@ To install the latest `pydap` version (client-only), directly from the GitHub re
     $ pip install --upgrade git+https://github.com/pydap/pydap.git
 ```
 
-This version is not stable as it is being actively developed and improved upon by contributors and maintainers of the `pydap` package.
+This version is not stable and is under active developement. We only recommend this if the official release has a bug that has been address in the source repository.
 
-If you are interested in installing `pydap` in `developer mode` to potentially contribute to the package, go to [Contributing to the code](contribute/contr_cod.md).
+If you are interested in installing `pydap` in `editable mode` to contribute to the project, go to [Contributing to the code](contribute/contr_cod.md).

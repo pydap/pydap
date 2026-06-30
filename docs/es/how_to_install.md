@@ -1,6 +1,6 @@
 # Cómo instalar
 
-Las versiones recientes de `pydap` pueden requerir actualizar la versión de Python. La versión más reciente de `pydap` requiere `Python=>3.12`. `Pydap` se puede instalar desde PyPI de la siguiente manera:
+Versiones recientes de `pydap` pueden requerir una versión de Python. Por ejemplo la versión más reciente de `pydap` requiere `Python=>3.12`. `Pydap` se puede instalar desde PyPI de la siguiente manera:
 
 ```shell
     $ pip install pydap
@@ -15,10 +15,10 @@ o, si estás usando Anaconda:
 Si ya tienes `mamba` instalado, puedes reemplazar `conda` por `mamba` en todos los comandos.
 ```
 
-Esta instalación de `pydap` incluirá las dependencias mínimas para permitir que las personas usuarias subdividan datos remotos en servidores OPeNDAP.
+Esta instalación de `pydap` incluirá las dependencias mínimas para accessar a datos remotos en servidores OPeNDAP.
 
 ```{note}
-Recomendamos usar administradores de paquetes como `conda`/`mamba`. Este enfoque requiere tener una instalación de [Miniconda](https://docs.anaconda.com/miniconda/) o [Anaconda](https://docs.anaconda.com/anaconda/install/).
+Recomendamos usar `conda`/`mamba`, lo cual requiere tener una instalación de `conda-forge` [Miniforge](https://conda-forge.org/download/).
 ```
 
 ## Entornos reproducibles (conda)
@@ -39,13 +39,14 @@ Si ya tienes `mamba` instalado, puedes reemplazar `conda` por `mamba` en todos l
 - `jupyterlab`
 - `cartopy`
 - `xarray`
+- `earthaccess`
 
-Para instalar la versión más reciente de `pydap` (solo cliente), directamente desde el repositorio de GitHub, ejecuta:
+Para instalar la versión más reciente de `pydap` directamente desde el repositorio de GitHub, ejecuta:
 
 ```shell
     $ pip install --upgrade git+https://github.com/pydap/pydap.git
 ```
 
-Esta versión no es estable, ya que se desarrolla y mejora activamente por las personas que contribuyen y mantienen el paquete `pydap`.
+Esta versión no es la mas estable, ya que esta en continue desarrollo. Solo se recommienda si la nueva version contiene un `bug` que ya ha side resuelto.
 
-Si te interesa instalar `pydap` en `modo desarrollador` para contribuir potencialmente al paquete, ve a [Contribuir al código](contribute/contr_cod.md).
+Si te interesa instalar `pydap` en mode `editable` para contribuir al proyecto, lee [Contribuir al código](contribute/contr_cod.md).
