@@ -1,20 +1,21 @@
-# Comenzar Aqui
+# Comenzar
 
-Para empezar con una descripcion muy general del uso de `pydap` como herramienta de acceso, navegue al [tutorial de 5 minutos](5_minute_tutorial). O puede navegar a uno de los siguientes ejemplos
+
+Para una intrudiction muy breve de `pydap`, consulta este [tutorial de 5 minutos](5_minute_tutorial.ipynb). También puedes ir a los siguientes ejemplos:
 
 ::::{grid} 1 1 1 3
 :class-container: text-center
 :gutter: 3
 
 :::{grid-item-card}
-:link: notebooks/ECCO
+:link: notebooks/DAYMET
 :link-type: doc
 :class-header: bg-light
 
-ECCOv4 via EarthData
+Daymet vía NASA Earthdata
 ^^^
 
-```{image} https://github.com/OPENDAP/ESIP2024/blob/main/binder/img/ECCO_native.png?raw=true
+```{image} images/OPeNDAP_Daymet_parallel.png
 :height: 200
 ```
 
@@ -25,24 +26,24 @@ ECCOv4 via EarthData
 :link-type: doc
 :class-header: bg-light
 
-PACE via EarthData
+PACE vía NASA Earthdata
 ^^^
 
-```{image} https://github.com/OPENDAP/ESIP2024/blob/main/binder/img/pace_subset.png?raw=true
+```{image} images/pace_diagram.png
 :height: 200
 ```
 
 :::
 
 :::{grid-item-card}
-:link: notebooks/CMIP6
+:link: notebooks/Ecostress
 :link-type: doc
 :class-header: bg-light
 
-CMIP6 via ESGF
+Ecostress vía NASA Earthdata
 ^^^
 
-```{image} https://github.com/OPENDAP/ESIP2024/blob/main/binder/img/Surface_Temperature.png?raw=true
+```{image} images/ecostress_diagram.png
 :height: 200
 ```
 :::

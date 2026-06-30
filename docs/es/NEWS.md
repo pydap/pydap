@@ -1,88 +1,249 @@
-Lo Nuevo
-========
+What's New
+==========
+
+3.5.10
+------
+*Release date: 2026-June*
+
+* Add attrs at dataset level to nc file when writting by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/663
+* Bump mamba-org/setup-micromamba from 2 to 3 by @dependabot[bot] in https://github.com/pydap/pydap/pull/662
+* prevent netcdf-api from applying cf-masking before writting deseriali… by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/664
+* Fix: prevent Group names with white space to cause issues by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/666
+* drop dmrpp build attributes from dataset parsing by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/668
+* enable writing parsed attribute with missing value into netcdf4 by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/670
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/671
+* skip test with dmrpp test file for now by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/677
+* Include pydap/version as User-Agent in headers when streaming dap responses by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/678
+* unskip test using file from test drmpp dir by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/679
+* case sensitive netcdf4 may be causing some issues in github/workflows by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/683
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/681
+* create initial agentic readme file by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/682
+* Dmr fixes by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/685
+* Add new tutorials by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/686
+* remove python v310 from workflows by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/687
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/689
+* fix text on docs by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/691
+* Improve data handling from tabular sequences by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/688
+* remove CMIP6/swot outdated tutorial by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/693
+* Add test hyrax responses (dmr and dap) from sequences for testing by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/695
+* add warning about expat version if < 2.4.0 by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/699
+* Expose dmrpp and virtualizarr more cleanly by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/697
+* untrack claude-plans by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/703
+* Bump actions/checkout from 6 to 7 by @dependabot[bot] in https://github.com/pydap/pydap/pull/701
+* Upgrade Webob dependency to version 1.8.10 to fix CVE by [Scott5S](https://github.com/Scott5S) in https://github.com/pydap/pydap/pull/704
+* Upgrade min python requirements by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/708
+* update publish workflow by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/710
+
+
+3.5.9
+------
+*Release date: 2026-March*
+
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/579
+* `get_cmr url`: enable seaching using version and shortname by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/580
+* Improve docs to use more Xarray and best practices by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/581
+* Minor fixes to docs by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/583
+* Replaces SimpleGroup.nc4.h5 testings with SimpleGroup3.nc4.h5 by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/585
+* Minor fix by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/586
+* skip tests for file no longer available on test server by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/588
+* No need to specify user_charset as encoding is part of dmr content by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/589
+* update how bytes are counted when deserializing String arrays by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/592
+* use some tds files for testing data with hierarchies by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/591
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/593
+* DMRPP parser to Pydap dataset model by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/594
+* add jinja2 to the list of dependencies by [Mattia Almansi](https://github.com/malmans2) in https://github.com/pydap/pydap/pull/597
+* Deprecate batch=True|False when consolidating metadata by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/599
+* Bump actions/checkout from 5 to 6 by @dependabot[bot] in https://github.com/pydap/pydap/pull/600
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/601
+* Enable streaming a dap response into a netcdf4 by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/602
+* Add a retry when fetching dimension fails before returning error by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/604
+* Make sure workers are spawn as in macos and not forked as in Linu… by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/606
+* separate download of concat_dims before special key handling by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/610
+* Iss607 by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/608
+* Restore session and refactor by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/611
+* Change suffix of files to nc4 when storing dap responses as they deserialize by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/613
+* Enable passing keep_variables with no dim_slices defined by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/615
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/617
+* Enable initial support for structures and sequences in dap4 by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/618
+* bump up dmrVersion parsing to discern two deserialization approaches by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/619
+* fix issues with nested empty Groups by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/624
+* Enable phony dims when streaming data into file (netcdf4 requires named dims) by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/626
+* return unescaped variables by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/622
+* Static logo by [aaron-kaplan](https://github.com/aaron-kaplan)aaron-kaplan in https://github.com/pydap/pydap/pull/627
+* Set elements of valid_range to match those of ncvariable when writing a de-serialized dap response into a nc4 file by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/629
+* Iss630 by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/631
+* skip test by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/632
+* Remove warnings about how structures may be escaped/accessed in tree … by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/635
+* Iss620 by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/625
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/638
+* return groups with fqns when requested by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/640
+* Enable parsing Groups when no Variables (Atomic Types) are in the DMR by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/637
+* Pin jupyterbook by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/642
+* Restore using Processes when streaming dap responses in parallel by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/643
+* dmrpp: improvements by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/645
+* fix setting attrs to nc file by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/648
+* support inline/missing data value by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/649
+* Enable N dim_slices when streaming N dap responses by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/652
+* enable phony_dims within hierarchies / groups by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/654
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/655
+* fix: Force dmrVersion=2 for dap responses from Hyrax's ngap of a specific build when dmrpp is cached by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/657
+* Update dmrpp parser - bring contributions from virtualizarr by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/658
+* include inline entry to metadata dict only if there exist one by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/659
+* enable deserializing entire dap response with one or more String arrays by [Miguel Jimenez-Urias](https://github.com/Mikejmnez) in https://github.com/pydap/pydap/pull/661
+
+
+3.5.8
+------
+*Release date: 2025-Oct*
+
+* Enable using a persistent sqlite3 as dabaset session object for testing by @Mikejmnez in https://github.com/pydap/pydap/pull/570
+* use `GET` instead of shared session by @Mikejmnez in https://github.com/pydap/pydap/pull/572
+* Enable batch=False|True when consolidating metadata by @Mikejmnez in https://github.com/pydap/pydap/pull/574
+* Update documentation by @Mikejmnez in https://github.com/pydap/pydap/pull/569
+
+
+3.5.7
+------
+*Release date: 2025-Sept*
+
+* enable updating the session credentials from a different session by @Mikejmnez in https://github.com/pydap/pydap/pull/537
+* Add an extra condition to get_cmr_urls to use if previous returns None by @Mikejmnez in https://github.com/pydap/pydap/pull/539
+* fix: get_cmr_urls by @Mikejmnez in https://github.com/pydap/pydap/pull/540
+* Enable shared dimensions option on when consolidated data by @Mikejmnez in https://github.com/pydap/pydap/pull/541
+* raise exception when trying to batch multiple variables in the dap2 p… by @Mikejmnez in https://github.com/pydap/pydap/pull/544
+* reorganize batching to return None -> add data into pydap dataset instead by @Mikejmnez in https://github.com/pydap/pydap/pull/546
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/548
+* Bump actions/setup-python from 5 to 6 by @dependabot[bot] in https://github.com/pydap/pydap/pull/552
+* a fix to parse ces with subsets by @Mikejmnez in https://github.com/pydap/pydap/pull/556
+* add slice as an argument to create single dap url with multiple variables by @Mikejmnez in https://github.com/pydap/pydap/pull/554
+* Improves memory management by @Mikejmnez in https://github.com/pydap/pydap/pull/560
+* add a data checker by @Mikejmnez in https://github.com/pydap/pydap/pull/561
+* Improve handling dimensions for datasets with nested groups by @Mikejmnez in https://github.com/pydap/pydap/pull/563
+* remove global url definitions - make tests self contained by @Mikejmnez in https://github.com/pydap/pydap/pull/564
+* Improve thread-safety ness and caching behavior by @Mikejmnez in https://github.com/pydap/pydap/pull/566
+* Improve dmr parser and deserialization by @Mikejmnez in https://github.com/pydap/pydap/pull/567
+
+
+3.5.6
+------
+*Release date: 2025-Aug-13*
+
+* Updates documentation with newer xarray by @Mikejmnez in https://github.com/pydap/pydap/pull/487
+* Update Why Pydap figure to show xarray using pydap by @Mikejmnez in https://github.com/pydap/pydap/pull/491
+* Set https as the default url scheme when dap2 or dap4 are used to set by @Mikejmnez in https://github.com/pydap/pydap/pull/493
+* Improvements to consolidate_metadata by @Mikejmnez in https://github.com/pydap/pydap/pull/488
+* Add function to query opendap urls from CMR by @Mikejmnez in https://github.com/pydap/pydap/pull/495
+* Remove slashes from dimension names when creating dds responses (pydap server) by @Mikejmnez in https://github.com/pydap/pydap/pull/503
+* Backwards compat by @Mikejmnez in https://github.com/pydap/pydap/pull/502
+* Improves support for concat_dims with size larger than 1 by @Mikejmnez in https://github.com/pydap/pydap/pull/505
+* Named dim consolidate by @Mikejmnez in https://github.com/pydap/pydap/pull/507
+* Stream into temp file using a chunk manager when downloading dap responses by @Mikejmnez in https://github.com/pydap/pydap/pull/509
+* release memory when downloading with remote dataset by @Mikejmnez in https://github.com/pydap/pydap/pull/511
+* disable caching except when using Consolidate_metadata by @Mikejmnez in https://github.com/pydap/pydap/pull/513
+* enables caching when consolidated-metadata is not run by @Mikejmnez in https://github.com/pydap/pydap/pull/514
+* String arrays by @Mikejmnez in https://github.com/pydap/pydap/pull/517
+* Enable option to requests/skip checksums by @Mikejmnez in https://github.com/pydap/pydap/pull/519
+* Adds Parent references for (nested) Groups and BaseTypes (arrays) by @Mikejmnez in https://github.com/pydap/pydap/pull/523
+* Update pre-commit hooks by @pre-commit-ci[bot] in https://github.com/pydap/pydap/pull/524
+* Enable unpacking responses from httpx by @Mikejmnez in https://github.com/pydap/pydap/pull/527
+* Enables batching multiple variable requests into a single dap url by @Mikejmnez in https://github.com/pydap/pydap/pull/525
+* Ensure consolidate_metadata and batch_mode are well integrated by @Mikejmnez in https://github.com/pydap/pydap/pull/530
+* Improve handling of Maps when consolidating metadata by @Mikejmnez in https://github.com/pydap/pydap/pull/531
+* Bump actions/checkout from 4 to 5 by @dependabot[bot] in https://github.com/pydap/pydap/pull/532
+* Enable caching urls in batch_mode, for debugging purposes by @Mikejmnez in https://github.com/pydap/pydap/pull/533
+* Enforce checksums=True, but expose option to users by @Mikejmnez in https://github.com/pydap/pydap/pull/535
+
 
 3.5.5
 ------
 *Release date: 2025-April-13*
 
-* Documentacion por @Mikejmnez en #461 #462, #464, #465, #467, #469,
-* Remueve archivos innecesarios por @Mikejmnez en #463
-* `decode_times=False` is el default @Mikejmnez en #470
-* Anade `python 3.13` a github testing por @Mikejmnez en #472
-* Dimensiones globales ahora son determinadas al inicializar el dataset por @Mikejmnez en #475
-* `pre-commit hooks` por @pre-commit-ci in #476
-* Incluye `caching` cuando se utilizan dap4 urls, y se reusa el URL de las dimensiones, en el caso de datacubes. Por @Mikejmnez en #473
-* Include `Python3.13` metadata y errores gramaticales por @Zeitsperre en #477
-* Mejora la declaracion de las dimensions de BaseType rn DAP2. Por @Mikejmnez en #481
-* Mejora del `netcdf handler`, para ser consistente con el parser de dmr. Por @Mikejmnez en #479
-* Cambio de nombre,  `datacube_urls` es ahora `consolidate_metadata` por @Mikejmnez en #483
-* Mejora de la advertencia en pruebas. Por @Mikejmnez en #484
+* Update documentation by @Mikejmnez in #461 #462, #464, #465, #467, #469,
+* remove unnecessary file by @Mikejmnez in #463
+* Sets `decode_times=False` when reading in parallel by @Mikejmnez in #470
+* add python 3.13 to testing by @Mikejmnez in #472
+* set global dims when initiating the dataset by @Mikejmnez in #475
+* Update pre-commit hooks by @pre-commit-ci in #476
+* enables caching of multiple dap4 urls and custom cache key for dimensions dap responses by @Mikejmnez in #473
+* Add Python3.13 metadata and fix spelling mistakes by @Zeitsperre in #477
+* update BaseType's reference to dimensions in DAP2 by @Mikejmnez in #481
+* update netcdf handler to be consistent with dmr parser when creating … by @Mikejmnez in #479
+* rename datacube_urls to consolidate_metadata by @Mikejmnez in #483
+* fix test warn by @Mikejmnez in #484
 
 
 3.5.4
 ------
-*Fecha de lanzamiento: 18 de marzo de 2025*
+*Release date: 2025-March-18*
 
-* Actualizacion de pre-commit hooks por @pre-commit-ci in #431
-* `Webob` ya no es usado por `pydap`. Ahora `pydap` usa la libreria `requests`, la cual automatiza el processo de autentification. Por @Mikejmnez in #434
-* Actualización de pre-commit hooks por @pre-commit-ci en #436
-* Nueva funcionalidad: `pydap` ahora usa `request_cache` para inicializar una sesión, lo que permite almacenar respuestas en caché. Por @Mikejmnez en #438
-* Nueva propiedad `.grids()` para identificar todos los objetos de tipo Grid dentro del pydap.dataset. Por @Mikejmnez en #446
-* Corrección de error: Se reemplaza dap2 con http al usar esquemas para determinar el protocolo DAP. Por @Mikejmnez en #451
-* Se agrega soporte para devolver un objeto de sesión como atributo en pydap.dataset. Ahora, los usuarios pueden recuperar la sesión. Por @Mikejmnez en #447
-* Se recopila y proporciona más metadatos sobre los nombres de las dimensiones por variable. Por @Mikejmnez en #453
-* Se eliminan atributos globales NC_GLOBAL y DODS_EXTRA heredados del analizador das. Por @Mikejmnez en #455
-* Cambio predeterminado: Ahora output_grid=False es el argumento predeterminado para open_url. Por @Mikejmnez en #457
+* Update pre-commit hooks by @pre-commit-ci in #431
+* Drop Webob from client use of pydap. Instead use requests's library which handles authentication by @Mikejmnez in #434
+* Update pre-commit hooks by @pre-commit-ci in #436
+* `New feature`: pydap now uses `request_cache` to initialize a session. Thus, responses can now be cached! by @Mikejmnez in #438
+* New `.grids()` property to identify all grid objects within dataset by @Mikejmnez in #446
+* Fixed bug: Replaces `dap2` with `http` when using schema to determine dap protocol by @Mikejmnez in #451
+* Support to return the a session object as attribute to `pydap.dataset`. The session can now be retrieved/recovered by user by @Mikejmnez in #447
+* Collect/provide more metadata about dimension names per variable by @Mikejmnez in #453
+* Flattens global attributes NC_GLOBAL and DODS_EXTRA inherited from das parser by @Mikejmnez in #455
+* Change default: `output_grid=False` is now the default argument for `open_url` by @Mikejmnez in #457
+
 
 3.5.3
 ------
-*Fecha de lanzamiento: 6 de enero de 2025*
+*Release date: 2025-Jan-6*
 
-* Se mejora el paralelismo en la lectura de fragmentos de datos binarios. Este problema afectaba especialmente a datasets con `chunks` muy pequeños, pero ya no es el caso. Por @Mikejmnez en #419
-* Limpieza de documentación por @Mikejmnez en #420
-* Nuevo soporte para analizar dmr con variables de tipo String. Por @Mikejmnez en #423
-* Se permite que el analizador dmr maneje múltiples valores en un solo atributo. Por @Mikejmnez en #421
-* Se agrega soporte para escapar espacios en blanco en nombres de grupos/variables. Por @Mikejmnez en #426
-* Se agrega soporte para decodificar encabezados de fragmentos y establecer la longitud del DMR de forma genérica, además de detectar automáticamente la endianidad de los datos. Esto permite a pydap analizar respuestas DAP4 de TDS y Hyrax sin necesidad de lógica adicional para identificar el servidor que generó la respuesta. Por @Mikejmnez en #428
+* Improved parallelism to chunk reader of binary data. This becomed an issue specially for datasets with lots of very small chunks. No longer the case by @Mikejmnez in #419
+* Docs cleanup by @Mikejmnez in #420
+* New support to parse dmr with String variables by @Mikejmnez in #423
+* New support for dmr parser to allow multiple values on single attribute by @Mikejmnez in #421
+* New Support to escape empty white spaces in names of Groups/Variables by @Mikejmnez in #426
+* Support to decode chunk header to set length of DMR in a generic way and endianness of data. This enables pydap to efficiently parse TDS and Hyrax DAP4 dap responses
+in a generaic way, without the need for extra logic to discern which server produced the dap response. By @Mikejmnez in #428
 
 
 3.5.2
 ------
-*Fecha de lanzamiento: 19 de noviembre de 2024*
 
-* Se agrega insignia de Zenodo por @Mikejmnez https://github.com/pydap/pydap/pull/405
-* Actualización de `pre-commit` hooks por @pre-commit-ci en https://github.com/pydap/pydap/pull/408
-* Se agregan versiones más recientes de Python a la metadata y los flujos de prueba. Por @Mikejmnez en https://github.com/pydap/pydap/pull/410
-* Se incluye `cas-extras` como dependencia mínima requerida para usar pydap solo como cliente. Por @Mikejmnez en https://github.com/pydap/pydap/pull/413
-* Actualización de documentación: Se añade información sobre DAP4 y Expresiones de Restricción en "Pydap como Cliente". Por @Mikejmnez en https://github.com/pydap/pydap/pull/414
-* Corrección rápida: Se implementa un parche temporal para analizar respuestas DAP4 de TDS, con un mensaje de advertencia recomendando el uso de DAP2. Por @Mikejmnez en https://github.com/pydap/pydap/pull/415
+*Release date: 2024-Nov-19*
+
+
+* Add zenodo badge by @Mikejmnez in https://github.com/pydap/pydap/pull/405
+* Update `pre-commit` hooks by @pre-commit-ci in https://github.com/pydap/pydap/pull/408
+* Adds newer `python` versions to metadata and tests workflows by @Mikejmnez in https://github.com/pydap/pydap/pull/410
+* include `cas-extras` as minimal required dependencies to use of pydap as client only by @Mikejmnez in https://github.com/pydap/pydap/pull/413
+* Update documentation, adding info about DAP4 and Constraint Expressions under `Pydap as a Client` by @Mikejmnez in https://github.com/pydap/pydap/pull/414
+* Quick patchwork to parse TDS DAP4 responses, with proper warning message to use dap2 instead by @Mikejmnez in https://github.com/pydap/pydap/pull/415
+
 
 
 3.5.1
 -----
-*Fecha de lanzamiento: 28 de octubre de 2024*
 
-- Soporte para DAP4:
-  * Mejora en la documentación de Expresiones de Restricción (se incluyen dimensiones compartidas). Por @Mikejmnez en https://github.com/pydap/pydap/pull/357
-  * Configuración de dimensiones a nivel de Group. Por @Mikejmnez en https://github.com/pydap/pydap/pull/360
-  * Creación de un método para generar objetos DAP. Por @Mikejmnez en  https://github.com/pydap/pydap/pull/362
-  * Soporte para servir datos nc4 con Groups. Por @Mikejmnez en https://github.com/pydap/pydap/pull/367
-  * Función `get.Dap` y una corrección. Por @Mikejmnez en https://github.com/pydap/pydap/pull/373.
-  * Se permite el uso de dimensiones repetidas. Por @Mikejmnez en https://github.com/pydap/pydap/pull/381
-  * Eliminación de GridType del manejador de NetCDF. Por @Mikejmnez en https://github.com/pydap/pydap/pull/395
-  * Análisis de elementos de atributos con tipos atómicos en `root`. Por @Mikejmnez en https://github.com/pydap/pydap/pull/403
+*Release date: 2024-Oct-28*
 
-- Simplificación instalación de `pydap`
+- DAP4 support:
+  * Improve docs description of Constraint Expressions (include shared dimensions) by @Mikejmnez in https://github.com/pydap/pydap/pull/357
+  * Set dimensions at `Group` level by @Mikejmnez in https://github.com/pydap/pydap/pull/360
+  * Creates method to generate dap objects by @Mikejmnez in https://github.com/pydap/pydap/pull/362
+  * serve nc4 data with `Groups` by @Mikejmnez in https://github.com/pydap/pydap/pull/367
+  * `get.Dap` objects function (and a fix)  by @Mikejmnez in https://github.com/pydap/pydap/pull/373.
+  * Allow repeated dimensions by @Mikejmnez in https://github.com/pydap/pydap/pull/381
+  * Removes `GridType` from netcdf handler by @Mikejmnez in https://github.com/pydap/pydap/pull/395
+  * Parse attribute elements with atomic types on root by @Mikejmnez in https://github.com/pydap/pydap/pull/403
 
-- Otros cambios:
-  * Se actualiza el logotipo y su referencia. Por @Mikejmnez en https://github.com/pydap/pydap/pull/366
-  * Reducción en las dependencias requeridas para la instalación. Por @Mikejmnez en https://github.com/pydap/pydap/pull/369
-  * Actualización del README. Por @Mikejmnez en https://github.com/pydap/pydap/pull/375 and https://github.com/pydap/pydap/pull/376
-  * Mejoras en workflows. Por @Mikejmnez https://github.com/pydap/pydap/pull/377
-  * Mejoras en la documentación @Mikejmnez in https://github.com/pydap/pydap/pull/378
-  * Se permite que `dds` y el analizador de `DMR` manejen datasets remotos con `Flatten Groups`. Por @Mikejmnez en https://github.com/pydap/pydap/pull/399
-  * Corrección en la variable usada para graficar y decodificar. @Mikejmnez in https://github.com/pydap/pydap/pull/383
-  * Eliminación de espacios en blanco en ci/env. Por @Mikejmnez in https://github.com/pydap/pydap/pull/386
+- Strip down installation of `pydap`:
+  - For `client`-only uses do: `pip install pydap`, or `conda install pydap` if using `conda`.
+  - If need to use `pydap`'s server do: `pip install "pydap[server,netcdf]"`, or `conda install pydap-server`.
+
+- Other changes:
+  * Updates logo file and point to it by @Mikejmnez in https://github.com/pydap/pydap/pull/366
+  * Reduced required dependencies to install by @Mikejmnez in https://github.com/pydap/pydap/pull/369
+  * update readme by @Mikejmnez in https://github.com/pydap/pydap/pull/375 and https://github.com/pydap/pydap/pull/376
+  * Worflows by @Mikejmnez in https://github.com/pydap/pydap/pull/377
+  * Docs update by @Mikejmnez in https://github.com/pydap/pydap/pull/378
+  * Allow `dds` and `DMR` parser of remote datasets with `Flatten` groups (slashes in name) by @Mikejmnez in https://github.com/pydap/pydap/pull/399
+  * change variable to plot and decode by @Mikejmnez in https://github.com/pydap/pydap/pull/383
+  * Remove whitespace on ci/env file by @Mikejmnez in https://github.com/pydap/pydap/pull/386
   * Bump mamba-org/setup-micromamba from 1 to 2 by @dependabot in https://github.com/pydap/pydap/pull/384
   * Update pre-commit hooks by @pre-commit-ci in https://github.com/pydap/pydap/pull/387
   * Update README.md by @Mikejmnez in https://github.com/pydap/pydap/pull/396
@@ -90,17 +251,18 @@ Lo Nuevo
 
 3.5.0
 -----
-*Fecha de lanzamiento: 16-Aug-2024*
 
-- Soporte de DAP4:
-  * Nuevo argumento para `client.open_url` : `protocol='dap2'|'dap4'`. Si ninguno se proporcional se usa `protocol='dap2'`.
-  * Escape de los caracteres '[' and ']' por @Mikejmnez in https://github.com/pydap/pydap/pull/310
-  * Include nuevo metodo para visualizar la estructura de arbol de el pydap dataset. Por @Mikejmnez in https://github.com/pydap/pydap/pull/324
-  * Simplification del model del Dataset en DAP4 by @Mikejmnez in https://github.com/pydap/pydap/pull/327
-  * Correccion de las Expresiones de Restriccion (CEs) de Arreglos en DAP4 by @Mikejmnez in https://github.com/pydap/pydap/pull/336
-  * Iss339 por @Mikejmnez in https://github.com/pydap/pydap/pull/340
-  * Suporte para atributos con valores NaNen el DMR (DAP4). Por @Mikejmnez in https://github.com/pydap/pydap/pull/345
-  * Corrije la definicion de `named dimensions` a nivel `root`por @Mikejmnez in https://github.com/pydap/pydap/pull/348
+*Release date: 2024-Aug-16*
+
+- DAP4 Support:
+  * New extra argument to `client.open_url` : `protocol='dap2'|'dap4'`. Default is `protocol='dap2'`.
+  * Allow escaping of '[' and ']' characters when opening remote datasets with dap4 protocol by @Mikejmnez in https://github.com/pydap/pydap/pull/310
+  * Adds a tree method for inspecting data within a pydap dataset by @Mikejmnez in https://github.com/pydap/pydap/pull/324
+  * Simplify the Dataset model in DAP4 by @Mikejmnez in https://github.com/pydap/pydap/pull/327
+  * correctly parse projections (CEs) with Arrays in DAP4 by @Mikejmnez in https://github.com/pydap/pydap/pull/336
+  * Iss339 by @Mikejmnez in https://github.com/pydap/pydap/pull/340
+  * Parse NaN attribute values on DMR (DAP4) by @Mikejmnez in https://github.com/pydap/pydap/pull/345
+  * correctly define `named dimensions` at `root` level by @Mikejmnez in https://github.com/pydap/pydap/pull/348
 
 - General updates:
   * Tests fix by @jgallagher59701 in https://github.com/pydap/pydap/pull/275
@@ -127,4 +289,199 @@ Lo Nuevo
   * Modernize the documentation with jupyter-books  by @Mikejmnez in https://github.com/pydap/pydap/pull/337
   * Implicit discovery of entry points by @Mikejmnez in https://github.com/pydap/pydap/pull/346
 
-Para ver una lista mas completa de lanzamientos anteriores, acuda a: https://github.com/pydap/pydap/releases
+
+3.4.0
+-----
+
+*Release date: 2023-April-5*
+
+* DAP4/DAS Patch (#278)
+  * Fixing a type that was causing DAP4 content to be igested in a DAP2 object with bad results.
+  * Retiring tests for Python 3.6 as it is no longer available in ubuntu. Adding tests for Python 3.10 and 3.11
+  * Dropped 3.7 and 3.8 from the version matrix
+  * test_response_error regex fixed
+  * test_response_error fix for 3.10 and 3.9
+  * changed python_macro version to 3.9
+  * Updated .gitignore for OSX Finder stuff
+
+* Dap4 beta (#271)
+  * Initial DAP4 support
+  * These changes are useful but do not represent 100% conformance to the DAP4.
+
+3.3.0
+-----
+
+*Release date: 2022-Feb-1*
+
+* There are many changes going from 3.2.0 to 3.3.0
+
+  - Merge pull request #259 from pydap/ejh_readme: fixing documentation links in README
+
+  - Merge pull request #258 from pydap/ejh_version: changed version to 3.3.0
+
+  - Merge pull request #253 from pydap/ejh_remove_python_2: initial attempt to remove python 2 support
+
+  - Merge pull request #209 from shreddd/master: Fix to speed up directory listings.
+
+  - Merge pull request #257 from pydap/ejh_macos_2: adding macos to GitHub CI
+
+  - Merge branch 'timeout' of github.com:cskarby/pydap
+  - Merge branch 'float_inf' of github.com:d70-t/pydap into ejh_inf
+
+  - Merge pull request #247 from pydap/ejh_warn2: fixed tostring warnings
+
+  - Merge pull request #246 from pydap/ejh_warn: fixed pytest warnings
+
+  - Merge pull request #243 from pydap/ejh_collections: Import ABC from collections.abc instead of collections for Python 3 compatibility (adding more versions of python)
+
+  - Merge pull request #241 from pydap/ejh_t1: adding GitHub actions CI workflow
+
+  - fix pos arg (#225)
+
+  - WIP: add user_charset arg (#223)
+
+  - Add 'default_charset' to open_url, for servers that don't (#222): specify it but serve utf-8
+
+  - client: Bugfix - pass session to server functions
+  - self.session was set to None instead of passed session object
+
+  - client: Pass timeout from open_url to server functions as well: Fixes pydap/pydap#220
+
+  - Handle KeyErrors as described in issue #128 (#201)
+
+  - Do not yield faulty DAS lines (#195): Fix #194.
+  - `sudo` is no longer needed (#193): https://blog.travis-ci.com/2018-11-19-required-linux-infrastructure-migration
+
+  - Avoid applying scale factor for consistency with dtype (#191)
+  - Fix #190.
+  - Fix Travis CI (#192)
+  - Fix PEP 479
+  - Fix PEP8
+  - add netcdf handler entry point (#179)
+  - minor client doc fixes (#181)
+  - adding logo pydap (#178)
+
+  - Merge pull request #177 from tomkralidis/add-tomkralidis-to-contributors
+
+  - Explicitly test client-only installations (solves #120) (#124)
+  0 Add a ``verify`` option to ``open_url`` (#112)
+
+  - Add a netcdf4-python interface for testing (#106)
+  - Remove serverside functions in devel server (#123)
+  - Remove non-existent entry in index (#115)
+  - make pydap canonical project name (#174)
+  - simplify HTML (#144)
+  - Fix gzip compression (#126) (#152)
+  - add support for THREDDS Catalog XML (#136) (#138)
+  - add support for THREDDS Catalog XML (#136)
+  - add pydap.__version__ capability (#133) (#135)
+
+  - Merge pull request #172 from rsignell-usgs/patch-1
+  - Create CODE_OF_CONDUCT.md
+
+  - Merge pull request #173 from betodealmeida/fix_ci_35
+  - Fix unit tests in Python 3.5
+
+  - Create CODE_OF_CONDUCT.md
+
+  - Merge pull request #161 from flackdl/patch-1
+  - Fix bad link in README
+
+  - add LICENSE file (#142) (#143)
+
+  - Handle gzipped responses (Solves #126) (#127)
+  - add requests to core dependencies (#145) (#120) (#146)
+  - Fixes #121, fixes deprecation warnings and incorporates flake8 changes (#159)
+  - Fix title level inconsistency (#117)
+  - Closes #116
+  - Exclude the Sphinx build directory from sdist (#114)
+  - Do not require mock for Python 3.3 or later (#113)
+  - `unittest.mock` is available since Python 3.3
+
+  - Merge pull request #34 from laliberte/merging/handlers.csv
+  - Merges CSV handler into the main repo
+
+  - Merge branch 'release/3.2.2'
+  - Add PasteDeploy as an optional dependency. Fixes #53
+  - New way of running a Paste server with Gunicorn. Fixes #52
+
+3.2.2
+-----
+
+*Release date: 2017-May-24*
+
+* Python 3.3 is no longer supported. This is in line with
+  other similar projects (Numpy, Xarray, ...) and it preempts the
+  expected python 3.3 EOL in September 2017.
+* Server improvements
+  * Merges pydap.handlers.netcdf into the main code base
+  * Adds a lightweight testing/development server
+  * Rewrites the server docs to reflect a post-paster world
+* Miscellaneous bug fixes
+  * Ensures Byte use is consistent with DAP2 standards
+  * Fixes client authentication to UK's CEDA
+  * Fixes client communcation with ERDDAP servers
+  * Fixes regression bug in model.GridType (#43)
+  * Fixes bug where the iteration does not replace previous_chunk
+  * Fixes bugs in command-line server (#52 and #53)
+* Fix mapping scheme for SequenceType (PR #89)
+  * Makes all types a mapping and protects the mapping semantics for sequence data
+  * Converts dict in StructureType to OrderedDict, changing
+    _original_keys handling (#3) and convers test_model.py to pytest
+    semantics (#82).
+  * Updats docs and docstrings. Added basic automatic
+    doctests. Doctests use integers for easy continuous integration
+  * 100% test coverage in src/pydap/model.py.
+* Various codebase improvements
+  * Transition tests from nose to pytest
+  * Tests with flake8 on all Python version
+* Adds timeout option to open_urls and open_dods
+
+
+3.2.1
+-----
+
+*Release date: 2017-Mar-28*
+
+* PyDAP client fixes
+  * Adds workaround to the client when making requests to older ESGF OPENDAP servers
+  * Fixes a bug where mechanicalsoup wouldn't its browser
+  * Adds handling for values of -NaN
+  * Overhauls URS authentication to use the requests library
+  * Sets a default charset when connecting to servers that do not
+* Packaging fixes
+  * Moves gunicorn in to server_extras dependency list
+  * Adds test data to the release tarball
+* Code base improvements
+  * Adds flake8 linting/checking to the code base
+  * Improves testing for client authentication
+  * Drops support for Python < 2.7
+  * Converts internal imports to be explicit relative
+* Miscellaneous bug fixes
+  * Fixes bug in fix_slices() when `stop` > len
+  * Fixes unexpected flattening of sliced arrays (#41)
+  * Fixes bug where attributes were not propagated to nested structures (#75)
+
+
+3.2.0
+-----
+
+*Release date: 2016-Dec-01*
+
+* Adds some optimizations to the server for DAP sequences
+* Rewrite of the client so that it's now able to stream real time data
+* Simplifies the design of handlers, eliminating DAP-related details
+  (so that developers can focus only on the data parsing when creating
+  new handlers).
+* Full test coverage and continuous integration
+* Adds support for Python version 3.3 through 3.5
+* Adds support for federated authentication through the Earth System
+  Grid Federation (ESGF) and NASA User Registration System (URS).
+* Fixes HTML response to show all dimensions for BaseType variables
+
+3.1.1
+-----
+
+*Release date: 14-Nov-2013*
+
+* Final release done by Roberto De Almeida
