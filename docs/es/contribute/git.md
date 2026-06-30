@@ -1,31 +1,26 @@
-# Guide to version control
+# Guía de control de versiones
 
-There are many ways to contribute to an open source project. Since pydap is already hosted
-on Github, we recommend using [Git](https://git-scm.com) for keeping track of changes and
-contribute to the project. There are many online tutorials for best practices for git, so
-we provide a summarized approach. We will assume that you have [GitHub](https://github.com)
-account and that you are signed in.
+Hay muchas formas de contribuir a un proyecto de código abierto. Como pydap ya está alojado en Github, recomendamos usar [Git](https://git-scm.com) para llevar el seguimiento de los cambios y contribuir al proyecto. Hay muchos tutoriales en línea sobre buenas prácticas con git, así que aquí damos un enfoque resumido. Asumiremos que tienes una cuenta de [GitHub](https://github.com) y que has iniciado sesión.
 
-## Using git and GitHub
+## Usar git y GitHub
 
-Go to [pydap](https://github.com/pydap/pydap) and [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) it. If you already have a fork, make sure your forked project is up-to-date
-with the remote project. If it is not, [sync](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) your fork.
+Ve a [pydap](https://github.com/pydap/pydap) y haz un [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo). Si ya tienes un fork, asegúrate de que tu proyecto derivado esté actualizado con el proyecto remoto. Si no lo está, [sincroniza](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) tu fork.
 
 
-Open your terminal. Set your GitHub username and ermail address using the following commands:
+Abre tu terminal. Configura tu nombre de usuario de GitHub y dirección de correo electrónico con los siguientes comandos:
 
 ```shell
 git config --global user.email "you@example.com"
 git config --global user.name "Your Name"
 ```
 
-Create a local clone of your fork as follows
+Crea un clon local de tu fork de la siguiente manera:
 
 ```shell
 git clone https://github.com/<your_username_here>/pydap.git
 ```
 
-Move into your local clone directory and setup a remote that points to the original
+Entra al directorio de tu clon local y configura un remoto que apunte al repositorio original:
 
 ```shell
 cd pydap
@@ -33,31 +28,29 @@ git remote add upstream https://github.com/pydap/pydap
 git fetch upstream/main
 ```
 
-A great feature of git is the ability to work on branches when developing a project. A branch helps
-keep track of changes while keeping a local copy of the remote, unchanged code. To start a branch to making a contribution to pydap
+Una gran característica de git es la capacidad de trabajar en ramas al desarrollar un proyecto. Una rama ayuda a llevar el seguimiento de los cambios manteniendo una copia local del código remoto sin modificar. Para iniciar una rama y hacer una contribución a pydap:
 
 ```shell
 git checkout -b <name_of_branch>
 ```
 
-You are now on a branch and can safely make changes to your local clone. To stage them to become visible
-to other contributors, you need to push your branch to your forked project. To achieve that run
+Ahora estás en una rama y puedes hacer cambios de forma segura en tu clon local. Para hacerlos visibles a otras personas contribuidoras, necesitas subir tu rama a tu proyecto derivado. Para lograrlo, ejecuta:
 
 ```shell
 git push --set-upstream origin <name_of_branch>
 ```
 
-You can now make changes, create commits and push them onto your forked project. To create a commit based on your local changes on your branch, run
+Ahora puedes hacer cambios, crear commits y subirlos a tu proyecto derivado. Para crear un commit con tus cambios locales en la rama, ejecuta:
 
 ```shell
 git add .
 git commit -m 'Minimal message describing changes'
 ```
 
-This will create a milestone to revert back. When you are done with your changes, or want your collaborators to become aware of your work on your forked project, run
+Esto creará un punto al que puedes volver. Cuando termines tus cambios, o quieras que tus colaboradores conozcan tu trabajo en el proyecto derivado, ejecuta:
 
 ```shell
 git push
 ```
 
-You can go to your remote GitHub directory and find your changes.
+Puedes ir a tu directorio remoto en GitHub y encontrar tus cambios.
