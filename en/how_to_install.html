@@ -375,12 +375,6 @@ gtag("config", "G-EN2VD1J32L");
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#client-only">1. Client-only</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-installation">2. Complete installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required">Minimal Required</a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-conda-environments">Reproducible (conda) environments</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-to-run-notebooks-in-this-documentation">Optional to run notebooks in this documentation</a></li>
 </ul>
@@ -398,15 +392,12 @@ gtag("config", "G-EN2VD1J32L");
                   
   <section class="tex2jax_ignore mathjax_ignore" id="how-to-install">
 <h1>How to install<a class="headerlink" href="#how-to-install" title="Link to this heading">#</a></h1>
-<p>Starting with the latest release <code class="docutils literal notranslate"><span class="pre">3.5.1</span></code>, the installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> is now split into two possible options:</p>
-<section id="client-only">
-<h2>1. Client-only<a class="headerlink" href="#client-only" title="Link to this heading">#</a></h2>
-<p>To install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> to use only as a client API, you can do:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pydap
+<p>Recent releases of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> may require upgrading Python versions. The latest version of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> requires <code class="docutils literal notranslate"><span class="pre">Python=&gt;3.12</span></code>. <code class="docutils literal notranslate"><span class="pre">Pydap</span></code> can be installed via PyPI as follows:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pydap
 </pre></div>
 </div>
-<p>or:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>pydap
+<p>or in the case you are using Anaconda:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>pydap
 </pre></div>
 </div>
 <div class="admonition note">
@@ -414,42 +405,15 @@ gtag("config", "G-EN2VD1J32L");
 <p>If you already have <code class="docutils literal notranslate"><span class="pre">mamba</span></code> installed, you can replace all <code class="docutils literal notranslate"><span class="pre">conda</span></code> in the commands with <code class="docutils literal notranslate"><span class="pre">mamba</span></code>.</p>
 </div>
 <p>This installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> will include the minimal dependencies to allow users to subset remote data on OPeNDAP servers.</p>
-</section>
-<section id="complete-installation">
-<h2>2. Complete installation<a class="headerlink" href="#complete-installation" title="Link to this heading">#</a></h2>
-<p>To recover the full installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code>, which includes the packages for using pydap as a client and as a server, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>install<span class="w"> </span>pydap-server
-</pre></div>
-</div>
-<p>This installation of <code class="docutils literal notranslate"><span class="pre">pydap</span></code> will include the dependencies to allow users to: a) subset remote data on OPeNDAP servers; and b) use <code class="docutils literal notranslate"><span class="pre">pydap</span></code>’s server to make data available.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>We recommend to use package installation managers like <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>. This approach requires having an installation of <a class="reference external" href="https://docs.anaconda.com/miniconda/">Miniconda</a> or <a class="reference external" href="https://docs.anaconda.com/anaconda/install/">Anaconda</a>.</p>
+<p>We recommend to use package installation managers like <code class="docutils literal notranslate"><span class="pre">conda</span></code>/<code class="docutils literal notranslate"><span class="pre">mamba</span></code>. This requires the installation of <a class="reference external" href="https://conda-forge.org/download/">Miniforge</a></p>
 </div>
-</section>
-<section id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">#</a></h2>
-<section id="minimal-required">
-<h3>Minimal Required<a class="headerlink" href="#minimal-required" title="Link to this heading">#</a></h3>
-<p>The following are required to run <code class="docutils literal notranslate"><span class="pre">pydap</span></code> as a client.</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">python&gt;=3.11</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">numpy</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scipy</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">requests</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">requests_cache</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">beautifulsoup4</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">lxml</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">Webob</span></code></p></li>
-</ul>
-<p>These are install with every <code class="docutils literal notranslate"><span class="pre">pydap</span></code> installation.</p>
-</section>
-</section>
 <section id="reproducible-conda-environments">
 <h2>Reproducible (conda) environments<a class="headerlink" href="#reproducible-conda-environments" title="Link to this heading">#</a></h2>
-<p>You can easily use conda to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> or <code class="docutils literal notranslate"><span class="pre">pydap-server</span></code>, along with any optional packages for sharing a reproducible workflow. For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12<span class="w"> </span>pydap
-<span class="w">    </span>$<span class="w"> </span>conda<span class="w"> </span>activate<span class="w"> </span>pydap_env
+<p>You can easily use conda to install <code class="docutils literal notranslate"><span class="pre">pydap</span></code> and any optional packages for sharing a reproducible workflow. For example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>pydap_env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.12<span class="w"> </span>pydap
+conda<span class="w"> </span>activate<span class="w"> </span>pydap_env
 </pre></div>
 </div>
 <div class="admonition note">
@@ -463,13 +427,14 @@ gtag("config", "G-EN2VD1J32L");
 <li><p><code class="docutils literal notranslate"><span class="pre">jupyterlab</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">cartopy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">xarray</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">earthaccess</span></code></p></li>
 </ul>
 <p>To install the latest <code class="docutils literal notranslate"><span class="pre">pydap</span></code> version (client-only), directly from the GitHub repository, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">    </span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>git+https://github.com/pydap/pydap.git
 </pre></div>
 </div>
-<p>This version is not stable as it is being actively developed and improved upon by contributors and maintainers of the <code class="docutils literal notranslate"><span class="pre">pydap</span></code> package.</p>
-<p>If you are interested in installing <code class="docutils literal notranslate"><span class="pre">pydap</span></code> in <code class="docutils literal notranslate"><span class="pre">developer</span> <span class="pre">mode</span></code> to potentially contribute to the package, go to <a class="reference internal" href="contribute/contr_cod.html"><span class="std std-doc">Contributing to the code</span></a>.</p>
+<p>This version is not stable and is under active developement. We only recommend this if the official release has a bug that has been address in the source repository.</p>
+<p>If you are interested in installing <code class="docutils literal notranslate"><span class="pre">pydap</span></code> in <code class="docutils literal notranslate"><span class="pre">editable</span> <span class="pre">mode</span></code> to contribute to the project, go to <a class="reference internal" href="contribute/contr_cod.html"><span class="std std-doc">Contributing to the code</span></a>.</p>
 </section>
 </section>
 </section>
@@ -540,12 +505,6 @@ gtag("config", "G-EN2VD1J32L");
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#client-only">1. Client-only</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#complete-installation">2. Complete installation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependencies">Dependencies</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#minimal-required">Minimal Required</a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#reproducible-conda-environments">Reproducible (conda) environments</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-to-run-notebooks-in-this-documentation">Optional to run notebooks in this documentation</a></li>
 </ul>

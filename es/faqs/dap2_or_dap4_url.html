@@ -16,7 +16,7 @@ gtag("config", "G-EN2VD1J32L");
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Como saber si el URL es DAP2 o DAP4? &#8212; PyDAP tutorial</title>
+    <title>¿Esta es una URL DAP2 o DAP4? &#8212; PyDAP tutorial</title>
   
   
   
@@ -71,7 +71,8 @@ gtag("config", "G-EN2VD1J32L");
     <script>DOCUMENTATION_OPTIONS.pagename = 'faqs/dap2_or_dap4_url';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="FAQs" href="faqs.html" />
+    <link rel="next" title="¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?" href="dap2_vs_dap4.html" />
+    <link rel="prev" title="¿Cómo puedo diagnosticar problemas de descarga?" href="diagnose_download_issues.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -167,28 +168,66 @@ gtag("config", "G-EN2VD1J32L");
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inicio rápido</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Como Installar</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar Aqui</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Cómo instalar</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">Lo Nuevo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ejemplos</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../notebooks/Authentication.html">Autenticacion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../notebooks/netrc.html">Como crear el archivo .netrc</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../notebooks/Authentication.html">Autenticación básica</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/netrc.html">Crear un archivo .netrc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/earthaccess.html">Autenticación EDL mediante earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/GetCMRURLS.html">Como encontrar URLs de OPeNDAP de NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/CalipsoL2_access.html">Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/DAYMET.html">Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Ecostress.html">Acceso a datos de temperatura de superficie terrestre de ECOSTRESS de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/TEMPO_NRT.html">Acceso a datos de calidad del aire casi en tiempo real (NRT) de TEMPO mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">Acceso a ECCOv4 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/MERRA2.html">Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Preguntas frecuentes</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="faqs.html">FAQs</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Como saber si el URL es DAP2 o DAP4?</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="faqs.html">Preguntas frecuentes</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="download_speed.html">Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnose_download_issues.html">¿Cómo puedo diagnosticar problemas de descarga?</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">¿Esta es una URL DAP2 o DAP4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dap2_vs_dap4.html">¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../PydapAsClient.html">PyDAP como cliente</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DAP_Protocol.html">Protocolo OPeNDAP DAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ConstraintExpressions.html">Constraint Expressions: subconjunto del lado del servidor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guía para desarrolladores</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contribuir</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../guide_to_developer.html">Guía para nuevos contribuidores</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/git.html">Guía de control de versiones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_cod.html">Contribuir al código</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_issues.html">Reportar issues en GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_docs.html">Contribuir a la documentación</a></li>
 </ul>
 </details></li>
 </ul>
@@ -326,7 +365,7 @@ gtag("config", "G-EN2VD1J32L");
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Como saber si el URL es DAP2 o DAP4?</h1>
+    <h1>¿Esta es una URL DAP2 o DAP4?</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -349,19 +388,19 @@ gtag("config", "G-EN2VD1J32L");
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="como-saber-si-el-url-es-dap2-o-dap4">
-<h1>Como saber si el URL es DAP2 o DAP4?<a class="headerlink" href="#como-saber-si-el-url-es-dap2-o-dap4" title="Link to this heading">#</a></h1>
-<p>Existen solo 2 servidores <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> que implementan el protocolo <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>: <a class="reference external" href="https://www.opendap.org/software/hyrax-data-server/">Hyrax Data Server</a> (developed by <a class="reference external" href="https://www.opendap.org/">OPeNDAP Inc</a>), y <a class="reference external" href="https://www.unidata.ucar.edu/software/tds/">Thredds Data Server</a> (developed by <a class="reference external" href="https://www.unidata.ucar.edu/">NSF Unidata</a>). El protocolo <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> fue disenado en conjunto por <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> y <code class="docutils literal notranslate"><span class="pre">Unidata</span></code> en 2016 (vea <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html">the DAP4 specification</a>). Cualquier servidor <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code> y <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> que implementen <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> tambien implementara <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>, pero verificar que dado algun URL sea <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> o <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> difiere entre los dos.</p>
+  <section id="esta-es-una-url-dap2-o-dap4">
+<h1>¿Esta es una URL DAP2 o DAP4?<a class="headerlink" href="#esta-es-una-url-dap2-o-dap4" title="Link to this heading">#</a></h1>
+<p>Solo dos servidores <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> soportan ampliamente <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>: <a class="reference external" href="https://www.opendap.org/software/hyrax-data-server/">Hyrax Data Server</a> (desarrollado por <a class="reference external" href="https://www.opendap.org/">OPeNDAP Inc</a>, los arquitectos originales de <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code>) y <a class="reference external" href="https://www.unidata.ucar.edu/software/tds/">Thredds Data Server</a> (desarrollado por <a class="reference external" href="https://www.unidata.ucar.edu/">NSF Unidata</a>). <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> fue desarrollado originalmente de forma conjunta por <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> y <code class="docutils literal notranslate"><span class="pre">Unidata</span></code> en 2016 (consulta <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html">la especificación DAP4</a>). Cualquier servidor <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code> y <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> que implemente <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> también implementa <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>, y comprobar si una URL es DAP4 o DAP2 es diferente en cada uno de estos servidores.</p>
 <section id="hyrax-data-server">
 <h2><font size="5"><span style='color:#0066cc'> <strong>Hyrax Data Server</strong><font size="3"><a class="headerlink" href="#hyrax-data-server" title="Link to this heading">#</a></h2>
-<p>Con <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code>, la manera mas facil es anadir la extension <code class="docutils literal notranslate"><span class="pre">.dmr</span></code> (o <code class="docutils literal notranslate"><span class="pre">.dmr.html</span></code>), a un URL, utilizar la pagina del ordenador y navegar hacia la pagina. For example, consider the following Hyrax opendap URLPor exemplo considere el siguiente URL de opendap:</p>
+<p>Con <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code>, la forma más sencilla de verificar si la URL soporta DAP4 o no es tomar la URL, agregar <code class="docutils literal notranslate"><span class="pre">.dmr</span></code> (o <code class="docutils literal notranslate"><span class="pre">.dmr.html</span></code>) y pegarla en un navegador. Por ejemplo, considera la siguiente URL opendap de Hyrax:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">URL</span> <span class="o">=</span> <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">test</span><span class="o">.</span><span class="n">opendap</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">opendap</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">nc</span><span class="o">/</span><span class="n">coads_climatology</span><span class="o">.</span><span class="n">nc</span>
 </pre></div>
 </div>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head text-left"><p><strong>DAP2 Hyrax URL</strong></p></th>
-<th class="head text-right"><p><strong>DAP4 Hyrax URL</strong></p></th>
+<tr class="row-odd"><th class="head text-left"><p><strong>URL DAP2 Hyrax</strong></p></th>
+<th class="head text-right"><p><strong>URL DAP4 Hyrax</strong></p></th>
 </tr>
 </thead>
 <tbody>
@@ -379,19 +418,23 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Cualquier servidor de OPeNDAP de Hyrax que implemente <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> tambien implementa <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>. De hecho, con Hyrax, <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> siempre es el protocol pre-determinada.</p>
+<p>Un servidor Hyrax que implementa DAP4 debería implementar DAP2. En la mayoría de los servidores Hyrax (versión &gt; 1.15), DAP4 es la implementación de protocolo predeterminada, y cuando una persona usuaria solicita una respuesta DAP2, el servidor primero procesa y luego traduce una respuesta DAP4 a DAP2. Esto habilita compatibilidad hacia atrás con clientes antiguos que solo pueden analizar respuestas DAP2, a la vez que soporta datasets más nuevos. En ese proceso, es posible que el dataset remoto no pueda traducirse por completo a una respuesta DAP2, y Hyrax puede devolver un Error 400 en su lugar (<a href="Q4.html#a-word-of-caution">consulta la advertencia</a>).</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Para ver la versión oficial más reciente de <code class="docutils literal notranslate"><span class="pre">Hyrax</span></code>, ve al <a class="reference external" href="https://www.opendap.org/">sitio oficial de OPeNDAP</a> y revisa <code class="docutils literal notranslate"><span class="pre">Latest</span> <span class="pre">Release</span></code> bajo <code class="docutils literal notranslate"><span class="pre">Software</span></code>.</p>
 </div>
 </section>
 <section id="thredds-data-server">
 <h2><font size="5"><span style='color:#0066cc'> <strong>Thredds Data Server</strong><font size="3"><a class="headerlink" href="#thredds-data-server" title="Link to this heading">#</a></h2>
-<p>En el caso del Thredds Data Server (<code class="docutils literal notranslate"><span class="pre">TDS</span></code>), un URL que posea  <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> siempre esta identificado con el protocolo <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>. Si en su lugar, reemplaza <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> en el URL por <code class="docutils literal notranslate"><span class="pre">dap4</span></code>, este nuevo URL sera <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. Por ejemplo considere el siguiente URL:</p>
+<p>Con <code class="docutils literal notranslate"><span class="pre">TDS</span></code>, una URL <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> tendrá <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> en su URL. Si reemplazas <code class="docutils literal notranslate"><span class="pre">dodsC</span></code> por <code class="docutils literal notranslate"><span class="pre">dap4</span></code> y la pegas en un navegador, debería producir una página web que permite descargar una respuesta DAP4. Por ejemplo, considera:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">URL</span> <span class="o">=</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">thredds</span><span class="o">-</span><span class="n">test</span><span class="o">.</span><span class="n">unidata</span><span class="o">.</span><span class="n">ucar</span><span class="o">.</span><span class="n">edu</span><span class="o">/</span><span class="n">thredds</span><span class="o">/</span><span class="n">dodsC</span><span class="o">/</span><span class="n">testdods</span><span class="o">/</span><span class="n">coads_climatology</span><span class="o">.</span><span class="n">nc</span>
 </pre></div>
 </div>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
-<tr class="row-odd"><th class="head text-left"><p><strong>DAP2 Thredds URL</strong></p></th>
-<th class="head text-right"><p><strong>DAP4 Thredds URL</strong></p></th>
+<tr class="row-odd"><th class="head text-left"><p><strong>URL DAP2 Thredds</strong></p></th>
+<th class="head text-right"><p><strong>URL DAP4 Thredds</strong></p></th>
 </tr>
 </thead>
 <tbody>
@@ -406,7 +449,11 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Un servidor OPeNDAP  <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> que implemente <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> puede que no implemente <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. Es recomendable asegurarse que el servidor este configurado para implementar el protocolo <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>.</p>
+<p>Un servidor <code class="docutils literal notranslate"><span class="pre">Thredds</span></code> que implementa DAP2 puede no implementar DAP4. Se recomienda firmemente comprobar si un servidor está configurado para ofrecer el endpoint DAP4.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Para ver la versión oficial más reciente de <code class="docutils literal notranslate"><span class="pre">Thredds</span></code>, ve a la <a class="reference external" href="https://www.unidata.ucar.edu/software/tds/">página oficial de Thredds</a>.</p>
 </div>
 </section>
 </section>
@@ -442,13 +489,22 @@ gtag("config", "G-EN2VD1J32L");
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="faqs.html"
+       href="diagnose_download_issues.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">FAQs</p>
+        <p class="prev-next-title">¿Cómo puedo diagnosticar problemas de descarga?</p>
       </div>
+    </a>
+    <a class="right-next"
+       href="dap2_vs_dap4.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
     </a>
 </div>
                 </footer>

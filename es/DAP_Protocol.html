@@ -16,7 +16,7 @@ gtag("config", "G-EN2VD1J32L");
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>El Protocolo DAP de OPeNDAP &#8212; PyDAP tutorial</title>
+    <title>Protocolo OPeNDAP DAP &#8212; PyDAP tutorial</title>
   
   
   
@@ -71,6 +71,8 @@ gtag("config", "G-EN2VD1J32L");
     <script>DOCUMENTATION_OPTIONS.pagename = 'DAP_Protocol';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Constraint Expressions: subconjunto del lado del servidor" href="ConstraintExpressions.html" />
+    <link rel="prev" title="PyDAP como cliente" href="PydapAsClient.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -122,8 +124,6 @@ gtag("config", "G-EN2VD1J32L");
       
       
       
-        
-      
       <dialog id="pst-primary-sidebar-modal"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
@@ -168,28 +168,66 @@ gtag("config", "G-EN2VD1J32L");
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inicio rápido</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="how_to_install.html">Como Installar</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Comenzar Aqui</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1"><a class="reference internal" href="how_to_install.html">Cómo instalar</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Comenzar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="NEWS.html">Lo Nuevo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NEWS.html">What’s New</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ejemplos</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Autenticacion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Como crear el archivo .netrc</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Autenticación básica</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Crear un archivo .netrc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/earthaccess.html">Autenticación EDL mediante earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/GetCMRURLS.html">Como encontrar URLs de OPeNDAP de NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CalipsoL2_access.html">Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/DAYMET.html">Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Ecostress.html">Acceso a datos de temperatura de superficie terrestre de ECOSTRESS de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/TEMPO_NRT.html">Acceso a datos de calidad del aire casi en tiempo real (NRT) de TEMPO mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">Acceso a ECCOv4 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MERRA2.html">Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Preguntas frecuentes</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="faqs/faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="faqs/dap2_or_dap4_url.html">Como saber si el URL es DAP2 o DAP4?</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="faqs/faqs.html">Preguntas frecuentes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="faqs/download_speed.html">Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faqs/diagnose_download_issues.html">¿Cómo puedo diagnosticar problemas de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faqs/dap2_or_dap4_url.html">¿Esta es una URL DAP2 o DAP4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faqs/dap2_vs_dap4.html">¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentación</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="PydapAsClient.html">PyDAP como cliente</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Protocolo OPeNDAP DAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ConstraintExpressions.html">Constraint Expressions: subconjunto del lado del servidor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guía para desarrolladores</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contribuir</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="guide_to_developer.html">Guía para nuevos contribuidores</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="contribute/git.html">Guía de control de versiones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_cod.html">Contribuir al código</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_issues.html">Reportar issues en GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_docs.html">Contribuir a la documentación</a></li>
 </ul>
 </details></li>
 </ul>
@@ -327,7 +365,7 @@ gtag("config", "G-EN2VD1J32L");
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>El Protocolo DAP de OPeNDAP</h1>
+    <h1>Protocolo OPeNDAP DAP</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -339,22 +377,14 @@ gtag("config", "G-EN2VD1J32L");
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#groups">Groups</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arrays-grids">Arrays / Grids</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#old-dap2-approach">old <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> approach</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enfoque-antiguo-de-dap2">Enfoque antiguo de <code class="docutils literal notranslate"><span class="pre">DAP2</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabular-data">Tabular data</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#erddap-in-situ-data">ERDDAP in situ data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-data">Filtering data</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authentication">Authentication</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cas">CAS</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#urs-nasa-earthdata">URS NASA EARTHDATA</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#earth-system-grid-federation-esgf">Earth System Grid Federation (ESGF)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced features</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-cache">Using a cache</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-a-proxy">Configuring a proxy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datos-tabulares">Datos tabulares</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datos-in-situ-de-erddap">Datos in situ de ERDDAP</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtrar-datos">Filtrar datos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#funcionalidades-avanzadas">Funcionalidades avanzadas</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configurar-un-proxy">Configurar un proxy</a></li>
 </ul>
 </li>
 </ul>
@@ -368,40 +398,40 @@ gtag("config", "G-EN2VD1J32L");
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="el-protocolo-dap-de-opendap">
-<h1>El Protocolo DAP de OPeNDAP<a class="headerlink" href="#el-protocolo-dap-de-opendap" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="protocolo-opendap-dap">
+<h1>Protocolo OPeNDAP DAP<a class="headerlink" href="#protocolo-opendap-dap" title="Link to this heading">#</a></h1>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><strong>Why is it important to understand the data type covered by each protocol?</strong> OPeNDAP servers that implement <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> and <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> are written in <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> and <code class="docutils literal notranslate"><span class="pre">Java</span></code>, and which means PyDAP users MUST be aware of the atomic types that such servers are compatible with.</p>
+<p><strong>¿Por qué es importante entender el tipo de datos cubierto por cada protocolo?</strong> Los servidores OPeNDAP que implementan <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> y <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> están escritos en <code class="docutils literal notranslate"><span class="pre">C/C++</span></code> y <code class="docutils literal notranslate"><span class="pre">Java</span></code>, lo que significa que las personas usuarias de PyDAP DEBEN conocer los tipos atómicos con los que estos servidores son compatibles.</p>
 </div>
-<p>There are broadly <code class="docutils literal notranslate"><span class="pre">two</span> <span class="pre">DAP</span> <span class="pre">Data</span> <span class="pre">Models</span></code>: <a class="reference external" href="https://zenodo.org/records/10794666">DAP2</a> and <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html">DAP4</a>. From the client perspective, these two have slight differences so we provide a brief overview of the two below</p>
-<p>The DAP4 data model is close to a <em>superset</em> of the older DAP2 model except that <code class="docutils literal notranslate"><span class="pre">Grids</span></code> are no longer part of the DAP4 data model (see <a class="reference internal" href="#Figure1"><span class="xref myst">Figure 1</span></a>). However, since the <code class="docutils literal notranslate"><span class="pre">Grid</span></code> datatype is a DAP2 object (as opposed to a <code class="docutils literal notranslate"><span class="pre">netCDF/HDF</span></code> object), a <em>Grid object in DAP2 CAN be represented in DAP4</em>. This means that any dataset that is represented by the DAP2 data model (and say made available by a TDS/Hyrax server) can be fully represented in DAP4. However, DAP4 types and objects (like <code class="docutils literal notranslate"><span class="pre">Groups</span></code>, and <code class="docutils literal notranslate"><span class="pre">Int64</span></code>) served by a remote Hyrax/TDS data server cannot be represented in DAP2, and pydap will receive DAP responses missing those data types.</p>
-<p>To learn more about the DAP4 specification, check the <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html">DAP4 official documentation</a> written jointly by Unidata and OPeNDAP, Inc back in 2016.</p>
+<p>En términos generales hay <code class="docutils literal notranslate"><span class="pre">dos</span> <span class="pre">modelos</span> <span class="pre">de</span> <span class="pre">datos</span> <span class="pre">DAP</span></code>: <a class="reference external" href="https://zenodo.org/records/10794666">DAP2</a> y <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html">DAP4</a>. Desde la perspectiva del cliente, estos dos tienen pequeñas diferencias, así que abajo proporcionamos una breve descripción de ambos.</p>
+<p>El modelo de datos DAP4 está cerca de ser un <em>superconjunto</em> del modelo DAP2 antiguo, excepto que <code class="docutils literal notranslate"><span class="pre">Grids</span></code> ya no forman parte del modelo de datos DAP4 (ver <a class="reference internal" href="#Figure1"><span class="xref myst">Figura 1</span></a>). Sin embargo, como el tipo de datos <code class="docutils literal notranslate"><span class="pre">Grid</span></code> es un objeto DAP2 (a diferencia de un objeto <code class="docutils literal notranslate"><span class="pre">netCDF/HDF</span></code>), un <em>objeto Grid en DAP2 PUEDE representarse en DAP4</em>. Esto significa que cualquier dataset representado por el modelo de datos DAP2 (y, digamos, disponible mediante un servidor TDS/Hyrax) puede representarse por completo en DAP4. Sin embargo, los tipos y objetos DAP4 (como <code class="docutils literal notranslate"><span class="pre">Groups</span></code> e <code class="docutils literal notranslate"><span class="pre">Int64</span></code>) servidos por un servidor remoto Hyrax/TDS no se pueden representar en DAP2, y pydap recibirá respuestas DAP a las que les faltan esos tipos de datos.</p>
+<p>Para aprender más sobre la especificación DAP4, consulta la <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html">documentación oficial de DAP4</a>, escrita conjuntamente por Unidata y OPeNDAP, Inc en 2016.</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head text-center"><p><img alt="Figure1" src="_images/DAP4vsDAP2.png" /></p></th>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-center"><p><em>Figure 1. Comparison between DAP2 and DAP4 data models and responses.</em></p></td>
+<tr class="row-even"><td class="text-center"><p><em>Figura 1. Comparación entre modelos de datos y respuestas DAP2 y DAP4.</em></p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>PyDAP aims at covering all of the DAP2 and DAP4 data models, broadly speaking, and so it covers the following DAP Objects:</p>
+<p>PyDAP busca cubrir ampliamente todos los modelos de datos DAP2 y DAP4, y por ello cubre los siguientes objetos DAP:</p>
 <ul class="simple">
 <li><p>Groups</p></li>
 <li><p>Gridded Arrays.</p></li>
-<li><p>Sequences (Tabular data)</p></li>
+<li><p>Sequences (datos tabulares)</p></li>
 <li><p>Structures.</p></li>
-<li><p>All but <code class="docutils literal notranslate"><span class="pre">Opaque</span></code> and <code class="docutils literal notranslate"><span class="pre">Enum</span></code> atomic types (all others types can be represented by numpy array data).</p></li>
+<li><p>Todos los tipos atómicos excepto <code class="docutils literal notranslate"><span class="pre">Opaque</span></code> y <code class="docutils literal notranslate"><span class="pre">Enum</span></code> (todos los demás tipos pueden representarse con datos de arreglos numpy).</p></li>
 </ul>
-<p>When opening a remote URL <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> will create a <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> object which acts like the <code class="docutils literal notranslate"><span class="pre">root</span></code> directly. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> can then contain multiple data types, which may be <code class="docutils literal notranslate"><span class="pre">nested</span></code>. Since <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> approaches full support of the <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> model, it supports <code class="docutils literal notranslate"><span class="pre">Groups</span></code> and nested <code class="docutils literal notranslate"><span class="pre">Groups</span></code>, which may themselves hold other data types, and other nested <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> objects named above.</p>
+<p>Al abrir una URL remota, <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> creará un objeto <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> que actúa como el directorio <code class="docutils literal notranslate"><span class="pre">root</span></code>. El <code class="docutils literal notranslate"><span class="pre">Dataset</span></code> de <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> puede contener múltiples tipos de datos, que pueden estar <code class="docutils literal notranslate"><span class="pre">anidados</span></code>. Como <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> se acerca al soporte completo del modelo <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>, soporta <code class="docutils literal notranslate"><span class="pre">Groups</span></code> y <code class="docutils literal notranslate"><span class="pre">Groups</span></code> anidados, que a su vez pueden contener otros tipos de datos y otros objetos <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> anidados nombrados arriba.</p>
 <section id="groups">
 <h2>Groups<a class="headerlink" href="#groups" title="Link to this heading">#</a></h2>
-<p>Groups are largely a feature of <code class="docutils literal notranslate"><span class="pre">HDF5/NetCDF4</span></code> file format models. Many remote datasets (e.g. from NASA made accessible by Hyrax data servers) may contain one or more <code class="docutils literal notranslate"><span class="pre">Groups</span></code>, some of them nested. Due to the complicate spec of the HDF data model, the <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> specification follows closely the <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code> model. This means there are no cyclic <code class="docutils literal notranslate"><span class="pre">Groups</span></code>. Instead, there is always a root, and each <code class="docutils literal notranslate"><span class="pre">Group</span></code> has a single parent <code class="docutils literal notranslate"><span class="pre">Group</span></code>.</p>
-<p>To read data from a remote DAP4 server, you MUST set <code class="docutils literal notranslate"><span class="pre">open_url(...,</span> <span class="pre">protocol='dap4')</span></code>.</p>
-<p>Consider the following example:</p>
+<p>Los Groups son en gran medida una característica de los modelos de formato de archivo <code class="docutils literal notranslate"><span class="pre">HDF5/NetCDF4</span></code>. Muchos datasets remotos (por ejemplo, de NASA disponibles mediante servidores de datos Hyrax) pueden contener uno o más <code class="docutils literal notranslate"><span class="pre">Groups</span></code>, algunos de ellos anidados. Debido a la compleja especificación del modelo de datos HDF, la especificación <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> sigue de cerca el modelo <code class="docutils literal notranslate"><span class="pre">netCDF4</span></code>. Esto significa que no hay <code class="docutils literal notranslate"><span class="pre">Groups</span></code> cíclicos. En su lugar, siempre hay una raíz, y cada <code class="docutils literal notranslate"><span class="pre">Group</span></code> tiene un único <code class="docutils literal notranslate"><span class="pre">Group</span></code> padre.</p>
+<p>Para leer datos desde un servidor DAP4 remoto, DEBES establecer <code class="docutils literal notranslate"><span class="pre">open_url(...,</span> <span class="pre">protocol='dap4')</span></code>.</p>
+<p>Considera el siguiente ejemplo:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
@@ -426,7 +456,7 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 </div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">print(dataset)</span></code> only returns the elements within the root directory. In <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>, one can navigate the dataset as if it were a POSIX filesystem, and inspect the variables within a (nested) group. For example:</p>
+<p><code class="docutils literal notranslate"><span class="pre">print(dataset)</span></code> solo devuelve los elementos dentro del directorio raíz. En <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>, se puede navegar el dataset como si fuera un sistema de archivos POSIX e inspeccionar las variables dentro de un grupo (anidado). Por ejemplo:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;gt1r&#39;</span><span class="p">]</span>
@@ -463,7 +493,7 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 </div>
 </div>
-<p>We take a look at the variable <code class="docutils literal notranslate"><span class="pre">bckgrd_int_height</span></code> and its <code class="docutils literal notranslate"><span class="pre">dimensions</span></code>:</p>
+<p>Observamos la variable <code class="docutils literal notranslate"><span class="pre">bckgrd_int_height</span></code> y sus <code class="docutils literal notranslate"><span class="pre">dimensions</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;/gt1r/bckgrd_atlas/bckgrd_int_height&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span>
@@ -509,10 +539,10 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">dimension</span></code> <code class="docutils literal notranslate"><span class="pre">delta_time</span></code> is defined at the <code class="docutils literal notranslate"><span class="pre">Group</span></code> level, with a name relative to the (nested) <code class="docutils literal notranslate"><span class="pre">Group:/gt1r/bckgrd_atlas</span></code>. But when inspecting a variable array that list <code class="docutils literal notranslate"><span class="pre">delta_time</span></code> as its dimension, it lists <code class="docutils literal notranslate"><span class="pre">delta_time</span></code> with its Fully Qualifying Name (FQN)</p>
+<p>La <code class="docutils literal notranslate"><span class="pre">dimension</span></code> <code class="docutils literal notranslate"><span class="pre">delta_time</span></code> está definida a nivel de <code class="docutils literal notranslate"><span class="pre">Group</span></code>, con un nombre relativo al <code class="docutils literal notranslate"><span class="pre">Group:/gt1r/bckgrd_atlas</span></code> (anidado). Pero al inspeccionar un arreglo de variable que lista <code class="docutils literal notranslate"><span class="pre">delta_time</span></code> como su dimensión, la lista con su Fully Qualifying Name (FQN).</p>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">Fully</span> <span class="pre">Qualifying</span> <span class="pre">Names</span></code> are an important feature of the DAP4 data model, avoiding name clashing across Groups. To read more about Qualifying Names, we refer you to the official <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html#_fully_qualified_names">DAP4 Specification</a>.</p>
-<p>Attempting to read this dataset from a DAP4 server may result in an error</p>
+<p>Los <code class="docutils literal notranslate"><span class="pre">Fully</span> <span class="pre">Qualifying</span> <span class="pre">Names</span></code> son una característica importante del modelo de datos DAP4, evitando colisiones de nombres entre Groups. Para leer más sobre Qualifying Names, te remitimos a la <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html#_fully_qualified_names">especificación oficial DAP4</a>.</p>
+<p>Intentar leer este dataset desde un servidor DAP4 puede producir un error.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
@@ -529,11 +559,11 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 </div>
 </div>
-<p>In the case above, a variable is of <code class="docutils literal notranslate"><span class="pre">Int64</span></code> (atomic) type, which causes the error. However, if instead the attribute is a type that is not supported by DAP2 model, the server will not raise an <code class="docutils literal notranslate"><span class="pre">HTTPError</span></code>, and <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> will download an <code class="docutils literal notranslate"><span class="pre">incomplete</span></code> dataset (with missing attributes)</p>
+<p>En el caso anterior, una variable es de tipo <code class="docutils literal notranslate"><span class="pre">Int64</span></code> (atómico), lo que causa el error. Sin embargo, si en cambio el atributo es de un tipo no soportado por el modelo DAP2, el servidor no lanzará un <code class="docutils literal notranslate"><span class="pre">HTTPError</span></code>, y <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> descargará un dataset <code class="docutils literal notranslate"><span class="pre">incomplete</span></code> (con atributos faltantes).</p>
 </section>
 <section id="arrays-grids">
 <h2>Arrays / Grids<a class="headerlink" href="#arrays-grids" title="Link to this heading">#</a></h2>
-<p>Let’s start by accessing <code class="docutils literal notranslate"><span class="pre">Gridded</span> <span class="pre">Array</span></code>, i.e., data that is stored as a regular multidimensional array. Here’s a simple example where we access the <a class="reference external" href="https://icoads.noaa.gov/">COADS</a> climatology from the official <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span> <span class="pre">test</span> <span class="pre">server</span></code>:</p>
+<p>Empecemos accediendo a un <code class="docutils literal notranslate"><span class="pre">Gridded</span> <span class="pre">Array</span></code>, es decir, datos almacenados como un arreglo multidimensional regular. Aquí hay un ejemplo simple donde accedemos a la climatología <a class="reference external" href="https://icoads.noaa.gov/">COADS</a> desde el <code class="docutils literal notranslate"><span class="pre">servidor</span> <span class="pre">de</span> <span class="pre">pruebas</span> <span class="pre">OPeNDAP</span></code> oficial:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap4&#39;</span><span class="p">)</span> <span class="c1"># dap2 is the default</span>
@@ -547,10 +577,8 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 </div>
 </div>
-<p>Here we used the <code class="docutils literal notranslate"><span class="pre">pydap.client.open_url</span></code> function to open an <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> URL specifying the location of the dataset. When we access the remote
-dataset the function returns a <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> object, which is a fancy dictionary that stores other variables. We can
-check the names of the store variables like we would do with a Python dictionary:</p>
-<p>Another useful way to inspect the dataset is the <code class="docutils literal notranslate"><span class="pre">.tree()</span></code> method, which provides an in-depth inspection of your dataset</p>
+<p>Aquí usamos la función <code class="docutils literal notranslate"><span class="pre">pydap.client.open_url</span></code> para abrir una URL <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> que especifica la ubicación del dataset. Cuando accedemos al dataset remoto, la función devuelve un objeto <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code>, que es un diccionario elegante que almacena otras variables. Podemos comprobar los nombres de las variables almacenadas como haríamos con un diccionario de Python:</p>
+<p>Otra forma útil de inspeccionar el dataset es el método <code class="docutils literal notranslate"><span class="pre">.tree()</span></code>, que proporciona una inspección detallada de tu dataset.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
@@ -572,9 +600,9 @@ check the names of the store variables like we would do with a Python dictionary
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>No data has been downloaded yet.</p>
+<p>Todavía no se ha descargado ningún dato.</p>
 </div>
-<p>Let’s work with the <code class="docutils literal notranslate"><span class="pre">SST</span></code> variable; we can “lazily” reference it using the usual dictionary syntax of <code class="docutils literal notranslate"><span class="pre">dataset['SST']</span></code>, or <code class="docutils literal notranslate"><span class="pre">dataset.SST</span></code>:</p>
+<p>Trabajemos con la variable <code class="docutils literal notranslate"><span class="pre">SST</span></code>; podemos referenciarla de forma “perezosa” usando la sintaxis usual de diccionario <code class="docutils literal notranslate"><span class="pre">dataset['SST']</span></code>, o <code class="docutils literal notranslate"><span class="pre">dataset.SST</span></code>:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span><span class="p">[</span><span class="s1">&#39;/SST&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span>
@@ -614,18 +642,18 @@ check the names of the store variables like we would do with a Python dictionary
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 8.45 ms, sys: 3.73 ms, total: 12.2 ms
-Wall time: 215 ms
+CPU times: user 7.72 ms, sys: 3.4 ms, total: 11.1 ms
+Wall time: 294 ms
 </pre></div>
 </div>
 </div>
 </div>
-<section id="old-dap2-approach">
-<h3>old <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> approach<a class="headerlink" href="#old-dap2-approach" title="Link to this heading">#</a></h3>
-<p>Below, we access the same dataset on the same server and request the DAP2 response.</p>
+<section id="enfoque-antiguo-de-dap2">
+<h3>Enfoque antiguo de <code class="docutils literal notranslate"><span class="pre">DAP2</span></code><a class="headerlink" href="#enfoque-antiguo-de-dap2" title="Link to this heading">#</a></h3>
+<p>Abajo accedemos al mismo dataset en el mismo servidor y solicitamos la respuesta DAP2.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">)</span> <span class="c1"># dap2 is the default</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span> <span class="n">output_grid</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># dap2 is the default</span>
 <span class="n">dataset</span>
 </pre></div>
 </div>
@@ -684,7 +712,7 @@ Wall time: 215 ms
 </div>
 </div>
 </div>
-<p>Note that the variable is of type <code class="docutils literal notranslate"><span class="pre">GridType</span></code>, a multidimensional array with specific axes defining each of its dimensions:</p>
+<p>Observa que la variable es de tipo <code class="docutils literal notranslate"><span class="pre">GridType</span></code>, un arreglo multidimensional con ejes específicos que definen cada una de sus dimensiones:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sst</span><span class="o">.</span><span class="n">dimensions</span>
@@ -723,12 +751,12 @@ Wall time: 215 ms
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">len</span></code> and <code class="docutils literal notranslate"><span class="pre">shape</span></code> of <code class="docutils literal notranslate"><span class="pre">sst</span></code> differ! The difference between them is a property of the <code class="docutils literal notranslate"><span class="pre">GridType</span></code>: in this case <code class="docutils literal notranslate"><span class="pre">sst</span></code> packs with itself the <code class="docutils literal notranslate"><span class="pre">coordinate</span> <span class="pre">axes</span></code> necessary to be fully “self-described”. This behavior was done to mimick the <code class="docutils literal notranslate"><span class="pre">netCDF</span></code> model, that each file (in this case each <code class="docutils literal notranslate"><span class="pre">gridded</span> <span class="pre">array</span></code>) is “self-describing” and therefore contains all the relevant information to process it. The <code class="docutils literal notranslate"><span class="pre">tree</span></code> view of the dataset above further illustrates the point, with the multiple copies of coordinate data in dataset. Everytime you download a <code class="docutils literal notranslate"><span class="pre">GridType</span></code> you also download the dimension arrays used fully describe them.</p>
+<p><code class="docutils literal notranslate"><span class="pre">len</span></code> y <code class="docutils literal notranslate"><span class="pre">shape</span></code> de <code class="docutils literal notranslate"><span class="pre">sst</span></code> difieren. La diferencia entre ellos es una propiedad de <code class="docutils literal notranslate"><span class="pre">GridType</span></code>: en este caso <code class="docutils literal notranslate"><span class="pre">sst</span></code> incluye consigo los <code class="docutils literal notranslate"><span class="pre">coordinate</span> <span class="pre">axes</span></code> necesarios para ser completamente “autodescriptivo”. Este comportamiento se hizo para imitar el modelo <code class="docutils literal notranslate"><span class="pre">netCDF</span></code>, donde cada archivo (en este caso cada <code class="docutils literal notranslate"><span class="pre">gridded</span> <span class="pre">array</span></code>) es “autodescriptivo” y por lo tanto contiene toda la información relevante para procesarlo. La vista <code class="docutils literal notranslate"><span class="pre">tree</span></code> del dataset anterior ilustra aún más el punto, con múltiples copias de datos de coordenadas en el dataset. Cada vez que descargas un <code class="docutils literal notranslate"><span class="pre">GridType</span></code>, también descargas los arreglos de dimensión usados para describirlo por completo.</p>
 </div>
-<p>It is possible to specify NOT to download the coordinate axes of a <code class="docutils literal notranslate"><span class="pre">GridType</span></code> variable when opening a URL as follows:</p>
+<p>Es posible especificar que NO se descarguen los ejes de coordenadas de una variable <code class="docutils literal notranslate"><span class="pre">GridType</span></code> al abrir una URL de la siguiente manera:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">,</span> <span class="n">output_grid</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">)</span>
 <span class="n">dataset</span>
 </pre></div>
 </div>
@@ -739,19 +767,19 @@ Wall time: 215 ms
 </div>
 </div>
 </div>
-<p>NO data has been downloaded into memory yet, but when you download a <code class="docutils literal notranslate"><span class="pre">GridType</span></code> array, the coordinate axes will not be downloaded. This important workaround is particularly usefull for speeding up workflows, and to not overwhelm older <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> servers that might run out of memory when attempting to retrieve both the data and the coordinate axes of a variable.</p>
+<p>NO se han descargado datos en memoria todavía, pero cuando descargues un arreglo <code class="docutils literal notranslate"><span class="pre">GridType</span></code>, los ejes de coordenadas no se descargarán. Este workaround importante es particularmente útil para acelerar flujos de trabajo y no sobrecargar servidores <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> antiguos que podrían quedarse sin memoria al intentar recuperar tanto los datos como los ejes de coordenadas de una variable.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">GridType</span></code> is a <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> model specification and was dropped in the much newer <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. Nonetheless, <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span> <span class="pre">DAP4</span></code> servers support <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>. Currently <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> when opening a remote URL, if <code class="docutils literal notranslate"><span class="pre">protocol</span></code> is not specified, <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> assumes by default the DAP2 model specification. This may change in the future.</p>
+<p><code class="docutils literal notranslate"><span class="pre">GridType</span></code> es una especificación del modelo <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> y se eliminó en el mucho más nuevo <code class="docutils literal notranslate"><span class="pre">DAP4</span></code>. No obstante, los servidores <code class="docutils literal notranslate"><span class="pre">OPeNDAP</span> <span class="pre">DAP4</span></code> soportan <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>. Actualmente, cuando <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> abre una URL remota, si no se especifica <code class="docutils literal notranslate"><span class="pre">protocol</span></code>, <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> asume por defecto la especificación del modelo DAP2. Esto puede cambiar en el futuro.</p>
 </div>
-<p>In <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>, the <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> is a thin wrapper to a <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> with some of the same basic attributes like shape, nbytes. The <code class="docutils literal notranslate"><span class="pre">Dap4BaseProxy</span></code> is an empty data container with all the attributes of the remote array, including:</p>
+<p>En <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>, <code class="docutils literal notranslate"><span class="pre">BaseType</span></code> es una envoltura ligera de un <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> con algunos de los mismos atributos básicos, como shape y nbytes. <code class="docutils literal notranslate"><span class="pre">Dap4BaseProxy</span></code> es un contenedor de datos vacío con todos los atributos del arreglo remoto, incluyendo:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">name</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">dtype</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">shape</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">slice</span></code></p></li>
 </ul>
-<p>To <code class="docutils literal notranslate"><span class="pre">download</span></code> data into memory you must <code class="docutils literal notranslate"><span class="pre">slice</span></code> the array. This is:</p>
+<p>Para <code class="docutils literal notranslate"><span class="pre">descargar</span></code> datos en memoria debes <code class="docutils literal notranslate"><span class="pre">rebanar</span></code> el arreglo. Esto es:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
@@ -762,8 +790,8 @@ Wall time: 215 ms
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 11 ms, sys: 6.05 ms, total: 17.1 ms
-Wall time: 263 ms
+CPU times: user 10.7 ms, sys: 5.02 ms, total: 15.8 ms
+Wall time: 260 ms
 </pre></div>
 </div>
 </div>
@@ -782,7 +810,7 @@ Wall time: 263 ms
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>One of the features of OPeNDAP is the <code class="docutils literal notranslate"><span class="pre">server-side</span> <span class="pre">subsetting</span></code>, which can be exploited by <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> via slicing of the array when downloading data. For example, if you are only interested in a localized subregion of the entire domain (e.g. finite range of latitude and longitudes of the global coverage), and you know the index that span your desired area of interest.</p>
+<p>Una de las características de OPeNDAP es el <code class="docutils literal notranslate"><span class="pre">server-side</span> <span class="pre">subsetting</span></code>, que <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> puede aprovechar mediante el rebanado del arreglo al descargar datos. Por ejemplo, si solo te interesa una subregión localizada de todo el dominio (por ejemplo, un rango finito de latitudes y longitudes de la cobertura global), y conoces los índices que abarcan tu área de interés deseada.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -794,8 +822,8 @@ Wall time: 263 ms
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Type of object:  &lt;class &#39;pydap.model.BaseType&#39;&gt;
-CPU times: user 7.59 ms, sys: 1.4 ms, total: 8.99 ms
-Wall time: 211 ms
+CPU times: user 6.58 ms, sys: 1.44 ms, total: 8.03 ms
+Wall time: 210 ms
 </pre></div>
 </div>
 </div>
@@ -814,20 +842,20 @@ Wall time: 211 ms
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The subsetting took place close to the data thanks for OPenDAP’s server functionality, and only the data that we request in the slice, is downloaded.</p>
+<p>El subconjunto ocurrió cerca de los datos gracias a la funcionalidad del servidor OPeNDAP, y solo se descargan los datos que solicitamos en el rebanado.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Slicing the array before downloading will almost always result in better performance and speed ups. This can be significant for very large datasets, and particularly useful when automatizing workflows that require downloading data into memory for further processing.</p>
+<p>Rebanar el arreglo antes de descargar casi siempre resultará en mejor rendimiento y aceleraciones. Esto puede ser significativo para datasets muy grandes y particularmente útil al automatizar flujos de trabajo que requieren descargar datos en memoria para procesamiento posterior.</p>
 </div>
 </section>
 </section>
-<section id="tabular-data">
-<h2>Tabular data<a class="headerlink" href="#tabular-data" title="Link to this heading">#</a></h2>
-<p>Let’s look now at tabular data, which <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> calls them <code class="docutils literal notranslate"><span class="pre">Sequences</span></code> (typically asociated with Sequential in situ data). Here we consider another file from within the test OPeNDAP server for simplicity. You can access the catalog <a class="reference external" href="http://test.opendap.org/opendap/hyrax/">HERE</a>.</p>
+<section id="datos-tabulares">
+<h2>Datos tabulares<a class="headerlink" href="#datos-tabulares" title="Link to this heading">#</a></h2>
+<p>Veamos ahora datos tabulares, que <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> llama <code class="docutils literal notranslate"><span class="pre">Sequences</span></code> (típicamente asociadas con datos in situ secuenciales). Aquí consideramos otro archivo dentro del servidor de pruebas OPeNDAP por simplicidad. Puedes acceder al catálogo <a class="reference external" href="http://test.opendap.org/opendap/hyrax/">AQUÍ</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Sequential data consists of one of more records of related variables, such as simultaneous measurements of temperature and wind velocity for example.</p>
+<p>Los datos secuenciales consisten en uno o más registros de variables relacionadas, como mediciones simultáneas de temperatura y velocidad del viento, por ejemplo.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
@@ -866,11 +894,10 @@ Wall time: 211 ms
 </div>
 </div>
 </div>
-<section id="erddap-in-situ-data">
-<h3>ERDDAP in situ data<a class="headerlink" href="#erddap-in-situ-data" title="Link to this heading">#</a></h3>
-<p>Consider a more complex example. Here we look at data from the <a class="reference external" href="https://oceanservice.noaa.gov/facts/ocean-gliders.html">glider</a> DAC found at the <a class="reference external" href="https://data.ioos.us/organization/glider-dac">Integrated Ocean Observing System</a> . The data can be accessed through an OPeNDAP server, as well as the <a class="reference external" href="https://gliders.ioos.us/erddap/index.html">ERRDAP</a> server. In the example below we demostrate how to access glider data from a
-Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class="docutils literal notranslate"><span class="pre">ERRDAP</span></code>.</p>
-<p>We look at the <code class="docutils literal notranslate"><span class="pre">Dataset</span> <span class="pre">ID:</span> <span class="pre">Murphy-20150809T1355</span></code>. It’s <code class="docutils literal notranslate"><span class="pre">ERDDAP</span></code> access form can be found <a class="reference external" href="https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355.html?trajectory%2Cwmo_id%2Cprofile_id%2Ctime%2Clatitude%2Clongitude%2Cdepth%2Cconductivity%2Cconductivity_qc%2Cdensity%2Cdensity_qc%2Cdepth_qc%2Cinstrument_ctd%2Clat_qc%2Clat_uv%2Clat_uv_qc%2Clon_qc%2Clon_uv%2Clon_uv_qc%2Cplatform_meta%2Cprecise_lat%2Cprecise_lon%2Cprecise_time%2Cpressure%2Cpressure_qc%2Cprofile_lat_qc%2Cprofile_lon_qc%2Cprofile_time_qc%2Cqartod_conductivity_flat_line_flag%2Cqartod_conductivity_gross_range_flag%2Cqartod_conductivity_primary_flag%2Cqartod_conductivity_rate_of_change_flag%2Cqartod_conductivity_spike_flag%2Cqartod_density_flat_line_flag%2Cqartod_density_gross_range_flag%2Cqartod_density_primary_flag%2Cqartod_density_rate_of_change_flag%2Cqartod_density_spike_flag%2Cqartod_monotonic_pressure_flag%2Cqartod_pressure_flat_line_flag%2Cqartod_pressure_gross_range_flag%2Cqartod_pressure_primary_flag%2Cqartod_pressure_rate_of_change_flag%2Cqartod_pressure_spike_flag%2Cqartod_salinity_flat_line_flag%2Cqartod_salinity_gross_range_flag%2Cqartod_salinity_primary_flag%2Cqartod_salinity_rate_of_change_flag%2Cqartod_salinity_spike_flag%2Cqartod_temperature_flat_line_flag%2Cqartod_temperature_gross_range_flag%2Cqartod_temperature_primary_flag%2Cqartod_temperature_rate_of_change_flag%2Cqartod_temperature_spike_flag%2Csalinity%2Csalinity_qc%2Ctemperature%2Ctemperature_qc%2Ctime_qc%2Ctime_uv%2Ctime_uv_qc%2Cu%2Cu_qc%2Cv%2Cv_qc&amp;amp;time%3E=2015-08-12T00%3A00%3A00Z&amp;amp;time%3C=2015-08-19T22%3A10%3A22Z">HERE</a></p>
+<section id="datos-in-situ-de-erddap">
+<h3>Datos in situ de ERDDAP<a class="headerlink" href="#datos-in-situ-de-erddap" title="Link to this heading">#</a></h3>
+<p>Considera un ejemplo más complejo. Aquí miramos datos del DAC de <a class="reference external" href="https://oceanservice.noaa.gov/facts/ocean-gliders.html">glider</a> en el <a class="reference external" href="https://data.ioos.us/organization/glider-dac">Integrated Ocean Observing System</a>. Los datos se pueden acceder a través de un servidor OPeNDAP, así como del servidor <a class="reference external" href="https://gliders.ioos.us/erddap/index.html">ERRDAP</a>. En el ejemplo abajo demostramos cómo acceder a datos de glider de un estudio Deep-Pelagic Nekton frente al Golfo de México, con pydap mediante <code class="docutils literal notranslate"><span class="pre">ERRDAP</span></code>.</p>
+<p>Miramos el <code class="docutils literal notranslate"><span class="pre">Dataset</span> <span class="pre">ID:</span> <span class="pre">Murphy-20150809T1355</span></code>. Su formulario de acceso <code class="docutils literal notranslate"><span class="pre">ERDDAP</span></code> se puede encontrar <a class="reference external" href="https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355.html?trajectory%2Cwmo_id%2Cprofile_id%2Ctime%2Clatitude%2Clongitude%2Cdepth%2Cconductivity%2Cconductivity_qc%2Cdensity%2Cdensity_qc%2Cdepth_qc%2Cinstrument_ctd%2Clat_qc%2Clat_uv%2Clat_uv_qc%2Clon_qc%2Clon_uv%2Clon_uv_qc%2Cplatform_meta%2Cprecise_lat%2Cprecise_lon%2Cprecise_time%2Cpressure%2Cpressure_qc%2Cprofile_lat_qc%2Cprofile_lon_qc%2Cprofile_time_qc%2Cqartod_conductivity_flat_line_flag%2Cqartod_conductivity_gross_range_flag%2Cqartod_conductivity_primary_flag%2Cqartod_conductivity_rate_of_change_flag%2Cqartod_conductivity_spike_flag%2Cqartod_density_flat_line_flag%2Cqartod_density_gross_range_flag%2Cqartod_density_primary_flag%2Cqartod_density_rate_of_change_flag%2Cqartod_density_spike_flag%2Cqartod_monotonic_pressure_flag%2Cqartod_pressure_flat_line_flag%2Cqartod_pressure_gross_range_flag%2Cqartod_pressure_primary_flag%2Cqartod_pressure_rate_of_change_flag%2Cqartod_pressure_spike_flag%2Cqartod_salinity_flat_line_flag%2Cqartod_salinity_gross_range_flag%2Cqartod_salinity_primary_flag%2Cqartod_salinity_rate_of_change_flag%2Cqartod_salinity_spike_flag%2Cqartod_temperature_flat_line_flag%2Cqartod_temperature_gross_range_flag%2Cqartod_temperature_primary_flag%2Cqartod_temperature_rate_of_change_flag%2Cqartod_temperature_spike_flag%2Csalinity%2Csalinity_qc%2Ctemperature%2Ctemperature_qc%2Ctime_qc%2Ctime_uv%2Ctime_uv_qc%2Cu%2Cu_qc%2Cv%2Cv_qc&amp;amp;time%3E=2015-08-12T00%3A00%3A00Z&amp;amp;time%3C=2015-08-19T22%3A10%3A22Z">AQUÍ</a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;https://gliders.ioos.us/erddap/tabledap/Murphy-20150809T1355&quot;</span><span class="p">)[</span><span class="s1">&#39;s&#39;</span><span class="p">]</span>
@@ -949,7 +976,7 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </div>
 </div>
 </div>
-<p>Where the variables <code class="docutils literal notranslate"><span class="pre">s</span></code> identifies the sequential data.</p>
+<p>Donde las variables <code class="docutils literal notranslate"><span class="pre">s</span></code> identifican los datos secuenciales.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
@@ -962,7 +989,7 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </div>
 </div>
 </div>
-<p>We can further identify each individual glider data by looking at <code class="docutils literal notranslate"><span class="pre">profile_id</span></code>, a value that is unique for each of them. You can inspect the raw values are follows</p>
+<p>Podemos identificar más cada dato individual de glider mirando <code class="docutils literal notranslate"><span class="pre">profile_id</span></code>, un valor único para cada uno. Puedes inspeccionar los valores crudos de la siguiente manera.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="nb">id</span> <span class="k">for</span> <span class="nb">id</span> <span class="ow">in</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iterdata</span><span class="p">()]</span>
@@ -1165,9 +1192,9 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> and therefore <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> support fully-qualifying names, which come in handly for complex (nested) data structures. In the case of <code class="docutils literal notranslate"><span class="pre">Sequential</span></code> data, you can access a variable <code class="docutils literal notranslate"><span class="pre">&lt;VarName&gt;</span></code> within a sequence named <code class="docutils literal notranslate"><span class="pre">&lt;Seq&gt;</span></code> as <code class="docutils literal notranslate"><span class="pre">&lt;Seq.VarName&gt;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">OPeNDAP</span></code> y por lo tanto <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> soportan nombres completamente calificados, que son útiles para estructuras de datos complejas (anidadas). En el caso de datos <code class="docutils literal notranslate"><span class="pre">Sequential</span></code>, puedes acceder a una variable <code class="docutils literal notranslate"><span class="pre">&lt;VarName&gt;</span></code> dentro de una secuencia llamada <code class="docutils literal notranslate"><span class="pre">&lt;Seq&gt;</span></code> como <code class="docutils literal notranslate"><span class="pre">&lt;Seq.VarName&gt;</span></code>.</p>
 </div>
-<p>These datasets are rich in metadata, which can be accessed through the attributes property as follows</p>
+<p>Estos datasets son ricos en metadatos, a los que se puede acceder mediante la propiedad attributes de la siguiente manera.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span>
@@ -1187,8 +1214,8 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </div>
 </div>
 </div>
-<p>The first thing we’d like to do is limit our very simple analysis. We consider only a single glider and only inspect the variables <code class="docutils literal notranslate"><span class="pre">depth</span></code> and <code class="docutils literal notranslate"><span class="pre">temperature</span></code>. This is simlar to <code class="docutils literal notranslate"><span class="pre">column-wise</span> <span class="pre">selection</span></code>.</p>
-<p>To accomplish that we use pydap’s simple logic as follows</p>
+<p>Lo primero que queremos hacer es limitar nuestro análisis muy simple. Consideramos solo un glider y solo inspeccionamos las variables <code class="docutils literal notranslate"><span class="pre">depth</span></code> y <code class="docutils literal notranslate"><span class="pre">temperature</span></code>. Esto es similar a una <code class="docutils literal notranslate"><span class="pre">selección</span> <span class="pre">por</span> <span class="pre">columnas</span></code>.</p>
+<p>Para lograrlo usamos la lógica simple de pydap como sigue:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">seq</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)]</span>
@@ -1208,10 +1235,10 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </div>
 </div>
 </section>
-<section id="filtering-data">
-<h3>Filtering data<a class="headerlink" href="#filtering-data" title="Link to this heading">#</a></h3>
-<p>With <code class="docutils literal notranslate"><span class="pre">Sequential</span></code>  data we can make use of <code class="docutils literal notranslate"><span class="pre">filters</span></code> to extract only those values associated with one or more <code class="docutils literal notranslate"><span class="pre">rows</span></code>. This is, identify all the values of the sequence that are less than, equal to, or greater than.</p>
-<p>For example, lets consider <code class="docutils literal notranslate"><span class="pre">depth</span></code> and <code class="docutils literal notranslate"><span class="pre">temperature</span></code> values associated with the value <code class="docutils literal notranslate"><span class="pre">profile_id=5</span></code>.</p>
+<section id="filtrar-datos">
+<h3>Filtrar datos<a class="headerlink" href="#filtrar-datos" title="Link to this heading">#</a></h3>
+<p>Con datos <code class="docutils literal notranslate"><span class="pre">Sequential</span></code> podemos usar <code class="docutils literal notranslate"><span class="pre">filters</span></code> para extraer solo aquellos valores asociados con una o más <code class="docutils literal notranslate"><span class="pre">rows</span></code>. Es decir, identificar todos los valores de la secuencia que son menores, iguales o mayores que cierto valor.</p>
+<p>Por ejemplo, consideremos valores de <code class="docutils literal notranslate"><span class="pre">depth</span></code> y <code class="docutils literal notranslate"><span class="pre">temperature</span></code> asociados con el valor <code class="docutils literal notranslate"><span class="pre">profile_id=5</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">glid5</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)][</span><span class="n">seq</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">==</span><span class="mi">5</span><span class="p">]</span>
@@ -1234,7 +1261,7 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </div>
 </div>
 </div>
-<p>Lets try another <code class="docutils literal notranslate"><span class="pre">profile_id</span></code>.</p>
+<p>Intentemos otro <code class="docutils literal notranslate"><span class="pre">profile_id</span></code>.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">glid6</span> <span class="o">=</span> <span class="n">seq</span><span class="p">[(</span><span class="s1">&#39;profile_id&#39;</span><span class="p">,</span> <span class="s1">&#39;depth&#39;</span><span class="p">,</span> <span class="s1">&#39;temperature&#39;</span><span class="p">)][</span><span class="n">seq</span><span class="p">[</span><span class="s1">&#39;profile_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">==</span><span class="mi">6</span><span class="p">]</span>
@@ -1256,79 +1283,18 @@ Deep-Pelagic Nekton study off the Gulf of Mexico, with pydap through <code class
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="_images/a82b52301e48adf52ea0970c7f4d0bf7a356a088d120e80a7a7b0e24dcf4b151.png" src="_images/a82b52301e48adf52ea0970c7f4d0bf7a356a088d120e80a7a7b0e24dcf4b151.png" />
+<img alt="_images/4549c77db7218d90cae2ef3e0d4838e8b00e32086f63afd66c8dbc9622777b5e.png" src="_images/4549c77db7218d90cae2ef3e0d4838e8b00e32086f63afd66c8dbc9622777b5e.png" />
 </div>
-</div>
-</section>
-</section>
-<section id="authentication">
-<h2>Authentication<a class="headerlink" href="#authentication" title="Link to this heading">#</a></h2>
-<p><strong>Basic and Digest</strong></p>
-<p>To use <code class="docutils literal notranslate"><span class="pre">Basic</span></code> and <code class="docutils literal notranslate"><span class="pre">Digest</span></code> authentication, simply add your username and password to the dataset URL. Keep in mind that if the server only supports Basic authentication your credentials will be sent as plaintext, and could be sniffed on the network.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://username:password@server.example.com/path/to/dataset&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<section id="cas">
-<h3>CAS<a class="headerlink" href="#cas" title="Link to this heading">#</a></h3>
-<p>The <a class="reference external" href="http://en.wikipedia.org/wiki/Central_Authentication_Service">Central Authentication Service</a> (<code class="docutils literal notranslate"><span class="pre">CAS</span></code>) is a single sign-on protocol for the web, usually involving a web browser and cookies. Nevertheless it’s possible to use pydap with an OPeNDAP server behind a CAS. The function <code class="docutils literal notranslate"><span class="pre">install_cas_client</span></code> below
-replaces pydap’s default HTTP function with a new version able to submit authentication data to an HTML form and store credentials in cookies. (In this particular case, the server uses Javascript to redirect the browser to a new location, so the client has to parse the location from the Javascript code; other CAS would require a tweaked function.)</p>
-<p>To use it, just attach a web browsing <code class="docutils literal notranslate"><span class="pre">session</span></code> with authentication cookies:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.cas.get_cookies</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_session</span>
-<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">authentication_url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>This method could work but each CAS is slightly different and might require a specifically designed <code class="docutils literal notranslate"><span class="pre">setup_session</span></code> instance. Two CAS are however explicitly supported by <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>:</p>
-</section>
-<section id="urs-nasa-earthdata">
-<h3>URS NASA EARTHDATA<a class="headerlink" href="#urs-nasa-earthdata" title="Link to this heading">#</a></h3>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This method requires an EDL account. If you do not have one, go <a class="reference external" href="https://urs.earthdata.nasa.gov/home">HERE</a> to create one</p>
-</div>
-<p>Authentication can done through a <code class="docutils literal notranslate"><span class="pre">username</span></code> and a <code class="docutils literal notranslate"><span class="pre">password</span></code>. However, it is <code class="docutils literal notranslate"><span class="pre">highly</span> <span class="pre">recommended</span></code> to use instead <code class="docutils literal notranslate"><span class="pre">tokens</span></code>. This <a class="reference internal" href="#.notebooks/ECCO"><span class="xref myst">ECCO</span></a> provides an example of how to use tokens to authenticate.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edl_token</span> <span class="o">=</span> <span class="s2">&quot;YourTokenHere&quot;</span>
-<span class="n">auth_hdr</span><span class="o">=</span><span class="s2">&quot;Bearer &quot;</span> <span class="o">+</span> <span class="n">edl_token</span>
-<span class="n">my_session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
-<span class="n">my_session</span><span class="o">.</span><span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Authorization&quot;</span><span class="p">:</span> <span class="n">auth_hdr</span><span class="p">}</span>
-</pre></div>
-</div>
-<p>With that you can now pass the <code class="docutils literal notranslate"><span class="pre">my_session</span></code> as an argument to <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>’s <code class="docutils literal notranslate"><span class="pre">open_url</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="earth-system-grid-federation-esgf">
-<h3>Earth System Grid Federation (ESGF)<a class="headerlink" href="#earth-system-grid-federation-esgf" title="Link to this heading">#</a></h3>
-<p>Authentication is done through an <code class="docutils literal notranslate"><span class="pre">openid</span></code> and a <code class="docutils literal notranslate"><span class="pre">password</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.cas.esgf</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_session</span>
-<span class="n">dataset_url</span> <span class="o">=</span> <span class="s1">&#39;http://server.example.com/path/to/dataset&#39;</span>
-<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">openid</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">check_url</span><span class="o">=</span><span class="n">dataset_url</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">dataset_url</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>If your <code class="docutils literal notranslate"><span class="pre">openid</span></code> contains contains the string <code class="docutils literal notranslate"><span class="pre">ceda.ac.uk</span></code>
-authentication requires an additional <code class="docutils literal notranslate"><span class="pre">username</span></code> argument:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.cas.esgf</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_session</span>
-<span class="n">session</span> <span class="o">=</span> <span class="n">setup_session</span><span class="p">(</span><span class="n">openid</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">check_url</span><span class="o">=</span><span class="n">dataset_url</span><span class="p">,</span> <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">dataset_url</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
-</pre></div>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>All Advanced features described below may be outdated.</p>
+<p>Todas las funcionalidades avanzadas descritas abajo pueden estar desactualizadas.</p>
 </div>
 </section>
-<section id="advanced-features">
-<h3>Advanced features<a class="headerlink" href="#advanced-features" title="Link to this heading">#</a></h3>
-<p><strong>Calling server-side functions</strong></p>
-<p>When you open a remote dataset, the <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> object has a special
-attribute named <code class="docutils literal notranslate"><span class="pre">functions</span></code> that can be used to invoke any server-side
-functions. Here’s an example of using the <code class="docutils literal notranslate"><span class="pre">geogrid</span></code> function from
-Hyrax:</p>
+<section id="funcionalidades-avanzadas">
+<h3>Funcionalidades avanzadas<a class="headerlink" href="#funcionalidades-avanzadas" title="Link to this heading">#</a></h3>
+<p><strong>Llamar funciones del lado del servidor</strong></p>
+<p>Cuando abres un dataset remoto, el objeto <code class="docutils literal notranslate"><span class="pre">DatasetType</span></code> tiene un atributo especial llamado <code class="docutils literal notranslate"><span class="pre">functions</span></code> que puede usarse para invocar cualquier función del lado del servidor. Aquí hay un ejemplo de uso de la función <code class="docutils literal notranslate"><span class="pre">geogrid</span></code> de Hyrax:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s2">&quot;http://test.opendap.org/dap/data/nc/coads_climatology.nc&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">functions</span><span class="o">.</span><span class="n">geogrid</span><span class="p">(</span><span class="n">dataset</span><span class="o">.</span><span class="n">SST</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">60</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_dataset</span><span class="o">.</span><span class="n">SST</span><span class="o">.</span><span class="n">COADSY</span><span class="p">[:]</span> 
@@ -1337,40 +1303,15 @@ Hyrax:</p>
 <span class="go">[ 21. 23. 25. 27. 29. 31. 33. 35. 37. 39. 41. 43. 45. 47. 49. 51. 53. 55. 57. 59. 61.]</span>
 </pre></div>
 </div>
-<p>Unfortunately, there’s currently no standard mechanism to discover which functions the server support. The <code class="docutils literal notranslate"><span class="pre">function</span></code> attribute will accept
-any function name the user specifies, and will try to pass the call to the remote server.</p>
+<p>Desafortunadamente, actualmente no hay un mecanismo estándar para descubrir qué funciones soporta el servidor. El atributo <code class="docutils literal notranslate"><span class="pre">function</span></code> aceptará cualquier nombre de función que la persona usuaria especifique e intentará pasar la llamada al servidor remoto.</p>
 </section>
-<section id="using-a-cache">
-<h3>Using a cache<a class="headerlink" href="#using-a-cache" title="Link to this heading">#</a></h3>
+<section id="configurar-un-proxy">
+<h3>Configurar un proxy<a class="headerlink" href="#configurar-un-proxy" title="Link to this heading">#</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This may be outdated.</p>
+<p>Esto puede estar desactualizado.</p>
 </div>
-<p>You can specify a cache directory in the <code class="docutils literal notranslate"><span class="pre">pydap.lib.CACHE</span></code> global variable. If this value is different than <code class="docutils literal notranslate"><span class="pre">None</span></code>, the client will try
-(if the server headers don’t prohibit) to cache the result, so repeated
-requests will be read from disk instead of the network:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pydap.lib</span>
-<span class="n">pydap</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">CACHE</span> <span class="o">=</span> <span class="s2">&quot;/tmp/pydap-cache/&quot;</span>
-</pre></div>
-</div>
-</section>
-<section id="timeout">
-<h3>Timeout<a class="headerlink" href="#timeout" title="Link to this heading">#</a></h3>
-<p>To specify a timeout for the client, just set the desired number of seconds using the <code class="docutils literal notranslate"><span class="pre">timeout</span></code> option to <code class="docutils literal notranslate"><span class="pre">open_url(...)</span></code> or <code class="docutils literal notranslate"><span class="pre">open_dods(...)</span></code>. For example, the following commands would timeout after 30 seconds without receiving a response from the server:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">dataset</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-<span class="n">dataset</span> <span class="o">=</span> <span class="n">open_dods</span><span class="p">(</span><span class="s1">&#39;http://test.opendap.org/dap/data/nc/coads_climatology.nc.dods&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="configuring-a-proxy">
-<h3>Configuring a proxy<a class="headerlink" href="#configuring-a-proxy" title="Link to this heading">#</a></h3>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This may be outdated.</p>
-</div>
-<p>It’s possible to configure pydap to access the network through a proxy
-server. Here’s an example for an HTTP proxy running on <code class="docutils literal notranslate"><span class="pre">localhost</span></code>
-listening on port 8000:</p>
+<p>Es posible configurar pydap para acceder a la red mediante un servidor proxy. Aquí hay un ejemplo para un proxy HTTP ejecutándose en <code class="docutils literal notranslate"><span class="pre">localhost</span></code> y escuchando en el puerto 8000:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">httplib2</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydap.util</span><span class="w"> </span><span class="kn">import</span> <span class="n">socks</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pydap.lib</span>
@@ -1378,14 +1319,13 @@ listening on port 8000:</p>
          <span class="n">socks</span><span class="o">.</span><span class="n">PROXY_TYPE_HTTP</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This way, all further calls to <code class="docutils literal notranslate"><span class="pre">pydap.client.open_url</span></code> will be routed through the proxy server. You can also authenticate to the proxy:</p>
+<p>De esta forma, todas las llamadas posteriores a <code class="docutils literal notranslate"><span class="pre">pydap.client.open_url</span></code> se enrutarán a través del servidor proxy. También puedes autenticarte en el proxy:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pydap</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">PROXY</span> <span class="o">=</span> <span class="n">httplib2</span><span class="o">.</span><span class="n">ProxyInfo</span><span class="p">(</span>
          <span class="n">socks</span><span class="o">.</span><span class="n">PROXY_TYPE_HTTP</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span>
          <span class="n">proxy_user</span><span class="o">=</span><span class="n">USERNAME</span><span class="p">,</span> <span class="n">proxy_pass</span><span class="o">=</span><span class="n">PASSWORD</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>A user <a class="reference external" href="http://groups.google.com/group/pydap/browse_thread/thread/425b2e1a3b3f233d">has reported</a> that <code class="docutils literal notranslate"><span class="pre">httplib2</span></code> has problems authenticating against a NTLM proxy server. In this case, a simple solution is to change the <code class="docutils literal notranslate"><span class="pre">pydap.http.request</span></code> function to use <code class="docutils literal notranslate"><span class="pre">urllib2</span></code> instead of <code class="docutils literal notranslate"><span class="pre">httplib2</span></code>, monkeypatching the code
-like in the <a class="reference internal" href="#cas"><span class="xref myst">CAS authentication example above</span></a>:</p>
+<p>Una persona usuaria <a class="reference external" href="http://groups.google.com/group/pydap/browse_thread/thread/425b2e1a3b3f233d">ha reportado</a> que <code class="docutils literal notranslate"><span class="pre">httplib2</span></code> tiene problemas para autenticarse contra un servidor proxy NTLM. En este caso, una solución simple es cambiar la función <code class="docutils literal notranslate"><span class="pre">pydap.http.request</span></code> para que use <code class="docutils literal notranslate"><span class="pre">urllib2</span></code> en lugar de <code class="docutils literal notranslate"><span class="pre">httplib2</span></code>, monkeypatcheando el código como en el <a class="reference internal" href="#cas"><span class="xref myst">ejemplo de autenticación CAS anterior</span></a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">urllib2</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
@@ -1403,7 +1343,7 @@ like in the <a class="reference internal" href="#cas"><span class="xref myst">CA
     <span class="n">http</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">new_request</span>
 </pre></div>
 </div>
-<p>The function <code class="docutils literal notranslate"><span class="pre">install_urllib2_client</span></code> should then be called before doing any requests.</p>
+<p>La función <code class="docutils literal notranslate"><span class="pre">install_urllib2_client</span></code> debe llamarse antes de hacer cualquier solicitud.</p>
 </section>
 </section>
 </section>
@@ -1438,6 +1378,24 @@ like in the <a class="reference internal" href="#cas"><span class="xref myst">CA
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="PydapAsClient.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">PyDAP como cliente</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="ConstraintExpressions.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Constraint Expressions: subconjunto del lado del servidor</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -1458,22 +1416,14 @@ like in the <a class="reference internal" href="#cas"><span class="xref myst">CA
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#groups">Groups</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#arrays-grids">Arrays / Grids</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#old-dap2-approach">old <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> approach</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enfoque-antiguo-de-dap2">Enfoque antiguo de <code class="docutils literal notranslate"><span class="pre">DAP2</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#tabular-data">Tabular data</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#erddap-in-situ-data">ERDDAP in situ data</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtering-data">Filtering data</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#authentication">Authentication</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#cas">CAS</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#urs-nasa-earthdata">URS NASA EARTHDATA</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#earth-system-grid-federation-esgf">Earth System Grid Federation (ESGF)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-features">Advanced features</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-cache">Using a cache</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#timeout">Timeout</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-a-proxy">Configuring a proxy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datos-tabulares">Datos tabulares</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datos-in-situ-de-erddap">Datos in situ de ERDDAP</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#filtrar-datos">Filtrar datos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#funcionalidades-avanzadas">Funcionalidades avanzadas</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#configurar-un-proxy">Configurar un proxy</a></li>
 </ul>
 </li>
 </ul>

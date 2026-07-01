@@ -1,45 +1,45 @@
-# Contributing to the code
+# Contribuir al código
 
-1. Install `PyDAP` within a containerized testing environment.
+1. Instala `PyDAP` dentro de un entorno de pruebas aislado.
 ```shell
-conda create -n pydap_tests -c conda-forge python=3.10
+conda create -n pydap_tests -c conda-forge python=3.12
 conda env update -n pydap_tests -f ci/environment.yml
 conda activate pydap_tests
 pip install -e .
 ```
-This will create and activate a test environment called `pydap_tests` which will contain many of the dependencies necessary for testing pydap (`pydap-server`) installation (see [how to install](../how_to_install.md)) in `developer mode`.
+Esto creará y activará un entorno de pruebas llamado `pydap_tests`, que contendrá muchas de las dependencias necesarias para probar la instalación de pydap (`pydap-server`) (consulta [cómo instalar](../how_to_install.md)) en `modo desarrollador`.
 
 ```{note}
-If you already have `mamba` installed, you can replace all `conda` in the commands with `mamba`.
+Si ya tienes `mamba` instalado, puedes reemplazar `conda` por `mamba` en todos los comandos.
 ```
-2. Clone the repository to your local machine, and fetch the newest commits.
-If you do not have yet a local repo, clone it.
+2. Clona el repositorio en tu máquina local y descarga los commits más recientes.
+Si todavía no tienes un repositorio local, clónalo.
 ```shell
 git clone https://github.com/pydap/pydap.git
 ```
-If you already have a local repo, then
+Si ya tienes un repositorio local, entonces ejecuta:
 ```shell
 git pull
 ```
-3. Create a new branch, and set its upstream
+3. Crea una rama nueva y configura su upstream.
 ```shell
 git checkout -b new_branch_name
 git push --set-upstream origin new_branch_name
 ```
-4. Now use [git](git.md) to add and commit changes to `pydap`.
+4. Ahora usa [git](git.md) para agregar y confirmar cambios en `pydap`.
 
-5. Make sure the code follows the style guide by running:
+5. Asegúrate de que el código siga la guía de estilo ejecutando:
 
 ```shell
 conda install -c conda-forge pre-commit
 pre-commit run --all
 ```
-The above commands install and will automatically run all the pre-commit formatting configuration specified in the yaml-file each time git commit is used.
+Los comandos anteriores instalan y ejecutarán automáticamente toda la configuración de formato de pre-commit especificada en el archivo yaml cada vez que se use git commit.
 
-6. Make sure the code is well tested by adding or improving tests in the `src/pydap/tests` repository. pydap uses [pytest](https://docs.pytest.org/en/stable/). To run tests run the following command:
+6. Asegúrate de que el código esté bien probado agregando o mejorando pruebas en el repositorio `src/pydap/tests`. pydap usa [pytest](https://docs.pytest.org/en/stable/). Para ejecutar las pruebas, usa el siguiente comando:
 
 ```shell
 pytest -v
 ```
 
-7. Push to `upstream`, and make a Pull Request to the main repository. Make sure to well describe the bug, enhancement of the code, and whenever possible, any issue that the proposed changes will close.
+7. Haz push a `upstream` y crea un Pull Request hacia el repositorio principal. Asegúrate de describir bien el bug, la mejora del código y, siempre que sea posible, cualquier issue que los cambios propuestos cerrarán.

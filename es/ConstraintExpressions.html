@@ -16,7 +16,7 @@ gtag("config", "G-EN2VD1J32L");
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Constraint Expressions: Server-side Subsetting &#8212; PyDAP tutorial</title>
+    <title>Constraint Expressions: subconjunto del lado del servidor &#8212; PyDAP tutorial</title>
   
   
   
@@ -73,6 +73,8 @@ gtag("config", "G-EN2VD1J32L");
     <script>DOCUMENTATION_OPTIONS.pagename = 'ConstraintExpressions';</script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Responses" href="responses.html" />
+    <link rel="prev" title="Protocolo OPeNDAP DAP" href="DAP_Protocol.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -124,8 +126,6 @@ gtag("config", "G-EN2VD1J32L");
       
       
       
-        
-      
       <dialog id="pst-primary-sidebar-modal"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
@@ -170,28 +170,66 @@ gtag("config", "G-EN2VD1J32L");
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inicio rápido</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="how_to_install.html">Como Installar</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Comenzar Aqui</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1"><a class="reference internal" href="how_to_install.html">Cómo instalar</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="get_started.html">Comenzar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="NEWS.html">Lo Nuevo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="NEWS.html">What’s New</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ejemplos</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Autenticacion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Como crear el archivo .netrc</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="notebooks/Authentication.html">Autenticación básica</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/netrc.html">Crear un archivo .netrc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notebooks/earthaccess.html">Autenticación EDL mediante earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/GetCMRURLS.html">Como encontrar URLs de OPeNDAP de NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/CalipsoL2_access.html">Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/DAYMET.html">Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="notebooks/Ecostress.html">Acceso a datos de temperatura de superficie terrestre de ECOSTRESS de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/TEMPO_NRT.html">Acceso a datos de calidad del aire casi en tiempo real (NRT) de TEMPO mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/ECCO.html">Acceso a ECCOv4 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/PACE.html">Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notebooks/MERRA2.html">Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Preguntas frecuentes</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="faqs/faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="faqs/dap2_or_dap4_url.html">Como saber si el URL es DAP2 o DAP4?</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="faqs/faqs.html">Preguntas frecuentes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="faqs/download_speed.html">Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faqs/diagnose_download_issues.html">¿Cómo puedo diagnosticar problemas de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faqs/dap2_or_dap4_url.html">¿Esta es una URL DAP2 o DAP4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faqs/dap2_vs_dap4.html">¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentación</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="PydapAsClient.html">PyDAP como cliente</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="DAP_Protocol.html">Protocolo OPeNDAP DAP</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Constraint Expressions: subconjunto del lado del servidor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guía para desarrolladores</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contribuir</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="guide_to_developer.html">Guía para nuevos contribuidores</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="contribute/git.html">Guía de control de versiones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_cod.html">Contribuir al código</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_issues.html">Reportar issues en GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contribute/contr_docs.html">Contribuir a la documentación</a></li>
 </ul>
 </details></li>
 </ul>
@@ -329,7 +367,7 @@ gtag("config", "G-EN2VD1J32L");
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Constraint Expressions: Server-side Subsetting</h1>
+    <h1>Constraint Expressions: subconjunto del lado del servidor</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -339,15 +377,15 @@ gtag("config", "G-EN2VD1J32L");
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach">Approach</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constraint-expressions-in-dap4">Constraint Expressions in DAP4</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivacion">Motivación</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enfoque">Enfoque</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constraint-expressions-en-dap4">Constraint Expressions en DAP4</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#atlas03">ATLAS03</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#this-is-an-order-of-magnitude-faster-than-before">This is an order of magnitude faster than before!</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esto-es-un-orden-de-magnitud-mas-rapido-que-antes">Esto es un orden de magnitud más rápido que antes.</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spatial-subsetting">Spatial Subsetting</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatial-subset">Spatial Subset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subconjunto-espacial">Subconjunto espacial</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Subconjunto espacial</a></li>
 </ul>
 </li>
 </ul>
@@ -361,31 +399,31 @@ gtag("config", "G-EN2VD1J32L");
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="constraint-expressions-server-side-subsetting">
-<h1>Constraint Expressions: Server-side Subsetting<a class="headerlink" href="#constraint-expressions-server-side-subsetting" title="Link to this heading">#</a></h1>
-<section id="motivation">
-<h2>Motivation<a class="headerlink" href="#motivation" title="Link to this heading">#</a></h2>
-<p>Many OPeNDAP servers contain collections of datasets that in aggregation describe a complete dataset (e.g. a multi-year simulation). In some cases, each dataset may contain <span class="math notranslate nohighlight">\(\sim O(10-100)\)</span> of variables in them – this is particularly true for Level 2 data, see for example <a class="reference external" href="http://test.opendap.org:8080/opendap/atlas03/ATL03_20200131234815_05540602_003_01.h5.dmr.html">this ATLAS03 dataset</a> from NASA. This means PyDAP must parse 100s of variables per file. PyDAP is a fast parser of <em>DMRs</em> (the <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html#_dmr_declarations">DAP4 metadata</a> response), but:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="constraint-expressions-subconjunto-del-lado-del-servidor">
+<h1>Constraint Expressions: subconjunto del lado del servidor<a class="headerlink" href="#constraint-expressions-subconjunto-del-lado-del-servidor" title="Link to this heading">#</a></h1>
+<section id="motivacion">
+<h2>Motivación<a class="headerlink" href="#motivacion" title="Link to this heading">#</a></h2>
+<p>Muchos servidores OPeNDAP contienen colecciones de datasets que, en agregación, describen un dataset completo (por ejemplo, una simulación multianual). En algunos casos, cada dataset puede contener <span class="math notranslate nohighlight">\(\sim O(10-100)\)</span> variables; esto es particularmente cierto para datos Nivel 2, consulta por ejemplo <a class="reference external" href="http://test.opendap.org:8080/opendap/atlas03/ATL03_20200131234815_05540602_003_01.h5.dmr.html">este dataset ATLAS03</a> de NASA. Esto significa que PyDAP debe analizar cientos de variables por archivo. PyDAP es un parser rápido de <em>DMRs</em> (la respuesta de <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html#_dmr_declarations">metadatos DAP4</a>), pero:</p>
 <ol class="arabic simple">
-<li><p>PyDAP does not (yet) aggregate datasets nor URLs.</p></li>
-<li><p>PyDAP does not make CF-checks, nor does it define label-based operations.</p></li>
+<li><p>PyDAP no agrega (todavía) datasets ni URLs.</p></li>
+<li><p>PyDAP no hace comprobaciones CF ni define operaciones basadas en etiquetas.</p></li>
 </ol>
-<p><code class="docutils literal notranslate"><span class="pre">xarray</span></code>, on the other hand, allows for parallel read and aggregation of multiple datasets. However, despite the awesome parallel features of <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, it can be slow during the aggregation of multiple datasets because it performs a number of checks on the metadata so that the collection of files are “safe” to open and operate upon, according to the internal logics of <code class="docutils literal notranslate"><span class="pre">xarray</span></code>. This means that xarray makes extra checks to ensure safe label-based operations, and the time it takes can grow with the number of variables.</p>
+<p><code class="docutils literal notranslate"><span class="pre">xarray</span></code>, por otro lado, permite lectura paralela y agregación de múltiples datasets. Sin embargo, a pesar de las excelentes capacidades paralelas de <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, puede ser lento durante la agregación de múltiples datasets porque realiza varias comprobaciones sobre los metadatos para que la colección de archivos sea “segura” de abrir y operar, de acuerdo con la lógica interna de <code class="docutils literal notranslate"><span class="pre">xarray</span></code>. Esto significa que xarray realiza comprobaciones extra para asegurar operaciones seguras basadas en etiquetas, y el tiempo puede crecer con el número de variables.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Even though <code class="docutils literal notranslate"><span class="pre">xarray</span></code> hasa. method to drop variables from the virtual <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code>, it is only available <strong>after</strong> the dataset is created. This is, if you have 100s of files each with 100s of variables, but you are only interested in 2-3 variables per file, the client must parse and check all variables in all files, to create a dataset from which you will then drop all but the 2-3 variables of interest.</p>
+<p>Aunque <code class="docutils literal notranslate"><span class="pre">xarray</span></code> tiene un método para descartar variables del <code class="docutils literal notranslate"><span class="pre">xarray.Dataset</span></code> virtual, solo está disponible <strong>después</strong> de crear el dataset. Es decir, si tienes cientos de archivos, cada uno con cientos de variables, pero solo te interesan 2-3 variables por archivo, el cliente debe analizar y comprobar todas las variables en todos los archivos para crear un dataset del cual luego descartarás todas menos las 2-3 variables de interés.</p>
 </div>
-<p>These, in combination, provide an obstacle for initial data exploration of collections of OPeNDAP datasets that contain many <code class="docutils literal notranslate"><span class="pre">variables</span></code>, <code class="docutils literal notranslate"><span class="pre">Groups</span></code>, among other complex types.</p>
+<p>Estos factores, en combinación, representan un obstáculo para la exploración inicial de colecciones de datasets OPeNDAP que contienen muchas <code class="docutils literal notranslate"><span class="pre">variables</span></code>, <code class="docutils literal notranslate"><span class="pre">Groups</span></code> y otros tipos complejos.</p>
 </section>
-<section id="approach">
-<h2>Approach<a class="headerlink" href="#approach" title="Link to this heading">#</a></h2>
-<p>One can add <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expresions</span></code> (<code class="docutils literal notranslate"><span class="pre">CEs</span></code>) to the dataset URL and sent it to the remote OPeNDAP server, to:</p>
+<section id="enfoque">
+<h2>Enfoque<a class="headerlink" href="#enfoque" title="Link to this heading">#</a></h2>
+<p>Se pueden agregar <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expresions</span></code> (<code class="docutils literal notranslate"><span class="pre">CEs</span></code>) a la URL del dataset y enviarlas al servidor OPeNDAP remoto para:</p>
 <ol class="arabic simple">
-<li><p>Request a subset of variables, and</p></li>
-<li><p>Request a spatial subset of variables.</p></li>
+<li><p>Solicitar un subconjunto de variables, y</p></li>
+<li><p>Solicitar un subconjunto espacial de variables.</p></li>
 </ol>
-<p>These <code class="docutils literal notranslate"><span class="pre">CEs</span></code> are increadible powerful from the user perspective because <code class="docutils literal notranslate"><span class="pre">pydap</span></code>, as a backend engine to <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, can receive a much smaller DAP response from the remote OPeNDAP server. This is, the <code class="docutils literal notranslate"><span class="pre">CEs</span> <span class="pre">inform</span> <span class="pre">the</span> <span class="pre">remote</span> <span class="pre">OPeNDAP</span> <span class="pre">server</span> <span class="pre">to</span> <span class="pre">subset</span> <span class="pre">close</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">data</span></code>. The response may be faster by <span class="math notranslate nohighlight">\(\sim O(1)\)</span> second overall, but when considering a 100s of URLs, the result can have a significant impact on the performance and user experience.</p>
-<p>Below we review <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expressions</span></code> with real data on OPeNDAP servers. Because there are two distinct DAP Protocols (see <a class="reference internal" href="#client"><span class="xref myst">Pydap as a client</span></a>), we will review the two cases separately.</p>
+<p>Estas <code class="docutils literal notranslate"><span class="pre">CEs</span></code> son increíblemente potentes desde la perspectiva de la persona usuaria porque <code class="docutils literal notranslate"><span class="pre">pydap</span></code>, como motor backend de <code class="docutils literal notranslate"><span class="pre">xarray</span></code>, puede recibir una respuesta DAP mucho más pequeña desde el servidor OPeNDAP remoto. Es decir, las <code class="docutils literal notranslate"><span class="pre">CEs</span> <span class="pre">informan</span> <span class="pre">al</span> <span class="pre">servidor</span> <span class="pre">OPeNDAP</span> <span class="pre">remoto</span> <span class="pre">que</span> <span class="pre">debe</span> <span class="pre">subdividir</span> <span class="pre">cerca</span> <span class="pre">de</span> <span class="pre">los</span> <span class="pre">datos</span></code>. La respuesta puede ser aproximadamente <span class="math notranslate nohighlight">\(\sim O(1)\)</span> segundo más rápida en total, pero al considerar cientos de URLs, el resultado puede tener un impacto significativo en el rendimiento y la experiencia de uso.</p>
+<p>A continuación revisamos <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expressions</span></code> con datos reales en servidores OPeNDAP. Como hay dos protocolos DAP distintos (consulta <a class="reference internal" href="#client"><span class="xref myst">Pydap como cliente</span></a>), revisaremos los dos casos por separado.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
@@ -398,27 +436,27 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 </div>
 </section>
-<section id="constraint-expressions-in-dap4">
-<h2>Constraint Expressions in DAP4<a class="headerlink" href="#constraint-expressions-in-dap4" title="Link to this heading">#</a></h2>
-<p>Here we demonstrate the use of CE in arrays of 1 and 2 dimensions, in two distinct datasets:</p>
+<section id="constraint-expressions-en-dap4">
+<h2>Constraint Expressions en DAP4<a class="headerlink" href="#constraint-expressions-en-dap4" title="Link to this heading">#</a></h2>
+<p>Aquí demostramos el uso de CE en arreglos de 1 y 2 dimensiones, en dos datasets distintos:</p>
 <ol class="arabic simple">
-<li><p><a class="reference external" href="http://test.opendap.org:8080/opendap/atlas03/ATL03_20200131234815_05540602_003_01.h5.dmr.html">ATLAS03</a>, level 2 Data.</p></li>
-<li><p><a class="reference external" href="http://test.opendap.org:8080/opendap/ghrsst/20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.h5.dmr">Daily MUR Sea Surface Temperature</a>, level 4 data provided by PODAAC at JPL.</p></li>
+<li><p><a class="reference external" href="http://test.opendap.org:8080/opendap/atlas03/ATL03_20200131234815_05540602_003_01.h5.dmr.html">ATLAS03</a>, datos Nivel 2.</p></li>
+<li><p><a class="reference external" href="http://test.opendap.org:8080/opendap/ghrsst/20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.h5.dmr">Daily MUR Sea Surface Temperature</a>, datos Nivel 4 proporcionados por PODAAC en JPL.</p></li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>For more interesting examples, take a look at <a class="reference internal" href="notebooks/PACE.html"><span class="doc std std-doc">PACE example</span></a></p>
+<p>Para ejemplos más interesantes, mira el <a class="reference internal" href="notebooks/PACE.html"><span class="doc std std-doc">ejemplo PACE</span></a>.</p>
 </div>
 <section id="atlas03">
 <h3>ATLAS03<a class="headerlink" href="#atlas03" title="Link to this heading">#</a></h3>
-<p>This dataset has many nested Groups, with many variables in them. Say we are only interested in the variables:</p>
+<p>Este dataset tiene muchos Groups anidados, con muchas variables dentro. Supongamos que solo nos interesan las variables:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">delta_time</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lat_ph</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">lon_ph</span></code>.</p></li>
 </ol>
-<p>The tree variables lie within the Group <code class="docutils literal notranslate"><span class="pre">heights</span></code>, which in turn is nested in the <code class="docutils literal notranslate"><span class="pre">Group</span></code> with name <code class="docutils literal notranslate"><span class="pre">gt3r</span></code>.</p>
-<p>Lets open the remote file naively, by requesting all the variables from the OPeNDAP server (<a class="reference external" href="https://www.opendap.org/software/hyrax-data-server/">Hyrax</a> in this case)</p>
+<p>Las tres variables están dentro del Group <code class="docutils literal notranslate"><span class="pre">heights</span></code>, que a su vez está anidado en el <code class="docutils literal notranslate"><span class="pre">Group</span></code> llamado <code class="docutils literal notranslate"><span class="pre">gt3r</span></code>.</p>
+<p>Abramos el archivo remoto de forma ingenua, solicitando todas las variables al servidor OPeNDAP (<a class="reference external" href="https://www.opendap.org/software/hyrax-data-server/">Hyrax</a> en este caso).</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_url</span> <span class="o">=</span> <span class="s1">&#39;http://test.opendap.org:8080/opendap/atlas03/ATL03_20200131234815_05540602_003_01.h5&#39;</span>
@@ -434,13 +472,13 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 4.05 s, sys: 12.2 ms, total: 4.07 s
-Wall time: 4.86 s
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 3.86 s, sys: 14.1 ms, total: 3.87 s
+Wall time: 4.66 s
 </pre></div>
 </div>
 </div>
 </div>
-<p>Below, we print the entire tree directory within the HDF5 dataset</p>
+<p>Abajo imprimimos todo el árbol de directorios dentro del dataset HDF5.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
@@ -1549,8 +1587,8 @@ Wall time: 4.86 s
 </div>
 </div>
 </div>
-<p>We must note that the same variable names appear in other groups across the file, in the different other <code class="docutils literal notranslate"><span class="pre">Groups</span></code>.</p>
-<p>The DAP4 Protocol makes it easier to identify each variable defined within a <code class="docutils literal notranslate"><span class="pre">Group</span></code> with a unique <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html#_fully_qualified_names">Fully Qualyfying Name</a>. In this case, the FQN of each variable, similar to the navigating thgrough file system is:</p>
+<p>Debemos notar que los mismos nombres de variables aparecen en otros grupos a lo largo del archivo, en otros <code class="docutils literal notranslate"><span class="pre">Groups</span></code> distintos.</p>
+<p>El protocolo DAP4 facilita identificar cada variable definida dentro de un <code class="docutils literal notranslate"><span class="pre">Group</span></code> con un <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html#_fully_qualified_names">Fully Qualyfying Name</a> único. En este caso, el FQN de cada variable, similar a navegar por un sistema de archivos, es:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head text-left"><p>VarName</p></th>
@@ -1570,12 +1608,12 @@ Wall time: 4.86 s
 </tbody>
 </table>
 </div>
-<p>With this knowledge, we want to only request these variables from the server’s <em>DMR</em>. The DAP4 specirication for Constraint Expressions is:</p>
+<p>Con este conocimiento, queremos solicitar solo estas variables del <em>DMR</em> del servidor. La especificación DAP4 para Constraint Expressions es:</p>
 <div class="math notranslate nohighlight">
 \[
 \text{Data_url + ?dap4.ce=&lt;FQN_VarName1&gt;;&lt;FQN_VarName2&gt;;&lt;FQN_VarName3&gt; }
 \]</div>
-<p>Let’s try it now:</p>
+<p>Probémoslo ahora:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">data_urlCE</span> <span class="o">=</span> <span class="n">data_url</span><span class="o">+</span><span class="s1">&#39;?dap4.ce=/gt3r/heights/delta_time;/gt3r/heights/lat_ph;/gt3r/heights/lon_ph&#39;</span>
@@ -1591,21 +1629,21 @@ Wall time: 4.86 s
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 67.7 ms, sys: 1.06 ms, total: 68.8 ms
-Wall time: 254 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 30.1 ms, sys: 973 μs, total: 31 ms
+Wall time: 581 ms
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="this-is-an-order-of-magnitude-faster-than-before">
-<h3>This is an order of magnitude faster than before!<a class="headerlink" href="#this-is-an-order-of-magnitude-faster-than-before" title="Link to this heading">#</a></h3>
-<p>Because <code class="docutils literal notranslate"><span class="pre">Groups</span></code> are NOT part of the DAP2 data model, we cannot illustrate the CE in DAP2 with the <code class="docutils literal notranslate"><span class="pre">ATLAS03</span></code> dataset. Instead, we now look at the <code class="docutils literal notranslate"><span class="pre">COADS</span></code> dataset which has 2D arrays.</p>
+<section id="esto-es-un-orden-de-magnitud-mas-rapido-que-antes">
+<h3>Esto es un orden de magnitud más rápido que antes.<a class="headerlink" href="#esto-es-un-orden-de-magnitud-mas-rapido-que-antes" title="Link to this heading">#</a></h3>
+<p>Como <code class="docutils literal notranslate"><span class="pre">Groups</span></code> NO forman parte del modelo de datos DAP2, no podemos ilustrar la CE en DAP2 con el dataset <code class="docutils literal notranslate"><span class="pre">ATLAS03</span></code>. En su lugar, ahora miramos el dataset <code class="docutils literal notranslate"><span class="pre">COADS</span></code>, que tiene arreglos 2D.</p>
 </section>
 </section>
-<section id="spatial-subsetting">
-<h2>Spatial Subsetting<a class="headerlink" href="#spatial-subsetting" title="Link to this heading">#</a></h2>
-<p>Continuing to demonstrate <code class="docutils literal notranslate"><span class="pre">CEs</span></code> in the DAP4 data model, we now want to request only a subset of the variables. We first take a look at the complete dataset</p>
+<section id="subconjunto-espacial">
+<h2>Subconjunto espacial<a class="headerlink" href="#subconjunto-espacial" title="Link to this heading">#</a></h2>
+<p>Continuando con la demostración de <code class="docutils literal notranslate"><span class="pre">CEs</span></code> en el modelo de datos DAP4, ahora queremos solicitar solo un subconjunto de las variables. Primero observamos el dataset completo.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
@@ -1614,8 +1652,8 @@ Wall time: 254 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 2 μs, sys: 0 ns, total: 2 μs
-Wall time: 3.1 μs
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 1e+03 ns, sys: 1 μs, total: 2 μs
+Wall time: 4.05 μs
 </pre></div>
 </div>
 </div>
@@ -1628,8 +1666,8 @@ Wall time: 3.1 μs
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 45 ms, sys: 958 μs, total: 46 ms
-Wall time: 417 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 37.3 ms, sys: 1.04 ms, total: 38.3 ms
+Wall time: 363 ms
 </pre></div>
 </div>
 </div>
@@ -1655,7 +1693,7 @@ Wall time: 417 ms
 </div>
 </div>
 </div>
-<p>Same as before in the DAP4 data model, we have</p>
+<p>Igual que antes en el modelo de datos DAP4, tenemos:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
 <tr class="row-odd"><th class="head text-left"><p>VarName</p></th>
@@ -1752,18 +1790,18 @@ Wall time: 417 ms
 </div>
 </div>
 </div>
-<p>We see that the variable has three dimensions, and these happen to coincide with those entire dataset.</p>
-<section id="spatial-subset">
-<h3>Spatial Subset<a class="headerlink" href="#spatial-subset" title="Link to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">We</span> <span class="pre">have</span> <span class="pre">yet</span> <span class="pre">to</span> <span class="pre">download/retrieve</span> <span class="pre">any</span> <span class="pre">data</span></code>. Only the <em>DMR</em> has so far been requested by PyDAP. Consider the scenario where we only want to inspect a spatial subset of the data, defined by the <code class="docutils literal notranslate"><span class="pre">indexes</span> <span class="pre">ranges</span></code> aka <code class="docutils literal notranslate"><span class="pre">hyperslabs</span></code>.</p>
-<p>Say we want to retrieve only the first 100 points of <code class="docutils literal notranslate"><span class="pre">lat</span></code>, and the last 300 points of <code class="docutils literal notranslate"><span class="pre">lon</span></code>, of all variables in the dataset. In DAP4, there are two options to accomplish this with the URL.</p>
+<p>Vemos que la variable tiene tres dimensiones, y estas coinciden con las del dataset completo.</p>
+<section id="id1">
+<h3>Subconjunto espacial<a class="headerlink" href="#id1" title="Link to this heading">#</a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">Todavía</span> <span class="pre">no</span> <span class="pre">hemos</span> <span class="pre">descargado/recuperado</span> <span class="pre">ningún</span> <span class="pre">dato</span></code>. Solo PyDAP ha solicitado hasta ahora el <em>DMR</em>. Considera el escenario donde solo queremos inspeccionar un subconjunto espacial de los datos, definido por los <code class="docutils literal notranslate"><span class="pre">rangos</span> <span class="pre">de</span> <span class="pre">índices</span></code>, también llamados <code class="docutils literal notranslate"><span class="pre">hyperslabs</span></code>.</p>
+<p>Supongamos que queremos recuperar solo los primeros 100 puntos de <code class="docutils literal notranslate"><span class="pre">lat</span></code> y los últimos 300 puntos de <code class="docutils literal notranslate"><span class="pre">lon</span></code>, de todas las variables del dataset. En DAP4 hay dos opciones para lograr esto con la URL.</p>
 <ol class="arabic simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">Traditional</span> <span class="pre">Approach</span></code>. Define the hyperslab for each variable you request. The <a class="reference external" href="http://test.opendap.org:8080/opendap/ghrsst/20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.h5.dmr">Data Request Form</a> allows users to (interactively) build such URLS (by selecting boxes and modifying hyperslabs). Following this approach, you get the following Constrained URL</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Enfoque</span> <span class="pre">tradicional</span></code>. Define el hyperslab para cada variable que solicites. El <a class="reference external" href="http://test.opendap.org:8080/opendap/ghrsst/20210102090000-JPL-L4_GHRSST-SSTfnd-MUR-GLOB-v02.0-fv04.1.h5.dmr">Data Request Form</a> permite a las personas usuarias construir dichas URLs de forma interactiva (seleccionando casillas y modificando hyperslabs). Siguiendo este enfoque, obtienes la siguiente URL restringida:</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>data_url + ?dap4.ce=/time;/lat[0:1:100];/lon[35700:1:];/mask[0][0:1:100][35700:1:];/sea_ice_fraction[0][0:1:100][35700:1:];/dt_1km_data[0][0:1:100][35700:1:];/analysed_sst[0][0:1:100][35700:1:];/analysed_sst[0][0:1:100][35700:1:];/analysis_error[0][0:1:100][35700:1:];/sst_anomaly[0][0:1:100][35700:1:]
 </pre></div>
 </div>
-<p>Lets try it!</p>
+<p>Probémoslo.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
@@ -1772,8 +1810,8 @@ Wall time: 417 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 44.9 ms, sys: 1.07 ms, total: 46 ms
-Wall time: 335 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 30.8 ms, sys: 988 μs, total: 31.8 ms
+Wall time: 228 ms
 </pre></div>
 </div>
 </div>
@@ -1814,8 +1852,7 @@ Wall time: 335 ms
 </div>
 </div>
 </div>
-<p>The spatial subsetting described above worked fine. It is very verbose and you have to explicitely set the size of all variables, if you want the resulting
-subset dataset to be self-consistent. For example, it can be easy to define the spatial subset only on a variable and not the rest.</p>
+<p>El subconjunto espacial descrito arriba funcionó bien. Es muy verboso y tienes que definir explícitamente el tamaño de todas las variables si quieres que el dataset subconjunto resultante sea autoconsistente. Por ejemplo, puede ser fácil definir el subconjunto espacial solo en una variable y no en el resto.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
@@ -1824,8 +1861,8 @@ subset dataset to be self-consistent. For example, it can be easy to define the 
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 40 ms, sys: 1.27 ms, total: 41.2 ms
-Wall time: 314 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 30 ms, sys: 2.15 ms, total: 32.1 ms
+Wall time: 426 ms
 </pre></div>
 </div>
 </div>
@@ -1854,18 +1891,18 @@ Wall time: 314 ms
 </div>
 </div>
 </div>
-<p>Next we provide an alternative approach that is less error prone, and makes use of <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html#_subsetting_and_shared_dimensions">Shared Dimensions</a>.</p>
+<p>A continuación proporcionamos un enfoque alternativo que es menos propenso a errores y usa <a class="reference external" href="https://opendap.github.io/dap4-specification/DAP4.html#_subsetting_and_shared_dimensions">Shared Dimensions</a>.</p>
 <ol class="arabic simple" start="2">
-<li><p><code class="docutils literal notranslate"><span class="pre">Shared</span> <span class="pre">Dimensions</span></code>: This alternative approach can be used to define the spatial subsetting via the dimensions. The syntax is:</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Shared</span> <span class="pre">Dimensions</span></code>: este enfoque alternativo se puede usar para definir el subconjunto espacial mediante las dimensiones. La sintaxis es:</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>data_url + ?dap4.ce=&lt;FQN_Dim1&gt;=[subset];&lt;FQN_Dim2&gt;=[subset];&lt;FQN_Var1&gt;;&lt;FQN_Var3&gt;;&lt;FQN_Var3&gt;;...&lt;FQN_VarN&gt;
 </pre></div>
 </div>
-<p>Where <code class="docutils literal notranslate"><span class="pre">&lt;FQN_Var1&gt;</span></code> may be the same as <code class="docutils literal notranslate"><span class="pre">&lt;FQN_Dim1&gt;</span></code>.</p>
-<p>In the syntax above,</p>
-<p>a) The subset is first defined on the dimensions by the <code class="docutils literal notranslate"><span class="pre">=</span></code> signs. Dimensions may be Global (at the root level), or within a <code class="docutils literal notranslate"><span class="pre">Group</span></code>.</p>
-<p>b) The user then defines the variables ot be included in the request by PyDAP. The subset defined in the previous space will be applied to the variable.</p>
-<p>Using the example, the much simplified URL becomes:</p>
+<p>Donde <code class="docutils literal notranslate"><span class="pre">&lt;FQN_Var1&gt;</span></code> puede ser igual a <code class="docutils literal notranslate"><span class="pre">&lt;FQN_Dim1&gt;</span></code>.</p>
+<p>En la sintaxis anterior,</p>
+<p>a) El subconjunto se define primero en las dimensiones mediante los signos <code class="docutils literal notranslate"><span class="pre">=</span></code>. Las dimensiones pueden ser globales (a nivel raíz) o estar dentro de un <code class="docutils literal notranslate"><span class="pre">Group</span></code>.</p>
+<p>b) Luego la persona usuaria define las variables que PyDAP debe incluir en la solicitud. El subconjunto definido en el paso anterior se aplicará a la variable.</p>
+<p>Usando el ejemplo, la URL mucho más simplificada se convierte en:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
@@ -1874,8 +1911,8 @@ Wall time: 314 ms
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 38.9 ms, sys: 1.25 ms, total: 40.2 ms
-Wall time: 224 ms
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 25.4 ms, sys: 1.07 ms, total: 26.5 ms
+Wall time: 199 ms
 </pre></div>
 </div>
 </div>
@@ -1947,6 +1984,24 @@ Wall time: 224 ms
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="DAP_Protocol.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Protocolo OPeNDAP DAP</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="responses.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Responses</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -1965,15 +2020,15 @@ Wall time: 224 ms
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivation">Motivation</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#approach">Approach</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constraint-expressions-in-dap4">Constraint Expressions in DAP4</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#motivacion">Motivación</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#enfoque">Enfoque</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#constraint-expressions-en-dap4">Constraint Expressions en DAP4</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#atlas03">ATLAS03</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#this-is-an-order-of-magnitude-faster-than-before">This is an order of magnitude faster than before!</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#esto-es-un-orden-de-magnitud-mas-rapido-que-antes">Esto es un orden de magnitud más rápido que antes.</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#spatial-subsetting">Spatial Subsetting</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#spatial-subset">Spatial Subset</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subconjunto-espacial">Subconjunto espacial</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Subconjunto espacial</a></li>
 </ul>
 </li>
 </ul>

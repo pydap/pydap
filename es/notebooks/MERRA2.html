@@ -1,0 +1,2942 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-EN2VD1J32L");
+</script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube &#8212; PyDAP tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/MERRA2';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Preguntas frecuentes" href="../faqs/faqs.html" />
+    <link rel="prev" title="Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube" href="PACE.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inicio rápido</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Cómo instalar</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ejemplos</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="Authentication.html">Autenticación básica</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="netrc.html">Crear un archivo .netrc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="earthaccess.html">Autenticación EDL mediante earthaccess</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="GetCMRURLS.html">Como encontrar URLs de OPeNDAP de NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalipsoL2_access.html">Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DAYMET.html">Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="Ecostress.html">Acceso a datos de temperatura de superficie terrestre de ECOSTRESS de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPO_NRT.html">Acceso a datos de calidad del aire casi en tiempo real (NRT) de TEMPO mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECCO.html">Acceso a ECCOv4 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACE.html">Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Preguntas frecuentes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">Preguntas frecuentes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/download_speed.html">Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/diagnose_download_issues.html">¿Cómo puedo diagnosticar problemas de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">¿Esta es una URL DAP2 o DAP4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_vs_dap4.html">¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../PydapAsClient.html">PyDAP como cliente</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DAP_Protocol.html">Protocolo OPeNDAP DAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ConstraintExpressions.html">Constraint Expressions: subconjunto del lado del servidor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guía para desarrolladores</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contribuir</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../guide_to_developer.html">Guía para nuevos contribuidores</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/git.html">Guía de control de versiones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_cod.html">Contribuir al código</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_issues.html">Reportar issues en GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_docs.html">Contribuir a la documentación</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/MERRA2.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explorar-la-coleccion-merra-2">Explorar la colección MERRA-2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autenticacion-edl-mediante-earthaccess-y-opendap">Autenticación EDL mediante earthaccess y OPeNDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explorar-variables-en-la-coleccion-y-filtrar-para-conservar-solo-las-deseadas">Explorar variables en la colección y filtrar para conservar solo las deseadas</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explorar-un-archivo-remoto-individual">Explorar un archivo remoto individual</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizar">Visualizar</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#subdividir-el-dataset-agregado-mientras-se-remuestrea-en-el-tiempo">Subdividir el dataset agregado mientras se remuestrea en el tiempo</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#crear-agregacion-de-dataset-fragmentando-en-el-espacio">Crear agregación de Dataset, fragmentando en el espacio</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#remuestrear-y-subdividir">Remuestrear y subdividir</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descargar">Descargar</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#veamos-los-datos">Veamos los datos</a></li>
+</ul>
+</li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="acceso-a-datos-merra-2-mediante-opendap-de-nasa-earthdata-en-la-nube">
+<h1>Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube<a class="headerlink" href="#acceso-a-datos-merra-2-mediante-opendap-de-nasa-earthdata-en-la-nube" title="Link to this heading">#</a></h1>
+<p><strong>Requisitos para ejecutar este notebook</strong></p>
+<ol class="arabic simple">
+<li><p>Tener una cuenta Earth Data Login</p></li>
+<li><p>Método preferido de autenticación.</p></li>
+<li><p>python&gt;=3.12</p></li>
+</ol>
+<p><strong>Objetivos</strong></p>
+<p>Usar buenas prácticas de OPeNDAP, <a class="reference external" href="https://pydap.github.io/pydap/">pydap</a> y xarray para:</p>
+<ul class="simple">
+<li><p>Descubrir todas las URLs OPeNDAP asociadas con una colección MERRA-2.</p></li>
+<li><p>Autenticarse mediante EDL (basado en token)</p></li>
+<li><p>Explorar la colección MERRA-2 y filtrar variables</p></li>
+<li><p>Consolidar metadatos a nivel de colección</p></li>
+<li><p>Descargar/transmitir un subconjunto de interés.</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">Autor</span></code>: Miguel Jimenez-Urias, ‘25</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">earthaccess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydap</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.net</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_cmr_urls</span><span class="p">,</span> <span class="n">consolidate_metadata</span><span class="p">,</span> <span class="n">open_url</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;xarray version: &quot;</span><span class="p">,</span> <span class="n">xr</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;pydap version: &quot;</span><span class="p">,</span> <span class="n">pydap</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>xarray version:  2026.4.0
+pydap version:  3.5.11.dev1+ge35cae66d
+</pre></div>
+</div>
+</div>
+</div>
+<section id="explorar-la-coleccion-merra-2">
+<h2>Explorar la colección MERRA-2<a class="headerlink" href="#explorar-la-coleccion-merra-2" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">merra2_doi</span> <span class="o">=</span> <span class="s2">&quot;10.5067/VJAFPLI1CSIV&quot;</span> <span class="c1"># available e.g. GES DISC MERRA-2 documentation </span>
+                                    <span class="c1"># https://disc.gsfc.nasa.gov/datasets/M2T1NXSLV_5.12.4/summary?keywords=MERRA-2</span>
+<span class="c1"># One month of data</span>
+<span class="n">time_range</span><span class="o">=</span><span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">28</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">urls</span> <span class="o">=</span> <span class="n">get_cmr_urls</span><span class="p">(</span><span class="n">doi</span><span class="o">=</span><span class="n">merra2_doi</span><span class="p">,</span><span class="n">time_range</span><span class="o">=</span><span class="n">time_range</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span> <span class="c1"># you can increase the limit of results</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">urls</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>59
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="autenticacion-edl-mediante-earthaccess-y-opendap">
+<h2>Autenticación EDL mediante earthaccess y OPeNDAP<a class="headerlink" href="#autenticacion-edl-mediante-earthaccess-y-opendap" title="Link to this heading">#</a></h2>
+<p>Puedes autenticarte mediante <code class="docutils literal notranslate"><span class="pre">earthaccess</span></code> como se muestra a continuacion. Debes tener una cuenta EDL válida. Hay dos estrategias para autenticarte con <code class="docutils literal notranslate"><span class="pre">earthaccess</span></code>:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">strategy=&quot;interactive&quot;</span></code>. Esto pedirá tu usuario y contraseña de EDL.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strategy=&quot;netrc&quot;</span></code>. Usa esta opción si el notebook se ejecuta en un entorno donde se puede recuperar un <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> con tus credenciales.</p></li>
+</ol>
+<p>A continuación, el valor predeterminado será <code class="docutils literal notranslate"><span class="pre">netrc</span></code>, asumiendo que el usuario ejecutó el notebook <strong>Authenticate.ipynb</strong>. Si no es así, puedes cambiar la estrategia a <code class="docutils literal notranslate"><span class="pre">&quot;interactive&quot;</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">earthaccess.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoginStrategyUnavailable</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">earthaccess</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;netrc&quot;</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># you will be promted to add your EDL credentials</span>
+<span class="k">except</span> <span class="n">LoginStrategyUnavailable</span><span class="p">:</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">earthaccess</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># pass Token Authorization to a new Session.</span>
+<span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">auth</span><span class="o">.</span><span class="n">get_session</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="explorar-variables-en-la-coleccion-y-filtrar-para-conservar-solo-las-deseadas">
+<h3>Explorar variables en la colección y filtrar para conservar solo las deseadas<a class="headerlink" href="#explorar-variables-en-la-coleccion-y-filtrar-para-conservar-solo-las-deseadas" title="Link to this heading">#</a></h3>
+<p>Hacemos esto especificando que el servidor OPeNDAP de NASA procese solicitudes mediante el protocolo DAP4.</p>
+<p>Hay dos formas de hacerlo:</p>
+<ul class="simple">
+<li><p>Usar <code class="docutils literal notranslate"><span class="pre">pydap</span></code> para inspeccionar los metadatos (todas las variables dentro de los archivos y su descripción). Puedes ejecutar el siguiente código para listar todos los nombres de variables.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">open_url</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">protocol</span><span class="o">=</span><span class="s1">&#39;dap4&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+<span class="n">ds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span> <span class="c1"># this will display the entire tree directory</span>
+
+<span class="n">ds</span><span class="p">[</span><span class="n">Varname</span><span class="p">]</span><span class="o">.</span><span class="n">attributes</span> <span class="c1"># will display all the information about Varname in the remote file.</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Usar el Data Request Form de OPeNDAP visible desde el navegador. Lo logras tomando una URL OPeNDAP, agregando la extensión <code class="docutils literal notranslate"><span class="pre">.dmr</span></code> y pegando la URL resultante en un navegador.</p></li>
+</ul>
+<p>De cualquiera de las dos formas, puedes inspeccionar nombres de variables y sus descripciones sin descargar arreglos grandes.</p>
+<p>Abajo asumimos que sabes qué variables necesitas.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">variables</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;T2M&#39;</span><span class="p">,</span> <span class="s2">&quot;U2M&quot;</span><span class="p">,</span> <span class="s2">&quot;V2M&quot;</span><span class="p">]</span> <span class="c1"># variables of interest</span>
+<span class="n">CE</span> <span class="o">=</span> <span class="s2">&quot;?dap4.ce=&quot;</span><span class="o">+</span> <span class="s2">&quot;/&quot;</span><span class="o">+</span><span class="s2">&quot;;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variables</span><span class="p">)</span> <span class="c1"># Need to add this string as a query expression to the OPeNDAP URL</span>
+<span class="n">new_urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">url</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;https&quot;</span><span class="p">,</span> <span class="s2">&quot;dap4&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="n">CE</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">]</span> <span class="c1"># </span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="explorar-un-archivo-remoto-individual">
+<h3>Explorar un archivo remoto individual<a class="headerlink" href="#explorar-un-archivo-remoto-individual" title="Link to this heading">#</a></h3>
+<p>Crearemos un dataset de <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> con fines de visualización, y haremos un gráfico de temperatura cerca de la superficie, en una sola unidad de tiempo.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span>
+    <span class="n">new_urls</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+    <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> 
+    <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> 
+<span class="p">)</span>
+<span class="n">ds</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 323 ms, sys: 52.2 ms, total: 375 ms
+Wall time: 4.46 s
+</pre></div>
+</div>
+<div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
+
+:root {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base rgba(0, 0, 0, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, white)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 15))
+  );
+}
+
+html[theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.vscode-dark {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base, rgba(255, 255, 255, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, #111111)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 15))
+  );
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+  line-height: 1.6;
+  padding-bottom: 4px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.xr-header {
+  border-bottom: solid 1px var(--xr-border-color);
+  margin-bottom: 4px;
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-obj-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type,
+.xr-group-box-contents > label {
+  color: var(--xr-font-color2);
+  display: block;
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item > input,
+.xr-group-box-contents > input,
+.xr-array-wrap > input {
+  display: block;
+  opacity: 0;
+  height: 0;
+  margin: 0;
+}
+
+.xr-section-item > input + label,
+.xr-var-item > input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item > input:enabled + label,
+.xr-var-item > input:enabled + label,
+.xr-array-wrap > input:enabled + label,
+.xr-group-box-contents > input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item > input:focus-visible + label,
+.xr-var-item > input:focus-visible + label,
+.xr-array-wrap > input:focus-visible + label,
+.xr-group-box-contents > input:focus-visible + label {
+  outline: auto;
+}
+
+.xr-section-item > input:enabled + label:hover,
+.xr-var-item > input:enabled + label:hover,
+.xr-array-wrap > input:enabled + label:hover,
+.xr-group-box-contents > input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.xr-section-summary > em {
+  font-weight: normal;
+}
+
+.xr-span-grid {
+  grid-column-end: -1;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label > span {
+  display: inline-block;
+  padding-left: 0.6em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: "►";
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: "▼";
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details,
+.xr-group-box-contents > label {
+  padding-top: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in ~ .xr-section-details {
+  display: none;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-children {
+  display: inline-grid;
+  grid-template-columns: 100%;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 30px auto;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 26px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+  padding-bottom: 4px;
+}
+
+.xr-group-box-contents > label::before {
+  content: "📂";
+  padding-right: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label::before {
+  content: "📁";
+}
+
+.xr-group-box-contents > input:checked + label {
+  padding-bottom: 0px;
+}
+
+.xr-group-box-contents > input:checked ~ .xr-sections {
+  display: none;
+}
+
+.xr-group-box-contents > input + label > span {
+  display: none;
+}
+
+.xr-group-box-ellipsis {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--xr-font-color2);
+  letter-spacing: 0.15em;
+  cursor: default;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: "(";
+}
+
+.xr-dim-list:after {
+  content: ")";
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ",";
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  border-color: var(--xr-background-color-row-odd);
+  margin-bottom: 0;
+  padding-top: 2px;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+  border-color: var(--xr-background-color-row-even);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  border-top: 2px dotted var(--xr-background-color);
+  padding-bottom: 20px !important;
+  padding-top: 10px !important;
+}
+
+.xr-var-attrs-in + label,
+.xr-var-data-in + label,
+.xr-index-data-in + label {
+  padding: 0 1px;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-data > pre,
+.xr-index-data > pre,
+.xr-var-data > table > tbody > tr {
+  background-color: transparent !important;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.xr-var-attrs-in:checked + label > .xr-icon-file-text2,
+.xr-var-data-in:checked + label > .xr-icon-database,
+.xr-index-data-in:checked + label > .xr-icon-database {
+  color: var(--xr-font-color0);
+  filter: drop-shadow(1px 1px 5px var(--xr-font-color2));
+  stroke-width: 0.8px;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 120MB
+Dimensions:  (time: 24, lat: 361, lon: 576)
+Coordinates:
+  * time     (time) datetime64[ns] 192B 2023-01-01T00:30:00 ... 2023-01-01T23...
+  * lat      (lat) float64 3kB -90.0 -89.5 -89.0 -88.5 ... 88.5 89.0 89.5 90.0
+  * lon      (lon) float64 5kB -180.0 -179.4 -178.8 -178.1 ... 178.1 178.8 179.4
+Data variables:
+    T2M      (time, lat, lon) float64 40MB ...
+    U2M      (time, lat, lon) float64 40MB ...
+    V2M      (time, lat, lon) float64 40MB ...
+Attributes: (12/30)
+    History:                           Original file generated: Wed Jan 11 21...
+    Comment:                           GMAO filename: d5124_m2_jan10.tavg1_2d...
+    Filename:                          MERRA2_400.tavg1_2d_slv_Nx.20230101.nc4
+    Conventions:                       CF-1
+    Institution:                       NASA Global Modeling and Assimilation ...
+    References:                        http://gmao.gsfc.nasa.gov
+    ...                                ...
+    Contact:                           http://gmao.gsfc.nasa.gov
+    identifier_product_doi:            10.5067/VJAFPLI1CSIV
+    RangeBeginningDate:                2023-01-01
+    RangeBeginningTime:                00:00:00.000000
+    RangeEndingDate:                   2023-01-01
+    RangeEndingTime:                   23:59:59.000000</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-29e98421-ad71-49f3-baf7-81eb32933e00' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-29e98421-ad71-49f3-baf7-81eb32933e00' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 24</li><li><span class='xr-has-index'>lat</span>: 361</li><li><span class='xr-has-index'>lon</span>: 576</li></ul></div></li><li class='xr-section-item'><input id='section-0af41741-c444-42f3-86b8-2432339b2466' class='xr-section-summary-in' type='checkbox' checked /><label for='section-0af41741-c444-42f3-86b8-2432339b2466' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2023-01-01T00:30:00 ... 2023-01-...</div><input id='attrs-34fa1e48-d7cc-4835-b5dd-3a938c460694' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-34fa1e48-d7cc-4835-b5dd-3a938c460694' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e7406725-d78e-4062-9da5-e1cdbd96d204' class='xr-var-data-in' type='checkbox'><label for='data-e7406725-d78e-4062-9da5-e1cdbd96d204' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>time</dd><dt><span>time_increment :</span></dt><dd>10000</dd><dt><span>begin_date :</span></dt><dd>20230101</dd><dt><span>begin_time :</span></dt><dd>3000</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2023-01-01T00:30:00.000000000&#x27;, &#x27;2023-01-01T01:30:00.000000000&#x27;,
+       &#x27;2023-01-01T02:30:00.000000000&#x27;, &#x27;2023-01-01T03:30:00.000000000&#x27;,
+       &#x27;2023-01-01T04:30:00.000000000&#x27;, &#x27;2023-01-01T05:30:00.000000000&#x27;,
+       &#x27;2023-01-01T06:30:00.000000000&#x27;, &#x27;2023-01-01T07:30:00.000000000&#x27;,
+       &#x27;2023-01-01T08:30:00.000000000&#x27;, &#x27;2023-01-01T09:30:00.000000000&#x27;,
+       &#x27;2023-01-01T10:30:00.000000000&#x27;, &#x27;2023-01-01T11:30:00.000000000&#x27;,
+       &#x27;2023-01-01T12:30:00.000000000&#x27;, &#x27;2023-01-01T13:30:00.000000000&#x27;,
+       &#x27;2023-01-01T14:30:00.000000000&#x27;, &#x27;2023-01-01T15:30:00.000000000&#x27;,
+       &#x27;2023-01-01T16:30:00.000000000&#x27;, &#x27;2023-01-01T17:30:00.000000000&#x27;,
+       &#x27;2023-01-01T18:30:00.000000000&#x27;, &#x27;2023-01-01T19:30:00.000000000&#x27;,
+       &#x27;2023-01-01T20:30:00.000000000&#x27;, &#x27;2023-01-01T21:30:00.000000000&#x27;,
+       &#x27;2023-01-01T22:30:00.000000000&#x27;, &#x27;2023-01-01T23:30:00.000000000&#x27;],
+      dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>-90.0 -89.5 -89.0 ... 89.5 90.0</div><input id='attrs-4a87c389-3ac1-49d3-b9ba-9e9b16c7c0e3' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-4a87c389-3ac1-49d3-b9ba-9e9b16c7c0e3' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-cd5293b4-0cf5-484b-a16a-8647fe39184f' class='xr-var-data-in' type='checkbox'><label for='data-cd5293b4-0cf5-484b-a16a-8647fe39184f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-90. , -89.5, -89. , ...,  89. ,  89.5,  90. ], shape=(361,))</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>-180.0 -179.4 ... 178.8 179.4</div><input id='attrs-25b95b4a-7809-49ab-b8e2-f1f4d73668dd' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-25b95b4a-7809-49ab-b8e2-f1f4d73668dd' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-985d770a-780b-43bf-aa64-3bfc7bb21561' class='xr-var-data-in' type='checkbox'><label for='data-985d770a-780b-43bf-aa64-3bfc7bb21561' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-180.   , -179.375, -178.75 , ...,  178.125,  178.75 ,  179.375],
+      shape=(576,))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-a060297a-f992-4d19-ae61-a318fd6bdf25' class='xr-section-summary-in' type='checkbox' checked /><label for='section-a060297a-f992-4d19-ae61-a318fd6bdf25' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>T2M</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-006231ff-cc27-4c4a-9ca3-32803dabb463' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-006231ff-cc27-4c4a-9ca3-32803dabb463' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-83102599-b9f8-4fa1-9244-796a4fc74cec' class='xr-var-data-in' type='checkbox'><label for='data-83102599-b9f8-4fa1-9244-796a4fc74cec' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>2-meter_air_temperature</dd><dt><span>units :</span></dt><dd>K</dd><dt><span>fmissing_value :</span></dt><dd>999999987000000.0</dd><dt><span>standard_name :</span></dt><dd>2-meter_air_temperature</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><pre>[4990464 values with dtype=float64]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>U2M</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-608b02f1-462f-43c3-bbe8-be82eb2ba63d' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-608b02f1-462f-43c3-bbe8-be82eb2ba63d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-3d29d798-f3d9-4231-8cc0-6136db301d41' class='xr-var-data-in' type='checkbox'><label for='data-3d29d798-f3d9-4231-8cc0-6136db301d41' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>2-meter_eastward_wind</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>fmissing_value :</span></dt><dd>999999987000000.0</dd><dt><span>standard_name :</span></dt><dd>2-meter_eastward_wind</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><pre>[4990464 values with dtype=float64]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>V2M</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-b14e460e-e8a9-4f21-8f4d-24923229311b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-b14e460e-e8a9-4f21-8f4d-24923229311b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-687e1e24-747f-4a58-8017-fa13692da4dd' class='xr-var-data-in' type='checkbox'><label for='data-687e1e24-747f-4a58-8017-fa13692da4dd' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>2-meter_northward_wind</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>fmissing_value :</span></dt><dd>999999987000000.0</dd><dt><span>standard_name :</span></dt><dd>2-meter_northward_wind</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><pre>[4990464 values with dtype=float64]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-84bc2a33-bc14-403d-868a-3c72e29e9ac5' class='xr-section-summary-in' type='checkbox' /><label for='section-84bc2a33-bc14-403d-868a-3c72e29e9ac5' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(30)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>History :</span></dt><dd>Original file generated: Wed Jan 11 21:58:01 2023 GMT</dd><dt><span>Comment :</span></dt><dd>GMAO filename: d5124_m2_jan10.tavg1_2d_slv_Nx.20230101.nc4</dd><dt><span>Filename :</span></dt><dd>MERRA2_400.tavg1_2d_slv_Nx.20230101.nc4</dd><dt><span>Conventions :</span></dt><dd>CF-1</dd><dt><span>Institution :</span></dt><dd>NASA Global Modeling and Assimilation Office</dd><dt><span>References :</span></dt><dd>http://gmao.gsfc.nasa.gov</dd><dt><span>Format :</span></dt><dd>NetCDF-4/HDF-5</dd><dt><span>SpatialCoverage :</span></dt><dd>global</dd><dt><span>VersionID :</span></dt><dd>5.12.4</dd><dt><span>TemporalRange :</span></dt><dd>1980-01-01 -&gt; 2016-12-31</dd><dt><span>identifier_product_doi_authority :</span></dt><dd>http://dx.doi.org/</dd><dt><span>ShortName :</span></dt><dd>M2T1NXSLV</dd><dt><span>GranuleID :</span></dt><dd>MERRA2_400.tavg1_2d_slv_Nx.20230101.nc4</dd><dt><span>ProductionDateTime :</span></dt><dd>Original file generated: Wed Jan 11 21:58:01 2023 GMT</dd><dt><span>LongName :</span></dt><dd>MERRA2 tavg1_2d_slv_Nx: 2d,1-Hourly,Time-Averaged,Single-Level,Assimilation,Single-Level Diagnostics</dd><dt><span>Title :</span></dt><dd>MERRA2 tavg1_2d_slv_Nx: 2d,1-Hourly,Time-Averaged,Single-Level,Assimilation,Single-Level Diagnostics</dd><dt><span>SouthernmostLatitude :</span></dt><dd>-90.0</dd><dt><span>NorthernmostLatitude :</span></dt><dd>90.0</dd><dt><span>WesternmostLongitude :</span></dt><dd>-180.0</dd><dt><span>EasternmostLongitude :</span></dt><dd>179.375</dd><dt><span>LatitudeResolution :</span></dt><dd>0.5</dd><dt><span>LongitudeResolution :</span></dt><dd>0.625</dd><dt><span>DataResolution :</span></dt><dd>0.5 x 0.625</dd><dt><span>Source :</span></dt><dd>CVS tag: GEOSadas-5_12_4_p36_SLES12_M2-OPS</dd><dt><span>Contact :</span></dt><dd>http://gmao.gsfc.nasa.gov</dd><dt><span>identifier_product_doi :</span></dt><dd>10.5067/VJAFPLI1CSIV</dd><dt><span>RangeBeginningDate :</span></dt><dd>2023-01-01</dd><dt><span>RangeBeginningTime :</span></dt><dd>00:00:00.000000</dd><dt><span>RangeEndingDate :</span></dt><dd>2023-01-01</dd><dt><span>RangeEndingTime :</span></dt><dd>23:59:59.000000</dd></dl></div></li></ul></div></div></div></div>
+</div>
+</section>
+<section id="visualizar">
+<h3>Visualizar<a class="headerlink" href="#visualizar" title="Link to this heading">#</a></h3>
+<p>En <code class="docutils literal notranslate"><span class="pre">Xarray</span></code>, al visualizar datos, los datos se descargan. Al fragmentar en <code class="docutils literal notranslate"><span class="pre">time</span></code> al crear el dataset, aseguramos que, en el momento de visualizar una sola unidad de tiempo en xarray, el rebanado temporal se pase al servidor. Esto reduce la cantidad de datos descargados y acelera la transferencia.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">ds</span><span class="p">[</span><span class="s1">&#39;T2M&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1978020d6783548e28b7585020b365eff459a1b81b4e7d4cf3e5c157d7655a24.png" src="../_images/1978020d6783548e28b7585020b365eff459a1b81b4e7d4cf3e5c157d7655a24.png" />
+</div>
+</div>
+</section>
+<section id="subdividir-el-dataset-agregado-mientras-se-remuestrea-en-el-tiempo">
+<h3>Subdividir el dataset agregado mientras se remuestrea en el tiempo<a class="headerlink" href="#subdividir-el-dataset-agregado-mientras-se-remuestrea-en-el-tiempo" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Seleccionamos datos relevantes para el hemisferio sur, en el área cercana a Sudamérica.</p></li>
+<li><p>Almacenamos datos en promedios diarios (a diferencia de datos horarios).</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Para lograrlo, necesitamos identificar el rebanado en espacio de índices y aplicar <code class="docutils literal notranslate"><span class="pre">chunk</span> <span class="pre">the</span> <span class="pre">dataset</span></code> antes de transmitir. Hacerlo asegurará que el subconjunto espacial se realice del lado del servidor (OPeNDAP), cerca de los datos, mientras <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> calcula el promedio diario.</p>
+</div>
+</section>
+<section id="crear-agregacion-de-dataset-fragmentando-en-el-espacio">
+<h3>Crear agregación de Dataset, fragmentando en el espacio<a class="headerlink" href="#crear-agregacion-de-dataset-fragmentando-en-el-espacio" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+
+<span class="c1"># spatial subset around South America</span>
+<span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;lon&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+
+<span class="n">minLon</span><span class="p">,</span> <span class="n">maxLon</span> <span class="o">=</span> <span class="o">-</span><span class="mi">100</span><span class="p">,</span> <span class="mi">50</span> 
+<span class="n">iLon</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">lon</span><span class="o">&gt;</span><span class="n">minLon</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="n">lon</span> <span class="o">&lt;</span> <span class="n">maxLon</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">iLat</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">lat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Make sure subset is done by server</span>
+<span class="n">expected_download</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lon&#39;</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">iLon</span><span class="p">),</span> <span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">iLat</span><span class="p">)}</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span>
+    <span class="n">new_urls</span><span class="p">,</span>
+    <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> 
+    <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span>
+    <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span>
+    <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;nested&#39;</span><span class="p">,</span>
+    <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">chunks</span><span class="o">=</span><span class="n">expected_download</span><span class="p">,</span>  <span class="c1">#### &lt;&lt;&lt;&lt;&lt;&lt;&lt;------- Muy importante </span>
+<span class="p">)</span>
+<span class="n">ds</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 9.27 s, sys: 1.34 s, total: 10.6 s
+Wall time: 31.7 s
+</pre></div>
+</div>
+<div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
+
+:root {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base rgba(0, 0, 0, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, white)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 15))
+  );
+}
+
+html[theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.vscode-dark {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base, rgba(255, 255, 255, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, #111111)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 15))
+  );
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+  line-height: 1.6;
+  padding-bottom: 4px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.xr-header {
+  border-bottom: solid 1px var(--xr-border-color);
+  margin-bottom: 4px;
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-obj-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type,
+.xr-group-box-contents > label {
+  color: var(--xr-font-color2);
+  display: block;
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item > input,
+.xr-group-box-contents > input,
+.xr-array-wrap > input {
+  display: block;
+  opacity: 0;
+  height: 0;
+  margin: 0;
+}
+
+.xr-section-item > input + label,
+.xr-var-item > input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item > input:enabled + label,
+.xr-var-item > input:enabled + label,
+.xr-array-wrap > input:enabled + label,
+.xr-group-box-contents > input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item > input:focus-visible + label,
+.xr-var-item > input:focus-visible + label,
+.xr-array-wrap > input:focus-visible + label,
+.xr-group-box-contents > input:focus-visible + label {
+  outline: auto;
+}
+
+.xr-section-item > input:enabled + label:hover,
+.xr-var-item > input:enabled + label:hover,
+.xr-array-wrap > input:enabled + label:hover,
+.xr-group-box-contents > input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.xr-section-summary > em {
+  font-weight: normal;
+}
+
+.xr-span-grid {
+  grid-column-end: -1;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label > span {
+  display: inline-block;
+  padding-left: 0.6em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: "►";
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: "▼";
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details,
+.xr-group-box-contents > label {
+  padding-top: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in ~ .xr-section-details {
+  display: none;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-children {
+  display: inline-grid;
+  grid-template-columns: 100%;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 30px auto;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 26px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+  padding-bottom: 4px;
+}
+
+.xr-group-box-contents > label::before {
+  content: "📂";
+  padding-right: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label::before {
+  content: "📁";
+}
+
+.xr-group-box-contents > input:checked + label {
+  padding-bottom: 0px;
+}
+
+.xr-group-box-contents > input:checked ~ .xr-sections {
+  display: none;
+}
+
+.xr-group-box-contents > input + label > span {
+  display: none;
+}
+
+.xr-group-box-ellipsis {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--xr-font-color2);
+  letter-spacing: 0.15em;
+  cursor: default;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: "(";
+}
+
+.xr-dim-list:after {
+  content: ")";
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ",";
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  border-color: var(--xr-background-color-row-odd);
+  margin-bottom: 0;
+  padding-top: 2px;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+  border-color: var(--xr-background-color-row-even);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  border-top: 2px dotted var(--xr-background-color);
+  padding-bottom: 20px !important;
+  padding-top: 10px !important;
+}
+
+.xr-var-attrs-in + label,
+.xr-var-data-in + label,
+.xr-index-data-in + label {
+  padding: 0 1px;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-data > pre,
+.xr-index-data > pre,
+.xr-var-data > table > tbody > tr {
+  background-color: transparent !important;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.xr-var-attrs-in:checked + label > .xr-icon-file-text2,
+.xr-var-data-in:checked + label > .xr-icon-database,
+.xr-index-data-in:checked + label > .xr-icon-database {
+  color: var(--xr-font-color0);
+  filter: drop-shadow(1px 1px 5px var(--xr-font-color2));
+  stroke-width: 0.8px;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 7GB
+Dimensions:  (time: 1416, lat: 361, lon: 576)
+Coordinates:
+  * time     (time) datetime64[ns] 11kB 2023-01-01T00:30:00 ... 2023-02-28T23...
+  * lat      (lat) float64 3kB -90.0 -89.5 -89.0 -88.5 ... 88.5 89.0 89.5 90.0
+  * lon      (lon) float64 5kB -180.0 -179.4 -178.8 -178.1 ... 178.1 178.8 179.4
+Data variables:
+    T2M      (time, lat, lon) float64 2GB dask.array&lt;chunksize=(24, 181, 239), meta=np.ndarray&gt;
+    U2M      (time, lat, lon) float64 2GB dask.array&lt;chunksize=(24, 181, 239), meta=np.ndarray&gt;
+    V2M      (time, lat, lon) float64 2GB dask.array&lt;chunksize=(24, 181, 239), meta=np.ndarray&gt;
+Attributes: (12/30)
+    History:                           Original file generated: Wed Jan 11 21...
+    Comment:                           GMAO filename: d5124_m2_jan10.tavg1_2d...
+    Filename:                          MERRA2_400.tavg1_2d_slv_Nx.20230101.nc4
+    Conventions:                       CF-1
+    Institution:                       NASA Global Modeling and Assimilation ...
+    References:                        http://gmao.gsfc.nasa.gov
+    ...                                ...
+    Contact:                           http://gmao.gsfc.nasa.gov
+    identifier_product_doi:            10.5067/VJAFPLI1CSIV
+    RangeBeginningDate:                2023-01-01
+    RangeBeginningTime:                00:00:00.000000
+    RangeEndingDate:                   2023-01-01
+    RangeEndingTime:                   23:59:59.000000</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-506f19a6-44c4-4ec1-bdc2-e447cb24e26b' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-506f19a6-44c4-4ec1-bdc2-e447cb24e26b' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 1416</li><li><span class='xr-has-index'>lat</span>: 361</li><li><span class='xr-has-index'>lon</span>: 576</li></ul></div></li><li class='xr-section-item'><input id='section-09302e16-cb45-4177-b4b1-abf320bd7205' class='xr-section-summary-in' type='checkbox' checked /><label for='section-09302e16-cb45-4177-b4b1-abf320bd7205' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2023-01-01T00:30:00 ... 2023-02-...</div><input id='attrs-18c78a10-5c0e-44f3-b07f-bcd1904ea372' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-18c78a10-5c0e-44f3-b07f-bcd1904ea372' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a2b8644c-ff9e-4ec8-bd43-5c0823ff107e' class='xr-var-data-in' type='checkbox'><label for='data-a2b8644c-ff9e-4ec8-bd43-5c0823ff107e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>time</dd><dt><span>time_increment :</span></dt><dd>10000</dd><dt><span>begin_date :</span></dt><dd>20230101</dd><dt><span>begin_time :</span></dt><dd>3000</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2023-01-01T00:30:00.000000000&#x27;, &#x27;2023-01-01T01:30:00.000000000&#x27;,
+       &#x27;2023-01-01T02:30:00.000000000&#x27;, ..., &#x27;2023-02-28T21:30:00.000000000&#x27;,
+       &#x27;2023-02-28T22:30:00.000000000&#x27;, &#x27;2023-02-28T23:30:00.000000000&#x27;],
+      shape=(1416,), dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>-90.0 -89.5 -89.0 ... 89.5 90.0</div><input id='attrs-cc83e3c6-1a96-4a51-ab4d-fe6645a5b345' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-cc83e3c6-1a96-4a51-ab4d-fe6645a5b345' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-94d20eea-a1f7-451c-b7a4-51958dcee3e1' class='xr-var-data-in' type='checkbox'><label for='data-94d20eea-a1f7-451c-b7a4-51958dcee3e1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-90. , -89.5, -89. , ...,  89. ,  89.5,  90. ], shape=(361,))</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>-180.0 -179.4 ... 178.8 179.4</div><input id='attrs-bb2b238e-648e-45d8-911d-f58382b32d7a' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-bb2b238e-648e-45d8-911d-f58382b32d7a' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-56628a59-41ad-4557-95be-ce7204051c7e' class='xr-var-data-in' type='checkbox'><label for='data-56628a59-41ad-4557-95be-ce7204051c7e' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>()</dd></dl></div><div class='xr-var-data'><pre>array([-180.   , -179.375, -178.75 , ...,  178.125,  178.75 ,  179.375],
+      shape=(576,))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-e36302ac-430a-43e6-a776-2fd7ed8015ab' class='xr-section-summary-in' type='checkbox' checked /><label for='section-e36302ac-430a-43e6-a776-2fd7ed8015ab' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>T2M</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(24, 181, 239), meta=np.ndarray&gt;</div><input id='attrs-304e0bc3-28a9-4440-a057-6701e07641dd' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-304e0bc3-28a9-4440-a057-6701e07641dd' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-96efb84c-50f8-4dcf-8177-80437510a83b' class='xr-var-data-in' type='checkbox'><label for='data-96efb84c-50f8-4dcf-8177-80437510a83b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>2-meter_air_temperature</dd><dt><span>units :</span></dt><dd>K</dd><dt><span>fmissing_value :</span></dt><dd>999999987000000.0</dd><dt><span>standard_name :</span></dt><dd>2-meter_air_temperature</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><table>
+    <tr>
+        <td>
+            <table style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <td> </td>
+                        <th> Array </th>
+                        <th> Chunk </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <th> Bytes </th>
+                        <td> 2.19 GiB </td>
+                        <td> 7.92 MiB </td>
+                    </tr>
+                    
+                    <tr>
+                        <th> Shape </th>
+                        <td> (1416, 361, 576) </td>
+                        <td> (24, 181, 239) </td>
+                    </tr>
+                    <tr>
+                        <th> Dask graph </th>
+                        <td colspan="2"> 354 chunks in 119 graph layers </td>
+                    </tr>
+                    <tr>
+                        <th> Data type </th>
+                        <td colspan="2"> float64 numpy.ndarray </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td>
+        <svg width="179" height="163" style="stroke:rgb(0,0,0);stroke-width:1" >
+
+  <!-- Horizontal lines -->
+  <line x1="10" y1="0" x2="80" y2="70" style="stroke-width:2" />
+  <line x1="10" y1="21" x2="80" y2="92" />
+  <line x1="10" y1="42" x2="80" y2="113" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="10" y1="0" x2="10" y2="42" style="stroke-width:2" />
+  <line x1="13" y1="3" x2="13" y2="46" />
+  <line x1="17" y1="7" x2="17" y2="50" />
+  <line x1="20" y1="10" x2="20" y2="53" />
+  <line x1="24" y1="14" x2="24" y2="57" />
+  <line x1="27" y1="17" x2="27" y2="60" />
+  <line x1="31" y1="21" x2="31" y2="64" />
+  <line x1="35" y1="25" x2="35" y2="68" />
+  <line x1="38" y1="28" x2="38" y2="71" />
+  <line x1="42" y1="32" x2="42" y2="75" />
+  <line x1="47" y1="37" x2="47" y2="80" />
+  <line x1="50" y1="40" x2="50" y2="83" />
+  <line x1="54" y1="44" x2="54" y2="87" />
+  <line x1="57" y1="47" x2="57" y2="90" />
+  <line x1="61" y1="51" x2="61" y2="94" />
+  <line x1="65" y1="55" x2="65" y2="98" />
+  <line x1="68" y1="58" x2="68" y2="101" />
+  <line x1="72" y1="62" x2="72" y2="105" />
+  <line x1="75" y1="65" x2="75" y2="108" />
+  <line x1="80" y1="70" x2="80" y2="113" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="10.0,0.0 80.58823529411765,70.58823529411765 80.58823529411765,113.5598559974504 10.0,42.97162070333275" style="fill:#8B4903A0;stroke-width:0"/>
+
+  <!-- Horizontal lines -->
+  <line x1="10" y1="0" x2="58" y2="0" style="stroke-width:2" />
+  <line x1="13" y1="3" x2="62" y2="3" />
+  <line x1="17" y1="7" x2="65" y2="7" />
+  <line x1="20" y1="10" x2="69" y2="10" />
+  <line x1="24" y1="14" x2="73" y2="14" />
+  <line x1="27" y1="17" x2="76" y2="17" />
+  <line x1="31" y1="21" x2="80" y2="21" />
+  <line x1="35" y1="25" x2="83" y2="25" />
+  <line x1="38" y1="28" x2="87" y2="28" />
+  <line x1="42" y1="32" x2="91" y2="32" />
+  <line x1="47" y1="37" x2="95" y2="37" />
+  <line x1="50" y1="40" x2="99" y2="40" />
+  <line x1="54" y1="44" x2="103" y2="44" />
+  <line x1="57" y1="47" x2="106" y2="47" />
+  <line x1="61" y1="51" x2="110" y2="51" />
+  <line x1="65" y1="55" x2="113" y2="55" />
+  <line x1="68" y1="58" x2="117" y2="58" />
+  <line x1="72" y1="62" x2="121" y2="62" />
+  <line x1="75" y1="65" x2="124" y2="65" />
+  <line x1="80" y1="70" x2="129" y2="70" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="10" y1="0" x2="80" y2="70" style="stroke-width:2" />
+  <line x1="30" y1="0" x2="100" y2="70" />
+  <line x1="50" y1="0" x2="121" y2="70" />
+  <line x1="58" y1="0" x2="129" y2="70" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="10.0,0.0 58.813559322033896,0.0 129.40179461615156,70.58823529411765 80.58823529411765,70.58823529411765" style="fill:#8B4903A0;stroke-width:0"/>
+
+  <!-- Horizontal lines -->
+  <line x1="80" y1="70" x2="129" y2="70" style="stroke-width:2" />
+  <line x1="80" y1="92" x2="129" y2="92" />
+  <line x1="80" y1="113" x2="129" y2="113" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="80" y1="70" x2="80" y2="113" style="stroke-width:2" />
+  <line x1="100" y1="70" x2="100" y2="113" />
+  <line x1="121" y1="70" x2="121" y2="113" />
+  <line x1="129" y1="70" x2="129" y2="113" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="80.58823529411765,70.58823529411765 129.40179461615156,70.58823529411765 129.40179461615156,113.5598559974504 80.58823529411765,113.5598559974504" style="fill:#ECB172A0;stroke-width:0"/>
+
+  <!-- Text -->
+  <text x="104.99501495513461" y="133.5598559974504" font-size="1.0rem" font-weight="100" text-anchor="middle" >576</text>
+  <text x="149.40179461615156" y="92.07404564578403" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,149.40179461615156,92.07404564578403)">361</text>
+  <text x="35.294117647058826" y="98.26573835039157" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,35.294117647058826,98.26573835039157)">1416</text>
+</svg>
+        </td>
+    </tr>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>U2M</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(24, 181, 239), meta=np.ndarray&gt;</div><input id='attrs-b2ee1fe0-d834-44f6-af05-3aa3f0af32fd' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-b2ee1fe0-d834-44f6-af05-3aa3f0af32fd' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-fa84ef65-ca55-463b-81f9-cc60cd1f3063' class='xr-var-data-in' type='checkbox'><label for='data-fa84ef65-ca55-463b-81f9-cc60cd1f3063' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>2-meter_eastward_wind</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>fmissing_value :</span></dt><dd>999999987000000.0</dd><dt><span>standard_name :</span></dt><dd>2-meter_eastward_wind</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><table>
+    <tr>
+        <td>
+            <table style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <td> </td>
+                        <th> Array </th>
+                        <th> Chunk </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <th> Bytes </th>
+                        <td> 2.19 GiB </td>
+                        <td> 7.92 MiB </td>
+                    </tr>
+                    
+                    <tr>
+                        <th> Shape </th>
+                        <td> (1416, 361, 576) </td>
+                        <td> (24, 181, 239) </td>
+                    </tr>
+                    <tr>
+                        <th> Dask graph </th>
+                        <td colspan="2"> 354 chunks in 119 graph layers </td>
+                    </tr>
+                    <tr>
+                        <th> Data type </th>
+                        <td colspan="2"> float64 numpy.ndarray </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td>
+        <svg width="179" height="163" style="stroke:rgb(0,0,0);stroke-width:1" >
+
+  <!-- Horizontal lines -->
+  <line x1="10" y1="0" x2="80" y2="70" style="stroke-width:2" />
+  <line x1="10" y1="21" x2="80" y2="92" />
+  <line x1="10" y1="42" x2="80" y2="113" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="10" y1="0" x2="10" y2="42" style="stroke-width:2" />
+  <line x1="13" y1="3" x2="13" y2="46" />
+  <line x1="17" y1="7" x2="17" y2="50" />
+  <line x1="20" y1="10" x2="20" y2="53" />
+  <line x1="24" y1="14" x2="24" y2="57" />
+  <line x1="27" y1="17" x2="27" y2="60" />
+  <line x1="31" y1="21" x2="31" y2="64" />
+  <line x1="35" y1="25" x2="35" y2="68" />
+  <line x1="38" y1="28" x2="38" y2="71" />
+  <line x1="42" y1="32" x2="42" y2="75" />
+  <line x1="47" y1="37" x2="47" y2="80" />
+  <line x1="50" y1="40" x2="50" y2="83" />
+  <line x1="54" y1="44" x2="54" y2="87" />
+  <line x1="57" y1="47" x2="57" y2="90" />
+  <line x1="61" y1="51" x2="61" y2="94" />
+  <line x1="65" y1="55" x2="65" y2="98" />
+  <line x1="68" y1="58" x2="68" y2="101" />
+  <line x1="72" y1="62" x2="72" y2="105" />
+  <line x1="75" y1="65" x2="75" y2="108" />
+  <line x1="80" y1="70" x2="80" y2="113" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="10.0,0.0 80.58823529411765,70.58823529411765 80.58823529411765,113.5598559974504 10.0,42.97162070333275" style="fill:#8B4903A0;stroke-width:0"/>
+
+  <!-- Horizontal lines -->
+  <line x1="10" y1="0" x2="58" y2="0" style="stroke-width:2" />
+  <line x1="13" y1="3" x2="62" y2="3" />
+  <line x1="17" y1="7" x2="65" y2="7" />
+  <line x1="20" y1="10" x2="69" y2="10" />
+  <line x1="24" y1="14" x2="73" y2="14" />
+  <line x1="27" y1="17" x2="76" y2="17" />
+  <line x1="31" y1="21" x2="80" y2="21" />
+  <line x1="35" y1="25" x2="83" y2="25" />
+  <line x1="38" y1="28" x2="87" y2="28" />
+  <line x1="42" y1="32" x2="91" y2="32" />
+  <line x1="47" y1="37" x2="95" y2="37" />
+  <line x1="50" y1="40" x2="99" y2="40" />
+  <line x1="54" y1="44" x2="103" y2="44" />
+  <line x1="57" y1="47" x2="106" y2="47" />
+  <line x1="61" y1="51" x2="110" y2="51" />
+  <line x1="65" y1="55" x2="113" y2="55" />
+  <line x1="68" y1="58" x2="117" y2="58" />
+  <line x1="72" y1="62" x2="121" y2="62" />
+  <line x1="75" y1="65" x2="124" y2="65" />
+  <line x1="80" y1="70" x2="129" y2="70" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="10" y1="0" x2="80" y2="70" style="stroke-width:2" />
+  <line x1="30" y1="0" x2="100" y2="70" />
+  <line x1="50" y1="0" x2="121" y2="70" />
+  <line x1="58" y1="0" x2="129" y2="70" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="10.0,0.0 58.813559322033896,0.0 129.40179461615156,70.58823529411765 80.58823529411765,70.58823529411765" style="fill:#8B4903A0;stroke-width:0"/>
+
+  <!-- Horizontal lines -->
+  <line x1="80" y1="70" x2="129" y2="70" style="stroke-width:2" />
+  <line x1="80" y1="92" x2="129" y2="92" />
+  <line x1="80" y1="113" x2="129" y2="113" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="80" y1="70" x2="80" y2="113" style="stroke-width:2" />
+  <line x1="100" y1="70" x2="100" y2="113" />
+  <line x1="121" y1="70" x2="121" y2="113" />
+  <line x1="129" y1="70" x2="129" y2="113" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="80.58823529411765,70.58823529411765 129.40179461615156,70.58823529411765 129.40179461615156,113.5598559974504 80.58823529411765,113.5598559974504" style="fill:#ECB172A0;stroke-width:0"/>
+
+  <!-- Text -->
+  <text x="104.99501495513461" y="133.5598559974504" font-size="1.0rem" font-weight="100" text-anchor="middle" >576</text>
+  <text x="149.40179461615156" y="92.07404564578403" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,149.40179461615156,92.07404564578403)">361</text>
+  <text x="35.294117647058826" y="98.26573835039157" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,35.294117647058826,98.26573835039157)">1416</text>
+</svg>
+        </td>
+    </tr>
+</table></div></li><li class='xr-var-item'><div class='xr-var-name'><span>V2M</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>dask.array&lt;chunksize=(24, 181, 239), meta=np.ndarray&gt;</div><input id='attrs-e59724c3-d60c-4cf1-b2a9-52ccd30f4f00' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-e59724c3-d60c-4cf1-b2a9-52ccd30f4f00' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a502ce6d-3489-4a3a-8488-0e03cd3b0d88' class='xr-var-data-in' type='checkbox'><label for='data-a502ce6d-3489-4a3a-8488-0e03cd3b0d88' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>2-meter_northward_wind</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>fmissing_value :</span></dt><dd>999999987000000.0</dd><dt><span>standard_name :</span></dt><dd>2-meter_northward_wind</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-999999987000000.0, 999999987000000.0]</dd><dt><span>Maps :</span></dt><dd>(&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;)</dd></dl></div><div class='xr-var-data'><table>
+    <tr>
+        <td>
+            <table style="border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <td> </td>
+                        <th> Array </th>
+                        <th> Chunk </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                    <tr>
+                        <th> Bytes </th>
+                        <td> 2.19 GiB </td>
+                        <td> 7.92 MiB </td>
+                    </tr>
+                    
+                    <tr>
+                        <th> Shape </th>
+                        <td> (1416, 361, 576) </td>
+                        <td> (24, 181, 239) </td>
+                    </tr>
+                    <tr>
+                        <th> Dask graph </th>
+                        <td colspan="2"> 354 chunks in 119 graph layers </td>
+                    </tr>
+                    <tr>
+                        <th> Data type </th>
+                        <td colspan="2"> float64 numpy.ndarray </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+        <td>
+        <svg width="179" height="163" style="stroke:rgb(0,0,0);stroke-width:1" >
+
+  <!-- Horizontal lines -->
+  <line x1="10" y1="0" x2="80" y2="70" style="stroke-width:2" />
+  <line x1="10" y1="21" x2="80" y2="92" />
+  <line x1="10" y1="42" x2="80" y2="113" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="10" y1="0" x2="10" y2="42" style="stroke-width:2" />
+  <line x1="13" y1="3" x2="13" y2="46" />
+  <line x1="17" y1="7" x2="17" y2="50" />
+  <line x1="20" y1="10" x2="20" y2="53" />
+  <line x1="24" y1="14" x2="24" y2="57" />
+  <line x1="27" y1="17" x2="27" y2="60" />
+  <line x1="31" y1="21" x2="31" y2="64" />
+  <line x1="35" y1="25" x2="35" y2="68" />
+  <line x1="38" y1="28" x2="38" y2="71" />
+  <line x1="42" y1="32" x2="42" y2="75" />
+  <line x1="47" y1="37" x2="47" y2="80" />
+  <line x1="50" y1="40" x2="50" y2="83" />
+  <line x1="54" y1="44" x2="54" y2="87" />
+  <line x1="57" y1="47" x2="57" y2="90" />
+  <line x1="61" y1="51" x2="61" y2="94" />
+  <line x1="65" y1="55" x2="65" y2="98" />
+  <line x1="68" y1="58" x2="68" y2="101" />
+  <line x1="72" y1="62" x2="72" y2="105" />
+  <line x1="75" y1="65" x2="75" y2="108" />
+  <line x1="80" y1="70" x2="80" y2="113" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="10.0,0.0 80.58823529411765,70.58823529411765 80.58823529411765,113.5598559974504 10.0,42.97162070333275" style="fill:#8B4903A0;stroke-width:0"/>
+
+  <!-- Horizontal lines -->
+  <line x1="10" y1="0" x2="58" y2="0" style="stroke-width:2" />
+  <line x1="13" y1="3" x2="62" y2="3" />
+  <line x1="17" y1="7" x2="65" y2="7" />
+  <line x1="20" y1="10" x2="69" y2="10" />
+  <line x1="24" y1="14" x2="73" y2="14" />
+  <line x1="27" y1="17" x2="76" y2="17" />
+  <line x1="31" y1="21" x2="80" y2="21" />
+  <line x1="35" y1="25" x2="83" y2="25" />
+  <line x1="38" y1="28" x2="87" y2="28" />
+  <line x1="42" y1="32" x2="91" y2="32" />
+  <line x1="47" y1="37" x2="95" y2="37" />
+  <line x1="50" y1="40" x2="99" y2="40" />
+  <line x1="54" y1="44" x2="103" y2="44" />
+  <line x1="57" y1="47" x2="106" y2="47" />
+  <line x1="61" y1="51" x2="110" y2="51" />
+  <line x1="65" y1="55" x2="113" y2="55" />
+  <line x1="68" y1="58" x2="117" y2="58" />
+  <line x1="72" y1="62" x2="121" y2="62" />
+  <line x1="75" y1="65" x2="124" y2="65" />
+  <line x1="80" y1="70" x2="129" y2="70" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="10" y1="0" x2="80" y2="70" style="stroke-width:2" />
+  <line x1="30" y1="0" x2="100" y2="70" />
+  <line x1="50" y1="0" x2="121" y2="70" />
+  <line x1="58" y1="0" x2="129" y2="70" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="10.0,0.0 58.813559322033896,0.0 129.40179461615156,70.58823529411765 80.58823529411765,70.58823529411765" style="fill:#8B4903A0;stroke-width:0"/>
+
+  <!-- Horizontal lines -->
+  <line x1="80" y1="70" x2="129" y2="70" style="stroke-width:2" />
+  <line x1="80" y1="92" x2="129" y2="92" />
+  <line x1="80" y1="113" x2="129" y2="113" style="stroke-width:2" />
+
+  <!-- Vertical lines -->
+  <line x1="80" y1="70" x2="80" y2="113" style="stroke-width:2" />
+  <line x1="100" y1="70" x2="100" y2="113" />
+  <line x1="121" y1="70" x2="121" y2="113" />
+  <line x1="129" y1="70" x2="129" y2="113" style="stroke-width:2" />
+
+  <!-- Colored Rectangle -->
+  <polygon points="80.58823529411765,70.58823529411765 129.40179461615156,70.58823529411765 129.40179461615156,113.5598559974504 80.58823529411765,113.5598559974504" style="fill:#ECB172A0;stroke-width:0"/>
+
+  <!-- Text -->
+  <text x="104.99501495513461" y="133.5598559974504" font-size="1.0rem" font-weight="100" text-anchor="middle" >576</text>
+  <text x="149.40179461615156" y="92.07404564578403" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(-90,149.40179461615156,92.07404564578403)">361</text>
+  <text x="35.294117647058826" y="98.26573835039157" font-size="1.0rem" font-weight="100" text-anchor="middle" transform="rotate(45,35.294117647058826,98.26573835039157)">1416</text>
+</svg>
+        </td>
+    </tr>
+</table></div></li></ul></div></li><li class='xr-section-item'><input id='section-b7f265a6-b43d-4848-8926-464688e0cc87' class='xr-section-summary-in' type='checkbox' /><label for='section-b7f265a6-b43d-4848-8926-464688e0cc87' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(30)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>History :</span></dt><dd>Original file generated: Wed Jan 11 21:58:01 2023 GMT</dd><dt><span>Comment :</span></dt><dd>GMAO filename: d5124_m2_jan10.tavg1_2d_slv_Nx.20230101.nc4</dd><dt><span>Filename :</span></dt><dd>MERRA2_400.tavg1_2d_slv_Nx.20230101.nc4</dd><dt><span>Conventions :</span></dt><dd>CF-1</dd><dt><span>Institution :</span></dt><dd>NASA Global Modeling and Assimilation Office</dd><dt><span>References :</span></dt><dd>http://gmao.gsfc.nasa.gov</dd><dt><span>Format :</span></dt><dd>NetCDF-4/HDF-5</dd><dt><span>SpatialCoverage :</span></dt><dd>global</dd><dt><span>VersionID :</span></dt><dd>5.12.4</dd><dt><span>TemporalRange :</span></dt><dd>1980-01-01 -&gt; 2016-12-31</dd><dt><span>identifier_product_doi_authority :</span></dt><dd>http://dx.doi.org/</dd><dt><span>ShortName :</span></dt><dd>M2T1NXSLV</dd><dt><span>GranuleID :</span></dt><dd>MERRA2_400.tavg1_2d_slv_Nx.20230101.nc4</dd><dt><span>ProductionDateTime :</span></dt><dd>Original file generated: Wed Jan 11 21:58:01 2023 GMT</dd><dt><span>LongName :</span></dt><dd>MERRA2 tavg1_2d_slv_Nx: 2d,1-Hourly,Time-Averaged,Single-Level,Assimilation,Single-Level Diagnostics</dd><dt><span>Title :</span></dt><dd>MERRA2 tavg1_2d_slv_Nx: 2d,1-Hourly,Time-Averaged,Single-Level,Assimilation,Single-Level Diagnostics</dd><dt><span>SouthernmostLatitude :</span></dt><dd>-90.0</dd><dt><span>NorthernmostLatitude :</span></dt><dd>90.0</dd><dt><span>WesternmostLongitude :</span></dt><dd>-180.0</dd><dt><span>EasternmostLongitude :</span></dt><dd>179.375</dd><dt><span>LatitudeResolution :</span></dt><dd>0.5</dd><dt><span>LongitudeResolution :</span></dt><dd>0.625</dd><dt><span>DataResolution :</span></dt><dd>0.5 x 0.625</dd><dt><span>Source :</span></dt><dd>CVS tag: GEOSadas-5_12_4_p36_SLES12_M2-OPS</dd><dt><span>Contact :</span></dt><dd>http://gmao.gsfc.nasa.gov</dd><dt><span>identifier_product_doi :</span></dt><dd>10.5067/VJAFPLI1CSIV</dd><dt><span>RangeBeginningDate :</span></dt><dd>2023-01-01</dd><dt><span>RangeBeginningTime :</span></dt><dd>00:00:00.000000</dd><dt><span>RangeEndingDate :</span></dt><dd>2023-01-01</dd><dt><span>RangeEndingTime :</span></dt><dd>23:59:59.000000</dd></dl></div></li></ul></div></div></div></div>
+</div>
+</section>
+<section id="remuestrear-y-subdividir">
+<h3>Remuestrear y subdividir<a class="headerlink" href="#remuestrear-y-subdividir" title="Link to this heading">#</a></h3>
+<p>Todas las operaciones en la celda siguiente son perezosas, es decir, se retrasan y no activan cómputo.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## now subset the Xarray Dataset and rechunk so it is a single chunk</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">iLon</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">iLon</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">lat</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">iLat</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">iLat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+
+<span class="c1"># take daily average and store locally</span>
+<span class="n">nds</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="s2">&quot;1D&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="descargar">
+<h3>Descargar<a class="headerlink" href="#descargar" title="Link to this heading">#</a></h3>
+<p>Almacenar los archivos no solo activará la descarga de los datos, sino también cualquier cómputo diferido anterior, como el remuestreo.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">nds</span><span class="o">.</span><span class="n">to_netcdf</span><span class="p">(</span><span class="s2">&quot;data/Merra2_subset.nc4&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 44.6 s, sys: 13.4 s, total: 58 s
+Wall time: 2min
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="veamos-los-datos">
+<h3>Veamos los datos<a class="headerlink" href="#veamos-los-datos" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="s2">&quot;data/Merra2_subset.nc4&quot;</span><span class="p">)</span>
+<span class="n">mds</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
+
+:root {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base rgba(0, 0, 0, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, white)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 15))
+  );
+}
+
+html[theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.vscode-dark {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base, rgba(255, 255, 255, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, #111111)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 15))
+  );
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+  line-height: 1.6;
+  padding-bottom: 4px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.xr-header {
+  border-bottom: solid 1px var(--xr-border-color);
+  margin-bottom: 4px;
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-obj-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type,
+.xr-group-box-contents > label {
+  color: var(--xr-font-color2);
+  display: block;
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item > input,
+.xr-group-box-contents > input,
+.xr-array-wrap > input {
+  display: block;
+  opacity: 0;
+  height: 0;
+  margin: 0;
+}
+
+.xr-section-item > input + label,
+.xr-var-item > input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item > input:enabled + label,
+.xr-var-item > input:enabled + label,
+.xr-array-wrap > input:enabled + label,
+.xr-group-box-contents > input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item > input:focus-visible + label,
+.xr-var-item > input:focus-visible + label,
+.xr-array-wrap > input:focus-visible + label,
+.xr-group-box-contents > input:focus-visible + label {
+  outline: auto;
+}
+
+.xr-section-item > input:enabled + label:hover,
+.xr-var-item > input:enabled + label:hover,
+.xr-array-wrap > input:enabled + label:hover,
+.xr-group-box-contents > input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.xr-section-summary > em {
+  font-weight: normal;
+}
+
+.xr-span-grid {
+  grid-column-end: -1;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label > span {
+  display: inline-block;
+  padding-left: 0.6em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: "►";
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: "▼";
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details,
+.xr-group-box-contents > label {
+  padding-top: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in ~ .xr-section-details {
+  display: none;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-children {
+  display: inline-grid;
+  grid-template-columns: 100%;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 30px auto;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 26px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+  padding-bottom: 4px;
+}
+
+.xr-group-box-contents > label::before {
+  content: "📂";
+  padding-right: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label::before {
+  content: "📁";
+}
+
+.xr-group-box-contents > input:checked + label {
+  padding-bottom: 0px;
+}
+
+.xr-group-box-contents > input:checked ~ .xr-sections {
+  display: none;
+}
+
+.xr-group-box-contents > input + label > span {
+  display: none;
+}
+
+.xr-group-box-ellipsis {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--xr-font-color2);
+  letter-spacing: 0.15em;
+  cursor: default;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: "(";
+}
+
+.xr-dim-list:after {
+  content: ")";
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ",";
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  border-color: var(--xr-background-color-row-odd);
+  margin-bottom: 0;
+  padding-top: 2px;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+  border-color: var(--xr-background-color-row-even);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  border-top: 2px dotted var(--xr-background-color);
+  padding-bottom: 20px !important;
+  padding-top: 10px !important;
+}
+
+.xr-var-attrs-in + label,
+.xr-var-data-in + label,
+.xr-index-data-in + label {
+  padding: 0 1px;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-data > pre,
+.xr-index-data > pre,
+.xr-var-data > table > tbody > tr {
+  background-color: transparent !important;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.xr-var-attrs-in:checked + label > .xr-icon-file-text2,
+.xr-var-data-in:checked + label > .xr-icon-database,
+.xr-index-data-in:checked + label > .xr-icon-database {
+  color: var(--xr-font-color0);
+  filter: drop-shadow(1px 1px 5px var(--xr-font-color2));
+  stroke-width: 0.8px;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.Dataset&gt; Size: 61MB
+Dimensions:  (time: 59, lat: 181, lon: 239)
+Coordinates:
+  * time     (time) datetime64[ns] 472B 2023-01-01 2023-01-02 ... 2023-02-28
+  * lat      (lat) float64 1kB -90.0 -89.5 -89.0 -88.5 ... -1.0 -0.5 -1.798e-13
+  * lon      (lon) float64 2kB -99.38 -98.75 -98.12 -97.5 ... 48.12 48.75 49.38
+Data variables:
+    T2M      (time, lat, lon) float64 20MB ...
+    U2M      (time, lat, lon) float64 20MB ...
+    V2M      (time, lat, lon) float64 20MB ...
+Attributes: (12/30)
+    History:                           Original file generated: Wed Jan 11 21...
+    Comment:                           GMAO filename: d5124_m2_jan10.tavg1_2d...
+    Filename:                          MERRA2_400.tavg1_2d_slv_Nx.20230101.nc4
+    Conventions:                       CF-1
+    Institution:                       NASA Global Modeling and Assimilation ...
+    References:                        http://gmao.gsfc.nasa.gov
+    ...                                ...
+    Contact:                           http://gmao.gsfc.nasa.gov
+    identifier_product_doi:            10.5067/VJAFPLI1CSIV
+    RangeBeginningDate:                2023-01-01
+    RangeBeginningTime:                00:00:00.000000
+    RangeEndingDate:                   2023-01-01
+    RangeEndingTime:                   23:59:59.000000</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.Dataset</div></div><ul class='xr-sections'><li class='xr-section-item'><input id='section-ea16dbd4-cd91-4bc1-96b4-d7f1c25da565' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-ea16dbd4-cd91-4bc1-96b4-d7f1c25da565' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span class='xr-has-index'>time</span>: 59</li><li><span class='xr-has-index'>lat</span>: 181</li><li><span class='xr-has-index'>lon</span>: 239</li></ul></div></li><li class='xr-section-item'><input id='section-f38f0b3f-b9b5-4e03-8710-920f3397ee04' class='xr-section-summary-in' type='checkbox' checked /><label for='section-f38f0b3f-b9b5-4e03-8710-920f3397ee04' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>time</span></div><div class='xr-var-dims'>(time)</div><div class='xr-var-dtype'>datetime64[ns]</div><div class='xr-var-preview xr-preview'>2023-01-01 ... 2023-02-28</div><input id='attrs-841b39cc-42f3-4128-a53f-6bd32edbee1b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-841b39cc-42f3-4128-a53f-6bd32edbee1b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e668d5e2-8eb5-490e-b9dc-4b410430f1fb' class='xr-var-data-in' type='checkbox'><label for='data-e668d5e2-8eb5-490e-b9dc-4b410430f1fb' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>time</dd><dt><span>time_increment :</span></dt><dd>10000</dd><dt><span>begin_date :</span></dt><dd>20230101</dd><dt><span>begin_time :</span></dt><dd>3000</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-9.99999987e+14  9.99999987e+14]</dd><dt><span>Maps :</span></dt><dd>[]</dd></dl></div><div class='xr-var-data'><pre>array([&#x27;2023-01-01T00:00:00.000000000&#x27;, &#x27;2023-01-02T00:00:00.000000000&#x27;,
+       &#x27;2023-01-03T00:00:00.000000000&#x27;, &#x27;2023-01-04T00:00:00.000000000&#x27;,
+       &#x27;2023-01-05T00:00:00.000000000&#x27;, &#x27;2023-01-06T00:00:00.000000000&#x27;,
+       &#x27;2023-01-07T00:00:00.000000000&#x27;, &#x27;2023-01-08T00:00:00.000000000&#x27;,
+       &#x27;2023-01-09T00:00:00.000000000&#x27;, &#x27;2023-01-10T00:00:00.000000000&#x27;,
+       &#x27;2023-01-11T00:00:00.000000000&#x27;, &#x27;2023-01-12T00:00:00.000000000&#x27;,
+       &#x27;2023-01-13T00:00:00.000000000&#x27;, &#x27;2023-01-14T00:00:00.000000000&#x27;,
+       &#x27;2023-01-15T00:00:00.000000000&#x27;, &#x27;2023-01-16T00:00:00.000000000&#x27;,
+       &#x27;2023-01-17T00:00:00.000000000&#x27;, &#x27;2023-01-18T00:00:00.000000000&#x27;,
+       &#x27;2023-01-19T00:00:00.000000000&#x27;, &#x27;2023-01-20T00:00:00.000000000&#x27;,
+       &#x27;2023-01-21T00:00:00.000000000&#x27;, &#x27;2023-01-22T00:00:00.000000000&#x27;,
+       &#x27;2023-01-23T00:00:00.000000000&#x27;, &#x27;2023-01-24T00:00:00.000000000&#x27;,
+       &#x27;2023-01-25T00:00:00.000000000&#x27;, &#x27;2023-01-26T00:00:00.000000000&#x27;,
+       &#x27;2023-01-27T00:00:00.000000000&#x27;, &#x27;2023-01-28T00:00:00.000000000&#x27;,
+       &#x27;2023-01-29T00:00:00.000000000&#x27;, &#x27;2023-01-30T00:00:00.000000000&#x27;,
+       &#x27;2023-01-31T00:00:00.000000000&#x27;, &#x27;2023-02-01T00:00:00.000000000&#x27;,
+       &#x27;2023-02-02T00:00:00.000000000&#x27;, &#x27;2023-02-03T00:00:00.000000000&#x27;,
+       &#x27;2023-02-04T00:00:00.000000000&#x27;, &#x27;2023-02-05T00:00:00.000000000&#x27;,
+       &#x27;2023-02-06T00:00:00.000000000&#x27;, &#x27;2023-02-07T00:00:00.000000000&#x27;,
+       &#x27;2023-02-08T00:00:00.000000000&#x27;, &#x27;2023-02-09T00:00:00.000000000&#x27;,
+       &#x27;2023-02-10T00:00:00.000000000&#x27;, &#x27;2023-02-11T00:00:00.000000000&#x27;,
+       &#x27;2023-02-12T00:00:00.000000000&#x27;, &#x27;2023-02-13T00:00:00.000000000&#x27;,
+       &#x27;2023-02-14T00:00:00.000000000&#x27;, &#x27;2023-02-15T00:00:00.000000000&#x27;,
+       &#x27;2023-02-16T00:00:00.000000000&#x27;, &#x27;2023-02-17T00:00:00.000000000&#x27;,
+       &#x27;2023-02-18T00:00:00.000000000&#x27;, &#x27;2023-02-19T00:00:00.000000000&#x27;,
+       &#x27;2023-02-20T00:00:00.000000000&#x27;, &#x27;2023-02-21T00:00:00.000000000&#x27;,
+       &#x27;2023-02-22T00:00:00.000000000&#x27;, &#x27;2023-02-23T00:00:00.000000000&#x27;,
+       &#x27;2023-02-24T00:00:00.000000000&#x27;, &#x27;2023-02-25T00:00:00.000000000&#x27;,
+       &#x27;2023-02-26T00:00:00.000000000&#x27;, &#x27;2023-02-27T00:00:00.000000000&#x27;,
+       &#x27;2023-02-28T00:00:00.000000000&#x27;], dtype=&#x27;datetime64[ns]&#x27;)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lat</span></div><div class='xr-var-dims'>(lat)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>-90.0 -89.5 ... -0.5 -1.798e-13</div><input id='attrs-b4147c8f-a519-4266-98fa-47ec9d95ec7b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-b4147c8f-a519-4266-98fa-47ec9d95ec7b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-492a4902-c412-48b4-b566-3e537d027816' class='xr-var-data-in' type='checkbox'><label for='data-492a4902-c412-48b4-b566-3e537d027816' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-9.99999987e+14  9.99999987e+14]</dd><dt><span>Maps :</span></dt><dd>[]</dd></dl></div><div class='xr-var-data'><pre>array([-9.00000e+01, -8.95000e+01, -8.90000e+01, -8.85000e+01, -8.80000e+01,
+       -8.75000e+01, -8.70000e+01, -8.65000e+01, -8.60000e+01, -8.55000e+01,
+       -8.50000e+01, -8.45000e+01, -8.40000e+01, -8.35000e+01, -8.30000e+01,
+       -8.25000e+01, -8.20000e+01, -8.15000e+01, -8.10000e+01, -8.05000e+01,
+       -8.00000e+01, -7.95000e+01, -7.90000e+01, -7.85000e+01, -7.80000e+01,
+       -7.75000e+01, -7.70000e+01, -7.65000e+01, -7.60000e+01, -7.55000e+01,
+       -7.50000e+01, -7.45000e+01, -7.40000e+01, -7.35000e+01, -7.30000e+01,
+       -7.25000e+01, -7.20000e+01, -7.15000e+01, -7.10000e+01, -7.05000e+01,
+       -7.00000e+01, -6.95000e+01, -6.90000e+01, -6.85000e+01, -6.80000e+01,
+       -6.75000e+01, -6.70000e+01, -6.65000e+01, -6.60000e+01, -6.55000e+01,
+       -6.50000e+01, -6.45000e+01, -6.40000e+01, -6.35000e+01, -6.30000e+01,
+       -6.25000e+01, -6.20000e+01, -6.15000e+01, -6.10000e+01, -6.05000e+01,
+       -6.00000e+01, -5.95000e+01, -5.90000e+01, -5.85000e+01, -5.80000e+01,
+       -5.75000e+01, -5.70000e+01, -5.65000e+01, -5.60000e+01, -5.55000e+01,
+       -5.50000e+01, -5.45000e+01, -5.40000e+01, -5.35000e+01, -5.30000e+01,
+       -5.25000e+01, -5.20000e+01, -5.15000e+01, -5.10000e+01, -5.05000e+01,
+       -5.00000e+01, -4.95000e+01, -4.90000e+01, -4.85000e+01, -4.80000e+01,
+       -4.75000e+01, -4.70000e+01, -4.65000e+01, -4.60000e+01, -4.55000e+01,
+       -4.50000e+01, -4.45000e+01, -4.40000e+01, -4.35000e+01, -4.30000e+01,
+       -4.25000e+01, -4.20000e+01, -4.15000e+01, -4.10000e+01, -4.05000e+01,
+       -4.00000e+01, -3.95000e+01, -3.90000e+01, -3.85000e+01, -3.80000e+01,
+       -3.75000e+01, -3.70000e+01, -3.65000e+01, -3.60000e+01, -3.55000e+01,
+       -3.50000e+01, -3.45000e+01, -3.40000e+01, -3.35000e+01, -3.30000e+01,
+       -3.25000e+01, -3.20000e+01, -3.15000e+01, -3.10000e+01, -3.05000e+01,
+       -3.00000e+01, -2.95000e+01, -2.90000e+01, -2.85000e+01, -2.80000e+01,
+       -2.75000e+01, -2.70000e+01, -2.65000e+01, -2.60000e+01, -2.55000e+01,
+       -2.50000e+01, -2.45000e+01, -2.40000e+01, -2.35000e+01, -2.30000e+01,
+       -2.25000e+01, -2.20000e+01, -2.15000e+01, -2.10000e+01, -2.05000e+01,
+       -2.00000e+01, -1.95000e+01, -1.90000e+01, -1.85000e+01, -1.80000e+01,
+       -1.75000e+01, -1.70000e+01, -1.65000e+01, -1.60000e+01, -1.55000e+01,
+       -1.50000e+01, -1.45000e+01, -1.40000e+01, -1.35000e+01, -1.30000e+01,
+       -1.25000e+01, -1.20000e+01, -1.15000e+01, -1.10000e+01, -1.05000e+01,
+       -1.00000e+01, -9.50000e+00, -9.00000e+00, -8.50000e+00, -8.00000e+00,
+       -7.50000e+00, -7.00000e+00, -6.50000e+00, -6.00000e+00, -5.50000e+00,
+       -5.00000e+00, -4.50000e+00, -4.00000e+00, -3.50000e+00, -3.00000e+00,
+       -2.50000e+00, -2.00000e+00, -1.50000e+00, -1.00000e+00, -5.00000e-01,
+       -1.79751e-13])</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span class='xr-has-index'>lon</span></div><div class='xr-var-dims'>(lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>-99.38 -98.75 ... 48.75 49.38</div><input id='attrs-62414c8b-f438-452c-8017-527c9c3c4796' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-62414c8b-f438-452c-8017-527c9c3c4796' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-4ce58658-a2f8-405d-a995-9e69685dccef' class='xr-var-data-in' type='checkbox'><label for='data-4ce58658-a2f8-405d-a995-9e69685dccef' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-9.99999987e+14  9.99999987e+14]</dd><dt><span>Maps :</span></dt><dd>[]</dd></dl></div><div class='xr-var-data'><pre>array([-99.375, -98.75 , -98.125, ...,  48.125,  48.75 ,  49.375], shape=(239,))</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-b8261acc-9da4-4007-894c-6365e5df330b' class='xr-section-summary-in' type='checkbox' checked /><label for='section-b8261acc-9da4-4007-894c-6365e5df330b' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(3)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>T2M</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-086f2897-d4b6-498c-9f5f-c48ee05e8941' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-086f2897-d4b6-498c-9f5f-c48ee05e8941' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5cf6f3ee-1d6a-4121-bbad-e88ba0c23229' class='xr-var-data-in' type='checkbox'><label for='data-5cf6f3ee-1d6a-4121-bbad-e88ba0c23229' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>2-meter_air_temperature</dd><dt><span>units :</span></dt><dd>K</dd><dt><span>fmissing_value :</span></dt><dd>999999987000000.0</dd><dt><span>standard_name :</span></dt><dd>2-meter_air_temperature</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-9.99999987e+14  9.99999987e+14]</dd><dt><span>Maps :</span></dt><dd>[&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;]</dd></dl></div><div class='xr-var-data'><pre>[2552281 values with dtype=float64]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>U2M</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-0c082448-e1e0-4bbe-b5ef-1bf0de358d84' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-0c082448-e1e0-4bbe-b5ef-1bf0de358d84' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-70c3c502-a365-44cc-b33a-c8f4fd84f8bd' class='xr-var-data-in' type='checkbox'><label for='data-70c3c502-a365-44cc-b33a-c8f4fd84f8bd' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>2-meter_eastward_wind</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>fmissing_value :</span></dt><dd>999999987000000.0</dd><dt><span>standard_name :</span></dt><dd>2-meter_eastward_wind</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-9.99999987e+14  9.99999987e+14]</dd><dt><span>Maps :</span></dt><dd>[&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;]</dd></dl></div><div class='xr-var-data'><pre>[2552281 values with dtype=float64]</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>V2M</span></div><div class='xr-var-dims'>(time, lat, lon)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>...</div><input id='attrs-1cf516f2-f0c5-4bf4-9291-246d26f8db99' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1cf516f2-f0c5-4bf4-9291-246d26f8db99' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1a33ae78-2116-475d-9f2b-8b83f13a6a7d' class='xr-var-data-in' type='checkbox'><label for='data-1a33ae78-2116-475d-9f2b-8b83f13a6a7d' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>long_name :</span></dt><dd>2-meter_northward_wind</dd><dt><span>units :</span></dt><dd>m s-1</dd><dt><span>fmissing_value :</span></dt><dd>999999987000000.0</dd><dt><span>standard_name :</span></dt><dd>2-meter_northward_wind</dd><dt><span>vmax :</span></dt><dd>999999987000000.0</dd><dt><span>vmin :</span></dt><dd>-999999987000000.0</dd><dt><span>valid_range :</span></dt><dd>[-9.99999987e+14  9.99999987e+14]</dd><dt><span>Maps :</span></dt><dd>[&#x27;/time&#x27;, &#x27;/lat&#x27;, &#x27;/lon&#x27;]</dd></dl></div><div class='xr-var-data'><pre>[2552281 values with dtype=float64]</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-00cc0e34-e034-4755-ad7c-d848a1f68f54' class='xr-section-summary-in' type='checkbox' /><label for='section-00cc0e34-e034-4755-ad7c-d848a1f68f54' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(30)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>History :</span></dt><dd>Original file generated: Wed Jan 11 21:58:01 2023 GMT</dd><dt><span>Comment :</span></dt><dd>GMAO filename: d5124_m2_jan10.tavg1_2d_slv_Nx.20230101.nc4</dd><dt><span>Filename :</span></dt><dd>MERRA2_400.tavg1_2d_slv_Nx.20230101.nc4</dd><dt><span>Conventions :</span></dt><dd>CF-1</dd><dt><span>Institution :</span></dt><dd>NASA Global Modeling and Assimilation Office</dd><dt><span>References :</span></dt><dd>http://gmao.gsfc.nasa.gov</dd><dt><span>Format :</span></dt><dd>NetCDF-4/HDF-5</dd><dt><span>SpatialCoverage :</span></dt><dd>global</dd><dt><span>VersionID :</span></dt><dd>5.12.4</dd><dt><span>TemporalRange :</span></dt><dd>1980-01-01 -&gt; 2016-12-31</dd><dt><span>identifier_product_doi_authority :</span></dt><dd>http://dx.doi.org/</dd><dt><span>ShortName :</span></dt><dd>M2T1NXSLV</dd><dt><span>GranuleID :</span></dt><dd>MERRA2_400.tavg1_2d_slv_Nx.20230101.nc4</dd><dt><span>ProductionDateTime :</span></dt><dd>Original file generated: Wed Jan 11 21:58:01 2023 GMT</dd><dt><span>LongName :</span></dt><dd>MERRA2 tavg1_2d_slv_Nx: 2d,1-Hourly,Time-Averaged,Single-Level,Assimilation,Single-Level Diagnostics</dd><dt><span>Title :</span></dt><dd>MERRA2 tavg1_2d_slv_Nx: 2d,1-Hourly,Time-Averaged,Single-Level,Assimilation,Single-Level Diagnostics</dd><dt><span>SouthernmostLatitude :</span></dt><dd>-90.0</dd><dt><span>NorthernmostLatitude :</span></dt><dd>90.0</dd><dt><span>WesternmostLongitude :</span></dt><dd>-180.0</dd><dt><span>EasternmostLongitude :</span></dt><dd>179.375</dd><dt><span>LatitudeResolution :</span></dt><dd>0.5</dd><dt><span>LongitudeResolution :</span></dt><dd>0.625</dd><dt><span>DataResolution :</span></dt><dd>0.5 x 0.625</dd><dt><span>Source :</span></dt><dd>CVS tag: GEOSadas-5_12_4_p36_SLES12_M2-OPS</dd><dt><span>Contact :</span></dt><dd>http://gmao.gsfc.nasa.gov</dd><dt><span>identifier_product_doi :</span></dt><dd>10.5067/VJAFPLI1CSIV</dd><dt><span>RangeBeginningDate :</span></dt><dd>2023-01-01</dd><dt><span>RangeBeginningTime :</span></dt><dd>00:00:00.000000</dd><dt><span>RangeEndingDate :</span></dt><dd>2023-01-01</dd><dt><span>RangeEndingTime :</span></dt><dd>23:59:59.000000</dd></dl></div></li></ul></div></div></div></div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">mds</span><span class="p">[</span><span class="s1">&#39;T2M&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">time</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/01328b5dba3730024c157965071fe78005e21b473a74640125f413c2128b298b.png" src="../_images/01328b5dba3730024c157965071fe78005e21b473a74640125f413c2128b298b.png" />
+</div>
+</div>
+</section>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="PACE.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../faqs/faqs.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Preguntas frecuentes</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#explorar-la-coleccion-merra-2">Explorar la colección MERRA-2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autenticacion-edl-mediante-earthaccess-y-opendap">Autenticación EDL mediante earthaccess y OPeNDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explorar-variables-en-la-coleccion-y-filtrar-para-conservar-solo-las-deseadas">Explorar variables en la colección y filtrar para conservar solo las deseadas</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#explorar-un-archivo-remoto-individual">Explorar un archivo remoto individual</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#visualizar">Visualizar</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#subdividir-el-dataset-agregado-mientras-se-remuestrea-en-el-tiempo">Subdividir el dataset agregado mientras se remuestrea en el tiempo</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#crear-agregacion-de-dataset-fragmentando-en-el-espacio">Crear agregación de Dataset, fragmentando en el espacio</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#remuestrear-y-subdividir">Remuestrear y subdividir</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descargar">Descargar</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#veamos-los-datos">Veamos los datos</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By OPeNDAP Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

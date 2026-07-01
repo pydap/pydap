@@ -1,0 +1,1847 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-EN2VD1J32L");
+</script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata &#8212; PyDAP tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/CalipsoL2_access';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube" href="DAYMET.html" />
+    <link rel="prev" title="Como encontrar URLs de OPeNDAP de NASA Earthdata" href="GetCMRURLS.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inicio rápido</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Cómo instalar</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ejemplos</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="Authentication.html">Autenticación básica</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="netrc.html">Crear un archivo .netrc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="earthaccess.html">Autenticación EDL mediante earthaccess</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="GetCMRURLS.html">Como encontrar URLs de OPeNDAP de NASA Earthdata</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DAYMET.html">Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="Ecostress.html">Acceso a datos de temperatura de superficie terrestre de ECOSTRESS de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPO_NRT.html">Acceso a datos de calidad del aire casi en tiempo real (NRT) de TEMPO mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECCO.html">Acceso a ECCOv4 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACE.html">Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MERRA2.html">Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Preguntas frecuentes</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">Preguntas frecuentes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/download_speed.html">Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/diagnose_download_issues.html">¿Cómo puedo diagnosticar problemas de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">¿Esta es una URL DAP2 o DAP4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_vs_dap4.html">¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../PydapAsClient.html">PyDAP como cliente</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DAP_Protocol.html">Protocolo OPeNDAP DAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ConstraintExpressions.html">Constraint Expressions: subconjunto del lado del servidor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guía para desarrolladores</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contribuir</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../guide_to_developer.html">Guía para nuevos contribuidores</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/git.html">Guía de control de versiones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_cod.html">Contribuir al código</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_issues.html">Reportar issues en GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_docs.html">Contribuir a la documentación</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/notebooks/CalipsoL2_access.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requisitos"><span style="color:#ff6666"> <strong>Requisitos</strong></span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objetivos"><span style="color:#ff6666"><strong>Objetivos</strong></span></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descarga-un-archivo-remoto-con-sub-selection">Descarga un archivo remoto con (sub)selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descarga-de-multiples-archivos-remotos">Descarga de múltiples archivos remotos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#referencias"><span style="color:#ff6666"> <strong>Referencias</strong></span></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#como-encontrar-urls-de-opendap">Como encontrar URLs de OPeNDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#usando-la-api-cmr-de-nasa"><strong>Usando la API CMR de NASA</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autenticacion-edl-mediante-earthaccess-y-opendap">Autenticación EDL mediante earthaccess y OPeNDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#acceso-solo-a-metadatos-con-pydap">Acceso SOLO a metadatos con PyDAP</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descargar-variables-minimas-para-identificar-el-subconjunto-espacial-y-datos-diurnos">Descargar variables mínimas para identificar el subconjunto espacial y datos diurnos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descarga-de-datos">Descarga de datos</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspeccionar-todos-los-archivos-descargados">Inspeccionar todos los archivos descargados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspeccionar-visualmente-el-subconjunto">Inspeccionar visualmente el subconjunto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#descargar-todos-los-datos-de-interes">Descargar todos los datos de interés</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspeccionar-un-archivo-descargado-local">Inspeccionar un archivo descargado (local)</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="acceso-a-datos-calipso-de-lidar-de-nubes-y-aerosoles-desde-nasa-earthdata">
+<h1>Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata<a class="headerlink" href="#acceso-a-datos-calipso-de-lidar-de-nubes-y-aerosoles-desde-nasa-earthdata" title="Link to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">CAL_LID_L2_01kmCLay-Standard-V5-00</span></code> es el producto de datos Cloud-Aerosol Lidar and Infrared Pathfinder Satellite Observation (<strong>CALIPSO</strong>) Lidar Level 2 1 km Cloud Layer. Este producto de datos fue recolectado usando el instrumento Cloud-Aerosol Lidar with Orthogonal Polarization (CALIOP). Dentro de este producto de capa de nubes, generado con una resolución horizontal de 1 km, hay dos clases generales de datos: Column Properties (incluyendo datos de posición y geometría de observación) y Layer Properties. Los productos de capas de nubes consisten en una secuencia de descriptores de columna, cada uno asociado con un número variable de descriptores de capas de nubes. <strong>Fuente:</strong> <a class="reference external" href="https://www.earthdata.nasa.gov/data/catalog/larc-cloud-cal-lid-l2-01kmclay-standard-v5-00-v5-00">NASA Earthdata</a>.</p>
+<section id="requisitos">
+<h2><span style='color:#ff6666'> <strong>Requisitos</strong><a class="headerlink" href="#requisitos" title="Link to this heading">#</a></h2>
+<ol class="arabic simple">
+<li><p>Autenticación EDL (usuario/contraseña)</p></li>
+<li><p>Obtener el archivo <code class="docutils literal notranslate"><span class="pre">environment.yml</span></code> e instalar el ambiente aislado de conda.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">python&gt;=3.12</span></code></p></li>
+</ol>
+</section>
+<section id="objetivos">
+<h2><span style='color:#ff6666'><strong>Objetivos</strong><a class="headerlink" href="#objetivos" title="Link to this heading">#</a></h2>
+<section id="descarga-un-archivo-remoto-con-sub-selection">
+<h3>Descarga un archivo remoto con (sub)selection<a class="headerlink" href="#descarga-un-archivo-remoto-con-sub-selection" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>a)</strong> Por variables.</p></li>
+<li><p><strong>b)</strong> Por coordenadas geograficas.</p></li>
+<li><p><strong>c)</strong> Solo datos diurnos.</p></li>
+</ul>
+</section>
+<section id="descarga-de-multiples-archivos-remotos">
+<h3>Descarga de múltiples archivos remotos<a class="headerlink" href="#descarga-de-multiples-archivos-remotos" title="Link to this heading">#</a></h3>
+<ul class="simple">
+<li><p>A cada archivo se le aplica la subseleccion de una subregion de datos de interes antes de descargar.</p></li>
+</ul>
+</section>
+<section id="referencias">
+<h3><span style='color:#ff6666'> <strong>Referencias</strong><a class="headerlink" href="#referencias" title="Link to this heading">#</a></h3>
+<p><strong>Getzewich, B. (2025)</strong>. <i>CALIPSO Lidar Level 2 1 km Cloud Layer, V5-00</i> [Data set]. NASA Langley Atmospheric Science Data Center Distributed Active Archive Center. <a class="reference external" href="https://doi.org/10.5067/CALIOP/CALIPSO/CAL_LID_L2_01KMCLAY-STANDARD-V5-00">https://doi.org/10.5067/CALIOP/CALIPSO/CAL_LID_L2_01KMCLAY-STANDARD-V5-00</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">xarray</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xr</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">earthaccess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="c1"># import pydap-specific tools</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_cmr_urls</span><span class="p">,</span> <span class="n">open_url</span><span class="p">,</span> <span class="n">create_session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_netcdf</span> <span class="k">as</span> <span class="n">dap_to_netcdf</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+</div>
+</div>
+</section>
+</section>
+<section id="como-encontrar-urls-de-opendap">
+<h2>Como encontrar URLs de OPeNDAP<a class="headerlink" href="#como-encontrar-urls-de-opendap" title="Link to this heading">#</a></h2>
+<section id="usando-la-api-cmr-de-nasa">
+<h3><strong>Usando la API CMR de NASA</strong><a class="headerlink" href="#usando-la-api-cmr-de-nasa" title="Link to this heading">#</a></h3>
+<p>Consultamos el <code class="docutils literal notranslate"><span class="pre">Common</span> <span class="pre">Metadata</span> <span class="pre">Repository</span></code> (CMR por sus siglas en ingles) de la NASA, para identificar archivos remotos que intersectan la siguiente área geográfica (caja delimitadora) y cubren el siguiente rango temporal:</p>
+<ul class="simple">
+<li><p>-121 &lt; longitud &lt; -115, y 26.5 &lt; latitud &lt; 31</p></li>
+<li><p>2 años de datos solo de primavera: del 1 de marzo al 31 de mayo (2022-2023).</p></li>
+</ul>
+<p>Por último, nos interesan <strong>SOLO</strong> datos donde <code class="docutils literal notranslate"><span class="pre">Daytime</span></code> es <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">Calipso_L2_ccid</span> <span class="o">=</span> <span class="s2">&quot;C3463063995-LARC_CLOUD&quot;</span> <span class="c1"># </span>
+<span class="n">bbox</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">121</span><span class="p">,</span><span class="mf">26.5</span><span class="p">,</span><span class="o">-</span><span class="mi">115</span><span class="p">,</span><span class="mi">31</span><span class="p">]</span> <span class="c1"># [west, south, east, north]</span>
+
+<span class="c1"># 2 years of March data</span>
+<span class="n">time_ranges</span> <span class="o">=</span> <span class="p">[[</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">31</span><span class="p">)]</span> <span class="k">for</span> <span class="n">year</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">2024</span><span class="p">)]</span>
+
+<span class="n">CMR_URLs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">args</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;ccid&quot;</span><span class="p">:</span> <span class="n">Calipso_L2_ccid</span><span class="p">,</span>
+    <span class="s2">&quot;bounding_box&quot;</span><span class="p">:</span> <span class="n">bbox</span><span class="p">,</span>
+    <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="n">cmr_urls</span> <span class="o">=</span> <span class="p">[</span><span class="n">url</span> <span class="k">for</span> <span class="n">time_range</span> <span class="ow">in</span> <span class="n">time_ranges</span> <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">get_cmr_urls</span><span class="p">(</span><span class="o">**</span><span class="n">args</span><span class="p">,</span> <span class="n">time_range</span><span class="o">=</span><span class="n">time_range</span><span class="p">)]</span> <span class="c1"># you can increase the limit of results</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;################################################ </span><span class="se">\n</span><span class="s2"> We found a total of &quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">cmr_urls</span><span class="p">),</span> <span class="s2">&quot;OPeNDAP URLS!!!</span><span class="se">\n</span><span class="s2">################################################&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>################################################ 
+ We found a total of  90 OPeNDAP URLS!!!
+################################################
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="autenticacion-edl-mediante-earthaccess-y-opendap">
+<h2>Autenticación EDL mediante earthaccess y OPeNDAP<a class="headerlink" href="#autenticacion-edl-mediante-earthaccess-y-opendap" title="Link to this heading">#</a></h2>
+<p>Puedes autenticarte mediante <code class="docutils literal notranslate"><span class="pre">earthaccess</span></code> como se muestra a continuacion. Debes tener una cuenta EDL válida. Hay dos estrategias para autenticarte con <code class="docutils literal notranslate"><span class="pre">earthaccess</span></code>:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">strategy=&quot;interactive&quot;</span></code>. Esto pedirá tu usuario y contraseña de EDL.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">strategy=&quot;netrc&quot;</span></code>. Usa esta opción si el notebook se ejecuta en un entorno donde se puede recuperar un <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> con tus credenciales.</p></li>
+</ol>
+<p>A continuación, el valor predeterminado será <code class="docutils literal notranslate"><span class="pre">netrc</span></code>, asumiendo que el usuario ejecutó el notebook <strong>Authenticate.ipynb</strong>. Si no es así, puedes cambiar la estrategia a <code class="docutils literal notranslate"><span class="pre">&quot;interactive&quot;</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">earthaccess.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">LoginStrategyUnavailable</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">earthaccess</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;netrc&quot;</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="c1"># you will be promted to add your EDL credentials</span>
+<span class="k">except</span> <span class="n">LoginStrategyUnavailable</span><span class="p">:</span>
+    <span class="n">auth</span> <span class="o">=</span> <span class="n">earthaccess</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s2">&quot;interactive&quot;</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># pass Token Authorization to a new Session.</span>
+<span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">auth</span><span class="o">.</span><span class="n">get_session</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="acceso-solo-a-metadatos-con-pydap">
+<h3>Acceso SOLO a metadatos con PyDAP<a class="headerlink" href="#acceso-solo-a-metadatos-con-pydap" title="Link to this heading">#</a></h3>
+<p>Podemos acceder a metadatos producidos por <span style='color:#ff6666'><strong>OPeNDAP</strong></span> para identificar las variables de interés. En particular, aquellas asociadas con valores de latitud y longitud.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">pyds</span> <span class="o">=</span> <span class="n">open_url</span><span class="p">(</span><span class="n">cmr_urls</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;dap4&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+<span class="n">pyds</span><span class="o">.</span><span class="n">tree</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.CAL_LID_L2_01kmCLay-Standard-V5-00.2022-03-02T10-34-17ZN.hdf
+├──Lidar_Surface_Detection
+│  ├──Surface_Top_Altitude_532
+│  ├──Surface_Base_Altitude_532
+│  ├──Surface_Integrated_Attenuated_Backscatter_532
+│  ├──Surface_532_Integrated_Depolarization_Ratio
+│  ├──Surface_532_Integrated_Attenuated_Color_Ratio
+│  ├──Surface_Detection_Flags_532
+│  ├──Surface_Overlying_Integrated_Attenuated_Backscatter_532
+│  ├──Surface_Scaled_RMS_Background_532
+│  ├──Surface_Peak_Signal_532
+│  ├──Surface_Detections_333m_532
+│  ├──Surface_Top_Altitude_1064
+│  ├──Surface_Base_Altitude_1064
+│  ├──Surface_Integrated_Attenuated_Backscatter_1064
+│  ├──Surface_1064_Integrated_Depolarization_Ratio
+│  ├──Surface_1064_Integrated_Attenuated_Color_Ratio
+│  ├──Surface_Detection_Flags_1064
+│  ├──Surface_Overlying_Integrated_Attenuated_Backscatter_1064
+│  ├──Surface_Scaled_RMS_Background_1064
+│  ├──Surface_Peak_Signal_1064
+│  └──Surface_Detections_333m_1064
+├──Ocean_Derived_Column_Optical_Depth
+│  ├──ODCOD_Effective_Optical_Depth_532
+│  ├──ODCOD_Effective_Optical_Depth_532_Uncertainty
+│  ├──ODCOD_QC_Flag_532
+│  ├──ODCOD_Surface_Wind_Speeds_10m
+│  └──ODCOD_Surface_Wind_Speed_Correction
+├──Lidar_Data_Altitudes
+├──Profile_ID
+├──Latitude
+├──Longitude
+├──Profile_Time
+├──Profile_UTC_Time
+├──Day_Night_Flag
+├──Off_Nadir_Angle
+├──Solar_Zenith_Angle
+├──Solar_Azimuth_Angle
+├──Scattering_Angle
+├──Spacecraft_Position
+├──Parallel_Column_Reflectance_532
+├──Parallel_Column_Reflectance_Uncertainty_532
+├──Perpendicular_Column_Reflectance_532
+├──Perpendicular_Column_Reflectance_Uncertainty_532
+├──Column_Integrated_Attenuated_Backscatter_532
+├──Column_IAB_Cumulative_Probability
+├──Column_Particulate_Optical_Depth_Above_Opaque_Water_Cloud_532
+├──Column_Particulate_Optical_Depth_Above_Opaque_Water_Cloud_Uncertainty_532
+├──Tropopause_Height
+├──Tropopause_Temperature
+├──IGBP_Surface_Type
+├──Snow_Ice_Surface_Type
+├──DEM_Surface_Elevation
+├──Minimum_Laser_Energy_532
+├──Low_Energy_Mitigation_Column_QC_Flag
+├──Number_Layers_Found
+├──Scene_Flag
+├──Low_Energy_Mitigation_Feature_QC_Flag
+├──Layer_Top_Altitude
+├──Layer_Base_Altitude
+├──Layer_Top_Pressure
+├──Midlayer_Pressure
+├──Layer_Base_Pressure
+├──Layer_Top_Temperature
+├──Layer_Centroid_Temperature
+├──Midlayer_Temperature
+├──Layer_Base_Temperature
+├──Opacity_Flag
+├──Attenuated_Scattering_Ratio_Statistics_532
+├──Attenuated_Backscatter_Statistics_532
+├──Integrated_Attenuated_Backscatter_532
+├──Integrated_Attenuated_Backscatter_Uncertainty_532
+├──Attenuated_Backscatter_Statistics_1064
+├──Integrated_Attenuated_Backscatter_1064
+├──Integrated_Attenuated_Backscatter_Uncertainty_1064
+├──Volume_Depolarization_Ratio_Statistics
+├──Integrated_Volume_Depolarization_Ratio
+├──Integrated_Volume_Depolarization_Ratio_Uncertainty
+├──Attenuated_Total_Color_Ratio_Statistics
+├──Integrated_Attenuated_Total_Color_Ratio
+├──Integrated_Attenuated_Total_Color_Ratio_Uncertainty
+├──Overlying_Integrated_Attenuated_Backscatter_532
+├──Layer_IAB_QA_Factor
+├──Feature_Classification_Flags
+├──CAD_Score
+├──Initial_CAD_Score
+├──metadata.Product_ID
+├──metadata.Date_Time_at_Granule_Start
+├──metadata.Date_Time_at_Granule_End
+├──metadata.Date_Time_of_Production
+├──metadata.Number_of_Good_Profiles
+├──metadata.Number_of_Bad_Profiles
+├──metadata.Initial_Subsatellite_Latitude
+├──metadata.Initial_Subsatellite_Longitude
+├──metadata.Final_Subsatellite_Latitude
+├──metadata.Final_Subsatellite_Longitude
+├──metadata.Orbit_Number_at_Granule_Start
+├──metadata.Orbit_Number_at_Granule_End
+├──metadata.Orbit_Number_Change_Time
+├──metadata.Path_Number_at_Granule_Start
+├──metadata.Path_Number_at_Granule_End
+├──metadata.Path_Number_Change_Time
+├──metadata.Lidar_L1_Production_Date_Time
+├──metadata.Number_of_Single_Shot_Records_in_File
+├──metadata.Number_of_Average_Records_in_File
+├──metadata.Number_of_Features_Found
+├──metadata.Number_of_Cloud_Features_Found
+├──metadata.Number_of_Aerosol_Features_Found
+├──metadata.Number_of_Indeterminate_Features_Found
+├──metadata.Ocean_Fresnel_Reflection_Coefficient_532
+├──metadata.MERRA2_Wind_Uncertainty
+├──metadata.AMSR_Wind_Correction_Uncertainty
+├──metadata.Lidar_Data_Altitudes
+├──metadata.GEOS_Version
+├──metadata.GMAO_Files_Used
+├──metadata.Classifier_Coefficients_Version_Number
+├──metadata.Classifier_Coefficients_Version_Date
+└──metadata.Production_Script
+CPU times: user 142 ms, sys: 4.89 ms, total: 147 ms
+Wall time: 1.95 s
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="descargar-variables-minimas-para-identificar-el-subconjunto-espacial-y-datos-diurnos">
+<h3>Descargar variables mínimas para identificar el subconjunto espacial y datos diurnos<a class="headerlink" href="#descargar-variables-minimas-para-identificar-el-subconjunto-espacial-y-datos-diurnos" title="Link to this heading">#</a></h3>
+<p><font size="3"> Las coordenadas son (nombres completamente calificados):</p>
+<ul class="simple">
+<li><p><font size="3"> <code class="docutils literal notranslate"><span class="pre">Latitude</span></code></p></li>
+<li><p><font size="3"> <code class="docutils literal notranslate"><span class="pre">Longitude</span></code></p></li>
+<li><p><font size="3"> <code class="docutils literal notranslate"><span class="pre">Day_Night_Flag</span></code></p></li>
+</ul>
+<p><font size="3"> Antes de descargar, necesitamos identificar cualquier dimensión que también sea un arreglo del dataset.</p>
+<p><font size="3"> (También puede haber dimensiones con nombre, es decir, dimensiones que solo tienen nombre y que NO están</p>
+<p><font size="3">asociadas con datos. No necesitamos declarar esas variables.)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">DIMS</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">pyds</span><span class="p">[</span><span class="s1">&#39;Latitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span> <span class="o">+</span> <span class="n">pyds</span><span class="p">[</span><span class="s1">&#39;Longitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span> <span class="o">+</span> <span class="n">pyds</span><span class="p">[</span><span class="s1">&#39;Day_Night_Flag&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dims</span><span class="p">))</span>
+<span class="n">dims</span> <span class="o">=</span> <span class="p">[</span><span class="n">dim</span> <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">DIMS</span> <span class="k">if</span> <span class="n">dim</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">pyds</span><span class="p">[(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">DIMS</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])]</span><span class="o">.</span><span class="n">variables</span><span class="p">()]</span> 
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Dimensions that are also arrays: &quot;</span><span class="p">,</span> <span class="n">dims</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Dimensions that are also arrays:  []
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">output_path</span> <span class="o">=</span> <span class="s2">&quot;./data/&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="descarga-de-datos">
+<h3>Descarga de datos<a class="headerlink" href="#descarga-de-datos" title="Link to this heading">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">dap_to_netcdf</span><span class="p">(</span><span class="n">cmr_urls</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> 
+              <span class="n">keep_variables</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/Longitude&quot;</span><span class="p">,</span> <span class="s2">&quot;/Day_Night_Flag&quot;</span><span class="p">],</span> 
+              <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 139 ms, sys: 224 ms, total: 363 ms
+Wall time: 13.3 s
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="inspeccionar-todos-los-archivos-descargados">
+<h2>Inspeccionar todos los archivos descargados<a class="headerlink" href="#inspeccionar-todos-los-archivos-descargados" title="Link to this heading">#</a></h2>
+<p><font size="3"> Aquí identificamos con más detalle el subconjunto de datos necesario en el archivo remoto, que descargará SOLO datos dentro de nuestra caja delimitadora, para cualquier variable de interés posible.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get data from Bounding Box</span>
+<span class="n">minLon</span><span class="p">,</span> <span class="n">maxLon</span> <span class="o">=</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">bbox</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">slices</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">final_urls</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="n">cmr_urls</span><span class="p">:</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">output_path</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">.nc4&quot;</span>
+    <span class="n">dt1</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_datatree</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+    <span class="n">daytime_flag</span> <span class="o">=</span> <span class="n">dt1</span><span class="p">[</span><span class="s1">&#39;Day_Night_Flag&#39;</span><span class="p">]</span>
+    <span class="c1"># find index /data_01/longitude</span>
+    <span class="n">longitude</span> <span class="o">=</span> <span class="n">dt1</span><span class="p">[</span><span class="s1">&#39;/Longitude&#39;</span><span class="p">]</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">longitude</span> <span class="o">&gt;=</span> <span class="n">minLon</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">longitude</span> <span class="o">&lt;=</span> <span class="n">maxLon</span><span class="p">)</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">values</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">daytime_flag</span> <span class="o">=</span> <span class="n">dt1</span><span class="p">[</span><span class="s1">&#39;Day_Night_Flag&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">Record_Number</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">idx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span><span class="o">==</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">daytime_flag</span><span class="o">==</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">final_urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">slices</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;/Record_Number&quot;</span><span class="p">:(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">idx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])})</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Only </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">final_urls</span><span class="p">)</span><span class="si">}</span><span class="s2"> out of the </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">cmr_urls</span><span class="p">)</span><span class="si">}</span><span class="s2"> remote files satisfy our Daylight Criteria</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sample subsetting slices:&quot;</span><span class="p">)</span>
+<span class="n">slices</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Only 42 out of the 90 remote files satisfy our Daylight Criteria
+
+Sample subsetting slices:
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{&#39;/Record_Number&#39;: (np.int64(11471), np.int64(14314))},
+ {&#39;/Record_Number&#39;: (np.int64(14165), np.int64(16225))},
+ {&#39;/Record_Number&#39;: (np.int64(12422), np.int64(14979))},
+ {&#39;/Record_Number&#39;: (np.int64(10329), np.int64(13187))}]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inspeccionar-visualmente-el-subconjunto">
+<h2>Inspeccionar visualmente el subconjunto<a class="headerlink" href="#inspeccionar-visualmente-el-subconjunto" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Subset data</span>
+<span class="n">Lon</span> <span class="o">=</span> <span class="n">dt1</span><span class="p">[</span><span class="s1">&#39;Longitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">Record_Number</span><span class="o">=</span><span class="nb">slice</span><span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">idx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+<span class="c1"># Generate masked data to visualize only</span>
+
+<span class="n">Lon_masked</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">full_like</span><span class="p">(</span><span class="n">dt1</span><span class="p">[</span><span class="s1">&#39;Longitude&#39;</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+<span class="n">Lon_masked</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span>
+    <span class="n">Record_Number</span> <span class="o">=</span> <span class="n">Lon</span><span class="p">[</span><span class="s1">&#39;Record_Number&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="p">)]</span> <span class="o">=</span> <span class="n">Lon</span>
+
+<span class="c1"># Visualize: Plot subset of data over original data</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+<span class="n">dt1</span><span class="p">[</span><span class="s1">&#39;Longitude&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.75</span><span class="p">);</span>
+<span class="n">Lon_masked</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lw</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#7f00ff&quot;</span><span class="p">)</span>
+<span class="n">axes</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Longitude Subset $[^\circ$E]&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c93df6d12cf2e09378eb358eab5139b23254e35fe19147904af5e75b37f322e5.png" src="../_images/c93df6d12cf2e09378eb358eab5139b23254e35fe19147904af5e75b37f322e5.png" />
+</div>
+</div>
+</section>
+<section id="descargar-todos-los-datos-de-interes">
+<h2>Descargar todos los datos de interés<a class="headerlink" href="#descargar-todos-los-datos-de-interes" title="Link to this heading">#</a></h2>
+<p><font size="3"> <strong>PRIMERO:</strong> necesitamos borrar todos los archivos descargados previamente para evitar colisiones de nombres.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">glob</span>
+
+<span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">output_path</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">.nc4&quot;</span> <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">cmr_urls</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The file &#39;</span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&#39; is not in there anymore&quot;</span><span class="p">)</span>    
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Will Download 34 Variables!</span>
+<span class="n">keep_variables</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;/Lidar_Surface_Detection&#39;</span><span class="p">,</span> <span class="c1"># &lt;----- ALL Variables inside Group</span>
+    <span class="s2">&quot;/Ocean_Derived_Column_Optical_Depth&quot;</span><span class="p">,</span> <span class="c1"># &lt; -- All varibles inside Group</span>
+    <span class="s2">&quot;/Lidar_Data_Altitudes&quot;</span><span class="p">,</span> <span class="s2">&quot;/Profile_ID&quot;</span><span class="p">,</span> <span class="s2">&quot;/Latitude&quot;</span><span class="p">,</span> <span class="s2">&quot;/Longitude&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;/Profile_Time&quot;</span><span class="p">,</span> <span class="s2">&quot;/Profile_UTC_Time&quot;</span><span class="p">,</span> <span class="s2">&quot;/Day_Night_Flag&quot;</span><span class="p">,</span> <span class="s2">&quot;/Tropopause_Height&quot;</span><span class="p">,</span> 
+    <span class="s2">&quot;/Tropopause_Temperature&quot;</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%%time</span>
+<span class="n">dap_to_netcdf</span><span class="p">(</span><span class="n">final_urls</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span>
+              <span class="n">keep_variables</span> <span class="o">=</span> <span class="n">keep_variables</span><span class="p">,</span>
+              <span class="n">dim_slices</span> <span class="o">=</span> <span class="n">slices</span><span class="p">,</span>
+              <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CPU times: user 94.5 ms, sys: 291 ms, total: 386 ms
+Wall time: 51.6 s
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="inspeccionar-un-archivo-descargado-local">
+<h2>Inspeccionar un archivo descargado (local)<a class="headerlink" href="#inspeccionar-un-archivo-descargado-local" title="Link to this heading">#</a></h2>
+<p><font size="3"> <strong>NOTA:</strong> el archivo hereda el nombre de archivo fuente mediante los metadatos OPeNDAP. Podemos recuperar el nombre de archivo fuente desde cada URL.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filename</span> <span class="o">=</span> <span class="n">output_path</span><span class="o">+</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">final_urls</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span><span class="si">}</span><span class="s2">.nc4&quot;</span>
+<span class="n">dt1</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_datatree</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<span class="n">dt1</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div><svg style="position: absolute; width: 0; height: 0; overflow: hidden">
+<defs>
+<symbol id="icon-database" viewBox="0 0 32 32">
+<path d="M16 0c-8.837 0-16 2.239-16 5v4c0 2.761 7.163 5 16 5s16-2.239 16-5v-4c0-2.761-7.163-5-16-5z"></path>
+<path d="M16 17c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+<path d="M16 26c-8.837 0-16-2.239-16-5v6c0 2.761 7.163 5 16 5s16-2.239 16-5v-6c0 2.761-7.163 5-16 5z"></path>
+</symbol>
+<symbol id="icon-file-text2" viewBox="0 0 32 32">
+<path d="M28.681 7.159c-0.694-0.947-1.662-2.053-2.724-3.116s-2.169-2.030-3.116-2.724c-1.612-1.182-2.393-1.319-2.841-1.319h-15.5c-1.378 0-2.5 1.121-2.5 2.5v27c0 1.378 1.122 2.5 2.5 2.5h23c1.378 0 2.5-1.122 2.5-2.5v-19.5c0-0.448-0.137-1.23-1.319-2.841zM24.543 5.457c0.959 0.959 1.712 1.825 2.268 2.543h-4.811v-4.811c0.718 0.556 1.584 1.309 2.543 2.268zM28 29.5c0 0.271-0.229 0.5-0.5 0.5h-23c-0.271 0-0.5-0.229-0.5-0.5v-27c0-0.271 0.229-0.5 0.5-0.5 0 0 15.499-0 15.5 0v7c0 0.552 0.448 1 1 1h7v19.5z"></path>
+<path d="M23 26h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 22h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+<path d="M23 18h-14c-0.552 0-1-0.448-1-1s0.448-1 1-1h14c0.552 0 1 0.448 1 1s-0.448 1-1 1z"></path>
+</symbol>
+</defs>
+</svg>
+<style>/* CSS stylesheet for displaying xarray objects in notebooks */
+
+:root {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base rgba(0, 0, 0, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(0, 0, 0, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, white)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, white) h s calc(l - 15))
+  );
+}
+
+html[theme="dark"],
+html[data-theme="dark"],
+body[data-theme="dark"],
+body.vscode-dark {
+  --xr-font-color0: var(
+    --jp-content-font-color0,
+    var(--pst-color-text-base, rgba(255, 255, 255, 1))
+  );
+  --xr-font-color2: var(
+    --jp-content-font-color2,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.54))
+  );
+  --xr-font-color3: var(
+    --jp-content-font-color3,
+    var(--pst-color-text-base, rgba(255, 255, 255, 0.38))
+  );
+  --xr-border-color: var(
+    --jp-border-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 10))
+  );
+  --xr-disabled-color: var(
+    --jp-layout-color3,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 40))
+  );
+  --xr-background-color: var(
+    --jp-layout-color0,
+    var(--pst-color-on-background, #111111)
+  );
+  --xr-background-color-row-even: var(
+    --jp-layout-color1,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 5))
+  );
+  --xr-background-color-row-odd: var(
+    --jp-layout-color2,
+    hsl(from var(--pst-color-on-background, #111111) h s calc(l + 15))
+  );
+}
+
+.xr-wrap {
+  display: block !important;
+  min-width: 300px;
+  max-width: 700px;
+  line-height: 1.6;
+  padding-bottom: 4px;
+}
+
+.xr-text-repr-fallback {
+  /* fallback to plain text repr when CSS is not injected (untrusted notebook) */
+  display: none;
+}
+
+.xr-header {
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.xr-header {
+  border-bottom: solid 1px var(--xr-border-color);
+  margin-bottom: 4px;
+}
+
+.xr-header > div,
+.xr-header > ul {
+  display: inline;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.xr-obj-type,
+.xr-obj-name {
+  margin-left: 2px;
+  margin-right: 10px;
+}
+
+.xr-obj-type,
+.xr-group-box-contents > label {
+  color: var(--xr-font-color2);
+  display: block;
+}
+
+.xr-sections {
+  padding-left: 0 !important;
+  display: grid;
+  grid-template-columns: 150px auto auto 1fr 0 20px 0 20px;
+  margin-block-start: 0;
+  margin-block-end: 0;
+}
+
+.xr-section-item {
+  display: contents;
+}
+
+.xr-section-item > input,
+.xr-group-box-contents > input,
+.xr-array-wrap > input {
+  display: block;
+  opacity: 0;
+  height: 0;
+  margin: 0;
+}
+
+.xr-section-item > input + label,
+.xr-var-item > input + label {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-item > input:enabled + label,
+.xr-var-item > input:enabled + label,
+.xr-array-wrap > input:enabled + label,
+.xr-group-box-contents > input:enabled + label {
+  cursor: pointer;
+  color: var(--xr-font-color2);
+}
+
+.xr-section-item > input:focus-visible + label,
+.xr-var-item > input:focus-visible + label,
+.xr-array-wrap > input:focus-visible + label,
+.xr-group-box-contents > input:focus-visible + label {
+  outline: auto;
+}
+
+.xr-section-item > input:enabled + label:hover,
+.xr-var-item > input:enabled + label:hover,
+.xr-array-wrap > input:enabled + label:hover,
+.xr-group-box-contents > input:enabled + label:hover {
+  color: var(--xr-font-color0);
+}
+
+.xr-section-summary {
+  grid-column: 1;
+  color: var(--xr-font-color2);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.xr-section-summary > em {
+  font-weight: normal;
+}
+
+.xr-span-grid {
+  grid-column-end: -1;
+}
+
+.xr-section-summary > span {
+  display: inline-block;
+  padding-left: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label > span {
+  display: inline-block;
+  padding-left: 0.6em;
+}
+
+.xr-section-summary-in:disabled + label {
+  color: var(--xr-font-color2);
+}
+
+.xr-section-summary-in + label:before {
+  display: inline-block;
+  content: "►";
+  font-size: 11px;
+  width: 15px;
+  text-align: center;
+}
+
+.xr-section-summary-in:disabled + label:before {
+  color: var(--xr-disabled-color);
+}
+
+.xr-section-summary-in:checked + label:before {
+  content: "▼";
+}
+
+.xr-section-summary-in:checked + label > span {
+  display: none;
+}
+
+.xr-section-summary,
+.xr-section-inline-details,
+.xr-group-box-contents > label {
+  padding-top: 4px;
+}
+
+.xr-section-inline-details {
+  grid-column: 2 / -1;
+}
+
+.xr-section-details {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+  margin-bottom: 5px;
+}
+
+.xr-section-summary-in ~ .xr-section-details {
+  display: none;
+}
+
+.xr-section-summary-in:checked ~ .xr-section-details {
+  display: contents;
+}
+
+.xr-children {
+  display: inline-grid;
+  grid-template-columns: 100%;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.xr-group-box {
+  display: inline-grid;
+  grid-template-columns: 0px 30px auto;
+}
+
+.xr-group-box-vline {
+  grid-column-start: 1;
+  border-right: 0.2em solid;
+  border-color: var(--xr-border-color);
+  width: 0px;
+}
+
+.xr-group-box-hline {
+  grid-column-start: 2;
+  grid-row-start: 1;
+  height: 1em;
+  width: 26px;
+  border-bottom: 0.2em solid;
+  border-color: var(--xr-border-color);
+}
+
+.xr-group-box-contents {
+  grid-column-start: 3;
+  padding-bottom: 4px;
+}
+
+.xr-group-box-contents > label::before {
+  content: "📂";
+  padding-right: 0.3em;
+}
+
+.xr-group-box-contents > input:checked + label::before {
+  content: "📁";
+}
+
+.xr-group-box-contents > input:checked + label {
+  padding-bottom: 0px;
+}
+
+.xr-group-box-contents > input:checked ~ .xr-sections {
+  display: none;
+}
+
+.xr-group-box-contents > input + label > span {
+  display: none;
+}
+
+.xr-group-box-ellipsis {
+  font-size: 1.4em;
+  font-weight: 900;
+  color: var(--xr-font-color2);
+  letter-spacing: 0.15em;
+  cursor: default;
+}
+
+.xr-array-wrap {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 20px auto;
+}
+
+.xr-array-wrap > label {
+  grid-column: 1;
+  vertical-align: top;
+}
+
+.xr-preview {
+  color: var(--xr-font-color3);
+}
+
+.xr-array-preview,
+.xr-array-data {
+  padding: 0 5px !important;
+  grid-column: 2;
+}
+
+.xr-array-data,
+.xr-array-in:checked ~ .xr-array-preview {
+  display: none;
+}
+
+.xr-array-in:checked ~ .xr-array-data,
+.xr-array-preview {
+  display: inline-block;
+}
+
+.xr-dim-list {
+  display: inline-block !important;
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.xr-dim-list li {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+}
+
+.xr-dim-list:before {
+  content: "(";
+}
+
+.xr-dim-list:after {
+  content: ")";
+}
+
+.xr-dim-list li:not(:last-child):after {
+  content: ",";
+  padding-right: 5px;
+}
+
+.xr-has-index {
+  font-weight: bold;
+}
+
+.xr-var-list,
+.xr-var-item {
+  display: contents;
+}
+
+.xr-var-item > div,
+.xr-var-item label,
+.xr-var-item > .xr-var-name span {
+  background-color: var(--xr-background-color-row-even);
+  border-color: var(--xr-background-color-row-odd);
+  margin-bottom: 0;
+  padding-top: 2px;
+}
+
+.xr-var-item > .xr-var-name:hover span {
+  padding-right: 5px;
+}
+
+.xr-var-list > li:nth-child(odd) > div,
+.xr-var-list > li:nth-child(odd) > label,
+.xr-var-list > li:nth-child(odd) > .xr-var-name span {
+  background-color: var(--xr-background-color-row-odd);
+  border-color: var(--xr-background-color-row-even);
+}
+
+.xr-var-name {
+  grid-column: 1;
+}
+
+.xr-var-dims {
+  grid-column: 2;
+}
+
+.xr-var-dtype {
+  grid-column: 3;
+  text-align: right;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-preview {
+  grid-column: 4;
+}
+
+.xr-index-preview {
+  grid-column: 2 / 5;
+  color: var(--xr-font-color2);
+}
+
+.xr-var-name,
+.xr-var-dims,
+.xr-var-dtype,
+.xr-preview,
+.xr-attrs dt {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 10px;
+}
+
+.xr-var-name:hover,
+.xr-var-dims:hover,
+.xr-var-dtype:hover,
+.xr-attrs dt:hover {
+  overflow: visible;
+  width: auto;
+  z-index: 1;
+}
+
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  display: none;
+  border-top: 2px dotted var(--xr-background-color);
+  padding-bottom: 20px !important;
+  padding-top: 10px !important;
+}
+
+.xr-var-attrs-in + label,
+.xr-var-data-in + label,
+.xr-index-data-in + label {
+  padding: 0 1px;
+}
+
+.xr-var-attrs-in:checked ~ .xr-var-attrs,
+.xr-var-data-in:checked ~ .xr-var-data,
+.xr-index-data-in:checked ~ .xr-index-data {
+  display: block;
+}
+
+.xr-var-data > table {
+  float: right;
+}
+
+.xr-var-data > pre,
+.xr-index-data > pre,
+.xr-var-data > table > tbody > tr {
+  background-color: transparent !important;
+}
+
+.xr-var-name span,
+.xr-var-data,
+.xr-index-name div,
+.xr-index-data,
+.xr-attrs {
+  padding-left: 25px !important;
+}
+
+.xr-attrs,
+.xr-var-attrs,
+.xr-var-data,
+.xr-index-data {
+  grid-column: 1 / -1;
+}
+
+dl.xr-attrs {
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: 125px auto;
+}
+
+.xr-attrs dt,
+.xr-attrs dd {
+  padding: 0;
+  margin: 0;
+  float: left;
+  padding-right: 10px;
+  width: auto;
+}
+
+.xr-attrs dt {
+  font-weight: normal;
+  grid-column: 1;
+}
+
+.xr-attrs dt:hover span {
+  display: inline-block;
+  background: var(--xr-background-color);
+  padding-right: 10px;
+}
+
+.xr-attrs dd {
+  grid-column: 2;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.xr-icon-database,
+.xr-icon-file-text2,
+.xr-no-icon {
+  display: inline-block;
+  vertical-align: middle;
+  width: 1em;
+  height: 1.5em !important;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+}
+
+.xr-var-attrs-in:checked + label > .xr-icon-file-text2,
+.xr-var-data-in:checked + label > .xr-icon-database,
+.xr-index-data-in:checked + label > .xr-icon-database {
+  color: var(--xr-font-color0);
+  filter: drop-shadow(1px 1px 5px var(--xr-font-color2));
+  stroke-width: 0.8px;
+}
+</style><pre class='xr-text-repr-fallback'>&lt;xarray.DataTree&gt;
+Group: /
+│   Dimensions:                 (Record_Number: 2843, Sample: 1,
+│                                Altitude_Record_Number: 1,
+│                                Lidar_Data_Altitudes: 583)
+│   Coordinates:
+│       Lidar_Data_Altitudes    (Altitude_Record_Number, Lidar_Data_Altitudes) float32 2kB ...
+│   Dimensions without coordinates: Record_Number, Sample, Altitude_Record_Number
+│   Data variables:
+│       Profile_ID              (Record_Number, Sample) int32 11kB 93378 ... 101904
+│       Latitude                (Record_Number, Sample) float32 11kB 5.639 ... 31.24
+│       Longitude               (Record_Number, Sample) float32 11kB -115.0 ... -...
+│       Profile_Time            (Record_Number, Sample) float64 23kB 9.205e+08 .....
+│       Profile_UTC_Time        (Record_Number, Sample) float64 23kB 2.203e+05 .....
+│       Day_Night_Flag          (Record_Number, Sample) int8 3kB 0 0 0 0 ... 0 0 0 0
+│       Tropopause_Height       (Record_Number, Sample) float32 11kB 16.65 ... 14.4
+│       Tropopause_Temperature  (Record_Number, Sample) float32 11kB -78.8 ... -5...
+│   Attributes:
+│       coremetadata:     \nGROUP                  = INVENTORYMETADATA\n  GROUPTY...
+│       archivemetadata:  \nGROUP                  = ARCHIVEDMETADATA\n  GROUPTYP...
+├── Group: /Ocean_Derived_Column_Optical_Depth
+│       Dimensions:                                        (Record_Number: 2843,
+│                                                           Sample: 1, Directions: 2)
+│       Dimensions without coordinates: Record_Number, Sample, Directions
+│       Data variables:
+│           ODCOD_Effective_Optical_Depth_532              (Record_Number, Sample) float32 11kB ...
+│           ODCOD_Effective_Optical_Depth_532_Uncertainty  (Record_Number, Sample) float32 11kB ...
+│           ODCOD_QC_Flag_532                              (Record_Number, Sample) float64 23kB ...
+│           ODCOD_Surface_Wind_Speeds_10m                  (Record_Number, Directions) float32 23kB ...
+│           ODCOD_Surface_Wind_Speed_Correction            (Record_Number, Sample) float32 11kB ...
+└── Group: /Lidar_Surface_Detection
+        Dimensions:                                                   (
+                                                                       Record_Number: 2843,
+                                                                       Sample: 1)
+        Dimensions without coordinates: Record_Number, Sample
+        Data variables: (12/20)
+            Surface_Top_Altitude_532                                  (Record_Number, Sample) float32 11kB ...
+            Surface_Base_Altitude_532                                 (Record_Number, Sample) float32 11kB ...
+            Surface_Integrated_Attenuated_Backscatter_532             (Record_Number, Sample) float32 11kB ...
+            Surface_532_Integrated_Depolarization_Ratio               (Record_Number, Sample) float32 11kB ...
+            Surface_532_Integrated_Attenuated_Color_Ratio             (Record_Number, Sample) float32 11kB ...
+            Surface_Detection_Flags_532                               (Record_Number, Sample) float32 11kB ...
+            ...                                                        ...
+            Surface_1064_Integrated_Attenuated_Color_Ratio            (Record_Number, Sample) float32 11kB ...
+            Surface_Detection_Flags_1064                              (Record_Number, Sample) float32 11kB ...
+            Surface_Overlying_Integrated_Attenuated_Backscatter_1064  (Record_Number, Sample) float32 11kB ...
+            Surface_Scaled_RMS_Background_1064                        (Record_Number, Sample) float32 11kB ...
+            Surface_Peak_Signal_1064                                  (Record_Number, Sample) float32 11kB ...
+            Surface_Detections_333m_1064                              (Record_Number, Sample) float32 11kB ...</pre><div class='xr-wrap' style='display:none'><div class='xr-header'><div class='xr-obj-type'>xarray.DataTree</div></div><ul class='xr-sections'><li class='xr-section-item'><div class='xr-children'><div class='xr-group-box'><div class='xr-group-box-vline' style='height: 100%'></div><div class='xr-group-box-hline'></div><div class='xr-group-box-contents'><input id='group-72cf0756-a291-4694-8cb5-a21b22585d36' type='checkbox' checked /><label for='group-72cf0756-a291-4694-8cb5-a21b22585d36' title='Expand/collapse group'>/Ocean_Derived_Column_Optical_Depth<span>(5)</span></label><ul class='xr-sections'><li class='xr-section-item'><input id='section-f478a8fd-a94c-49c1-8e02-aef7c97b9251' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-f478a8fd-a94c-49c1-8e02-aef7c97b9251' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>Record_Number</span>: 2843</li><li><span>Sample</span>: 1</li><li><span>Altitude_Record_Number</span>: 1</li><li><span>Lidar_Data_Altitudes</span>: 583</li><li><span>Directions</span>: 2</li></ul></div></li><li class='xr-section-item'><input id='section-082115e8-3c3d-4cbf-bbe9-66bc3f55dd0a' class='xr-section-summary-in' type='checkbox' checked /><label for='section-082115e8-3c3d-4cbf-bbe9-66bc3f55dd0a' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(5)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>ODCOD_Effective_Optical_Depth_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.143 0.679 0.09383 ... nan nan nan</div><input id='attrs-0b7776bc-b73a-4a5c-ac46-7edbbb2ebdd4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-0b7776bc-b73a-4a5c-ac46-7edbbb2ebdd4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-5a41d8c5-6ee0-4d84-90ca-ba15eed9bdc5' class='xr-var-data-in' type='checkbox'><label for='data-5a41d8c5-6ee0-4d84-90ca-ba15eed9bdc5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[ 0. 25.]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Column estimate of apparent (multiple scattering effects not accounted for) optical depth at 532nm wavelength for all particulate (clouds and aerosols) within the illuminated volume from just above the lidar detected ocean surface to the CALIPSO top of atmosphere.</dd><dt><span>dmr_sds_ref :</span></dt><dd>82</dd></dl></div><div class='xr-var-data'><pre>array([[0.14298336],[0.6790115 ],[0.09382977],...,[       nan],[       nan],[       nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>ODCOD_Effective_Optical_Depth_532_Uncertainty</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.06697 0.06649 0.06684 ... nan nan</div><input id='attrs-6768fdaa-1aa3-4eb7-8784-dc9d6f95923d' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-6768fdaa-1aa3-4eb7-8784-dc9d6f95923d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-dede1127-46a1-4f8b-be62-0616d1f3e760' class='xr-var-data-in' type='checkbox'><label for='data-dede1127-46a1-4f8b-be62-0616d1f3e760' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>An analytical estimate of the absolute standard deviation uncertainty in the ODCOD Effective Optical Depth estimate at 532 nm.</dd><dt><span>dmr_sds_ref :</span></dt><dd>83</dd></dl></div><div class='xr-var-data'><pre>array([[0.06697307],[0.06648565],[0.06683574],...,[       nan],[       nan],[       nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>ODCOD_QC_Flag_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>0.0 0.0 0.0 ... 1.024e+03 1.024e+03</div><input id='attrs-10518961-316d-4931-baf2-aa3da1e61a07' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-10518961-316d-4931-baf2-aa3da1e61a07' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-1ea5a867-184b-4a9a-83fe-14949d3e959f' class='xr-var-data-in' type='checkbox'><label for='data-1ea5a867-184b-4a9a-83fe-14949d3e959f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>UInt_32</dd><dt><span>valid_range :</span></dt><dd>[         0 4294967295]</dd><dt><span>comment :</span></dt><dd>Ocean Derived Column Optical Depth (ODCOD) quality control flags; least significant bit = bit 1 (bit; interpretation):bit 1; The fundamental time delay was shifted from the first pointbit 2; Lidar surface data too many data points for a valid surface spikebit 3; Range bin above recorded lidar surface data addedbit 4; Range bin below recorded lidar surface data addedbit 5; The surface point ratio indicated that the first point of the surface spike is missingbit 6; To find the time delay, the surface spike index range had to be shifted downbit 7; The retrieval inputs fall outside of confidence ranges indicating a confident retrievalbits 8-10; Unused, nonebit 11; No Lidar surface was foundbit 12; The surface is not oceanbit 13; The surface is icebit 14; The wind speed is outside the valid range; 0.025 to 43 m/sbit 15; The fundamental time delay found was too low and there were not enough points to find a new onebit 16; Too few data points to solvebit 17; The low pass filter impulse response model curve area was too largebit 18; The low pass filter impulse response model curve scale factor could not be foundbit 19; Lidar surface saturatedbit 20; Lidar surface has negative signal anomalybit 21; Lidar surface data is not validbit 22; Flags bad input/ancillary databit 23; No Lidar surface was detected via derivative method at greater than single shot resolutionsbits 24-32; Unused, none</dd><dt><span>dmr_sds_ref :</span></dt><dd>84</dd></dl></div><div class='xr-var-data'><pre>array([[   0.],[   0.],[   0.],...,[1024.],[1024.],[1024.]], shape=(2843, 1))</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>ODCOD_Surface_Wind_Speeds_10m</span></div><div class='xr-var-dims'>(Record_Number, Directions)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-4.195 0.2132 ... 7.419 0.1874</div><input id='attrs-70fb0efb-a567-4eea-9cb2-7947a1c4e812' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-70fb0efb-a567-4eea-9cb2-7947a1c4e812' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-6ca1dd05-66d6-40a8-84e0-c14a415d2e93' class='xr-var-data-in' type='checkbox'><label for='data-6ca1dd05-66d6-40a8-84e0-c14a415d2e93' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>m/s</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-43.  43.]</dd><dt><span>comment :</span></dt><dd>Mean zonal and meridional component of the surface wind speed 10 meters above the surface provided by MERRA-2. First Dimension = eastward, zonal, u; Second Dimension = northward, meridional, v.</dd><dt><span>dmr_sds_ref :</span></dt><dd>85</dd></dl></div><div class='xr-var-data'><pre>array([[-4.194588  ,  0.21321225],[-4.1945953 ,  0.21320756],[-4.194603  ,  0.2132029 ],...,[ 7.4190497 ,  0.1874183 ],[ 7.4190655 ,  0.18738453],[ 7.419081  ,  0.18735075]], shape=(2843, 2), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>ODCOD_Surface_Wind_Speed_Correction</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>1.113 1.111 ... -0.121 -0.1199</div><input id='attrs-93893e3d-634f-4f93-89ad-5be16c02d852' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-93893e3d-634f-4f93-89ad-5be16c02d852' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-74932bc5-e6f8-4216-98e3-44aa8812c2c1' class='xr-var-data-in' type='checkbox'><label for='data-74932bc5-e6f8-4216-98e3-44aa8812c2c1' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>m/s</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-43.  43.]</dd><dt><span>comment :</span></dt><dd>An additive correction derived from AMSR analysis applied to the MERRA-2 wind speed magnitude calculated from the zonal winds reported in ODCOD Surface Wind Speeds 10 m.</dd><dt><span>dmr_sds_ref :</span></dt><dd>86</dd></dl></div><div class='xr-var-data'><pre>array([[ 1.1127212 ],[ 1.1106881 ],[ 1.108656  ],...,[-0.12215707],[-0.1210348 ],[-0.11991166]], shape=(2843, 1), dtype=float32)</pre></div></li></ul></div></li></ul></div></div><div class='xr-group-box'><div class='xr-group-box-vline' style='height: 1.2em'></div><div class='xr-group-box-hline'></div><div class='xr-group-box-contents'><input id='group-8426df15-a320-46c7-b52c-cdb836a596a5' type='checkbox' checked /><label for='group-8426df15-a320-46c7-b52c-cdb836a596a5' title='Expand/collapse group'>/Lidar_Surface_Detection<span>(20)</span></label><ul class='xr-sections'><li class='xr-section-item'><input id='section-2df97416-43a7-4d2f-ba9a-8c95b37ce427' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-2df97416-43a7-4d2f-ba9a-8c95b37ce427' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>Record_Number</span>: 2843</li><li><span>Sample</span>: 1</li><li><span>Altitude_Record_Number</span>: 1</li><li><span>Lidar_Data_Altitudes</span>: 583</li></ul></div></li><li class='xr-section-item'><input id='section-e1c44f4a-90c4-438c-aedf-a6ec6001584b' class='xr-section-summary-in' type='checkbox' /><label for='section-e1c44f4a-90c4-438c-aedf-a6ec6001584b' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(20)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Top_Altitude_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-0.007116 -0.007116 ... nan nan</div><input id='attrs-1bb54223-2b84-4b39-8f3a-a4f97ae17e99' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1bb54223-2b84-4b39-8f3a-a4f97ae17e99' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-b58648de-caea-47ae-8bd8-0a42b893bca7' class='xr-var-data-in' type='checkbox'><label for='data-b58648de-caea-47ae-8bd8-0a42b893bca7' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>km</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-0.5         8.19999981]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Top altitude of the surface return at 532 nm at the lidar footprint above local mean sea level.</dd><dt><span>dmr_sds_ref :</span></dt><dd>61</dd></dl></div><div class='xr-var-data'><pre>array([[-0.0071161],[-0.0071161],[-0.0071161],...,[       nan],[       nan],[       nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Base_Altitude_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-0.06699 -0.06699 ... nan nan</div><input id='attrs-877d74c6-3b59-44c7-b12c-ad3038b36f27' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-877d74c6-3b59-44c7-b12c-ad3038b36f27' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-c1a1a207-e03d-4f5f-8e1c-f6ef0d5f99a2' class='xr-var-data-in' type='checkbox'><label for='data-c1a1a207-e03d-4f5f-8e1c-f6ef0d5f99a2' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>km</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-0.5         8.19999981]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Base altitude of the surface return at 532 nm at the lidar footprint above local mean sea level.</dd><dt><span>dmr_sds_ref :</span></dt><dd>62</dd></dl></div><div class='xr-var-data'><pre>array([[-0.06699242],[-0.06699242],[-0.06699242],...,[        nan],[        nan],[        nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Integrated_Attenuated_Backscatter_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.03763 0.01226 0.04019 ... nan nan</div><input id='attrs-ce90b796-ef20-4421-9b6e-3e7b63cfeee5' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-ce90b796-ef20-4421-9b6e-3e7b63cfeee5' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-0d0f5ac5-a60b-4f86-abe4-3a5f4dbf5cf3' class='xr-var-data-in' type='checkbox'><label for='data-0d0f5ac5-a60b-4f86-abe4-3a5f4dbf5cf3' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>1/sr</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0. 2.]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Vertically integrated Total Attenuated Backscatter 532 nm of the surface return from Surface Top Altitude 532 to Surface Base Altitude 532.</dd><dt><span>dmr_sds_ref :</span></dt><dd>63</dd></dl></div><div class='xr-var-data'><pre>array([[0.03763214],[0.01226327],[0.04018843],...,[       nan],[       nan],[       nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_532_Integrated_Depolarization_Ratio</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.01068 -0.01596 ... nan nan</div><input id='attrs-13fec4ca-80eb-4572-9af4-0aa4014b319f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-13fec4ca-80eb-4572-9af4-0aa4014b319f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-791bfe4e-6982-4fd2-ace4-925003d9ba64' class='xr-var-data-in' type='checkbox'><label for='data-791bfe4e-6982-4fd2-ace4-925003d9ba64' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0. 1.]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Depolarization ratio of surface return at 532 nm from Surface Top Altitude 532 to Surface Base Altitude 532, computed as the ratio of vertically integrated Perpendicular Attenuated Backscatter 532 to vertically integrated Parallel Attenuated Backscatter 532.</dd><dt><span>dmr_sds_ref :</span></dt><dd>64</dd></dl></div><div class='xr-var-data'><pre>array([[ 0.01068227],[-0.0159568 ],[ 0.0091367 ],...,[        nan],[        nan],[        nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_532_Integrated_Attenuated_Color_Ratio</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.9058 0.9741 0.8407 ... nan nan</div><input id='attrs-006cff6f-7e24-49ba-85d9-114dcd74733c' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-006cff6f-7e24-49ba-85d9-114dcd74733c' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-34155479-168f-4230-b132-59165e2f6577' class='xr-var-data-in' type='checkbox'><label for='data-34155479-168f-4230-b132-59165e2f6577' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0. 2.]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Attenuated color ratio of surface return from Surface Top Altitude 532 to Surface Base Altitude 532, computed as the ratio of vertically integrated Attenuated Backscatter 1064 to vertically integrated Total Attenuated Backscatter 532.</dd><dt><span>dmr_sds_ref :</span></dt><dd>65</dd></dl></div><div class='xr-var-data'><pre>array([[0.90578914],[0.9740962 ],[0.84067374],...,[       nan],[       nan],[       nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Detection_Flags_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>1.0 1.0 1.0 ... 2.048e+03 0.0 512.0</div><input id='attrs-c0bcd7fb-7778-4b16-aa9a-50d513cebc93' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-c0bcd7fb-7778-4b16-aa9a-50d513cebc93' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-fa868d8d-7a53-4b65-8840-4398eeb8cd9f' class='xr-var-data-in' type='checkbox'><label for='data-fa868d8d-7a53-4b65-8840-4398eeb8cd9f' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>UInt_16</dd><dt><span>valid_range :</span></dt><dd>[   0 8192]</dd><dt><span>comment :</span></dt><dd>Surface detection flag, stored as a single 16-bit integer; least significant bit = bit 1 (bits; interpretation):bit 1; Surface detected (0=no, 1=yes)bits 2-3; Surface detection method0 = derivative test1 = multi-shot averaged data test2 = single shot surface detection fraction test3 = unusedbit 4; 532 nm parallel saturatedbit 5; 532 nm perpendicular saturatedbit 6; 1064 nm saturatedbit 7; 532 nm parallel negative signal anomalybit 8; 532 nm perpendicular negative signal anomalybit 9; 1064 nm negative signal anomalybit 10; Derivative method failure: Z(min gradient) &lt; Z(max gradient)bit 11; Derivative method failure: vertical extent exceeds limitbit 12; Derivative method failure: peak signal below thresholdbit 13; Failure: vertical separation between 532 and 1064 surface top altitudes exceeds allowable limitbit 14; Failure: surface detected at 1064 nm only, but overlying color ratio below thresholdbits 15-16; Unused</dd><dt><span>dmr_sds_ref :</span></dt><dd>66</dd></dl></div><div class='xr-var-data'><pre>array([[1.000e+00],[1.000e+00],[1.000e+00],...,[2.048e+03],[0.000e+00],[5.120e+02]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Overlying_Integrated_Attenuated_Backscatter_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.01933 0.06524 ... 0.06305 0.06037</div><input id='attrs-f8dc37f3-e571-4859-9cbe-eec295312e3f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-f8dc37f3-e571-4859-9cbe-eec295312e3f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-28f9e86e-29f3-4392-b9aa-54d6592d3e4b' class='xr-var-data-in' type='checkbox'><label for='data-28f9e86e-29f3-4392-b9aa-54d6592d3e4b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>1/sr</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0. 2.]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Vertically integrated Total Attenuated Backscatter 532 from 40 km to one range bin above Surface Top Altitude 532.</dd><dt><span>dmr_sds_ref :</span></dt><dd>67</dd></dl></div><div class='xr-var-data'><pre>array([[0.01933475],[0.06523918],[0.01138037],...,[0.05815685],[0.06304639],[0.06036561]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Scaled_RMS_Background_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.001747 0.003328 ... 0.00355</div><input id='attrs-17d7581c-78c2-47b0-9ec9-985c8ec45799' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-17d7581c-78c2-47b0-9ec9-985c8ec45799' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ac9993ac-217b-412a-82eb-c7bc91ed43bf' class='xr-var-data-in' type='checkbox'><label for='data-ac9993ac-217b-412a-82eb-c7bc91ed43bf' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>1/(km * sr)</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0.   0.05]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Background noise estimate computed from RMS baseline noise measurements between 65 and 80 km above mean sea level, rescaled to create a pseudo 532 nm attenuated backscatter coefficient.</dd><dt><span>dmr_sds_ref :</span></dt><dd>68</dd></dl></div><div class='xr-var-data'><pre>array([[0.00174663],[0.00332825],[0.00188282],...,[0.00335313],[0.00346344],[0.00355018]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Peak_Signal_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.6915 0.2512 ... 0.006846 0.003678</div><input id='attrs-003ce2d4-68e3-4123-9d7a-d3d2deb14953' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-003ce2d4-68e3-4123-9d7a-d3d2deb14953' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e5b5ec3e-81dd-4616-932a-a07554d7cd7a' class='xr-var-data-in' type='checkbox'><label for='data-e5b5ec3e-81dd-4616-932a-a07554d7cd7a' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>1/(km * sr)</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0.  3.5]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Maximum 532 nm attenuated backscatter value of the surface signal.</dd><dt><span>dmr_sds_ref :</span></dt><dd>69</dd></dl></div><div class='xr-var-data'><pre>array([[0.6914887 ],[0.25115013],[0.80445683],...,[0.00827278],[0.00684649],[0.00367826]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Detections_333m_532</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.0 1.0 3.0 3.0 ... 0.0 0.0 0.0 0.0</div><input id='attrs-1cfed96d-c571-4091-9760-181a6b6c2b4e' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-1cfed96d-c571-4091-9760-181a6b6c2b4e' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-b042ca60-d1ac-42ef-a2ee-7fdc66177a63' class='xr-var-data-in' type='checkbox'><label for='data-b042ca60-d1ac-42ef-a2ee-7fdc66177a63' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Int_16</dd><dt><span>valid_range :</span></dt><dd>[ 0 15]</dd><dt><span>flag_values :</span></dt><dd>-111 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Number of single shot profiles (1/3 km resolution) within each 5 km resolution profile where surface was detected for the 532 nm channel.</dd><dt><span>dmr_sds_ref :</span></dt><dd>70</dd></dl></div><div class='xr-var-data'><pre>array([[3.],[1.],[3.],...,[0.],[0.],[0.]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Top_Altitude_1064</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.02282 0.02282 0.02282 ... nan nan</div><input id='attrs-61609573-26d1-4fb0-8ea1-627e63d53e5d' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-61609573-26d1-4fb0-8ea1-627e63d53e5d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-b3a6017c-4dbe-4584-a663-255ac29eaea2' class='xr-var-data-in' type='checkbox'><label for='data-b3a6017c-4dbe-4584-a663-255ac29eaea2' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>km</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-0.5         8.19999981]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Top altitude of the surface return at 1064 nm at the lidar footprint above local mean sea level.</dd><dt><span>dmr_sds_ref :</span></dt><dd>71</dd></dl></div><div class='xr-var-data'><pre>array([[0.02282206],[0.02282206],[0.02282206],...,[       nan],[       nan],[       nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Base_Altitude_1064</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-0.09693 -0.09693 ... nan nan</div><input id='attrs-9fd8db09-fcf2-4edb-9bf4-c07016b39403' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9fd8db09-fcf2-4edb-9bf4-c07016b39403' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ca2f0a15-6cda-4166-bdb9-d90a49ebe8ce' class='xr-var-data-in' type='checkbox'><label for='data-ca2f0a15-6cda-4166-bdb9-d90a49ebe8ce' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>km</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-0.5         8.19999981]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Base altitude of the surface return at 1064 nm at the lidar footprint above local mean sea level.</dd><dt><span>dmr_sds_ref :</span></dt><dd>72</dd></dl></div><div class='xr-var-data'><pre>array([[-0.09693058],[-0.09693058],[-0.09693058],...,[        nan],[        nan],[        nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Integrated_Attenuated_Backscatter_1064</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.04808 0.01664 0.04656 ... nan nan</div><input id='attrs-adf34fe2-8237-4cbf-97f2-e1adae84292d' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-adf34fe2-8237-4cbf-97f2-e1adae84292d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-e4947f0b-9527-416f-8b83-bb6e19a4517a' class='xr-var-data-in' type='checkbox'><label for='data-e4947f0b-9527-416f-8b83-bb6e19a4517a' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>1/sr</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0. 2.]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Vertically integrated Total Attenuated Backscatter 1064 nm of the surface return from Surface Top Altitude 1064 to Surface Base Altitude 1064.</dd><dt><span>dmr_sds_ref :</span></dt><dd>73</dd></dl></div><div class='xr-var-data'><pre>array([[0.04807623],[0.01664365],[0.04656009],...,[       nan],[       nan],[       nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_1064_Integrated_Depolarization_Ratio</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.0128 -0.03049 0.00924 ... nan nan</div><input id='attrs-d264eb44-c4f8-41b7-95de-70799443c59f' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-d264eb44-c4f8-41b7-95de-70799443c59f' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-cd2f629f-f3cb-4fae-b895-2cfd9e8d5b6d' class='xr-var-data-in' type='checkbox'><label for='data-cd2f629f-f3cb-4fae-b895-2cfd9e8d5b6d' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0. 1.]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Depolarization ratio of surface return at 532 nm from Surface Top Altitude 1064 to Surface Base Altitude 1064, computed as the ratio of vertically integrated Perpendicular Attenuated Backscatter 532 to vertically integrated Parallel Attenuated Backscatter 532.</dd><dt><span>dmr_sds_ref :</span></dt><dd>74</dd></dl></div><div class='xr-var-data'><pre>array([[ 0.01280225],[-0.03049067],[ 0.00923955],...,[        nan],[        nan],[        nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_1064_Integrated_Attenuated_Color_Ratio</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>1.185 1.292 1.094 ... nan nan nan</div><input id='attrs-d2dc6405-56be-4000-95b3-b4704ffa9fb4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-d2dc6405-56be-4000-95b3-b4704ffa9fb4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-50bf16bc-5e2f-435e-adb6-73828fcdc065' class='xr-var-data-in' type='checkbox'><label for='data-50bf16bc-5e2f-435e-adb6-73828fcdc065' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0. 2.]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Attenuated color ratio of surface return from Surface Top Altitude 1064 to Surface Base 1064, computed as the ratio of vertically integrated Attenuated Backscatter 1064 to vertically integrated Total Attenuated Backscatter 532.</dd><dt><span>dmr_sds_ref :</span></dt><dd>75</dd></dl></div><div class='xr-var-data'><pre>array([[1.1851143],[1.2924207],[1.0943058],...,[      nan],[      nan],[      nan]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Detection_Flags_1064</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>1.0 1.0 1.0 ... 512.0 2.048e+03</div><input id='attrs-85115335-052d-4b6c-bd50-28125943a88d' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-85115335-052d-4b6c-bd50-28125943a88d' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-28c35046-50d9-418a-8117-dd1e5b15b706' class='xr-var-data-in' type='checkbox'><label for='data-28c35046-50d9-418a-8117-dd1e5b15b706' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>UInt_16</dd><dt><span>valid_range :</span></dt><dd>[    0 16384]</dd><dt><span>comment :</span></dt><dd>Surface detection flag, stored as a single 16-bit integer; least significant bit = bit 1 (bits; interpretation):bit 1; Surface detected (0=no, 1=yes)bits 2-3; Surface detection method0 = derivative test1 = multi-shot averaged data test2 = single shot surface detection fraction test3 = unusedbit 4; 532 nm parallel saturatedbit 5; 532 nm perpendicular saturatedbit 6; 1064 nm saturatedbit 7; 532 nm parallel negative signal anomalybit 8; 532 nm perpendicular negative signal anomalybit 9; 1064 nm negative signal anomalybit 10; Derivative method failure: Z(min gradient) &lt; Z(max gradient)bit 11; Derivative method failure: vertical extent exceeds limitbit 12; Derivative method failure: peak signal below thresholdbit 13; Failure: vertical separation between 532 and 1064 surface top altitudes exceeds allowable limitbit 14; Failure: surface detected at 1064 nm only, but overlying color ratio below thresholdbits 15-16; Unused</dd><dt><span>dmr_sds_ref :</span></dt><dd>76</dd></dl></div><div class='xr-var-data'><pre>array([[1.000e+00],[1.000e+00],[1.000e+00],...,[2.048e+03],[5.120e+02],[2.048e+03]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Overlying_Integrated_Attenuated_Backscatter_1064</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-0.002105 0.05221 ... 0.06224</div><input id='attrs-c748e33b-a643-4e7a-b4b1-ae86689b9679' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-c748e33b-a643-4e7a-b4b1-ae86689b9679' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-dc3f3735-ed38-454b-bf1b-f9db9bf5e43c' class='xr-var-data-in' type='checkbox'><label for='data-dc3f3735-ed38-454b-bf1b-f9db9bf5e43c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>1/sr</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0. 2.]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Vertically integrated Attenuated Backscatter 1064 from 40 km to one range bin above Surface Top Altitude 1064.</dd><dt><span>dmr_sds_ref :</span></dt><dd>77</dd></dl></div><div class='xr-var-data'><pre>array([[-0.00210548],[ 0.0522145 ],[-0.0104142 ],...,[ 0.06297688],[ 0.07249936],[ 0.06223845]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Scaled_RMS_Background_1064</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.00349 0.003888 ... 0.004178</div><input id='attrs-14f3adba-992d-4609-a9b9-7cc4590503f4' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-14f3adba-992d-4609-a9b9-7cc4590503f4' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-36e6f67b-ac40-45ca-9b9f-caced6cf3bd0' class='xr-var-data-in' type='checkbox'><label for='data-36e6f67b-ac40-45ca-9b9f-caced6cf3bd0' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>1/(km * sr)</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0.   0.05]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Background noise estimate computed from RMS baseline noise measurements between 65 and 80 km above mean sea level, rescaled to create a pseudo 1064 nm attenuated backscatter coefficient.</dd><dt><span>dmr_sds_ref :</span></dt><dd>78</dd></dl></div><div class='xr-var-data'><pre>array([[0.00348963],[0.00388755],[0.00347075],...,[0.00405319],[0.0043332 ],[0.00417774]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Peak_Signal_1064</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>0.5611 0.2159 ... 0.001354 0.006056</div><input id='attrs-4d439ba4-958d-4ac8-989e-0d27c8436f55' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-4d439ba4-958d-4ac8-989e-0d27c8436f55' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-7cda5627-0e4f-4b04-875b-9467bf6ad422' class='xr-var-data-in' type='checkbox'><label for='data-7cda5627-0e4f-4b04-875b-9467bf6ad422' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>1/(km * sr)</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[0.  3.5]</dd><dt><span>flag_values :</span></dt><dd>-111.0 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Maximum 1064 nm attenuated backscatter value of the surface signal.</dd><dt><span>dmr_sds_ref :</span></dt><dd>79</dd></dl></div><div class='xr-var-data'><pre>array([[0.5610632 ],[0.2158587 ],[0.60161084],...,[0.00352693],[0.00135378],[0.00605645]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Surface_Detections_333m_1064</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>3.0 1.0 3.0 3.0 ... 0.0 0.0 0.0 0.0</div><input id='attrs-fc051d57-5317-4677-8475-f28a251ec850' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-fc051d57-5317-4677-8475-f28a251ec850' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-32d75eae-b7b4-44c4-8bd0-126829d95bbf' class='xr-var-data-in' type='checkbox'><label for='data-32d75eae-b7b4-44c4-8bd0-126829d95bbf' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Int_16</dd><dt><span>valid_range :</span></dt><dd>[ 0 15]</dd><dt><span>flag_values :</span></dt><dd>-111 (data quality degraded due to low laser energy)</dd><dt><span>comment :</span></dt><dd>Number of single shot profiles (1/3 km resolution) within each 5 km resolution profile where surface was detected for the 1064 nm channel.</dd><dt><span>dmr_sds_ref :</span></dt><dd>80</dd></dl></div><div class='xr-var-data'><pre>array([[3.],[1.],[3.],...,[0.],[0.],[0.]], shape=(2843, 1), dtype=float32)</pre></div></li></ul></div></li></ul></div></div></div></li><li class='xr-section-item'><input id='section-9bcca479-5d9d-4ccf-93c1-8b44e9a78c7e' class='xr-section-summary-in' type='checkbox' disabled /><label for='section-9bcca479-5d9d-4ccf-93c1-8b44e9a78c7e' class='xr-section-summary'>Dimensions:</label><div class='xr-section-inline-details'><ul class='xr-dim-list'><li><span>Record_Number</span>: 2843</li><li><span>Sample</span>: 1</li><li><span>Altitude_Record_Number</span>: 1</li><li><span>Lidar_Data_Altitudes</span>: 583</li></ul></div></li><li class='xr-section-item'><input id='section-729d3bcd-54e4-490a-9b78-9311055c5c10' class='xr-section-summary-in' type='checkbox' checked /><label for='section-729d3bcd-54e4-490a-9b78-9311055c5c10' class='xr-section-summary' title='Expand/collapse section'>Coordinates: <span>(1)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>Lidar_Data_Altitudes</span></div><div class='xr-var-dims'>(Altitude_Record_Number, Lidar_Data_Altitudes)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>39.8 39.5 39.2 ... -1.519 -1.818</div><input id='attrs-7a626610-14ba-4d68-8b4a-a1114c1d564b' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-7a626610-14ba-4d68-8b4a-a1114c1d564b' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-bf476286-89bc-477d-be52-679e0b0a7f0c' class='xr-var-data-in' type='checkbox'><label for='data-bf476286-89bc-477d-be52-679e0b0a7f0c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>km</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-2. 40.]</dd><dt><span>comment :</span></dt><dd>Lidar data altitudes, totaling 583 range bins, to which the profiles are registered (above mean sea level).</dd><dt><span>dmr_sds_ref :</span></dt><dd>2</dd></dl></div><div class='xr-var-data'><pre>array([[ 3.97956696e+01,  3.94962883e+01,  3.91969070e+01,
+         3.88975220e+01,  3.85981407e+01,  3.82987595e+01,
+         3.79993782e+01,  3.76999969e+01,  3.74006157e+01,
+         3.71012344e+01,  3.68018532e+01,  3.65024719e+01,
+         3.62030907e+01,  3.59037094e+01,  3.56043243e+01,
+         3.53049431e+01,  3.50055618e+01,  3.47061806e+01,
+         3.44067993e+01,  3.41074181e+01,  3.38080368e+01,
+         3.35086555e+01,  3.32092743e+01,  3.29098930e+01,
+         3.26105118e+01,  3.23111267e+01,  3.20117455e+01,
+         3.17123661e+01,  3.14129829e+01,  3.11136017e+01,
+         3.08142204e+01,  3.05148392e+01,  3.02154579e+01,
+         2.99759521e+01,  2.97963238e+01,  2.96166935e+01,
+         2.94370651e+01,  2.92574368e+01,  2.90778065e+01,
+         2.88981781e+01,  2.87185497e+01,  2.85389194e+01,
+         2.83592911e+01,  2.81796627e+01,  2.80000324e+01,
+         2.78204041e+01,  2.76407757e+01,  2.74611473e+01,
+         2.72815170e+01,  2.71018887e+01,  2.69222603e+01,
+         2.67426300e+01,  2.65630016e+01,  2.63833733e+01,
+         2.62037430e+01,  2.60241146e+01,  2.58444862e+01,
+         2.56648560e+01,  2.54852276e+01,  2.53055992e+01,
+...
+         1.10059583e+00,  1.07065773e+00,  1.04071951e+00,
+         1.01078141e+00,  9.80843186e-01,  9.50905025e-01,
+         9.20966864e-01,  8.91028702e-01,  8.61090541e-01,
+         8.31152380e-01,  8.01214218e-01,  7.71276057e-01,
+         7.41337895e-01,  7.11399734e-01,  6.81461573e-01,
+         6.51523411e-01,  6.21585250e-01,  5.91647089e-01,
+         5.61708927e-01,  5.31770766e-01,  5.01832604e-01,
+         4.71894473e-01,  4.41956311e-01,  4.12018150e-01,
+         3.82079989e-01,  3.52141827e-01,  3.22203666e-01,
+         2.92265505e-01,  2.62327343e-01,  2.32389182e-01,
+         2.02451020e-01,  1.72512859e-01,  1.42574698e-01,
+         1.12636544e-01,  8.26983824e-02,  5.27602211e-02,
+         2.28220616e-02, -7.11609982e-03, -3.70542593e-02,
+        -6.69924244e-02, -9.69305784e-02, -1.26868740e-01,
+        -1.56806901e-01, -1.86745062e-01, -2.16683224e-01,
+        -2.46621385e-01, -2.76559561e-01, -3.06497693e-01,
+        -3.36435854e-01, -3.66374016e-01, -3.96312177e-01,
+        -4.26250339e-01, -4.56188500e-01, -6.20848417e-01,
+        -9.20230031e-01, -1.21961164e+00, -1.51899326e+00,
+        -1.81837487e+00]], dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-36c505d5-278a-4e1e-9fb3-ae81ad51d01d' class='xr-section-summary-in' type='checkbox' checked /><label for='section-36c505d5-278a-4e1e-9fb3-ae81ad51d01d' class='xr-section-summary' title='Expand/collapse section'>Data variables: <span>(8)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><ul class='xr-var-list'><li class='xr-var-item'><div class='xr-var-name'><span>Profile_ID</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>int32</div><div class='xr-var-preview xr-preview'>93378 93381 93384 ... 101901 101904</div><input id='attrs-d9249942-e554-4ee3-8920-d8f38962dd38' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-d9249942-e554-4ee3-8920-d8f38962dd38' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-a00980d1-a2f6-4618-91de-932342d58792' class='xr-var-data-in' type='checkbox'><label for='data-a00980d1-a2f6-4618-91de-932342d58792' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Int_32</dd><dt><span>valid_range :</span></dt><dd>[     1 228630]</dd><dt><span>comment :</span></dt><dd>Unique profile identifier generated sequentially for each profile record.  Profile IDs are unique within each granule but not unique over multiple granules.</dd><dt><span>dmr_sds_ref :</span></dt><dd>3</dd></dl></div><div class='xr-var-data'><pre>array([[ 93378],
+       [ 93381],
+       [ 93384],
+       ...,
+       [101898],
+       [101901],
+       [101904]], shape=(2843, 1), dtype=int32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Latitude</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>5.639 5.648 5.657 ... 31.23 31.24</div><input id='attrs-9bd2533a-5e98-4d7f-893a-d2a32f971d62' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-9bd2533a-5e98-4d7f-893a-d2a32f971d62' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-66d08da8-ef66-4cd1-a676-ba78fd38503b' class='xr-var-data-in' type='checkbox'><label for='data-66d08da8-ef66-4cd1-a676-ba78fd38503b' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-90.  90.]</dd><dt><span>comment :</span></dt><dd>Geodetic latitude of the laser footprint on the Earth&#x27;s surface.</dd><dt><span>dmr_sds_ref :</span></dt><dd>4</dd></dl></div><div class='xr-var-data'><pre>array([[ 5.6391463],
+       [ 5.648183 ],
+       [ 5.6572194],
+       ...,
+       [31.219042 ],
+       [31.22801  ],
+       [31.236977 ]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Longitude</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-115.0 -115.0 ... -121.0 -121.0</div><input id='attrs-af8d04a1-1419-4dc8-be1c-72a8db6ed684' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-af8d04a1-1419-4dc8-be1c-72a8db6ed684' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-ceef1201-6906-440a-89ec-6a32484e1a96' class='xr-var-data-in' type='checkbox'><label for='data-ceef1201-6906-440a-89ec-6a32484e1a96' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-180.  180.]</dd><dt><span>comment :</span></dt><dd>Longitude of the laser footprint on the Earth&#x27;s surface.</dd><dt><span>dmr_sds_ref :</span></dt><dd>5</dd></dl></div><div class='xr-var-data'><pre>array([[-115.001785],
+       [-115.00375 ],
+       [-115.00571 ],
+       ...,
+       [-120.992325],
+       [-120.99475 ],
+       [-120.99718 ]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Profile_Time</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>9.205e+08 9.205e+08 ... 9.205e+08</div><input id='attrs-24ebbf03-4c07-48fb-b572-e88f351f0f57' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-24ebbf03-4c07-48fb-b572-e88f351f0f57' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-aca23241-1062-410c-8238-427d1fffaf7a' class='xr-var-data-in' type='checkbox'><label for='data-aca23241-1062-410c-8238-427d1fffaf7a' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>TAI seconds</dd><dt><span>format :</span></dt><dd>Float_64</dd><dt><span>valid_range :</span></dt><dd>[4.203e+08 9.623e+08]</dd><dt><span>comment :</span></dt><dd>International Atomic Time (TAI) in elapsed seconds from January 1, 1993.</dd><dt><span>dmr_sds_ref :</span></dt><dd>6</dd></dl></div><div class='xr-var-data'><pre>array([[9.20499444e+08],
+       [9.20499445e+08],
+       [9.20499445e+08],
+       ...,
+       [9.20499867e+08],
+       [9.20499867e+08],
+       [9.20499867e+08]], shape=(2843, 1))</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Profile_UTC_Time</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float64</div><div class='xr-var-preview xr-preview'>2.203e+05 2.203e+05 ... 2.203e+05</div><input id='attrs-afef9936-9ae3-46c7-8392-8a17daf99a60' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-afef9936-9ae3-46c7-8392-8a17daf99a60' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-06bf06fd-2803-4c4c-b8a7-5fba144fce92' class='xr-var-data-in' type='checkbox'><label for='data-06bf06fd-2803-4c4c-b8a7-5fba144fce92' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>yymmdd.ffffffff</dd><dt><span>format :</span></dt><dd>Float_64</dd><dt><span>valid_range :</span></dt><dd>[ 60428. 230701.]</dd><dt><span>comment :</span></dt><dd>Coordinated Universal Time (UTC); format = yymmdd.ffffffff, where yy is a two digit data acquisition year number (06 to 23), mm is a month number (01 to 12), dd is a day number (1 to 31), and ffffffff is the elapsed fraction of the data acquisition day.</dd><dt><span>dmr_sds_ref :</span></dt><dd>7</dd></dl></div><div class='xr-var-data'><pre>array([[220303.92863939],
+       [220303.92864111],
+       [220303.92864284],
+       ...,
+       [220303.93353048],
+       [220303.9335322 ],
+       [220303.93353392]], shape=(2843, 1))</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Day_Night_Flag</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>int8</div><div class='xr-var-preview xr-preview'>0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0</div><input id='attrs-5229d228-598f-4a2d-abe0-6cb195f724d8' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-5229d228-598f-4a2d-abe0-6cb195f724d8' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-f9cf6a74-0516-485f-9e39-4ec081cd6524' class='xr-var-data-in' type='checkbox'><label for='data-f9cf6a74-0516-485f-9e39-4ec081cd6524' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>NoUnits</dd><dt><span>format :</span></dt><dd>Int_8</dd><dt><span>valid_range :</span></dt><dd>[0 1]</dd><dt><span>comment :</span></dt><dd>Lighting conditions at an altitude of ~24 km above mean sea level (value - lighting):
+	 0 - daytime
+	 1 - nighttime</dd><dt><span>dmr_sds_ref :</span></dt><dd>8</dd></dl></div><div class='xr-var-data'><pre>array([[0],
+       [0],
+       [0],
+       ...,
+       [0],
+       [0],
+       [0]], shape=(2843, 1), dtype=int8)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Tropopause_Height</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>16.65 16.65 16.65 ... 14.4 14.4</div><input id='attrs-4c79df76-0526-4054-a20c-f501cd6379a2' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-4c79df76-0526-4054-a20c-f501cd6379a2' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-89578c85-0e18-4199-965f-a83d6e67b6c5' class='xr-var-data-in' type='checkbox'><label for='data-89578c85-0e18-4199-965f-a83d6e67b6c5' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>km</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[ 4. 22.]</dd><dt><span>comment :</span></dt><dd>Tropopause height. Provided by MERRA-2.</dd><dt><span>dmr_sds_ref :</span></dt><dd>22</dd></dl></div><div class='xr-var-data'><pre>array([[16.645674],
+       [16.64567 ],
+       [16.645668],
+       ...,
+       [14.396784],
+       [14.396773],
+       [14.396762]], shape=(2843, 1), dtype=float32)</pre></div></li><li class='xr-var-item'><div class='xr-var-name'><span>Tropopause_Temperature</span></div><div class='xr-var-dims'>(Record_Number, Sample)</div><div class='xr-var-dtype'>float32</div><div class='xr-var-preview xr-preview'>-78.8 -78.8 -78.8 ... -57.46 -57.46</div><input id='attrs-963eab27-7257-4eba-be94-579b804c0db1' class='xr-var-attrs-in' type='checkbox' ><label for='attrs-963eab27-7257-4eba-be94-579b804c0db1' title='Show/Hide attributes'><svg class='icon xr-icon-file-text2'><use xlink:href='#icon-file-text2'></use></svg></label><input id='data-39a3d42e-f5fa-4ad2-9efc-adde01b9778c' class='xr-var-data-in' type='checkbox'><label for='data-39a3d42e-f5fa-4ad2-9efc-adde01b9778c' title='Show/Hide data repr'><svg class='icon xr-icon-database'><use xlink:href='#icon-database'></use></svg></label><div class='xr-var-attrs'><dl class='xr-attrs'><dt><span>units :</span></dt><dd>degC</dd><dt><span>format :</span></dt><dd>Float_32</dd><dt><span>valid_range :</span></dt><dd>[-95. -20.]</dd><dt><span>comment :</span></dt><dd>Tropopause temperature. Provided by MERRA-2.</dd><dt><span>dmr_sds_ref :</span></dt><dd>23</dd></dl></div><div class='xr-var-data'><pre>array([[-78.79799 ],
+       [-78.79799 ],
+       [-78.798   ],
+       ...,
+       [-57.464203],
+       [-57.464203],
+       [-57.4642  ]], shape=(2843, 1), dtype=float32)</pre></div></li></ul></div></li><li class='xr-section-item'><input id='section-073c1789-a885-4c2e-8aa1-85bbb181d70d' class='xr-section-summary-in' type='checkbox' checked /><label for='section-073c1789-a885-4c2e-8aa1-85bbb181d70d' class='xr-section-summary' title='Expand/collapse section'>Attributes: <span>(2)</span></label><div class='xr-section-inline-details'></div><div class='xr-section-details'><dl class='xr-attrs'><dt><span>coremetadata :</span></dt><dd>
+GROUP                  = INVENTORYMETADATA
+  GROUPTYPE            = MASTERGROUP
+
+  GROUP                  = GRANULE
+
+    OBJECT                 = GRANULEID
+      NUM_VAL              = 1
+      VALUE                = &quot;L2_LIDAR&quot;
+    END_OBJECT             = GRANULEID
+
+    OBJECT                 = GRANULENAME
+      NUM_VAL              = 1
+      VALUE                = &quot;CAL_LID_L2_01kmCLay-Standard-V5-00.2022-03-03T21-48-52ZD.hdf&quot;
+    END_OBJECT             = GRANULENAME
+
+    OBJECT                 = GRANULEVERSION
+      NUM_VAL              = 1
+      VALUE                = &quot;V01&quot;
+    END_OBJECT             = GRANULEVERSION
+
+    OBJECT                 = DAYNIGHT
+      NUM_VAL              = 1
+      VALUE                = &quot;D&quot;
+    END_OBJECT             = DAYNIGHT
+
+    OBJECT                 = BROWSE
+      NUM_VAL              = 1
+      VALUE                = &quot;N&quot;
+    END_OBJECT             = BROWSE
+
+    OBJECT                 = GRINGTYPE
+      NUM_VAL              = 1
+      VALUE                = &quot;S&quot;
+    END_OBJECT             = GRINGTYPE
+
+  END_GROUP              = GRANULE
+
+  GROUP                  = METADATA
+
+    OBJECT                 = METADATANAME
+      NUM_VAL              = 1
+      VALUE                = &quot;CAL_LID_L2_01kmCLay-Standard-V5-00.2022-03-03T21-48-52ZD.hdf.met&quot;
+    END_OBJECT             = METADATANAME
+
+  END_GROUP              = METADATA
+
+  GROUP                  = TEMPORALINFORMATION
+
+    OBJECT                 = PRODUCTIONDATETIME
+      NUM_VAL              = 1
+      VALUE                = &quot;2025-04-16T09:45:58Z&quot;
+    END_OBJECT             = PRODUCTIONDATETIME
+
+    OBJECT                 = START_DATE
+      NUM_VAL              = 1
+      VALUE                = &quot;2022-03-03T21:48:52Z&quot;
+    END_OBJECT             = START_DATE
+
+    OBJECT                 = STOP_DATE
+      NUM_VAL              = 1
+      VALUE                = &quot;2022-03-03T22:41:32Z&quot;
+    END_OBJECT             = STOP_DATE
+
+  END_GROUP              = TEMPORALINFORMATION
+
+  GROUP                  = QA
+
+    OBJECT                 = QAFLAG
+      NUM_VAL              = 1
+      VALUE                = &quot;Passed&quot;
+    END_OBJECT             = QAFLAG
+
+    OBJECT                 = QAEXPLANATION
+      NUM_VAL              = 1
+      VALUE                = &quot;All data passed during checkout&quot;
+    END_OBJECT             = QAEXPLANATION
+
+  END_GROUP              = QA
+
+  GROUP                  = GEOMINMAX
+
+    OBJECT                 = MINLAT
+      NUM_VAL              = 1
+      VALUE                = -78.4542388916016
+    END_OBJECT             = MINLAT
+
+    OBJECT                 = MINLON
+      NUM_VAL              = 1
+      VALUE                = -143.471740722656
+    END_OBJECT             = MINLON
+
+    OBJECT                 = MAXLAT
+      NUM_VAL              = 1
+      VALUE                = 80.8529357910156
+    END_OBJECT             = MAXLAT
+
+    OBJECT                 = MAXLON
+      NUM_VAL              = 1
+      VALUE                = 124.261535644531
+    END_OBJECT             = MAXLON
+
+  END_GROUP              = GEOMINMAX
+
+  GROUP                  = GRING
+
+    OBJECT                 = GRINGCONTAINER
+      CLASS                = &quot;1&quot;
+
+      OBJECT                 = GRINGLATITUDE
+        CLASS                = &quot;1&quot;
+        NUM_VAL              = 21
+        VALUE                = (-78.4542388916016, -74.5673217773438, -54.8505783081055, -34.0021057128906, -12.86305809021, 8.38367652893066, 29.5940971374512, 50.6005935668945, 70.8433609008789, 80.8529357910156, 80.8529357910156, 70.8433609008789, 50.6005935668945, 29.5940971374512, 
+                                8.38367652893066, -12.86305809021, -34.0021057128906, -54.8505783081055, -74.5673217773438, -78.4542388916016, -78.4542388916016)
+      END_OBJECT             = GRINGLATITUDE
+
+      OBJECT                 = GRINGLONGITUDE
+        CLASS                = &quot;1&quot;
+        NUM_VAL              = 21
+        VALUE                = (27.5961761474609, -76.7712707519531, -98.0797500610352, -105.823959350586, -111.007148742676, -115.595306396484, -120.561470031738, -127.476524353027, -143.471740722656, 124.261535644531, 124.261535644531, -143.471740722656, -127.476524353027, -120.561470031738, 
+                                -115.595306396484, -111.007148742676, -105.823959350586, -98.0797500610352, -76.7712707519531, 27.5961761474609, 27.5961761474609)
+      END_OBJECT             = GRINGLONGITUDE
+
+    END_OBJECT             = GRINGCONTAINER
+
+  END_GROUP              = GRING
+
+  GROUP                  = ORBITPATH
+
+    OBJECT                 = STARTORBITNUMBER
+      NUM_VAL              = 1
+      VALUE                = 84363
+    END_OBJECT             = STARTORBITNUMBER
+
+    OBJECT                 = STOPORBITNUMBER
+      NUM_VAL              = 1
+      VALUE                = 84364
+    END_OBJECT             = STOPORBITNUMBER
+
+    OBJECT                 = ORBITCHANGETIME
+      NUM_VAL              = 1
+      VALUE                = 2.203039276213153e+05
+    END_OBJECT             = ORBITCHANGETIME
+
+    OBJECT                 = STARTPATHNUMBER
+      NUM_VAL              = 1
+      VALUE                = 141
+    END_OBJECT             = STARTPATHNUMBER
+
+    OBJECT                 = STOPPATHNUMBER
+      NUM_VAL              = 1
+      VALUE                = 157
+    END_OBJECT             = STOPPATHNUMBER
+
+    OBJECT                 = PATHCHANGETIME
+      NUM_VAL              = 1
+      VALUE                = 2.203039446990787e+05
+    END_OBJECT             = PATHCHANGETIME
+
+  END_GROUP              = ORBITPATH
+
+END_GROUP              = INVENTORYMETADATA
+
+END
+</dd><dt><span>archivemetadata :</span></dt><dd>
+GROUP                  = ARCHIVEDMETADATA
+  GROUPTYPE            = MASTERGROUP
+
+  OBJECT                 = NUMBEROFRECORDS
+    NUM_VAL              = 1
+    VALUE                = -1
+  END_OBJECT             = NUMBEROFRECORDS
+
+END_GROUP              = ARCHIVEDMETADATA
+
+END
+</dd></dl></div></li></ul></div></div></div></div>
+</div>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./notebooks"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="GetCMRURLS.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Como encontrar URLs de OPeNDAP de NASA Earthdata</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="DAYMET.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requisitos"><span style="color:#ff6666"> <strong>Requisitos</strong></span></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#objetivos"><span style="color:#ff6666"><strong>Objetivos</strong></span></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descarga-un-archivo-remoto-con-sub-selection">Descarga un archivo remoto con (sub)selection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descarga-de-multiples-archivos-remotos">Descarga de múltiples archivos remotos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#referencias"><span style="color:#ff6666"> <strong>Referencias</strong></span></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#como-encontrar-urls-de-opendap">Como encontrar URLs de OPeNDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#usando-la-api-cmr-de-nasa"><strong>Usando la API CMR de NASA</strong></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#autenticacion-edl-mediante-earthaccess-y-opendap">Autenticación EDL mediante earthaccess y OPeNDAP</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#acceso-solo-a-metadatos-con-pydap">Acceso SOLO a metadatos con PyDAP</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descargar-variables-minimas-para-identificar-el-subconjunto-espacial-y-datos-diurnos">Descargar variables mínimas para identificar el subconjunto espacial y datos diurnos</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#descarga-de-datos">Descarga de datos</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspeccionar-todos-los-archivos-descargados">Inspeccionar todos los archivos descargados</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspeccionar-visualmente-el-subconjunto">Inspeccionar visualmente el subconjunto</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#descargar-todos-los-datos-de-interes">Descargar todos los datos de interés</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#inspeccionar-un-archivo-descargado-local">Inspeccionar un archivo descargado (local)</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By OPeNDAP Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>

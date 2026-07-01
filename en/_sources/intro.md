@@ -34,12 +34,6 @@ Equitable open data access remains essential for advancing effective Open Scienc
 
 For researchers, educators, and citizen scientists, `OPeNDAP` allows to share scientific data freely under well-known standard protocols over the web, making data publishable, citable, and findable. Importantly, data users can access and subset data in a data-proximate way, downloading only the subregion of interest.
 
-Beginner OPeNDAP users may rapidly find themselves spending the time to better understand OPeNDAP to enable efficient data access. Some of the OPeNDAP elements that require developing a varying degree of skill by the user to better exploit OPeNDAP are:
-
-1. Constraint Expressions.
-2. Escaping URL characters for safe internet use.
-3. Differences between DAP2 / DAP4 protocol.
-
 
 
 ```{tableofcontents}

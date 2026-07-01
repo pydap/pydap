@@ -16,7 +16,7 @@ gtag("config", "G-EN2VD1J32L");
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Como crear el archivo .netrc &#8212; PyDAP tutorial</title>
+    <title>Crear un archivo .netrc &#8212; PyDAP tutorial</title>
   
   
   
@@ -71,8 +71,8 @@ gtag("config", "G-EN2VD1J32L");
     <script>DOCUMENTATION_OPTIONS.pagename = 'notebooks/netrc';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA" href="ECCO.html" />
-    <link rel="prev" title="Autenticacion" href="Authentication.html" />
+    <link rel="next" title="Autenticación EDL mediante earthaccess" href="earthaccess.html" />
+    <link rel="prev" title="Autenticación básica" href="Authentication.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -168,28 +168,66 @@ gtag("config", "G-EN2VD1J32L");
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inicio rápido</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Como Installar</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar Aqui</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Cómo instalar</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">Lo Nuevo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ejemplos</span></p>
 <ul class="current nav bd-sidenav">
-<li class="toctree-l1 current active has-children"><a class="reference internal" href="Authentication.html">Autenticacion</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">Como crear el archivo .netrc</a></li>
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="Authentication.html">Autenticación básica</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Crear un archivo .netrc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="earthaccess.html">Autenticación EDL mediante earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GetCMRURLS.html">Como encontrar URLs de OPeNDAP de NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="CalipsoL2_access.html">Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="DAYMET.html">Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="Ecostress.html">Acceso a datos de temperatura de superficie terrestre de ECOSTRESS de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="TEMPO_NRT.html">Acceso a datos de calidad del aire casi en tiempo real (NRT) de TEMPO mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ECCO.html">Acceso a ECCOv4 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="PACE.html">Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="MERRA2.html">Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Preguntas frecuentes</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">Como saber si el URL es DAP2 o DAP4?</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">Preguntas frecuentes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/download_speed.html">Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/diagnose_download_issues.html">¿Cómo puedo diagnosticar problemas de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">¿Esta es una URL DAP2 o DAP4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_vs_dap4.html">¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../PydapAsClient.html">PyDAP como cliente</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DAP_Protocol.html">Protocolo OPeNDAP DAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ConstraintExpressions.html">Constraint Expressions: subconjunto del lado del servidor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guía para desarrolladores</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contribuir</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../guide_to_developer.html">Guía para nuevos contribuidores</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/git.html">Guía de control de versiones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_cod.html">Contribuir al código</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_issues.html">Reportar issues en GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_docs.html">Contribuir a la documentación</a></li>
 </ul>
 </details></li>
 </ul>
@@ -327,7 +365,7 @@ gtag("config", "G-EN2VD1J32L");
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Como crear el archivo .netrc</h1>
+    <h1>Crear un archivo .netrc</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -337,7 +375,7 @@ gtag("config", "G-EN2VD1J32L");
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pasos">Pasos.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pasos-para-configurar-tu-archivo-netrc">Pasos para configurar tu archivo .netrc</a></li>
 </ul>
             </nav>
         </div>
@@ -349,28 +387,27 @@ gtag("config", "G-EN2VD1J32L");
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="como-crear-el-archivo-netrc">
-<h1>Como crear el archivo .netrc<a class="headerlink" href="#como-crear-el-archivo-netrc" title="Link to this heading">#</a></h1>
-<p>The default location for this file is on the home directory so that you are the only one who can use it. This is:</p>
-<p>La ubicacion predeterminadata donde las librarias como <code class="docutils literal notranslate"><span class="pre">curl</span></code> y <code class="docutils literal notranslate"><span class="pre">pydap</span></code> buscar el archivo <code class="docutils literal notranslate"><span class="pre">netrc</span></code> dependen del sistema operativo del usuario. Es decir, en un sistema</p>
+  <section id="crear-un-archivo-netrc">
+<h1>Crear un archivo .netrc<a class="headerlink" href="#crear-un-archivo-netrc" title="Link to this heading">#</a></h1>
+<p>La ubicación predeterminada de este archivo es el directorio home, de modo que solo tú puedas usarlo. Esto es:</p>
 <ul class="simple">
-<li><p>LinuxOS / MacOS : <code class="docutils literal notranslate"><span class="pre">~/.netrc</span></code>. El simbolo <code class="docutils literal notranslate"><span class="pre">~</span></code> se refiere al directorio de inicio.</p></li>
-<li><p>Windows: <code class="docutils literal notranslate"><span class="pre">C:\Users\&lt;User-Name&gt;/_netrc</span></code>.</p></li>
+<li><p>LinuxOS / MacOS : <code class="docutils literal notranslate"><span class="pre">~/.netrc</span></code></p></li>
+<li><p>Windows OS: <code class="docutils literal notranslate"><span class="pre">C:\Users\&lt;User-Name&gt;/_netrc</span></code>.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>En el resto de este tutorial, asumiremos que el usuario posee una computadora con sistema operativo Linux/MacOS.</p>
+<p>En el resto de este notebook asumiremos que tienes LinuxOS / MacOS.</p>
 </div>
-<section id="pasos">
-<h2>Pasos.<a class="headerlink" href="#pasos" title="Link to this heading">#</a></h2>
+<section id="pasos-para-configurar-tu-archivo-netrc">
+<h2>Pasos para configurar tu archivo .netrc<a class="headerlink" href="#pasos-para-configurar-tu-archivo-netrc" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
-<li><p>Crea el archivo en la ubicacion predeterminada.</p></li>
+<li><p>Créalo en la ubicación predeterminada</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">touch</span> <span class="o">~/.</span><span class="n">netrc</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="2">
-<li><p>Anade como contenido al archivo <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> las credenciales de autenticacion. Por ejemplo, en el caso the Earth Data Login:</p></li>
+<li><p>Agrega credenciales de autenticación (por ejemplo, Earth Data Login), usando cualquiera de los siguientes formatos:</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">machine</span> <span class="n">urs</span><span class="o">.</span><span class="n">earthdata</span><span class="o">.</span><span class="n">nasa</span><span class="o">.</span><span class="n">gov</span>
 <span class="n">login</span> <span class="o">&lt;</span><span class="n">YourEDLUserName</span><span class="o">&gt;</span>
@@ -383,21 +420,21 @@ gtag("config", "G-EN2VD1J32L");
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>El archivo <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> tambien puede contener credenciales de autenticacion. Por ejemplo en el caso de poseer una cuenta de <code class="docutils literal notranslate"><span class="pre">AVISO</span> <span class="pre">Altimetry</span></code>, puedes acceder a datos scientificos a traves de un Thredds Data Server TDS data. En este case, anades otra entrada al archivo <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> siguendo el mismo formato: <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">tds.aviso.altimetry.fr</span> <span class="pre">login</span> <span class="pre">&lt;AvisoUsername&gt;</span> <span class="pre">password</span> <span class="pre">AvisoPassword&gt;</span></code></p>
+<p>Tu <code class="docutils literal notranslate"><span class="pre">.netrc</span></code> puede contener credenciales de autenticación fuera del ámbito de NASA. Por ejemplo, si tienes una cuenta de AVISO Altimetry y quieres acceder a datos TDS, puedes agregar otra entrada a tu archivo <code class="docutils literal notranslate"><span class="pre">.netrc</span></code>, como: <code class="docutils literal notranslate"><span class="pre">machine</span> <span class="pre">tds.aviso.altimetry.fr</span> <span class="pre">login</span> <span class="pre">&lt;YourAvisoUsername&gt;</span> <span class="pre">password</span> <span class="pre">&lt;YourAvisoPassword&gt;</span></code></p>
 </div>
 <ol class="arabic simple" start="3">
-<li><p>Asigna el permiso adecuado y seguro, para poder leer el archivo <code class="docutils literal notranslate"><span class="pre">.netrc</span></code></p></li>
+<li><p>Otorga permisos a tu archivo .netrc:</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">chmod</span> <span class="mi">600</span> <span class="o">~/.</span><span class="n">netrc</span>
 </pre></div>
 </div>
 <ol class="arabic simple" start="4">
-<li><p>[Opcional] Prueba que puedes acceder a un recurso associado alguna credencial del <code class="docutils literal notranslate"><span class="pre">.netrc</span></code>. Por ejemplo, en el caso de EarthDataLogin, ejecuta el siguiente comando en la terminal:</p></li>
+<li><p>[Opcional] Prueba que se pueda usar con una herramienta de línea de comandos. Por ejemplo, con curl:</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="o">-</span><span class="n">n</span> <span class="o">&lt;</span><span class="n">OPeNDAP</span> <span class="n">EarthData</span> <span class="n">URL</span><span class="o">&gt;</span> 
 </pre></div>
 </div>
-<p>donde <code class="docutils literal notranslate"><span class="pre">-L</span></code> intruye a el comando <code class="docutils literal notranslate"><span class="pre">curl</span></code> que siga las redirecciones, y <code class="docutils literal notranslate"><span class="pre">-n</span></code> instruye a la libraria <code class="docutils literal notranslate"><span class="pre">curl</span></code> que recupere las credenciales de autenticacion del archivo <code class="docutils literal notranslate"><span class="pre">netrc</span></code> en la ubicacion pre-determinada.</p>
+<p>donde <code class="docutils literal notranslate"><span class="pre">-L</span></code> implica seguir redirecciones, y <code class="docutils literal notranslate"><span class="pre">-n</span></code> le indica a curl que busque el archivo netrc en la ubicación predeterminada.</p>
 </section>
 </section>
 
@@ -437,15 +474,15 @@ gtag("config", "G-EN2VD1J32L");
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Autenticacion</p>
+        <p class="prev-next-title">Autenticación básica</p>
       </div>
     </a>
     <a class="right-next"
-       href="ECCO.html"
+       href="earthaccess.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</p>
+        <p class="prev-next-title">Autenticación EDL mediante earthaccess</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -467,7 +504,7 @@ gtag("config", "G-EN2VD1J32L");
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pasos">Pasos.</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pasos-para-configurar-tu-archivo-netrc">Pasos para configurar tu archivo .netrc</a></li>
 </ul>
   </nav></div>
 

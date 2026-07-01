@@ -16,7 +16,7 @@ gtag("config", "G-EN2VD1J32L");
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Guide to version control &#8212; PyDAP tutorial</title>
+    <title>Guía de control de versiones &#8212; PyDAP tutorial</title>
   
   
   
@@ -71,6 +71,8 @@ gtag("config", "G-EN2VD1J32L");
     <script>DOCUMENTATION_OPTIONS.pagename = 'contribute/git';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contribuir al código" href="contr_cod.html" />
+    <link rel="prev" title="Guía para nuevos contribuidores" href="../guide_to_developer.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -122,8 +124,6 @@ gtag("config", "G-EN2VD1J32L");
       
       
       
-        
-      
       <dialog id="pst-primary-sidebar-modal"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
         
@@ -168,28 +168,66 @@ gtag("config", "G-EN2VD1J32L");
 </button></div>
         <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
     <div class="bd-toc-item navbar-nav active">
-        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Quickstart</span></p>
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inicio rápido</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Como Installar</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar Aqui</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Cómo instalar</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
 <li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">Lo Nuevo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ejemplos</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../notebooks/Authentication.html">Autenticacion</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../notebooks/netrc.html">Como crear el archivo .netrc</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../notebooks/Authentication.html">Autenticación básica</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/netrc.html">Crear un archivo .netrc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/earthaccess.html">Autenticación EDL mediante earthaccess</a></li>
 </ul>
 </details></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">Acceso a ECCOv4 por medio de EarthData in the Cloud de la NASA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">PACE</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/GetCMRURLS.html">Como encontrar URLs de OPeNDAP de NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/CalipsoL2_access.html">Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/DAYMET.html">Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Ecostress.html">Acceso a datos de temperatura de superficie terrestre de ECOSTRESS de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/TEMPO_NRT.html">Acceso a datos de calidad del aire casi en tiempo real (NRT) de TEMPO mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">Acceso a ECCOv4 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/MERRA2.html">Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Frequently Asked Questions</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Preguntas frecuentes</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">FAQs</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
-<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">Como saber si el URL es DAP2 o DAP4?</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../faqs/faqs.html">Preguntas frecuentes</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/download_speed.html">Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/diagnose_download_issues.html">¿Cómo puedo diagnosticar problemas de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_or_dap4_url.html">¿Esta es una URL DAP2 o DAP4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../faqs/dap2_vs_dap4.html">¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../PydapAsClient.html">PyDAP como cliente</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DAP_Protocol.html">Protocolo OPeNDAP DAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ConstraintExpressions.html">Constraint Expressions: subconjunto del lado del servidor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guía para desarrolladores</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contribuir</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../guide_to_developer.html">Guía para nuevos contribuidores</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Guía de control de versiones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contr_cod.html">Contribuir al código</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contr_issues.html">Reportar issues en GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contr_docs.html">Contribuir a la documentación</a></li>
 </ul>
 </details></li>
 </ul>
@@ -327,7 +365,7 @@ gtag("config", "G-EN2VD1J32L");
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Guide to version control</h1>
+    <h1>Guía de control de versiones</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -337,7 +375,7 @@ gtag("config", "G-EN2VD1J32L");
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-git-and-github">Using git and GitHub</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usar-git-y-github">Usar git y GitHub</a></li>
 </ul>
             </nav>
         </div>
@@ -349,52 +387,45 @@ gtag("config", "G-EN2VD1J32L");
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="guide-to-version-control">
-<h1>Guide to version control<a class="headerlink" href="#guide-to-version-control" title="Link to this heading">#</a></h1>
-<p>There are many ways to contribute to an open source project. Since pydap is already hosted
-on Github, we recommend using <a class="reference external" href="https://git-scm.com">Git</a> for keeping track of changes and
-contribute to the project. There are many online tutorials for best practices for git, so
-we provide a summarized approach. We will assume that you have <a class="reference external" href="https://github.com">GitHub</a>
-account and that you are signed in.</p>
-<section id="using-git-and-github">
-<h2>Using git and GitHub<a class="headerlink" href="#using-git-and-github" title="Link to this heading">#</a></h2>
-<p>Go to <a class="reference external" href="https://github.com/pydap/pydap">pydap</a> and <a class="reference external" href="https://docs.github.com/en/get-started/quickstart/fork-a-repo">fork</a> it. If you already have a fork, make sure your forked project is up-to-date
-with the remote project. If it is not, <a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork">sync</a> your fork.</p>
-<p>Open your terminal. Set your GitHub username and ermail address using the following commands:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="guia-de-control-de-versiones">
+<h1>Guía de control de versiones<a class="headerlink" href="#guia-de-control-de-versiones" title="Link to this heading">#</a></h1>
+<p>Hay muchas formas de contribuir a un proyecto de código abierto. Como pydap ya está alojado en Github, recomendamos usar <a class="reference external" href="https://git-scm.com">Git</a> para llevar el seguimiento de los cambios y contribuir al proyecto. Hay muchos tutoriales en línea sobre buenas prácticas con git, así que aquí damos un enfoque resumido. Asumiremos que tienes una cuenta de <a class="reference external" href="https://github.com">GitHub</a> y que has iniciado sesión.</p>
+<section id="usar-git-y-github">
+<h2>Usar git y GitHub<a class="headerlink" href="#usar-git-y-github" title="Link to this heading">#</a></h2>
+<p>Ve a <a class="reference external" href="https://github.com/pydap/pydap">pydap</a> y haz un <a class="reference external" href="https://docs.github.com/en/get-started/quickstart/fork-a-repo">fork</a>. Si ya tienes un fork, asegúrate de que tu proyecto derivado esté actualizado con el proyecto remoto. Si no lo está, <a class="reference external" href="https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork">sincroniza</a> tu fork.</p>
+<p>Abre tu terminal. Configura tu nombre de usuario de GitHub y dirección de correo electrónico con los siguientes comandos:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.email<span class="w"> </span><span class="s2">&quot;you@example.com&quot;</span>
 git<span class="w"> </span>config<span class="w"> </span>--global<span class="w"> </span>user.name<span class="w"> </span><span class="s2">&quot;Your Name&quot;</span>
 </pre></div>
 </div>
-<p>Create a local clone of your fork as follows</p>
+<p>Crea un clon local de tu fork de la siguiente manera:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/&lt;your_username_here&gt;/pydap.git
 </pre></div>
 </div>
-<p>Move into your local clone directory and setup a remote that points to the original</p>
+<p>Entra al directorio de tu clon local y configura un remoto que apunte al repositorio original:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>pydap
 git<span class="w"> </span>remote<span class="w"> </span>add<span class="w"> </span>upstream<span class="w"> </span>https://github.com/pydap/pydap
 git<span class="w"> </span>fetch<span class="w"> </span>upstream/main
 </pre></div>
 </div>
-<p>A great feature of git is the ability to work on branches when developing a project. A branch helps
-keep track of changes while keeping a local copy of the remote, unchanged code. To start a branch to making a contribution to pydap</p>
+<p>Una gran característica de git es la capacidad de trabajar en ramas al desarrollar un proyecto. Una rama ayuda a llevar el seguimiento de los cambios manteniendo una copia local del código remoto sin modificar. Para iniciar una rama y hacer una contribución a pydap:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>&lt;name_of_branch&gt;
 </pre></div>
 </div>
-<p>You are now on a branch and can safely make changes to your local clone. To stage them to become visible
-to other contributors, you need to push your branch to your forked project. To achieve that run</p>
+<p>Ahora estás en una rama y puedes hacer cambios de forma segura en tu clon local. Para hacerlos visibles a otras personas contribuidoras, necesitas subir tu rama a tu proyecto derivado. Para lograrlo, ejecuta:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>--set-upstream<span class="w"> </span>origin<span class="w"> </span>&lt;name_of_branch&gt;
 </pre></div>
 </div>
-<p>You can now make changes, create commits and push them onto your forked project. To create a commit based on your local changes on your branch, run</p>
+<p>Ahora puedes hacer cambios, crear commits y subirlos a tu proyecto derivado. Para crear un commit con tus cambios locales en la rama, ejecuta:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>add<span class="w"> </span>.
 git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </span><span class="s1">&#39;Minimal message describing changes&#39;</span>
 </pre></div>
 </div>
-<p>This will create a milestone to revert back. When you are done with your changes, or want your collaborators to become aware of your work on your forked project, run</p>
+<p>Esto creará un punto al que puedes volver. Cuando termines tus cambios, o quieras que tus colaboradores conozcan tu trabajo en el proyecto derivado, ejecuta:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push
 </pre></div>
 </div>
-<p>You can go to your remote GitHub directory and find your changes.</p>
+<p>Puedes ir a tu directorio remoto en GitHub y encontrar tus cambios.</p>
 </section>
 </section>
 
@@ -428,6 +459,24 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
                 <footer class="prev-next-footer d-print-none">
                   
 <div class="prev-next-area">
+    <a class="left-prev"
+       href="../guide_to_developer.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Guía para nuevos contribuidores</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="contr_cod.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Contribuir al código</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
 </div>
                 </footer>
               
@@ -446,7 +495,7 @@ git<span class="w"> </span>commit<span class="w"> </span>-m<span class="w"> </sp
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-git-and-github">Using git and GitHub</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usar-git-y-github">Usar git y GitHub</a></li>
 </ul>
   </nav></div>
 

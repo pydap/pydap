@@ -1,0 +1,647 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EN2VD1J32L"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag("js", new Date());
+gtag("config", "G-EN2VD1J32L");
+</script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga? &#8212; PyDAP tutorial</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/sphinx-book-theme.css?v=3c74b3bc" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=f281be69"></script>
+    <script src="../_static/scripts/sphinx-book-theme.js?v=fab101a9"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="../_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'faqs/download_speed';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="¿Cómo puedo diagnosticar problemas de descarga?" href="diagnose_download_issues.html" />
+    <link rel="prev" title="Preguntas frecuentes" href="faqs.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search..."
+         aria-label="Search..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-light" alt="PyDAP tutorial - Home"/>
+    <img src="../_static/PyDAP_logo.png" class="logo__image only-dark pst-js-only" alt="PyDAP tutorial - Home"/>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        <p aria-level="2" class="caption" role="heading"><span class="caption-text">Inicio rápido</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../how_to_install.html">Cómo instalar</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../get_started.html">Comenzar</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../5_minute_tutorial.html">Tutorial de 5 minutos</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../NEWS.html">What’s New</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Ejemplos</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../notebooks/Authentication.html">Autenticación básica</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/netrc.html">Crear un archivo .netrc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../notebooks/earthaccess.html">Autenticación EDL mediante earthaccess</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/GetCMRURLS.html">Como encontrar URLs de OPeNDAP de NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/CalipsoL2_access.html">Acceso a datos CALIPSO de lidar de nubes y aerosoles desde NASA Earthdata</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/DAYMET.html">Acceso a datos de precipitación de DAYMET mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/Ecostress.html">Acceso a datos de temperatura de superficie terrestre de ECOSTRESS de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/TEMPO_NRT.html">Acceso a datos de calidad del aire casi en tiempo real (NRT) de TEMPO mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/ECCO.html">Acceso a ECCOv4 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/PACE.html">Acceso a datos de clorofila A de PACE mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notebooks/MERRA2.html">Acceso a datos MERRA-2 mediante OPeNDAP de NASA Earthdata en la nube</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Preguntas frecuentes</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="faqs.html">Preguntas frecuentes</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="diagnose_download_issues.html">¿Cómo puedo diagnosticar problemas de descarga?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dap2_or_dap4_url.html">¿Esta es una URL DAP2 o DAP4?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dap2_vs_dap4.html">¿Hay algún beneficio al solicitar datos mediante DAP4 en lugar de DAP2?</a></li>
+</ul>
+</details></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentación</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../PydapAsClient.html">PyDAP como cliente</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../DAP_Protocol.html">Protocolo OPeNDAP DAP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../ConstraintExpressions.html">Constraint Expressions: subconjunto del lado del servidor</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../responses.html">Responses</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../server.html">Running a server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../handlers.html">Handlers</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guía para desarrolladores</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../developer/data_model.html">The Pydap data model</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/handlers.html">Handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../developer/responses.html">Responses</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contribuir</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1 has-children"><a class="reference internal" href="../guide_to_developer.html">Guía para nuevos contribuidores</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/git.html">Guía de control de versiones</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_cod.html">Contribuir al código</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_issues.html">Reportar issues en GitHub</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../contribute/contr_docs.html">Contribuir a la documentación</a></li>
+</ul>
+</details></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="../_sources/faqs/download_speed.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button pst-navbar-icon"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button>
+
+
+<button class="btn btn-sm pst-navbar-icon search-button search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+</button>
+<button class="sidebar-toggle secondary-toggle btn btn-sm pst-navbar-icon" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-crear-el-dataset"><font size="5"><span style="color:#0066cc"> <strong>a) Crear el Dataset</strong><font size="3"></font></span></font></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b-obtener-datos-numericos"><font size="5.5"><span style="color:#0066cc"><strong>b) Obtener datos numéricos</strong> <font size="3.5"></font></span></font></a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="pydap-es-lento-como-puedo-mejorar-el-tiempo-de-descarga">
+<h1>Pydap es lento. ¿Cómo puedo mejorar el tiempo de descarga?<a class="headerlink" href="#pydap-es-lento-como-puedo-mejorar-el-tiempo-de-descarga" title="Link to this heading">#</a></h1>
+<p>Hay dos etapas en las que <code class="docutils literal notranslate"><span class="pre">pydap</span></code> descarga datos: <code class="docutils literal notranslate"><span class="pre">a)</span></code> durante la <span style='color:#0066cc'><strong>creación del dataset</strong></span>, y <code class="docutils literal notranslate"><span class="pre">b)</span></code> al <span style='color:#0066cc'><strong>descargar datos de arreglos</strong></span>. Estas pueden ser lentas por sí mismas debido a varios escenarios:</p>
+<ol class="arabic simple">
+<li><p>Datos detrás de autenticación.</p></li>
+<li><p>Uso del protocolo DAP2 en lugar del protocolo DAP4.</p></li>
+<li><p>El dataset remoto está fragmentado en chunks pequeños.</p></li>
+<li><p>La API cliente está enviando demasiadas solicitudes innecesarias al servidor remoto.</p></li>
+<li><p>El servidor no está configurado correctamente.</p></li>
+<li><p>La conexión a internet es intermitente o deficiente.</p></li>
+</ol>
+<p>Entre otros escenarios. En la gran mayoría de los casos, se considera una buena práctica mantener al mínimo la cantidad de solicitudes al servidor, es decir, solicitar solo lo necesario. Esto es aún más importante cuando los datos están detrás de autenticación, ya que puede haber muchas redirecciones por cada solicitud desde la API cliente.</p>
+<p>A continuación se muestran algunas guías para mejorar el acceso a datos. Si sigues experimentando problemas de rendimiento, considera escribir un issue en el <a class="reference external" href="https://github.com/pydap/pydap/issues">Github IssueTracker</a> de Pydap. Abajo asumimos que las personas usuarias usan <code class="docutils literal notranslate"><span class="pre">pydap</span></code> como motor backend de <code class="docutils literal notranslate"><span class="pre">Xarray</span></code>. Esto es:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="c1"># or xr.open_mfdataset()</span>
+</pre></div>
+</div>
+<section id="a-crear-el-dataset">
+<h2><font size="5"><span style='color:#0066cc'> <strong>a) Crear el Dataset</strong><font size="3"><a class="headerlink" href="#a-crear-el-dataset" title="Link to this heading">#</a></h2>
+<p>Al crear un Dataset, la lógica interna de <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> envía solicitudes al servidor para:</p>
+<ul class="simple">
+<li><p><span style='color:#0066cc'><strong>Descargar metadatos</strong></span>. Para el protocolo <code class="docutils literal notranslate"><span class="pre">DAP2</span></code> estos son <code class="docutils literal notranslate"><span class="pre">.dds</span></code> y <code class="docutils literal notranslate"><span class="pre">.das</span></code>, uno de cada uno por archivo remoto. En <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> solo se envía una solicitud de metadatos por archivo remoto, el <code class="docutils literal notranslate"><span class="pre">.dmr</span></code>. Estos archivos de metadatos describen la estructura interna y la información dentro de cada archivo remoto (todos los nombres, tipos, formas y atributos de variables), que <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> usa para crear el Dataset.</p></li>
+<li><p><span style='color:#0066cc'><strong>Descargar todos los datos de arreglos de dimensiones</strong></span>. Por archivo, <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> descarga de forma predeterminada todas las dimensiones y las carga en memoria. Al abrir múltiples archivos, este comportamiento puede producir bajo rendimiento, ya que <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> solicitará todos los datos de dimensiones de cada archivo para realizar una comprobación de seguridad, incluso cuando la persona usuaria sabe de antemano que estos datos son idénticos en todos los archivos remotos. Aunque estas comprobaciones de seguridad son muy importantes (y deben existir), pueden causar grandes pérdidas de rendimiento al agregar cientos de archivos remotos, cada uno con 2 o más dimensiones, en particular al reiniciar el Kernel (y verse obligado a ejecutar el flujo de trabajo desde cero).</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A partir de <code class="docutils literal notranslate"><span class="pre">xarray=v2025.10</span></code>, <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> envía una solicitud individual por variable dentro de un archivo remoto, en lugar de obtener los datos de arreglo de todas las variables en una sola solicitud. Este comportamiento no es óptimo y se mejorará en el futuro.</p>
+</div>
+<p>Para mejorar el rendimiento y evitar volver a descargar los datos necesarios para abrir un dataset recomendamos:</p>
+<ol class="arabic simple">
+<li><p><span style='color:#0066cc'><strong>Usar DAP4</strong></span>. Es un protocolo DAP más moderno y mejor soportado por servicios OPeNDAP y por la comunidad geoespacial en general. Además, al elegir DAP4 automáticamente reduces a la mitad la cantidad de respuestas asociadas con metadatos del mismo archivo. Para especificar el protocolo DAP con <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code>, puedes cambiar el esquema de la URL así:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">dap4_url</span> <span class="o">=</span> <span class="s2">&quot;dap4://&lt;www.opendap.org/remote_file&gt;&quot;</span> <span class="c1"># &lt;------- DAP4</span>
+<span class="n">dap2_url</span> <span class="o">=</span> <span class="s2">&quot;dap2://&lt;www.opendap.org/remote_file&gt;&quot;</span> <span class="c1"># &lt;------- DAP2</span>
+<span class="n">url</span> <span class="o">=</span> <span class="s2">&quot;https://&lt;www.opendap.org/remote_file&gt;&quot;</span>     <span class="c1"># &lt;------- Pydap assumes DAP2.</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><span style='color:#0066cc'><strong>Usar Constraint Expressions para producir un DMR restringido</strong></span>. Se puede agregar una <code class="docutils literal notranslate"><span class="pre">Constraint</span> <span class="pre">Expression</span></code> a una URL <code class="docutils literal notranslate"><span class="pre">DAP4</span></code> siguiendo esta sintaxis:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">url</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">https</span><span class="p">:</span><span class="o">//...</span><span class="n">opendap_url</span><span class="o">..&gt;</span>
+<span class="n">CE</span> <span class="o">=</span> <span class="s2">&quot;dap4.ce=/VarName1;/VarName2;/...;/VarNameN&quot;</span>
+<span class="n">url_ce</span> <span class="o">=</span> <span class="n">url</span> <span class="o">+</span> <span class="s2">&quot;?&quot;</span> <span class="o">+</span> <span class="n">CE</span>
+</pre></div>
+</div>
+<p>donde <code class="docutils literal notranslate"><span class="pre">VarName1</span></code>, <code class="docutils literal notranslate"><span class="pre">VarName2</span></code> y <code class="docutils literal notranslate"><span class="pre">VarNameN</span></code> son variables presentes en un archivo remoto con <code class="docutils literal notranslate"><span class="pre">M&gt;=N</span></code> variables. Pasar esta URL a <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> usando <code class="docutils literal notranslate"><span class="pre">pydap</span></code> como motor permitirá que el servidor OPeNDAP remoto produzca un <code class="docutils literal notranslate"><span class="pre">DMR</span> <span class="pre">restringido</span></code>, que solo tendrá información sobre esas variables. Esto puede generar mejoras significativas de rendimiento cuando <code class="docutils literal notranslate"><span class="pre">N&lt;&lt;M</span></code> (por ejemplo <code class="docutils literal notranslate"><span class="pre">N=4</span></code> y <code class="docutils literal notranslate"><span class="pre">M=1000</span></code>).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">Xarray</span></code> tiene lógica interna para descartar variables. Pero <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> analizará los metadatos de TODAS las variables y luego descartará las variables especificadas por la persona usuaria en <code class="docutils literal notranslate"><span class="pre">.drop_vars()</span></code>. Con un DMR restringido mediante la Constraint Expression del ejemplo anterior, por ejemplo, <code class="docutils literal notranslate"><span class="pre">Xarray</span></code> solo procesaría las <code class="docutils literal notranslate"><span class="pre">N</span></code> variables.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">Xarray</span></code> requiere la presencia de datos de dimensión para coincidir con la forma de cualquier <code class="docutils literal notranslate"><span class="pre">data</span> <span class="pre">variable</span></code>. Al construir una Constraint Expression como arriba, incluye en la <code class="docutils literal notranslate"><span class="pre">CE</span></code> todas las dimensiones asociadas con las variables de interés.</p>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><span style='color:#0066cc'><strong>Consolidar metadatos</strong></span>. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> tiene un método para persistir metadatos y reutilizarlos después. <code class="docutils literal notranslate"><span class="pre">PyDAP</span></code> puede usar una <a class="reference external" href="https://requests-cache.readthedocs.io/en/stable/">request_cache.CachedSession</a> para descargar y persistir los metadatos necesarios para iniciar un Dataset de <code class="docutils literal notranslate"><span class="pre">Xarray</span></code>. Una <code class="docutils literal notranslate"><span class="pre">CachedSession</span></code> usa un backend <code class="docutils literal notranslate"><span class="pre">SQLite</span></code> y puede actuar como gestor de base de datos; como una <code class="docutils literal notranslate"><span class="pre">CachedSession</span></code> también se puede usar para autenticarse, reemplaza directamente a un objeto requests.Session típicamente usado por PyDAP. Considera el ejemplo siguiente:</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pydap.net</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_session</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydap.client</span><span class="w"> </span><span class="kn">import</span> <span class="n">consolidate_metadata</span>
+
+<span class="n">URLS</span> <span class="o">=</span> <span class="p">[</span><span class="n">url1</span><span class="p">,</span> <span class="n">url2</span><span class="p">,</span> <span class="n">url3</span><span class="p">,</span> <span class="n">url4</span><span class="p">,</span> <span class="n">url5</span><span class="p">,</span> <span class="o">....</span><span class="p">,</span> <span class="n">urlN</span><span class="p">]</span>
+<span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;&lt;/path_to_persistent_directory_of_metadata_for_the_files/NAME_OF_DATABASE&gt;&#39;</span>
+
+<span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cache_name&#39;</span><span class="p">:</span> <span class="n">database_name</span><span class="p">})</span>
+
+<span class="n">consolidate_metadata</span><span class="p">(</span><span class="n">URLS</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">URLS</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>El <code class="docutils literal notranslate"><span class="pre">my_session</span></code> resultante apunta a una base de datos <code class="docutils literal notranslate"><span class="pre">SQLite</span></code> que puede persistir y estar bajo control de versiones si el directorio <code class="docutils literal notranslate"><span class="pre">/path_to_persistent_directory_of_metadata_for_this_files/</span></code>, donde existe el archivo <code class="docutils literal notranslate"><span class="pre">NAME_OF_DATABASE.sqlite</span></code>, es un directorio versionado (por ejemplo, usando github).</p>
+<p><code class="docutils literal notranslate"><span class="pre">consolidate_metadata</span></code> predescarga todos los DMRs del servidor remoto, junto con cualquier dato necesario de arreglos de dimensión, y los almacena en la base de datos <code class="docutils literal notranslate"><span class="pre">SQLite</span></code> para reutilizarlos después. Depende de la persona usuaria saber en qué dimensión se deben concatenar los datos; en el ejemplo anterior, es <code class="docutils literal notranslate"><span class="pre">time</span></code>. Entonces, después de reiniciar el kernel (o eliminar la referencia <code class="docutils literal notranslate"><span class="pre">ds</span></code>), mientras <code class="docutils literal notranslate"><span class="pre">my_session</span></code> apunte a la base de datos, todos los metadatos persisten. Crear/abrir el dataset de Xarray no debería tardar más de 2 a 5 segundos.</p>
+<p>Además, considera el caso en que el proveedor de datos agrega más archivos remotos a la misma colección a la que pertenecen las URLs iniciales. Ejecutar lo siguiente debería actualizar el dataset con los datos nuevos. Como los archivos originales ya están cacheados, no deberían descargarse datos de las URLs originales.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># new urls</span>
+<span class="n">new_URLs</span> <span class="o">=</span> <span class="p">[</span><span class="n">urlN1</span><span class="p">,</span> <span class="n">urlN2</span><span class="p">,</span> <span class="n">urlN3</span><span class="p">,</span> <span class="n">urlN4</span><span class="p">,</span> <span class="n">urlN5</span><span class="p">,</span> <span class="o">....</span><span class="p">,</span> <span class="n">urlNN</span><span class="p">]</span>
+
+<span class="c1"># add new url to previous ones</span>
+<span class="n">updated_URLs</span> <span class="o">=</span> <span class="n">URLs</span> <span class="o">+</span> <span class="n">new_URLs</span>
+
+<span class="c1"># load the session that points to the SQLite database</span>
+<span class="n">database_name</span> <span class="o">=</span> <span class="s1">&#39;&lt;/path_to_persistent_directory_of_metadata_for_this_files/NAME_OF_DATABASE&gt;&#39;</span>
+<span class="n">my_session</span> <span class="o">=</span> <span class="n">create_session</span><span class="p">(</span><span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_kwargs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;cache_name&#39;</span><span class="p">:</span> <span class="n">database_name</span><span class="p">})</span>
+
+<span class="n">consolidate_metadata</span><span class="p">(</span><span class="n">updated_URLs</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Ahora, la base de datos SQLite contiene datos de dimensiones y metadatos actualizados.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Para limpiar los metadatos, basta con hacer: <code class="docutils literal notranslate"><span class="pre">my_session.cache.clear()</span></code>. Al limpiar los metadatos, especialmente después de reiniciar el Kernel, sugerimos empezar de nuevo desde <code class="docutils literal notranslate"><span class="pre">create_session</span></code>.</p>
+</div>
+</section>
+<section id="b-obtener-datos-numericos">
+<h2><font size="5.5"><span style='color:#0066cc'><strong>b) Obtener datos numéricos</strong> <font size="3.5"><a class="headerlink" href="#b-obtener-datos-numericos" title="Link to this heading">#</a></h2>
+<ul class="simple">
+<li><p>Se recomienda firmemente configurar el servidor OPeNDAP para implementar el protocolo <span style='color:#ff6666'><strong>DAP4</strong></span>, ya que soporta completamente todos los tipos de datos admitidos por DAP2 y puede enviar <span style='color:#0066cc'><strong>respuestas por chunks</strong></span> a través de la web.</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>En el protocolo <code class="docutils literal notranslate"><span class="pre">DAP2</span></code>, toda la respuesta se envía en un solo Chunk. Es decir, el protocolo DAP2 no soporta enviar respuestas por chunks. Esto puede provocar errores de Timeout del lado del servidor.</p>
+</div>
+<ul class="simple">
+<li><p>Al transmitir datos por la red (en lugar de dentro de la región de la nube), se recomienda firmemente aprovechar la infraestructura especializada del servidor OPeNDAP para subdividir de forma próxima a los datos. Al trabajar con Xarray, esto implica <span style='color:#0066cc'><strong>asegurarse de que el rebanado se pase al servidor</strong></span>. Esto se logra de las siguientes formas:</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">)</span>
+<span class="n">ds</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">dim1</span><span class="o">=</span><span class="n">slice_dim1</span><span class="p">,</span> <span class="n">dim2</span><span class="o">=</span><span class="n">slice_dim2</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>donde <code class="docutils literal notranslate"><span class="pre">slice_dim1</span></code> y <code class="docutils literal notranslate"><span class="pre">slice_dim2</span></code> son los rebanados predeterminados por la persona usuaria.</p>
+<p>Al trabajar con múltiples archivos, a partir de <code class="docutils literal notranslate"><span class="pre">Xarray</span> <span class="pre">&lt;=v2025.10</span></code>, el rebanado no se pasa al servidor a menos que el dataset se fragmente al crearlo. Esto es:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="n">expected_sizes</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;dim1&#39;</span><span class="p">:</span><span class="n">expected_size_dim1</span><span class="p">,</span> <span class="s1">&#39;dim2&#39;</span><span class="p">:</span><span class="n">expected_size_dim2</span><span class="p">,</span> <span class="s1">&#39;dim3&#39;</span><span class="p">:</span> <span class="n">expected_size_dim3</span><span class="p">}</span>
+
+<span class="n">ds</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_mfdataset</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="n">engine</span><span class="o">=</span><span class="s1">&#39;pydap&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">my_session</span><span class="p">,</span> <span class="n">concat_dim</span><span class="o">=</span><span class="s1">&#39;dim1&#39;</span><span class="p">,</span> <span class="n">combine</span><span class="o">=</span><span class="s1">&#39;nested&#39;</span><span class="p">,</span> <span class="n">parallel</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">ds</span><span class="p">[</span><span class="s1">&#39;varName&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isel</span><span class="p">(</span><span class="n">dim1</span><span class="o">=</span><span class="n">slice_dim1</span><span class="p">,</span> <span class="n">dim2</span><span class="o">=</span><span class="n">slice_dim2</span><span class="p">,</span> <span class="n">dim3</span><span class="o">=</span><span class="n">slice_dim3</span><span class="p">)</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>donde <code class="docutils literal notranslate"><span class="pre">dim1</span></code> es la dimensión de concatenación, <code class="docutils literal notranslate"><span class="pre">dim2</span></code> y <code class="docutils literal notranslate"><span class="pre">dim3</span></code> son otras dimensiones del dataset agregado, y <code class="docutils literal notranslate"><span class="pre">expected_size_dim1</span></code>, <code class="docutils literal notranslate"><span class="pre">expected_size_dim2</span></code> y <code class="docutils literal notranslate"><span class="pre">expected_size_dim3</span></code> juntos definen el tamaño esperado del subconjunto dentro de cada gránulo. Este tamaño no puede exceder el tamaño original de la dimensión. Para algunos ejemplos, consulta el <a class="reference internal" href="../5_minute_tutorial.html"><span class="doc std std-doc">tutorial de 5 minutos</span></a>.</p>
+<ul class="simple">
+<li><p><strong>Diagnóstico</strong>. Es posible que el dataset remoto tenga muchos chunks pequeños, lo que produce un rendimiento muy lento. Esto, junto con la conexión a internet, son problemas de rendimiento fuera del alcance de <code class="docutils literal notranslate"><span class="pre">pydap</span></code>. Un diagnóstico útil para saber si el problema está en <code class="docutils literal notranslate"><span class="pre">pydap</span></code> o en el servidor remoto es usar curl para descargar la respuesta.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="o">-</span><span class="n">n</span> <span class="s2">&quot;&lt;opendap_url_with_constraint_expression&gt;&quot;</span> 
+</pre></div>
+</div>
+<p>donde <code class="docutils literal notranslate"><span class="pre">-L</span></code> implica seguir redirecciones, y <code class="docutils literal notranslate"><span class="pre">-n</span></code> indica a <code class="docutils literal notranslate"><span class="pre">curl</span></code> que recupere la autenticación desde el archivo <code class="docutils literal notranslate"><span class="pre">~/.netrc</span></code>. Esto último solo es necesario cuando se requiere autenticación. Por ejemplo, para descargar una respuesta <code class="docutils literal notranslate"><span class="pre">.dap</span></code> (DAP4) desde un servidor dap4 (sin autenticación requerida):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">curl</span> <span class="o">-</span><span class="n">L</span> <span class="o">-</span><span class="n">o</span> <span class="n">output</span><span class="o">.</span><span class="n">dap</span> <span class="s2">&quot;http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dap?dap4.ce=/TIME&quot;</span>
+</pre></div>
+</div>
+<p>El siguiente comando descarga solo la variable <code class="docutils literal notranslate"><span class="pre">TIME</span></code> desde <a class="reference external" href="http://test.opendap.org/opendap/data/nc/coads_climatology.nc.dmr">este dataset de prueba</a>. La descarga debería ser muy rápida. Al rebanar un arreglo, <code class="docutils literal notranslate"><span class="pre">pydap</span></code> hace algo muy similar: descarga una respuesta <code class="docutils literal notranslate"><span class="pre">.dap</span></code> para una sola variable, en este caso <code class="docutils literal notranslate"><span class="pre">TIME</span></code>. Pydap no debería tardar mucho más que <code class="docutils literal notranslate"><span class="pre">curl</span></code> en descargar la respuesta <code class="docutils literal notranslate"><span class="pre">.dap</span></code>.</p>
+<ul class="simple">
+<li><p><strong>Revisa tamaños de variables y evita descargar arreglos completos de datasets ncml</strong>. Los datasets <code class="docutils literal notranslate"><span class="pre">ncml</span></code> son una agregación virtual de una colección de archivos NetCDF. <code class="docutils literal notranslate"><span class="pre">ncml</span></code> es excelente porque proporciona un único endpoint URL para una colección, pero muchas personas usuarias experimentan tiempos largos y errores de descarga al solicitar descargar incluso una sola variable.</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "python"
+        },
+        kernelOptions: {
+            name: "python3",
+            path: "./faqs"
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'python3'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="faqs.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Preguntas frecuentes</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="diagnose_download_issues.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">¿Cómo puedo diagnosticar problemas de descarga?</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item"><div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-crear-el-dataset"><font size="5"><span style="color:#0066cc"> <strong>a) Crear el Dataset</strong><font size="3"></font></span></font></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#b-obtener-datos-numericos"><font size="5.5"><span style="color:#0066cc"><strong>b) Obtener datos numéricos</strong> <font size="3.5"></font></span></font></a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By OPeNDAP Community
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
