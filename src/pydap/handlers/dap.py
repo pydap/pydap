@@ -800,7 +800,7 @@ class SequenceDAP4Proxy(SequenceProxy):
         """Return a lightweight copy of the object."""
         return self.__class__(
             self.baseurl,
-            self.template,
+            self.sequence,
             self.selection[:],
             self.slice[:],
             self.application,
@@ -863,6 +863,7 @@ class SequenceDAP4Proxy(SequenceProxy):
 
     def __iter__(self):
         # download and unpack data
+        print("Fetching URL: %s" % self.url)
         r = GET(
             self.url,
             self.application,
@@ -872,25 +873,17 @@ class SequenceDAP4Proxy(SequenceProxy):
         )
 
         assert isinstance(r, requests.Response)  # better way to do this
-        # r??
-        # iterator = self.iter_body()
-        iterator = r.iter_content()
+
         CHUNK_SIZE = 1048576
         # remote dataset
         with tempfile.TemporaryFile() as tmp:
             # write the response to a temporary file
             # so that we can read it in chunks
-            for chunk in iterator(chunk_size=CHUNK_SIZE):
+            for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
                 if chunk:  # filter out keep-alive chunks
                     tmp.write(chunk)
             tmp.seek(0)
-            dmr, rawdata = safe_dmr_and_data(BytesReader(tmp))
-            dataset = dmr_to_dataset(dmr, flat=False)
-
-            # stream = StreamReader(chain(stream_start(), iterator))
-
-            # return unpack_sequence(rawdata, self.template)
-            return None
+            return unpack_dap4_sequence(BytesReader(tmp), self.sequence)
 
 
 def unpack_sequence(stream, template):
@@ -1080,6 +1073,66 @@ def decode_variable(buffer, start, variable, endian):
         data = numpy.frombuffer(buffer[start:stop], dtype=dtype)
         data = data.reshape(variable.shape)
         return DapDecodedArray(data), stop
+
+
+def unpack_dap4_sequence(_stream, _sequence):
+
+    _, _bin_raw, _ = split_dmr_and_data(_stream)
+    buffer = stream2bytearray(_bin_raw)
+    mv = memoryview(buffer)
+
+    cols = [c.name for c in _sequence.children()]
+    types = [c.dtype for c in _sequence.children()]
+
+    # first step - get number of rows
+    start = 0
+    nrows = numpy.frombuffer(mv[start : start + 4], dtype=numpy.uint8)[0]
+    start += 8  # empty space always after number of rows
+
+    # preallocate objects
+    data = []
+    append = data.append
+    _decoder = sequence_decoder
+    cols_range = range(len(cols))
+
+    for _ in range(nrows):
+        Values = [None] * len(cols)
+        for i in cols_range:
+            val, start = _decoder(mv, start, types[i])
+            Values[i] = val
+        append(tuple(Values))
+    return IterData(data, _sequence)
+
+
+def sequence_decoder(_buffer, _start, _dtype):
+    """decodes a buffer binary array produced by a Hyrax dap response,
+    into human readable data. The source data must be no-nested.
+
+    Parameters
+    ----------
+    _buffer : bytes
+        The binary buffer to decode.
+    _start : int
+        The starting index in the buffer to begin decoding.
+    _dtype : dtype
+        The dtype of the binary buffer to decode.
+
+    Returns
+    -------
+    _value : int | string | numpy.ndarray
+        The decoded value.
+    _start : int
+        The new starting index in the buffer after decoding.
+    """
+    if _dtype.char in "S":
+        _value, _start = decode_utf8_string_array(
+            _buffer, _start
+        )  # start is already the new start
+    else:
+        _stop = _start + _dtype.itemsize
+        _value = numpy.frombuffer(_buffer[_start:_stop], dtype=_dtype)[0]
+        _start = _stop
+    return _value, _start
 
 
 def decode_utf8_string_array(buffer, start=0):
