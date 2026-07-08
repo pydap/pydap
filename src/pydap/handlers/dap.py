@@ -294,14 +294,19 @@ class DAPHandler(BaseHandler):
             )
 
         for var in walk(self.dataset, SequenceType):
-            warnings.warn(
-                f"The remote file contains Sequence `{var.name}`"
-                ". Sequences in DAP4 are not fully supported and their"
-                " use may lead to unexpected results."
+            template = copy.copy(var)
+            var.data = SequenceDAP4Proxy(
+                self.base_url,
+                template,
+                selection=self.selection,
+                application=self.application,
+                session=self.session,
+                timeout=self.timeout,
+                verify=self.verify,
+                get_kwargs={**self.get_kwargs, "stream": True},
             )
 
         self.dataset.assign_dataset_recursive(self.dataset)
-        # self.dataset.enable_batch_mode()
 
         # apply projections to BaseType only
         # CE for sequences and structs
@@ -844,8 +849,11 @@ class SequenceDAP4Proxy(SequenceProxy):
                 scheme,
                 netloc,
                 path + ".dap",
-                "?dap4.ce=",
-                self.id + hyperslab(self.slice) + "&" + "&".join(self.selection),
+                "",
+                "?dap4.ce="
+                + self.id
+                + hyperslab(self.slice)
+                + "&".join(self.selection),
                 fragment,
             )
         ).rstrip("&")
@@ -855,15 +863,11 @@ class SequenceDAP4Proxy(SequenceProxy):
     @property
     def id(self):
         """Return the id of this sequence."""
-        if self.sub_children:
-            id_ = ";".join(child.id for child in self.sequence.children())
-        else:
-            id_ = self.sequence.id
-        return id_
+        return self.sequence.id
 
     def __iter__(self):
         # download and unpack data
-        print("Fetching URL: %s" % self.url)
+        print("url", self.url)
         r = GET(
             self.url,
             self.application,
