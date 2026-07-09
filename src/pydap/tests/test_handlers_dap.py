@@ -17,9 +17,12 @@ from pydap.handlers.dap import (
     decode_utf8_string_array,
     dmr_to_dataset,
     find_pattern_in_string_iter,
+    split_dmr_and_data,
+    unpack_dap4_sequence,
     walk,
 )
 from pydap.handlers.lib import BaseHandler, ConstraintExpression
+from pydap.lib import BytesReader
 from pydap.model import BaseType, DatasetType, GridType, StructureType
 from pydap.tests.datasets import (
     SimpleArray,
@@ -35,6 +38,9 @@ try:
     from unittest.mock import patch
 except ImportError:
     from mock import patch
+
+DAPSequence_file = os.path.join(os.path.dirname(__file__), "data/daps/gsodock.dat.dap")
+DMRSequence_file = os.path.join(os.path.dirname(__file__), "data/dmrs/gsodock.dat.dmr")
 
 
 class TestDapHandler(unittest.TestCase):
@@ -724,3 +730,40 @@ def test_checksum(checksum):
             buffer = bytearray(var[:].data)
             checksum = zlib.crc32(buffer)
             assert var[:].attributes["_DAP4_Checksum_CRC32"] == checksum
+
+
+def test_split_dmr_and_data():
+    """test that the DAP Handler can deserialize a dap4
+    sequence correctly.
+    """
+    dap = open(DAPSequence_file, "rb")
+    # test that the split_dmr_and_data function can split the dmr and
+    # data correctly
+    dmr, data, _ = split_dmr_and_data(BytesReader(dap))
+
+    assert dmr[-13:] == "</Dataset>\n\r\n"
+
+    pyds = dmr_to_dataset(dmr)
+    assert pyds["URI_GSO-Dock"].type == "Sequence"
+    assert len([item.id for item in pyds["URI_GSO-Dock"].children()]) == 12
+
+
+def test_unpack_dap4_sequence():
+    """test that the DAP Handler can deserialize a dap4
+    sequence correctly.
+    """
+    # create pyds from dmr
+    dmr = open(DMRSequence_file, "rb").read().decode()
+    pyds = dmr_to_dataset(dmr)
+
+    # test that the unpack_dap4_sequence function can unpack the dmr and
+    # data correctly
+    dap = open(DAPSequence_file, "rb")
+    seq = unpack_dap4_sequence(BytesReader(dap), pyds["URI_GSO-Dock"])
+    pyds["URI_GSO-Dock"].data = seq
+
+    # test values are correct as expected
+    expected = [2.27, 2.28, 2.28, 2.27, 2.29, 2.31, 2.3, 2.28, 2.26]
+
+    actual = [depth for depth in pyds["URI_GSO-Dock"].Depth if depth > 2.25]
+    assert actual == expected
