@@ -851,10 +851,7 @@ class SequenceDAP4Proxy(SequenceProxy):
                 netloc,
                 path + ".dap",
                 "",
-                "?dap4.ce="
-                + self.id
-                + hyperslab(self.slice)
-                + "&".join(self.selection),
+                "dap4.ce=" + self.id + hyperslab(self.slice) + "&".join(self.selection),
                 fragment,
             )
         ).rstrip("&")
