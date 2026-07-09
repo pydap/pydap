@@ -1133,6 +1133,7 @@ def sequence_decoder(_buffer, _start, _dtype):
         _value, _start = decode_utf8_string_array(
             _buffer, _start
         )  # start is already the new start
+        _value = _value[0]  # unpack the list to get the string
     else:
         _stop = _start + _dtype.itemsize
         _value = numpy.frombuffer(_buffer[_start:_stop], dtype=_dtype)[0]

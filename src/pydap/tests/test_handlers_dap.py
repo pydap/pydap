@@ -17,6 +17,7 @@ from pydap.handlers.dap import (
     decode_utf8_string_array,
     dmr_to_dataset,
     find_pattern_in_string_iter,
+    sequence_decoder,
     split_dmr_and_data,
     unpack_dap4_sequence,
     walk,
@@ -767,3 +768,27 @@ def test_unpack_dap4_sequence():
 
     actual = [depth for depth in pyds["URI_GSO-Dock"].Depth if depth > 2.25]
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "bytarray, expected, dtype",
+    [
+        (
+            bytearray(
+                b"G\x00\x00\x00\x00\x00\x00\x00"
+                b"http://dods.gso.uri.edu/cgi-bin/nph-dsp/avhrr"
+                b"/1998/6/f98152074533.pvu.Z"
+            ),
+            "http://dods.gso.uri.edu/cgi-bin/nph-dsp/avhrr/1998/6/f98152074533.pvu.Z",
+            "S128",
+        ),
+        (bytearray(b"\x98\x00\x00\x00"), 152, np.int32),  # 152 in little-endian
+    ],
+)
+def test_sequence_decoder(bytarray, expected, dtype):
+    """Test the sequence_decoder function for both string data and numeric data"""
+    data = np.array(expected, dtype=dtype)
+    result, _start = sequence_decoder(bytarray, _start=0, _dtype=data.dtype)
+    np.testing.assert_array_equal(data, np.array(result, dtype=dtype))
+    # assert that new start position is at end of the bytearray
+    assert bytarray == bytarray[:_start]
