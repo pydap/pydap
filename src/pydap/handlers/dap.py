@@ -294,7 +294,6 @@ class DAPHandler(BaseHandler):
             )
 
         for var in walk(self.dataset, SequenceType):
-
             template = copy.copy(var)
             var.data = SequenceDAP4Proxy(
                 self.base_url,
