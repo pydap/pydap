@@ -865,7 +865,6 @@ class SequenceDAP4Proxy(SequenceProxy):
 
     def __iter__(self):
         # download and unpack data
-        print("url", self.url)
         r = GET(
             self.url,
             self.application,
@@ -874,18 +873,7 @@ class SequenceDAP4Proxy(SequenceProxy):
             get_kwargs=self.get_kwargs,
         )
 
-        assert isinstance(r, requests.Response)  # better way to do this
-
-        CHUNK_SIZE = 1048576
-        # remote dataset
-        with tempfile.TemporaryFile() as tmp:
-            # write the response to a temporary file
-            # so that we can read it in chunks
-            for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
-                if chunk:  # filter out keep-alive chunks
-                    tmp.write(chunk)
-            tmp.seek(0)
-            return unpack_dap4_sequence(BytesReader(tmp), self.sequence)
+        return unpack_dap4_sequence(BytesReader(r.content), self.sequence)
 
 
 def unpack_sequence(stream, template):
