@@ -878,20 +878,6 @@ class SequenceDAP4Proxy(SequenceProxy):
         )
 
         assert isinstance(r, requests.Response)  # better way to do this
-        # r??
-        # iterator = self.iter_body()
-        iterator = r.iter_content()
-        CHUNK_SIZE = 1048576
-        # remote dataset
-        with tempfile.TemporaryFile() as tmp:
-            # write the response to a temporary file
-            # so that we can read it in chunks
-            for chunk in iterator(chunk_size=CHUNK_SIZE):
-                if chunk:  # filter out keep-alive chunks
-                    tmp.write(chunk)
-            tmp.seek(0)
-            dmr, rawdata = safe_dmr_and_data(BytesReader(tmp))
-            dataset = dmr_to_dataset(dmr, flat=False)
 
         CHUNK_SIZE = 1048576
         # remote dataset
