@@ -17,7 +17,10 @@ from pydap.handlers.dap import (
     decode_utf8_string_array,
     dmr_to_dataset,
     find_pattern_in_string_iter,
+<<<<<<< HEAD
     sequence_decoder,
+=======
+>>>>>>> 4151e10 (add some tests)
     split_dmr_and_data,
     unpack_dap4_sequence,
     walk,
