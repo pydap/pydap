@@ -1376,7 +1376,7 @@ class SequenceType(StructureType):
     data = property(_get_data, _set_data)
 
     def iterdata(self):
-        for line in self._data.__iter__():
+        for line in self._data:
             yield tuple(map(decode_np_strings, line))
 
     def __iter__(self):
