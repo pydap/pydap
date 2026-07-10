@@ -3,8 +3,8 @@
 # C extensions
 *.so
 
-# Claud
-.claude/plans/*
+# Claude
+.claude/plans/*.md
 
 # no chached sessions
 *.sqlite

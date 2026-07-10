@@ -333,7 +333,7 @@ def dmr_to_dataset(dmr, flat=True, dmrVersion=None):
             "Structure",
         ]:
             parent_type = variable["parent"]
-            if flat:
+            if flat and parent_type != "Sequence":
                 # Flat Access
                 var_kwargs.update({"name": pydap.lib._quote(name)})
             else:
@@ -348,9 +348,8 @@ def dmr_to_dataset(dmr, flat=True, dmrVersion=None):
                 if parent_name[0][1:] not in dataset.keys():
                     if parent_type == "Sequence":
                         warnings.warn(
-                            f"The remote file contains Sequence `{parent_name[0][1:]}`"
-                            ". Sequences in DAP4 are not fully supported and their"
-                            " use may lead to unexpected results."
+                            "Support for DAP4 Sequences is experimental"
+                            " and may lead to unexpected results."
                         )
                         dataset.createSequence(parent_name[0], dims=Dims)
                     else:
