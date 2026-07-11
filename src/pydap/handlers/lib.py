@@ -288,7 +288,11 @@ class IterData(object):
 
         # these are used to lazily evaluate the data stream
         self.ifilter = ifilter or []
-        self.imap = imap or [fix_nested(template)]
+        # self.imap = imap or [fix_nested(template)]
+        self.imap = imap or (
+            [fix_nested(template)] if list(template.children()) else []
+        )
+
         self.islice = islice or []
 
     @property

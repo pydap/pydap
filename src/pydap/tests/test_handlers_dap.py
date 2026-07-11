@@ -1,6 +1,7 @@
 """Test the DAP handler, which forms the core of the client."""
 
 import os
+import struct
 import unittest
 
 import numpy as np
@@ -768,6 +769,57 @@ def test_unpack_dap4_sequence():
 
     actual = [depth for depth in pyds["URI_GSO-Dock"].Depth if depth > 2.25]
     assert actual == expected
+
+
+def _dap4_chunk(chunk_type, payload=b""):
+    """Build one DAP4 response chunk: a 4-byte big-endian header (1-byte
+    type flags + 3-byte payload length) followed by the payload itself.
+    ``chunk_type=0x04`` is a regular, little-endian, non-terminal chunk;
+    ``0x05`` is the (empty) terminator chunk that marks the end of the
+    response, per ``decode_chunktype``.
+    """
+    header = struct.pack(">I", (chunk_type << 24) | (len(payload) & 0x00FFFFFF))
+    return header + payload
+
+
+def _dap4_sequence_response(row_bytes, n_rows):
+    """Assemble a minimal, valid ``.dap`` byte stream around raw sequence
+    row data: a DMR chunk (its content is irrelevant to
+    ``unpack_dap4_sequence``, which only reads the ``encoding`` attribute
+    to skip past it), one data chunk holding the little-endian row count
+    followed by the row bytes, and a zero-length terminator chunk.
+    """
+    dmr = b'<?xml version="1.0" encoding="UTF-8"?><Dataset></Dataset>'
+    data = struct.pack("<Q", n_rows) + row_bytes
+    return _dap4_chunk(0x04, dmr) + _dap4_chunk(0x04, data) + _dap4_chunk(0x05)
+
+
+def test_unpack_dap4_sequence_single_column_returns_scalars():
+    """Narrowing a Sequence to one column (e.g. ``seq["Depth"]``) passes a
+    plain ``BaseType`` -- not a ``SequenceType`` -- to
+    ``unpack_dap4_sequence``. Each row must then decode to a bare scalar,
+    matching DAP2's ``unpack_sequence`` behavior for a single requested
+    column, rather than an empty or a one-element tuple.
+    """
+    depth = BaseType("Depth", dtype=np.dtype("float32"))
+    values = np.array([1.95, 1.89, 1.84], dtype="<f4")
+    stream = _dap4_sequence_response(values.tobytes(), n_rows=len(values))
+
+    result = list(unpack_dap4_sequence(BytesReader(stream), depth))
+
+    assert result == list(values)
+    assert all(not isinstance(v, tuple) for v in result)
+
+
+def test_unpack_dap4_sequence_invalid_template_raises():
+    """Anything that is neither a ``SequenceType`` nor a ``BaseType`` (e.g.
+    a plain ``StructureType``) is a programming error and must fail loudly
+    rather than silently returning empty or garbage data."""
+    bogus = StructureType("not_a_sequence_or_base_type")
+    stream = _dap4_sequence_response(b"", n_rows=0)
+
+    with pytest.raises(TypeError):
+        unpack_dap4_sequence(BytesReader(stream), bogus)
 
 
 @pytest.mark.parametrize(
