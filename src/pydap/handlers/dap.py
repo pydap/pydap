@@ -875,24 +875,6 @@ class SequenceDAP4Proxy(SequenceProxy):
 
         return iter(unpack_dap4_sequence(BytesReader(r.content), self.sequence))
 
-    def __eq__(self, other):
-        return ConstraintExpression("%s=%s" % (self.id, encode(other)))
-
-    def __ne__(self, other):
-        return ConstraintExpression("%s!=%s" % (self.id, encode(other)))
-
-    def __ge__(self, other):
-        return ConstraintExpression("%s>=%s" % (self.id, encode(other)))
-
-    def __le__(self, other):
-        return ConstraintExpression("%s<=%s" % (self.id, encode(other)))
-
-    def __gt__(self, other):
-        return ConstraintExpression("%s>%s" % (self.id, encode(other)))
-
-    def __lt__(self, other):
-        return ConstraintExpression("%s<%s" % (self.id, encode(other)))
-
 
 def unpack_sequence(stream, template):
     """Unpack data from a sequence, yielding records."""
