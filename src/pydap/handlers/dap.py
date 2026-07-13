@@ -825,9 +825,9 @@ class SequenceDAP4Proxy(SequenceProxy):
             out.sub_children = True
             out.sequence._visible_keys = key
 
-        # # return a copy with the added constraints
-        # elif isinstance(key, ConstraintExpression):
-        #     out.selection.extend(str(key).split("&"))
+        # return a copy with the added constraints
+        elif isinstance(key, ConstraintExpression):
+            out.selection.extend(str(key).split("&"))
 
         # # slice data
         else:
@@ -851,10 +851,7 @@ class SequenceDAP4Proxy(SequenceProxy):
                 netloc,
                 path + ".dap",
                 "",
-                "?dap4.ce="
-                + self.id
-                + hyperslab(self.slice)
-                + "&".join(self.selection),
+                "dap4.ce=" + self.id + hyperslab(self.slice) + "&".join(self.selection),
                 fragment,
             )
         ).rstrip("&")
@@ -868,7 +865,6 @@ class SequenceDAP4Proxy(SequenceProxy):
 
     def __iter__(self):
         # download and unpack data
-        print("url", self.url)
         r = GET(
             self.url,
             self.application,
@@ -877,18 +873,7 @@ class SequenceDAP4Proxy(SequenceProxy):
             get_kwargs=self.get_kwargs,
         )
 
-        assert isinstance(r, requests.Response)  # better way to do this
-
-        CHUNK_SIZE = 1048576
-        # remote dataset
-        with tempfile.TemporaryFile() as tmp:
-            # write the response to a temporary file
-            # so that we can read it in chunks
-            for chunk in r.iter_content(chunk_size=CHUNK_SIZE):
-                if chunk:  # filter out keep-alive chunks
-                    tmp.write(chunk)
-            tmp.seek(0)
-            return unpack_dap4_sequence(BytesReader(tmp), self.sequence)
+        return iter(unpack_dap4_sequence(BytesReader(r.content), self.sequence))
 
 
 def unpack_sequence(stream, template):
@@ -1085,10 +1070,18 @@ def unpack_dap4_sequence(_stream, _sequence):
     _, _bin_raw, _ = split_dmr_and_data(_stream)
     buffer = stream2bytearray(_bin_raw)
     mv = memoryview(buffer)
+    is_sequence = isinstance(_sequence, SequenceType)
 
-    cols = [c.name for c in _sequence.children()]
-    types = [c.dtype for c in _sequence.children()]
-
+    if is_sequence:
+        cols = [c.name for c in _sequence.children()]
+        types = [c.dtype for c in _sequence.children()]
+    elif isinstance(_sequence, BaseType):
+        cols = [_sequence.name]
+        types = [_sequence.dtype]
+    else:
+        raise TypeError(
+            "Expected SequenceType or BaseType, got {}".format(type(_sequence))
+        )
     # first step - get number of rows
     start = 0
     nrows = numpy.frombuffer(mv[start : start + 4], dtype=numpy.uint8)[0]
@@ -1105,7 +1098,7 @@ def unpack_dap4_sequence(_stream, _sequence):
         for i in cols_range:
             val, start = _decoder(mv, start, types[i])
             Values[i] = val
-        append(tuple(Values))
+        append(tuple(Values) if is_sequence else Values[0])
     return IterData(data, _sequence)
 
 

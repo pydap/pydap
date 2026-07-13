@@ -234,5 +234,17 @@ def tests_structure_unflatted_unescaped(capsys):
     assert out == expected
 
 
+def test_sequence_dap4():
+    url1 = "http://test.opendap.org/opendap/hyrax/data/ff/gsodock.dat"
+    pyds = open_url(url1, session=create_session(), protocol="dap4")
+    assert isinstance(pyds["URI_GSO-Dock"], SequenceType)
+    assert isinstance(pyds["URI_GSO-Dock"][("Depth", "Sea_Temp")], SequenceType)
+
+    # check that data is correct for the first two rows of the sequence
+    new_seq = pyds["URI_GSO-Dock"][("Depth", "Sea_Temp")]
+    result = [data for data in new_seq.iterdata()][:2]
+    assert result == [(0.0, 7.037628), (1.95, 17.62)]
+
+
 if __name__ == "__main__":
     test_maps()

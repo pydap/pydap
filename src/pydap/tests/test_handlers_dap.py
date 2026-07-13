@@ -42,6 +42,7 @@ except ImportError:
 
 DAPSequence_file = os.path.join(os.path.dirname(__file__), "data/daps/gsodock.dat.dap")
 DMRSequence_file = os.path.join(os.path.dirname(__file__), "data/dmrs/gsodock.dat.dmr")
+DMRGroup_file = os.path.join(os.path.dirname(__file__), "data/dmrs/SimpleGroup.dmr")
 
 
 class TestDapHandler(unittest.TestCase):
@@ -768,6 +769,39 @@ def test_unpack_dap4_sequence():
 
     actual = [depth for depth in pyds["URI_GSO-Dock"].Depth if depth > 2.25]
     assert actual == expected
+
+
+def test_unpack_dap4_sequence_single_column_returns_scalars():
+    """Narrowing a Sequence to one column (e.g. ``seq["Depth"]``) passes a
+    plain ``BaseType`` -- not a ``SequenceType`` -- to
+    ``unpack_dap4_sequence``. Each row must then decode to a bare scalar,
+    matching DAP2's ``unpack_sequence`` behavior for a single requested
+    column, rather than an empty or a one-element tuple.
+    """
+    url = "http://test.opendap.org/opendap/hyrax/data/ff/gsodock.dat"
+    dap4ce = "?dap4.ce=/URI_GSO-Dock.Depth"
+    dap_url = url + ".dap" + dap4ce
+    dmr_url = url + ".dmr" + dap4ce
+    my_session = create_session()
+    # get test sequence
+    r = my_session.get(dmr_url).content.decode()
+    seq = dmr_to_dataset(r)["URI_GSO-Dock"]
+
+    r = my_session.get(dap_url)
+
+    values = [
+        (val,)
+        for val in np.array(
+            [1.95, 1.89, 1.84, 1.76, 1.73, 1.68, 1.63, 1.58, 1.54, 1.47], dtype="<f4"
+        )
+    ]
+
+    result = list(unpack_dap4_sequence(BytesReader(r.content), seq))
+
+    assert len(result) == 144
+    assert all(isinstance(v, tuple) for v in result)
+    # assert first 10 values are correct
+    assert list(result)[:10] == values
 
 
 @pytest.mark.parametrize(

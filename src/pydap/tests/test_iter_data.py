@@ -246,3 +246,45 @@ def test_nested_combined(nested_data, nested_object):
     filtered = filtered[filtered["a"] < 4]
     filtered = filtered[::2]
     assert [tuple(row) for row in filtered] == [(3, 6, 9, [])]
+
+
+@pytest.fixture
+def leaf_template():
+    """A single scalar variable with no children of its own.
+
+    This is what a column narrows down to when a caller selects a single
+    field out of a Sequence, e.g. ``sequence["depth"]`` in the DAP4 handler:
+    the resulting template is a bare ``BaseType``, not a ``SequenceType``.
+    """
+    return BaseType("depth", dtype="float32")
+
+
+@pytest.fixture
+def leaf_object(leaf_template):
+    return IterData([1.95, 1.89, 1.84], leaf_template)
+
+
+def test_leaf_template_has_no_children(leaf_template):
+    """Sanity check the premise the rest of this test class relies on: a
+    bare BaseType has nothing to zip a row against."""
+    assert list(leaf_template.children()) == []
+
+
+def test_leaf_default_imap_skips_fix_nested(leaf_template):
+    """``IterData`` must not wire up ``fix_nested`` for a childless template.
+
+    Regression test: ``IterData.__init__`` used to default to
+    ``imap=[fix_nested(template)]`` unconditionally. ``fix_nested`` assumes a
+    row is a tuple with one entry per child (``zip(row, template.children())``),
+    so for a childless template it either collapses every row to ``()`` or
+    raises, depending on the shape of the row. The default ``imap`` is now
+    empty whenever ``template.children()`` is empty.
+    """
+    obj = IterData([1.95, 1.89, 1.84], leaf_template)
+    assert obj.imap == []
+
+
+def test_leaf_iter_returns_bare_values(leaf_object):
+    """Iterating an ``IterData`` built around a childless template must hand
+    back each stream element unchanged, not wrapped or collapsed to ``()``."""
+    assert list(leaf_object) == [1.95, 1.89, 1.84]
