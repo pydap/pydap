@@ -839,19 +839,27 @@ class SequenceDAP4Proxy(SequenceProxy):
 
     @property
     def url(self):
-        """Return url from where data is fetched.
-        TO: needs testing that CE is properly generated
-        acorting to the dap4 spec, which is different from dap2.
-
-        """
+        """Return url from where data is fetched."""
         scheme, netloc, path, params, query, fragment = urlparse(self.baseurl)
+
+        _id = self.id
+        if len(self.id.split(".")) == 1:
+            # a) either the entire sequence is requested, or b) more than a one element.
+            # To remove any ambiguity - construct a CE that has all elements in sequence
+            children = list(self.sequence.keys())
+            _id += "{" + ";".join(children) + "}"
+
+        dap4query = "dap4.ce=" + _id + hyperslab(self.slice)
+        if len(self.selection) > 0:
+            dap4query += "|" + "&".join(self.selection)
+
         url = urlunparse(
             (
                 scheme,
                 netloc,
                 path + ".dap",
                 "",
-                "dap4.ce=" + self.id + hyperslab(self.slice) + "&".join(self.selection),
+                dap4query,
                 fragment,
             )
         ).rstrip("&")

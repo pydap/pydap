@@ -242,8 +242,16 @@ def test_sequence_dap4():
 
     # check that data is correct for the first two rows of the sequence
     new_seq = pyds["URI_GSO-Dock"][("Depth", "Sea_Temp")]
-    result = [data for data in new_seq.iterdata()][:2]
-    assert result == [(0.0, 7.037628), (1.95, 17.62)]
+    result = [data for data in new_seq.iterdata()][:6]
+    values = [
+        (1.95, 17.62),
+        (1.89, 17.76),
+        (1.84, 18.01),
+        (1.76, 17.99),
+        (1.73, 17.95),
+        (1.68, 18.01),
+    ]
+    assert result == values
 
 
 if __name__ == "__main__":
