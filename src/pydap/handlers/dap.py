@@ -131,6 +131,7 @@ class DAPHandler(BaseHandler):
             self.protocol = self.determine_protocol()
 
         self.projection, self.selection = parse_ce(self.query, self.protocol)
+        print("parse: ", self.selection)
         arg = (
             self.scheme,
             self.netloc,
@@ -296,6 +297,7 @@ class DAPHandler(BaseHandler):
         for var in walk(self.dataset, SequenceType):
 
             template = copy.copy(var)
+            print(f"proxy {self.selection}")
             var.data = SequenceDAP4Proxy(
                 self.base_url,
                 template,
@@ -827,7 +829,10 @@ class SequenceDAP4Proxy(SequenceProxy):
 
         # return a copy with the added constraints
         elif isinstance(key, ConstraintExpression):
-            out.selection.extend(str(key).split("&"))
+            ce = str(key).split("&")[0]
+            ce_var = [ce.split(out.sequence.id + ".")[-1]]
+            # need to assert that ce_var is in sequence?
+            out.selection.extend(ce_var)
 
         # # slice data
         else:
