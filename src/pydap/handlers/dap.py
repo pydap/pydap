@@ -131,7 +131,6 @@ class DAPHandler(BaseHandler):
             self.protocol = self.determine_protocol()
 
         self.projection, self.selection = parse_ce(self.query, self.protocol)
-        print("parse: ", self.selection)
         arg = (
             self.scheme,
             self.netloc,
@@ -297,7 +296,6 @@ class DAPHandler(BaseHandler):
         for var in walk(self.dataset, SequenceType):
 
             template = copy.copy(var)
-            print(f"proxy {self.selection}")
             var.data = SequenceDAP4Proxy(
                 self.base_url,
                 template,
