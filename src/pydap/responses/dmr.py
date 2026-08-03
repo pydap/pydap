@@ -7,159 +7,26 @@ clients to introspect the variables and request data as necessary.
 
 """
 
-from collections import OrderedDict
-from collections.abc import Iterable, Mapping
+from collections.abc import Mapping
 from functools import singledispatch
-from xml.sax.saxutils import escape
 
-import numpy as np
-
-from pydap.lib import NUMPY_TO_DAP4_TYPEMAP, __version__
+from pydap.lib import __version__
 from pydap.model import BaseType, DatasetType, GroupType, SequenceType, StructureType
 from pydap.responses.lib import BaseResponse
+from pydap.responses.xml import (
+    _attribute_items,
+    _attribute_type,
+    _attribute_values,
+    _children_by_declaration_order,
+    _container_dimension_context,
+    _dataset_name_attr,
+    _dtype_to_dap4,
+    _xml_attr,
+    _xml_text,
+    namespace,
+)
 
 INDENT = " " * 4
-namespace = {"": "http://xml.opendap.org/ns/DAP/4.0#"}
-
-
-def _xml_attr(value):
-    value = escape(str(value), {'"': "&quot;"})
-    return value.encode("ascii", "xmlcharrefreplace").decode("ascii")
-
-
-def _xml_text(value):
-    value = escape(str(_normalize_scalar(value)))
-    return value.encode("ascii", "xmlcharrefreplace").decode("ascii")
-
-
-def _dataset_name_attr(value):
-    return _xml_attr(str(value).replace("%2E", ".").replace("%2e", "."))
-
-
-def _dtype_to_dap4(dtype):
-    dtype = np.dtype(dtype)
-    key = (dtype.kind, dtype.itemsize)
-    if dtype.kind in {"S", "U"}:
-        key = (dtype.kind, None)
-    try:
-        return NUMPY_TO_DAP4_TYPEMAP[key]
-    except KeyError as exc:
-        raise TypeError("Unsupported DAP4 dtype: {dtype}".format(dtype=dtype)) from exc
-
-
-def _normalize_scalar(value):
-    if isinstance(value, np.ndarray) and value.shape == ():
-        value = value.item()
-    elif isinstance(value, np.generic):
-        value = value.item()
-    if isinstance(value, bytes):
-        return value.decode("utf-8")
-    return value
-
-
-def _attribute_values(value):
-    if isinstance(value, np.ndarray):
-        if value.shape == ():
-            return [value[()]]
-        return list(value.ravel())
-    if (
-        isinstance(value, Iterable)
-        and not isinstance(value, (str, bytes, Mapping))
-        and getattr(value, "shape", None) != ()
-    ):
-        return list(value)
-    return [value]
-
-
-def _scalar_attribute_type(value):
-    if isinstance(value, np.generic):
-        return _dtype_to_dap4(value.dtype)
-    if isinstance(value, np.ndarray):
-        return _dtype_to_dap4(value.dtype)
-    if isinstance(value, bool):
-        return "UInt8"
-    if isinstance(value, int):
-        return "Int64"
-    if isinstance(value, float):
-        return "Float64"
-    return "String"
-
-
-def _attribute_type(values):
-    types = [_scalar_attribute_type(value) for value in values if value is not None]
-    if not types:
-        return "String"
-    if len(set(types)) == 1:
-        return types[0]
-    if "String" in types:
-        return "String"
-    if any(type_.startswith("Float") for type_ in types):
-        return "Float64"
-    if any(type_.startswith("Int") for type_ in types):
-        return "Int64"
-    if any(type_.startswith("UInt") for type_ in types):
-        return "UInt64"
-    return "String"
-
-
-def _attribute_items(attributes, excluded=()):
-    for key, value in attributes.items():
-        if key not in excluded:
-            yield key, value
-
-
-def _dimensions(attributes):
-    return attributes.get("dimensions", {})
-
-
-def _container_dimension_name(container, name):
-    if isinstance(container, DatasetType):
-        return "/" + name
-    path = container.attributes.get("path", "/")
-    if not path.endswith("/"):
-        path += "/"
-    return path + container.name + "/" + name
-
-
-def _next_phony_dimension_name(used_names):
-    index = 0
-    while True:
-        name = "phony_dim_{index}".format(index=index)
-        if name not in used_names:
-            used_names.add(name)
-            return name
-        index += 1
-
-
-def _container_dimension_context(var):
-    dimensions = OrderedDict(_dimensions(var.attributes))
-    phony_dimensions = {}
-    used_names = set(dimensions)
-
-    variables, _ = _children_by_declaration_order(var)
-    for child in variables:
-        if not isinstance(child, BaseType):
-            continue
-        shape = tuple(child.shape or ())
-        missing_dims = []
-        for size in shape[len(child.dims) :]:
-            name = _next_phony_dimension_name(used_names)
-            dimensions[name] = size
-            missing_dims.append(_container_dimension_name(var, name))
-        if missing_dims:
-            phony_dimensions[id(child)] = tuple(missing_dims)
-    return dimensions, phony_dimensions
-
-
-def _is_group(child):
-    return isinstance(child, GroupType)
-
-
-def _children_by_declaration_order(var):
-    children = list(var.children())
-    variables = [child for child in children if not _is_group(child)]
-    groups = [child for child in children if _is_group(child)]
-    return variables, groups
 
 
 def _emit_dimensions(dimensions, level):
