@@ -222,7 +222,7 @@ SimpleGroup = DatasetType(
 )
 SimpleGroup.createVariable(
     name="/time",
-    data=np.array(0.5, dtype="f4"),
+    data=np.array([0.5], dtype="f4"),
     dims=("/time",),
     attributes={
         "standard_name": "time",
