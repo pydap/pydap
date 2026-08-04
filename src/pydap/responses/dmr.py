@@ -23,7 +23,7 @@ from pydap.responses.xml import (
     _dtype_to_dap4,
     _xml_attr,
     _xml_text,
-    namespace,
+    DAP4_NS,
 )
 
 INDENT = " " * 4
@@ -125,7 +125,7 @@ def dmr(var):
 
 @dmr.register(DatasetType)
 def _(var, level=0, phony_dimensions=()):
-    str0 = 'Dataset xmlns="{namespace}"'.format(namespace=namespace[""])
+    str0 = 'Dataset xmlns="{namespace}"'.format(namespace=DAP4_NS["dap"])
     str1 = ' xml:base="{url}"'.format(url=_xml_attr("http://localhost:8001"))
     str2 = ' dapVersion="4.0" dmrVersion="1.0"'
     str3 = ' name="{name}">\n'.format(name=_dataset_name_attr(var.name))

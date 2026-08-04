@@ -17,10 +17,7 @@ from pydap.lib import NUMPY_TO_DAP4_TYPEMAP
 from pydap.model import BaseType, DatasetType, GroupType, SequenceType, StructureType
 
 # DAP 4 Namespace URI and a mapping for passing to lxml
-namespace = {"": "http://xml.opendap.org/ns/DAP/4.0#"}
-
-DAP4_NS = namespace[""]
-NSMAP = {"dap": DAP4_NS}
+DAP4_NS = {"dap":  "http://xml.opendap.org/ns/DAP/4.0#"}
 
 _XML_NS = "http://www.w3.org/XML/1998/namespace"
 
@@ -293,7 +290,7 @@ def _basetype_element(dataset, parent=None, phony_dimensions=()):
 
 def _new_root(name):
     """Create the single root element, declaring the DAP4 default namespace."""
-    return etree.Element(_qual_name(name), nsmap={None: DAP4_NS})
+    return etree.Element(_qual_name(name), nsmap={None: DAP4_NS["dap"]})
 
 
 def _qual_name(name):
@@ -305,7 +302,7 @@ def _qual_name(name):
     order for the tree to serialize back out with everything sharing the
     same DAP4 namespace.
     """
-    return "{{{ns}}}{name}".format(ns=DAP4_NS, name=name)
+    return "{{{ns}}}{name}".format(ns=DAP4_NS["dap"], name=name)
 
 
 def _build_dimensions(parent, dims):
