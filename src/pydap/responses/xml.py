@@ -25,9 +25,9 @@ NSMAP = {"dap": DAP4_NS}
 _XML_NS = "http://www.w3.org/XML/1998/namespace"
 
 
-# ====================================
-# API migrated from pydap.resposes.dmr
-# ====================================
+# =====================================
+# API migrated from pydap.responses.dmr
+# =====================================
 
 
 def _xml_attr(value):
@@ -217,7 +217,8 @@ def _dataset_element_factory(dataset, parent=None, phony_dimensions=()):
     element.set("{%s}base" % _XML_NS, "http://localhost:8001")
     element.set("dapVersion", "4.0")
     element.set("dmrVersion", "1.0")
-    element.set("name", _dataset_name_attr(dataset.name))
+    # name should be unescaped
+    element.set("name", _dataset_name_attr(dataset.name)) 
 
     dimensions, child_phony_dimensions = _container_dimension_context(dataset)
     _build_dimensions(element, dimensions)
@@ -316,11 +317,11 @@ def _build_dimensions(parent, dims):
         _new_child(parent, "Dimension", name=str(name), size=str(size))
 
 
-def _new_child(parent, name, **attr):
+def _new_child(parent, daptype, **attr):
     """
     creates a new child node and returns it
     """
-    element = etree.SubElement(parent, _qual_name(name))
+    element = etree.SubElement(parent, _qual_name(daptype))
     for key, value in attr.items():
         if value is not None:
             element.set(key, str(value))
