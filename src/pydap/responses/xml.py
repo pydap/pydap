@@ -17,7 +17,7 @@ from pydap.lib import NUMPY_TO_DAP4_TYPEMAP
 from pydap.model import BaseType, DatasetType, GroupType, SequenceType, StructureType
 
 # DAP 4 Namespace URI and a mapping for passing to lxml
-DAP4_NS = {"dap":  "http://xml.opendap.org/ns/DAP/4.0#"}
+DAP4_NS = {"dap": "http://xml.opendap.org/ns/DAP/4.0#"}
 
 _XML_NS = "http://www.w3.org/XML/1998/namespace"
 
@@ -215,7 +215,7 @@ def _dataset_element_factory(dataset, parent=None, phony_dimensions=()):
     element.set("dapVersion", "4.0")
     element.set("dmrVersion", "1.0")
     # name should be unescaped
-    element.set("name", _dataset_name_attr(dataset.name)) 
+    element.set("name", _dataset_name_attr(dataset.name))
 
     dimensions, child_phony_dimensions = _container_dimension_context(dataset)
     _build_dimensions(element, dimensions)

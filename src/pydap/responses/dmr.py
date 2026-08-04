@@ -14,6 +14,7 @@ from pydap.lib import __version__
 from pydap.model import BaseType, DatasetType, GroupType, SequenceType, StructureType
 from pydap.responses.lib import BaseResponse
 from pydap.responses.xml import (
+    DAP4_NS,
     _attribute_items,
     _attribute_type,
     _attribute_values,
@@ -23,7 +24,6 @@ from pydap.responses.xml import (
     _dtype_to_dap4,
     _xml_attr,
     _xml_text,
-    DAP4_NS,
 )
 
 INDENT = " " * 4
