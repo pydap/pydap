@@ -398,11 +398,13 @@ def _build_variable_dims(parent, dataset, phony_dimensions=()):
 # ////////////////////////////////////////////////////////////////////////////////////
 
 
-def dmr_tree_to_string(tree, pretty_print=True, xml_declaration=True):
+def dmr_tree_to_string(
+    tree, pretty_print=True, xml_declaration=True, encoding="ISO-8859-1"
+):
     """Serialize a lxml DMR tree (as returned by :func:`build_dmr_tree`) to text."""
     return etree.tostring(
         tree,
         pretty_print=pretty_print,
         xml_declaration=xml_declaration,
-        encoding="ISO-8859-1",
-    ).decode("ISO-8859-1")
+        encoding=encoding,
+    ).decode(encoding)
