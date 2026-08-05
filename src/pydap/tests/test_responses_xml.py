@@ -77,6 +77,17 @@ def test_build_dmr_element_basetype():
     assert element.tag == "{" + DAP4_NS["dap"] + "}" + "Float32"
     assert element.get("name") == "time"
     assert len(element.findall("dap:Dim", DAP4_NS)) == 1
+    assert element.findall("dap:Dim", DAP4_NS)[0].get("name") == "/time"
+
+
+def test_build_dmr_element_sequence():
+    """Test that the xml API can generate a dmr element from a sequence."""
+    sequence = SimpleSequence["cast"]
+    root = _new_root("Dataset")
+    element = build_dmr_element(sequence, parent=root)
+    assert element.tag == "{" + DAP4_NS["dap"] + "}" + "Sequence"
+    assert element.get("name") == "cast"
+    assert element.findall("dap:String", DAP4_NS)[0].get("name") == "id"
 
 
 def test_roundtrip_dataset_xml_dataset():
