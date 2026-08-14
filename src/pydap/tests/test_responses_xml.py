@@ -1,12 +1,18 @@
 """Test pydap xml API to generate dmr responses."""
 
+import numpy as np
 import pytest
 
+from pydap.model import DatasetType
 from pydap.parsers.dmr import dmr_to_dataset
 from pydap.responses.xml import (
     DAP4_NS,
     _basetype_element,
+    _build_dimensions,
+    _children_by_declaration_order,
+    _dtype_to_dap4,
     _group_element,
+    _new_child,
     _new_root,
     _qual_name,
     _sequence_element,
@@ -149,6 +155,104 @@ def test_roundtrip_dataset_xml_dataset_with_unnamed_dimensions():
         "/Group2/phony_dim_1",
         "/Group2/phony_dim_2",
     ]
+
+
+@pytest.mark.parametrize(
+    "dimensions",
+    [
+        ({"a": 1, "b": 2, "c": 3}),
+        ({"a": 10, "b": 100}),
+    ],
+)
+def test_build_dimensions(dimensions):
+    """Test that the xml API generates correctly dmr dimensions"""
+    root = _new_root("Dataset")
+    _build_dimensions(root, dimensions)
+    assert (
+        dict(
+            (el.get("name"), int(el.get("size")))
+            for el in root.findall("dap:Dimension", DAP4_NS)
+        )
+        == dimensions
+    )
+
+
+@pytest.mark.parametrize(
+    "arr, expected_type",
+    [
+        (np.array([1], dtype=np.int8), "Int8"),
+        (np.array([1], dtype=np.uint8), "UInt8"),
+        (np.array([1], dtype=np.int16), "Int16"),
+        (np.array([1], dtype=np.uint16), "UInt16"),
+        (np.array([1], dtype=np.int32), "Int32"),
+        (np.array([1], dtype=np.uint32), "UInt32"),
+        (np.array([1], dtype=np.int64), "Int64"),
+        (np.array([1], dtype=np.uint64), "UInt64"),
+        (np.array([1.0], dtype=np.float32), "Float32"),
+        (np.array([1.0], dtype=np.float64), "Float64"),
+        (np.array([b"Hello"], dtype="S5"), "String"),
+        (np.array(["Hello"], dtype="<U5"), "String"),
+    ],
+)
+def test_dtype_to_dap4(arr, expected_type):
+    """Test that the correct DAP4 type is returned for a given numpy array."""
+    assert _dtype_to_dap4(arr.dtype) == expected_type
+
+
+@pytest.mark.parametrize(
+    "DAP4_type, attr_name",
+    [
+        ("Group", "test_group"),
+        ("Float32", "Temperature"),
+        ("Int16", "Index"),
+        ("Sequence", "test_sequence"),
+        ("String", "test_string"),
+        (
+            "boolean",
+            "test_does_not_fail",
+        ),  # <---not valid DAP4 type, but should not fail
+    ],
+)
+def test_new_child(DAP4_type, attr_name):
+    """Test that the new child element is created with the correct namespace.
+    This function does not discriminate between different DAP4 types, i.e. it
+    does not check that the correct element type is returned for a given DAP4 type.
+    Also - it does not check that a DAP4 type is valid.
+    """
+    parent = _new_root("Dataset")
+    el = _new_child(parent, DAP4_type, name=attr_name)
+    assert el.tag == "{" + DAP4_NS["dap"] + "}" + DAP4_type
+    assert el.get("name") == attr_name
+
+
+def test_children_by_declaration_order_flat():
+    """Test that the children of a group are returned in the order they were
+    declared."""
+    group = SimpleGroup["SimpleGroup"]
+    children = _children_by_declaration_order(group)[0]
+    assert [child.name for child in children] == [
+        "Temperature",
+        "Salinity",
+        "Y",
+        "X",
+    ]
+
+
+def test_children_by_declaration_order_nested_groups():
+    """Test that the children of a group with nested groups are
+    returned, and assert how deep into a nested hierarchy the function goes.
+    """
+    ds = DatasetType("test_root")
+    ds.createGroup("A")
+    ds.createGroup("A/B")
+    ds.createGroup("A/B/C")
+    ds.createVariable("A/B/C/var1", dims=["x"])
+    ds.createGroup("D")
+    children = _children_by_declaration_order(ds)
+    flattened_children = [
+        x for item in children for x in (item if isinstance(item, list) else [item])
+    ]
+    assert [child.name for child in flattened_children] == ["A", "D"]
 
 def test_attribute_items():
     group = SimpleGroup["SimpleGroup"]
