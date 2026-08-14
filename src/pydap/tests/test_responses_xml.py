@@ -13,6 +13,9 @@ from pydap.responses.xml import (
     build_dmr_element,
     build_dmr_tree,
     dmr_tree_to_string,
+    _attribute_items,
+    _dimensions,
+    _children_by_declaration_order,
 )
 from pydap.tests.datasets import DSUnDims, SimpleGroup, SimpleSequence
 
@@ -146,3 +149,38 @@ def test_roundtrip_dataset_xml_dataset_with_unnamed_dimensions():
         "/Group2/phony_dim_1",
         "/Group2/phony_dim_2",
     ]
+
+def test_attribute_items():
+    group = SimpleGroup["SimpleGroup"]
+    root = _new_root("Dataset")
+    element = build_dmr_element(group, parent=root)
+    dataset_attrs = {}
+    for item in element.findall("dap:Attribute", DAP4_NS):
+        attr_name = item.get("name")
+        attr_value = [ value.text for value in item.findall("dap:Value", DAP4_NS) ]
+        dataset_attrs[attr_name] = attr_value[0]
+
+    attr = dict(_attribute_items(dataset_attrs))
+    assert attr == {'Description': 'Test group with numerical data'}
+
+def test_dimensions():
+    group = SimpleGroup["SimpleGroup"]
+    root = _new_root("Dataset")
+    element = build_dmr_element(group, parent=root)
+    group_dims = {}
+    for dims in element.findall("dap:Dimension", DAP4_NS):
+        dim_name = dims.get("name")
+        print("name: " + dim_name)
+        dim_value = int(dims.get("size"))
+        print("value: " + str(dim_value))
+        group_dims[dim_name] = dim_value
+
+    dimension_attrs = {
+        "dimensions": group_dims,
+        "Description": "Test group with numerical data"
+    }
+    print("attr: "+ str(dimension_attrs))
+
+    result = _dimensions(dimension_attrs)
+    assert result == {"Y": 4, "X": 4}
+
