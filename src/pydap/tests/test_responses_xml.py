@@ -7,11 +7,14 @@ from pydap.model import DatasetType, GroupType
 from pydap.parsers.dmr import dmr_to_dataset
 from pydap.responses.xml import (
     DAP4_NS,
+    _attribute_items,
     _basetype_element,
     _build_dimensions,
     _children_by_declaration_order,
+    _dimensions,
     _dtype_to_dap4,
     _group_element,
+    _is_group,
     _new_child,
     _new_root,
     _qual_name,
@@ -19,9 +22,6 @@ from pydap.responses.xml import (
     build_dmr_element,
     build_dmr_tree,
     dmr_tree_to_string,
-    _attribute_items,
-    _dimensions,
-    _children_by_declaration_order, _is_group,
 )
 from pydap.tests.datasets import DSUnDims, SimpleGroup, SimpleSequence
 
@@ -254,6 +254,7 @@ def test_children_by_declaration_order_nested_groups():
     ]
     assert [child.name for child in flattened_children] == ["A", "D"]
 
+
 def test_attribute_items():
     group = SimpleGroup["SimpleGroup"]
     root = _new_root("Dataset")
@@ -261,11 +262,12 @@ def test_attribute_items():
     dataset_attrs = {}
     for item in element.findall("dap:Attribute", DAP4_NS):
         attr_name = item.get("name")
-        attr_value = [ value.text for value in item.findall("dap:Value", DAP4_NS) ]
+        attr_value = [value.text for value in item.findall("dap:Value", DAP4_NS)]
         dataset_attrs[attr_name] = attr_value[0]
 
     attr = dict(_attribute_items(dataset_attrs))
-    assert attr == {'Description': 'Test group with numerical data'}
+    assert attr == {"Description": "Test group with numerical data"}
+
 
 def test_dimensions():
     group = SimpleGroup["SimpleGroup"]
@@ -281,12 +283,13 @@ def test_dimensions():
 
     dimension_attrs = {
         "dimensions": group_dims,
-        "Description": "Test group with numerical data"
+        "Description": "Test group with numerical data",
     }
-    print("attr: "+ str(dimension_attrs))
+    print("attr: " + str(dimension_attrs))
 
     result = _dimensions(dimension_attrs)
     assert result == {"Y": 4, "X": 4}
+
 
 def test_is_group():
     group = SimpleGroup["SimpleGroup"]
@@ -295,4 +298,3 @@ def test_is_group():
 
     simple_group = GroupType(name=element.get("name"))
     assert _is_group(simple_group) is True
-
