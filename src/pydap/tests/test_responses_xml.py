@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from pydap.model import DatasetType
+from pydap.model import DatasetType, GroupType
 from pydap.parsers.dmr import dmr_to_dataset
 from pydap.responses.xml import (
     DAP4_NS,
@@ -21,7 +21,7 @@ from pydap.responses.xml import (
     dmr_tree_to_string,
     _attribute_items,
     _dimensions,
-    _children_by_declaration_order,
+    _children_by_declaration_order, _is_group,
 )
 from pydap.tests.datasets import DSUnDims, SimpleGroup, SimpleSequence
 
@@ -287,4 +287,12 @@ def test_dimensions():
 
     result = _dimensions(dimension_attrs)
     assert result == {"Y": 4, "X": 4}
+
+def test_is_group():
+    group = SimpleGroup["SimpleGroup"]
+    root = _new_root("Dataset")
+    element = build_dmr_element(group, parent=root)
+
+    simple_group = GroupType(name=element.get("name"))
+    assert _is_group(simple_group) is True
 
