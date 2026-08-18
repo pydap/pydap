@@ -22,6 +22,9 @@ from pydap.responses.xml import (
     build_dmr_element,
     build_dmr_tree,
     dmr_tree_to_string,
+    _attribute_items,
+    _dimensions,
+    _children_by_declaration_order, _is_group,
 )
 from pydap.tests.datasets import DSUnDims, SimpleGroup, SimpleSequence
 
