@@ -408,4 +408,3 @@ def dmr_tree_to_string(
         xml_declaration=xml_declaration,
         encoding=encoding,
     ).decode(encoding)
-
