@@ -276,16 +276,13 @@ def test_dimensions():
     group_dims = {}
     for dims in element.findall("dap:Dimension", DAP4_NS):
         dim_name = dims.get("name")
-        print("name: " + dim_name)
         dim_value = int(dims.get("size"))
-        print("value: " + str(dim_value))
         group_dims[dim_name] = dim_value
 
     dimension_attrs = {
         "dimensions": group_dims,
         "Description": "Test group with numerical data",
     }
-    print("attr: " + str(dimension_attrs))
 
     result = _dimensions(dimension_attrs)
     assert result == {"Y": 4, "X": 4}
