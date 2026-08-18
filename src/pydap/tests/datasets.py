@@ -222,7 +222,7 @@ SimpleGroup = DatasetType(
 )
 SimpleGroup.createVariable(
     name="/time",
-    data=np.array(0.5, dtype="f4"),
+    data=np.array([0.5], dtype="f4"),
     dims=("/time",),
     attributes={
         "standard_name": "time",
@@ -230,7 +230,9 @@ SimpleGroup.createVariable(
     },
 )
 SimpleGroup.createVariable(
-    name="/time_bnds", data=np.arange(2, dtype="f4"), dims=("/time", "/nv")
+    name="/time_bnds",
+    data=np.arange(2, dtype="f4").reshape(1, 2),
+    dims=("/time", "/nv"),
 )
 
 SimpleGroup.createGroup(
