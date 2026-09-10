@@ -1962,6 +1962,8 @@ def to_netcdf(
             # see https://github.com/pydap/pydap/issues/656
             # enforce always 2.0 - some servers may indicate 1.0
             dmrVersion = "2.0"
+        elif version >= 1.172:
+            dmrVersion = "2.0"
     except ET.ParseError:
         # server is not a Hyrax!
         dmrVersion = None  # infers from dap response
