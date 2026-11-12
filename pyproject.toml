@@ -3,7 +3,7 @@ build-backend = "setuptools.build_meta"
 requires = ["setuptools >= 64", "setuptools_scm[toml]>=8"]
 
 [project]
-authors = [{name = 'Roberto De Almeida', email = 'roberto@dealmeida.net'}]
+authors = [{ name = 'Roberto De Almeida', email = 'roberto@dealmeida.net' }]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Science/Research",
@@ -30,8 +30,8 @@ dependencies = [
 ]
 description = "A pure python implementation of the Data Access Protocol."
 dynamic = ["version"]
-license = {file = "LICENSE"}
-maintainers = [{name = 'Miguel Jimenez-Urias', email = 'mjimenez@opendap.org'}]
+license = { file = "LICENSE" }
+maintainers = [{ name = 'Miguel Jimenez-Urias', email = 'mjimenez@opendap.org' }]
 name = "pydap"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -76,7 +76,7 @@ markers = [
 testpaths = ["/src/pydap/tests"]
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
