@@ -24,7 +24,8 @@ _FORMAT_DEPENDENCIES = {
     ".pq": (("pyarrow", "fastparquet"),),
     ".tsv": (),
     ".txt": (),
-    ".xls": ("xlrd",),
+    # pandas picks the .xls engine (xlrd or calamine, depending on version).
+    ".xls": (("xlrd", "python_calamine"),),
     ".xlsm": ("openpyxl",),
     ".xlsx": ("openpyxl",),
     ".xml": ("lxml",),
@@ -165,7 +166,7 @@ def test_supported_tabular_formats_become_single_sequence_dataset(
     )
 
     if extension == ".xls":
-        _assert_xls_fixture_reads_or_reports_missing_xlrd(dataframe)
+        _assert_xls_fixture_reads_or_reports_missing_engine(dataframe)
         return
 
     _require_format_dependencies(extension)
@@ -288,22 +289,22 @@ def _write_tabular_fixture(dataframe, filepath, extension):
         raise AssertionError("No fixture writer for {0}".format(extension))
 
 
-def _assert_xls_fixture_reads_or_reports_missing_xlrd(dataframe):
+def _assert_xls_fixture_reads_or_reports_missing_engine(dataframe):
     filepath = _TEST_DATA / "simple_data.xls"
     assert filepath.exists()
 
-    if importlib.util.find_spec("xlrd"):
+    # The default .xls engine is chosen by pandas and has changed across
+    # versions (xlrd, then python-calamine), so do not assume which one.
+    try:
         sequence = SequenceHandler(str(filepath)).dataset["sequence"]
-        _assert_sequence_matches_dataframe(sequence, dataframe)
+    except OpenFileError as exc:
+        message = str(exc)
+        assert "Unable to open file" in message
+        assert "install" in message.lower()
+        assert "xlrd" in message or "calamine" in message
         return
 
-    with pytest.raises(OpenFileError) as excinfo:
-        SequenceHandler(str(filepath))
-
-    message = str(excinfo.value)
-    assert "Unable to open file" in message
-    assert "xlrd" in message
-    assert "install" in message.lower()
+    _assert_sequence_matches_dataframe(sequence, dataframe)
 
 
 def _assert_sequence_matches_dataframe(sequence, dataframe):
