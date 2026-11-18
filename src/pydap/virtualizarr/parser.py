@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 import io
 import sys
 import warnings
@@ -36,6 +35,7 @@ def _require_virtualizarr():
             ManifestGroup,
             ManifestStore,
         )
+        from virtualizarr.manifests.manifest import ChunkEntry
         from virtualizarr.manifests.utils import create_v3_array_metadata
         from virtualizarr.parsers.utils import encode_cf_fill_value
     except ImportError as exc:
@@ -46,6 +46,7 @@ def _require_virtualizarr():
 
     return (
         EagerStoreReader,
+        ChunkEntry,
         ChunkManifest,
         ManifestArray,
         ManifestGroup,
@@ -158,6 +159,7 @@ class DMRParser:
 
         (
             EagerStoreReader,
+            ChunkEntry,
             ChunkManifest,
             ManifestArray,
             ManifestGroup,
@@ -209,17 +211,18 @@ class DMRParser:
             if "inline" in meta:
                 # extract data already decoded into array/string
                 data = meta.pop("inline", None)
-                bdata = base64.b64encode(data)
 
                 chunks = {
-                    "0.0": {
+                    "0": {
                         "path": "__inline__",
                         "offset": 0,
-                        "length": len(bdata),
-                        "data": bdata,
+                        "length": len(data),
+                        "data": np.array(data),
                     },
                 }
-                chunkmanifest = ChunkManifest(entries=chunks)
+                chunkmanifest = ChunkManifest(
+                    entries=chunks, shape=np.array(data).shape
+                )
             else:
                 chunkmanifest = ChunkManifest(chunkmanifest)
 
