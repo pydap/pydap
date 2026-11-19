@@ -211,7 +211,7 @@ class DMRParser:
             if "inline" in meta:
                 # extract data already decoded into array/string
                 data = meta.pop("inline", None)
-                ndim = len(meta.pop("shape", None))
+                ndim = len(meta["shape"])
 
                 chunks = {
                     "0": {
