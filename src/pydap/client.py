@@ -304,9 +304,9 @@ def consolidate_metadata(
             "URLs must have the same netloc. Try again with the same base URL."
         )
     if set(netlocs).pop() == "test.opendap.org":
-        URLs = ["http" + urls[i][4:] for i in range(len(urls))]
+        URLs = [urls[i].replace("dap4", "http", 1) for i in range(len(urls))]
     else:
-        URLs = ["https" + urls[i][4:] for i in range(len(urls))]
+        URLs = [urls[i].replace("dap4", "https", 1) for i in range(len(urls))]
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
@@ -1855,7 +1855,7 @@ def _run_process_batch(
 def _download_with_retries_process(
     urls: Sequence[str],
     session_state: dict,
-    output_path: Union[str, Path, None, Iterable[Union[str, Path]]],
+    output_path: Union[str, Path, None],
     keep_variables: Optional[Sequence[str]],
     dim_slices: Optional[
         Union[Mapping[str, SliceTuple], Sequence[Mapping[str, SliceTuple]]]
