@@ -463,9 +463,6 @@ def test_warning_nondap4urls_consolidate_metadata(cache_tmp_dir, urls):
     cached_session.cache.clear()
 
 
-# @pytest.mark.skipif(
-#     os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
-# )
 @pytest.mark.parametrize(
     "urls",
     [

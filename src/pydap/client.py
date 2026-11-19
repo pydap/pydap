@@ -1855,7 +1855,7 @@ def _run_process_batch(
 def _download_with_retries_process(
     urls: Sequence[str],
     session_state: dict,
-    output_path: Union[str, Path, None],
+    output_path: Union[str, Path, None, Iterable[Union[str, Path]]],
     keep_variables: Optional[Sequence[str]],
     dim_slices: Optional[
         Union[Mapping[str, SliceTuple], Sequence[Mapping[str, SliceTuple]]]
@@ -1931,7 +1931,7 @@ def _download_with_retries_process(
 def to_netcdf(
     urls: Union[str, Sequence[str]],
     session: Optional[requests.Session] = None,
-    output_path: Optional[Union[str, Path, Iterable[Union[str, Path]]]] = None,
+    output_path: Optional[Union[str, Path]] = None,
     keep_variables: Optional[Sequence[str]] = None,
     dim_slices: Optional[
         Union[Mapping[str, SliceTuple], Sequence[Mapping[str, SliceTuple]]]
@@ -1959,21 +1959,6 @@ def to_netcdf(
     dmrVersion = None
     rv = session.get(url.split("?")[0] + ".ver")  # hyrax specific!
     dmr_ver = rv.content.decode()
-
-    if isinstance(output_path, list):
-        if isinstance(urls, list) and len(output_path) != len(urls):
-            raise ValueError(
-                f"output_path must be a single path or a list of paths"
-                " with the same length as urls. "
-                f"Got {len(output_path)} paths for {len(urls)} urls."
-            )
-        elif isinstance(urls, str):
-            raise ValueError(
-                f"output_path must be a single path. Got {len(output_path)} paths"
-                f" for a single url."
-            )
-        else:
-            output_path = [Path(p) for p in output_path]
 
     try:
         root = ET.fromstring(dmr_ver)
