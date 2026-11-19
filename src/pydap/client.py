@@ -1931,7 +1931,7 @@ def _download_with_retries_process(
 def to_netcdf(
     urls: Union[str, Sequence[str]],
     session: Optional[requests.Session] = None,
-    output_path: Optional[Union[str, Path, Iterable[str]]] = None,
+    output_path: Optional[Union[str, Path, Iterable[Union[str, Path]]]] = None,
     keep_variables: Optional[Sequence[str]] = None,
     dim_slices: Optional[
         Union[Mapping[str, SliceTuple], Sequence[Mapping[str, SliceTuple]]]
