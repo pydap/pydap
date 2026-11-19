@@ -284,6 +284,7 @@ def consolidate_metadata(
             DeprecationWarning,
         )
     schemes = [urlparse(urls[n]).scheme for n in range(len(urls))]
+    netlocs = [urlparse(urls[n]).netloc for n in range(len(urls))]
     # check if all urls have the same scheme
     scheme = set(schemes)
     if len(scheme) > 1:
@@ -298,7 +299,14 @@ def consolidate_metadata(
         )
         return None
     # All URLs begin with dap4 - to make sure DAP4 compliant
-    URLs = ["https" + urls[i][4:] for i in range(len(urls))]
+    if set(netlocs) != {netlocs[0]}:
+        raise ValueError(
+            "URLs must have the same netloc. Try again with the same base URL."
+        )
+    if set(netlocs).pop() == "test.opendap.org":
+        URLs = [urls[i].replace("dap4", "http", 1) for i in range(len(urls))]
+    else:
+        URLs = [urls[i].replace("dap4", "https", 1) for i in range(len(urls))]
     dmr_urls = [
         url + ".dmr" if "?" not in url else url.replace("?", ".dmr?") for url in URLs
     ]
@@ -1951,6 +1959,7 @@ def to_netcdf(
     dmrVersion = None
     rv = session.get(url.split("?")[0] + ".ver")  # hyrax specific!
     dmr_ver = rv.content.decode()
+
     try:
         root = ET.fromstring(dmr_ver)
         ver = root.find("Hyrax").attrib.get("version")

@@ -31,7 +31,7 @@ def test_maps():
 @pytest.mark.parametrize("protocol", ["dap4", "dap2"])
 def test_dap4_slices(cache_tmp_dir, protocol):
     """Also tests dap2"""
-    url = "https://test.opendap.org/opendap/netcdf/examples/tos_O1_2001-2002.nc"
+    url = "http://test.opendap.org/opendap/netcdf/examples/tos_O1_2001-2002.nc"
     cache_name = cache_tmp_dir / "debug_dap4_slices"
     session = create_session(
         use_cache=True,
