@@ -211,18 +211,17 @@ class DMRParser:
             if "inline" in meta:
                 # extract data already decoded into array/string
                 data = meta.pop("inline", None)
+                ndim = len(meta.pop("shape", None))
 
                 chunks = {
                     "0": {
                         "path": "__inline__",
                         "offset": 0,
-                        "length": len(data),
-                        "data": np.array(data),
+                        "length": data.nbytes,
+                        "data": data.tobytes(),
                     },
                 }
-                chunkmanifest = ChunkManifest(
-                    entries=chunks, shape=np.array(data).shape
-                )
+                chunkmanifest = ChunkManifest(entries=chunks, shape=(1,) * ndim)
             else:
                 chunkmanifest = ChunkManifest(chunkmanifest)
 
