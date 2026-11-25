@@ -963,7 +963,6 @@ def test_get_cmr_urls(cache_tmp_dir, param, expected):
         doi_query = _quote(param["doi"]).replace("/", "%2F").replace("%2E", ".")
         assert url + doi_query == cached_urls[0]
         cached_urls = cached_urls[1:]  # remove the first url
-    # a second "?" means a parameter was appended to the url incorrectly (BUG-001)
     assert cached_urls[0].count("?") == 1
     cached_urls = cached_urls[0].split("?")[-1]  # get only the query part of the url
     if "limit" not in param.keys():
@@ -1023,7 +1022,7 @@ _cmr_expected = {
     [(a, b) for i, a in enumerate(_cmr_filters) for b in list(_cmr_filters)[i + 1 :]],
 )
 def test_get_cmr_urls_combined_filters(first, second):
-    """BUG-001: combining filters yields one well-formed query joined with '&'."""
+    """combining filters yields one well-formed query joined with '&'."""
     session = _RecordingSession()
     kwargs = {**_cmr_filters[first], **_cmr_filters[second]}
     if "short_name" not in kwargs:
@@ -1045,7 +1044,7 @@ def test_get_cmr_urls_combined_filters(first, second):
     ],
 )
 def test_get_cmr_urls_version_types(version, expected):
-    """BUG-001: numeric versions (docstring example) are accepted."""
+    """numeric versions (docstring example) are accepted."""
     session = _RecordingSession()
     get_cmr_urls(short_name="SN", version=version, session=session)
     query = session.url.split("?")[1].split("&")
@@ -1053,7 +1052,7 @@ def test_get_cmr_urls_version_types(version, expected):
 
 
 def test_get_cmr_urls_does_not_mutate_input():
-    """BUG-001: the 'Union' key is read, not removed from the caller's dict."""
+    """the 'Union' key is read, not removed from the caller's dict."""
     session = _RecordingSession()
     bbox = {"b1": [0, 0, 1, 1], "b2": [2, 2, 3, 3], "Union": True}
     get_cmr_urls(ccid="C1-TEST", bounding_box=bbox, session=session)
@@ -1065,7 +1064,7 @@ def test_get_cmr_urls_does_not_mutate_input():
     os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
 )
 def test_get_cmr_urls_short_name_version_bbox():
-    """BUG-001 (live CMR): short_name + version + bounding_box returns granules."""
+    """(live CMR): short_name + version + bounding_box returns granules."""
     urls = get_cmr_urls(
         short_name="MUR-JPL-L4-GLOB-v4.1",
         version="4.1",
@@ -1196,7 +1195,7 @@ def test_recover_missing_url(queries, baseurl):
 @pytest.mark.parametrize(
     "cached_urls",
     [
-        # no repeated base url (BUG-002 reproduction)
+        # no repeated base url
         [
             "https://s/a/g1.nc.dap?dap4.ce=/x",
             "https://s/a/g2.nc.dap?dap4.ce=/y",
@@ -1222,7 +1221,7 @@ def test_recover_missing_url(queries, baseurl):
     ],
 )
 def test_recover_missing_url_unpairable(cached_urls):
-    """BUG-002: cached urls that cannot be paired raise ConsolidatedCacheError,
+    """cached urls that cannot be paired raise ConsolidatedCacheError,
     not a TypeError or ValueError, and do not warn."""
     with warnings.catch_warnings():
         warnings.simplefilter("error", UserWarning)
@@ -1291,7 +1290,7 @@ def test_fetched_batched(cache_tmp_dir, group):
     ],
 )
 def test_get_batch_data_consolidated_fallback(cache_tmp_dir, cache_urls):
-    """BUG-002: when the consolidated cache cannot be paired with the granule,
+    """when the consolidated cache cannot be paired with the granule,
     `get_batch_data` silently downloads the dimensions directly."""
     url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
     session = create_session(
