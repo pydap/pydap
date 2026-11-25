@@ -888,6 +888,34 @@ def patch_session_for_shared_dap_cache(
     session._dap_cache_configs.append(new_config)
 
 
+def _cmr_spatial_params(name: str, value: list | dict) -> list[tuple[str, str]]:
+    """Build CMR query parameters for one spatial filter type.
+
+    `value` is either a single shape (a list of numbers) or a dict of shapes, which
+    may contain an optional `"Union"` key that makes the shapes OR-ed. The input is
+    never modified. Returns (key, value) pairs, e.g.
+    [("bounding_box[]", "0,0,1,1"), ("options[bounding_box][or]", "true")].
+    """
+    if isinstance(value, list):
+        shapes, union = [value], False
+    elif isinstance(value, dict):
+        union = bool(value.get("Union", False))
+        shapes = []
+        for key, coords in value.items():
+            if key == "Union":
+                continue
+            if not isinstance(coords, list):
+                raise ValueError(f"{name} must be a list or a dictionary of lists.")
+            shapes.append(coords)
+    else:
+        raise ValueError(f"`{name}` must be a list or a dictionary of lists.")
+
+    params = [(f"{name}[]", ",".join(str(x) for x in coords)) for coords in shapes]
+    if union:
+        params.append((f"options[{name}][or]", "true"))
+    return params
+
+
 def get_cmr_urls(
     ccid: str | None = None,
     doi: str | None = None,
@@ -1042,7 +1070,9 @@ def get_cmr_urls(
     }
     if session is None or not isinstance(session, (requests.Session, CachedSession)):
         session = create_session()
-    params = {"page_size": limit}
+    # A list of (key, value) pairs, so repeated keys (version, bounding_box[], ...)
+    # are kept and every parameter is joined with "&" by requests.
+    params = [("page_size", limit)]
 
     if doi:
         doisearch = "https://cmr.earthdata.nasa.gov/search/collections.json?doi=" + doi
@@ -1055,12 +1085,12 @@ def get_cmr_urls(
         )
 
     if ccid:
-        params["collection_concept_id"] = ccid
+        params.append(("collection_concept_id", ccid))
     elif short_name and version:
-        if isinstance(version, str):
+        if not isinstance(version, (list, tuple)):
             version = [version]
-        params["short_name"] = short_name
-        cmr_url += "?" + "&".join(["version=" + v for v in version])
+        params.append(("short_name", short_name))
+        params.extend(("version", str(v)) for v in version)
 
     if time_range and isinstance(time_range, list):
         if len(time_range) != 2:
@@ -1084,112 +1114,22 @@ def get_cmr_urls(
                     " format YYYY-MM-DDTHH:MM:SSZ."
                 )
                 return None
-        params["temporal"] = temporal_str
+        params.append(("temporal", temporal_str))
     elif time_range and not isinstance(time_range, list):
         warnings.warn(
             "time_range must be a list of two elements or a string in the format"
             " YYYY-MM-DDTHH:MM:SSZ."
         )
         return None
-    if bounding_box:
-        if isinstance(bounding_box, list):
-            cmr_url += "?bounding_box%5B%5D=" + "%2C".join(str(x) for x in bounding_box)
-        elif isinstance(bounding_box, dict):
-            ces = []
-            if "Union" in bounding_box:
-                extra = bounding_box.pop("Union", None)
-            else:
-                extra = False
-            for key, value in bounding_box.items():
-                if isinstance(value, list):
-                    ces.append(
-                        "bounding_box%5B%5D=" + "%2C".join(str(x) for x in value)
-                    )
-                else:
-                    raise ValueError(
-                        "bounding_box must be a list or a dictionary of lists."
-                    )
-            cmr_url += "?" + "&".join(ces)
-            if extra:
-                cmr_url += "&options%5Bbounding_box%5D%5Bor%5D=true"
-        else:
-            raise ValueError("`bounding_box` must be a list or a dictionary of lists.")
-    if polygon:
-        if isinstance(polygon, list):
-            cmr_url += "?polygon%5B%5D=" + "%2C".join(str(x) for x in polygon)
-        elif isinstance(polygon, dict):
-            ces = []
-            if "Union" in polygon:
-                extra = polygon.pop("Union", None)
-            else:
-                extra = False
-            for key, value in polygon.items():
-                if isinstance(value, list):
-                    ces.append("polygon%5B%5D=" + "%2C".join(str(x) for x in value))
-                else:
-                    raise ValueError("polygon must be a list or a dictionary of lists.")
-            cmr_url += "?" + "&".join(ces)
-            if extra:
-                cmr_url += "&options%5Bpolygon%5D%5Bor%5D=true"
-        else:
-            raise ValueError("`polygon` must be a list or a dictionary of lists.")
-    if line:
-        if isinstance(line, list):
-            cmr_url += "?line%5B%5D=" + "%2C".join(str(x) for x in line)
-        elif isinstance(line, dict):
-            ces = []
-            if "Union" in line:
-                extra = line.pop("Union", None)
-            else:
-                extra = False
-            for key, value in line.items():
-                if isinstance(value, list):
-                    ces.append("line%5B%5D=" + "%2C".join(str(x) for x in value))
-                else:
-                    raise ValueError("line must be a list or a dictionary of lists.")
-            cmr_url += "?" + "&".join(ces)
-            if extra:
-                cmr_url += "&options%5Bline%5D%5Bor%5D=true"
-        else:
-            raise ValueError("`line` must be a list or a dictionary of lists.")
-    if circle:
-        if isinstance(circle, list):
-            cmr_url += "?circle%5B%5D=" + "%2C".join(str(x) for x in circle)
-        elif isinstance(circle, dict):
-            ces = []
-            if "Union" in circle:
-                extra = circle.pop("Union", None)
-            else:
-                extra = False
-            for key, value in circle.items():
-                if isinstance(value, list):
-                    ces.append("circle%5B%5D=" + "%2C".join(str(x) for x in value))
-                else:
-                    raise ValueError("circle must be a list or a dictionary of lists.")
-            cmr_url += "?" + "&".join(ces)
-            if extra:
-                cmr_url += "&options%5Bcircle%5D%5Bor%5D=true"
-        else:
-            raise ValueError("`circle` must be a list or a dictionary of lists.")
-    if point:
-        if isinstance(point, list):
-            cmr_url += "?point%5B%5D=" + "%2C".join(str(x) for x in point)
-        elif isinstance(point, dict):
-            ces = []
-            if "Union" in point:
-                extra = point.pop("Union", None)
-            else:
-                extra = False
-            for key, value in point.items():
-                if isinstance(value, list):
-                    ces.append("point%5B%5D=" + "%2C".join(str(x) for x in value))
-                else:
-                    raise ValueError("point must be a list or a dictionary of lists.")
-            cmr_url += "?" + "&".join(ces)
-            if extra:
-                cmr_url += "&options%5Bpoint%5D%5Bor%5D=true"
-        else:
-            raise ValueError("`point` must be a list or a dictionary of lists.")
+    for name, value in (
+        ("bounding_box", bounding_box),
+        ("polygon", polygon),
+        ("line", line),
+        ("circle", circle),
+        ("point", point),
+    ):
+        if value:
+            params.extend(_cmr_spatial_params(name, value))
 
     try:
         r = session.get(cmr_url, params=params, headers=headers)

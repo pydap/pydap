@@ -747,7 +747,7 @@ def test_patch_session_for_shared_dap_cache(cache_tmp_dir, urls):
     assert len(my_session.cache.urls()) == len(dimensions)
 
 
-ccid = "concept_id=C2076114664-LPCLOUD"
+ccid = "collection_concept_id=C2076114664-LPCLOUD"
 start_date = dt.datetime(2020, 1, 1)
 end_date = dt.datetime(2020, 1, 31)
 dt_format = "%Y-%m-%dT%H:%M:%SZ"
@@ -761,7 +761,10 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
 @pytest.mark.parametrize(
     "param, expected",
     [
-        [{"doi": "10.5067/ECL5M-OTS44"}, "concept_id=C1991543728-POCLOUD&page_size=50"],
+        [
+            {"doi": "10.5067/ECL5M-OTS44"},
+            "collection_concept_id=C1991543728-POCLOUD&page_size=50",
+        ],
         [
             {
                 "ccid": ccid.split("=")[-1],
@@ -824,7 +827,7 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
                 "ccid": "C1991543728-POCLOUD",
                 "point": {"point1": [100, 20], "point2": [80, 20]},
             },
-            "concept_id=C1991543728-POCLOUD"
+            "collection_concept_id=C1991543728-POCLOUD"
             + "&point%5B%5D=100%2C20&point%5B%5D=80%2C20",
         ],
         [
@@ -832,7 +835,7 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
                 "ccid": "C1991543728-POCLOUD",
                 "point": {"point1": [100, 20], "point2": [80, 20], "Union": True},
             },
-            "concept_id=C1991543728-POCLOUD"
+            "collection_concept_id=C1991543728-POCLOUD"
             + "&point%5B%5D=100%2C20&point%5B%5D=80%2C20"
             + "&options%5Bpoint%5D%5Bor%5D=true",
         ],
@@ -841,7 +844,7 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
                 "ccid": "C1991543728-POCLOUD",
                 "polygon": [10, 10, 30, 10, 30, 20, 10, 20, 10, 10],
             },
-            "concept_id=C1991543728-POCLOUD"
+            "collection_concept_id=C1991543728-POCLOUD"
             + "&polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C20%2C10%2C10",
         ],
         [
@@ -852,7 +855,7 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
                     "p2": [11, 11, 31, 11, 31, 21, 11, 21, 11, 11],
                 },
             },
-            "concept_id=C1991543728-POCLOUD"
+            "collection_concept_id=C1991543728-POCLOUD"
             + "&polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C20%2C10%2C10"
             + "&polygon%5B%5D=11%2C11%2C31%2C11%2C31%2C21%2C11%2C21%2C11%2C11",
         ],
@@ -865,7 +868,7 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
                     "Union": True,
                 },
             },
-            "concept_id=C1991543728-POCLOUD"
+            "collection_concept_id=C1991543728-POCLOUD"
             + "&polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C20%2C10%2C10"
             + "&polygon%5B%5D=11%2C11%2C31%2C11%2C31%2C21%2C11%2C21%2C11%2C11"
             + "&options%5Bpolygon%5D%5Bor%5D=true",
@@ -918,7 +921,7 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
                     "c2": [-75, 41.878112, 1000],
                 },
             },
-            "concept_id=C1991543728-POCLOUD"
+            "collection_concept_id=C1991543728-POCLOUD"
             + "&circle%5B%5D=-87.629717%2C41.878112%2C1000"
             + "&circle%5B%5D=-75%2C41.878112%2C1000",
         ],
@@ -931,7 +934,7 @@ bbox2 = "bounding_box%5B%5D=-11%2C-6%2C11%2C6"
                     "Union": True,
                 },
             },
-            "concept_id=C1991543728-POCLOUD"
+            "collection_concept_id=C1991543728-POCLOUD"
             + "&circle%5B%5D=-87.629717%2C41.878112%2C1000"
             + "&circle%5B%5D=-75%2C41.878112%2C1000"
             + "&options%5Bcircle%5D%5Bor%5D=true",
@@ -958,6 +961,8 @@ def test_get_cmr_urls(cache_tmp_dir, param, expected):
         doi_query = _quote(param["doi"]).replace("/", "%2F").replace("%2E", ".")
         assert url + doi_query == cached_urls[0]
         cached_urls = cached_urls[1:]  # remove the first url
+    # a second "?" means a parameter was appended to the url incorrectly (BUG-001)
+    assert cached_urls[0].count("?") == 1
     cached_urls = cached_urls[0].split("?")[-1]  # get only the query part of the url
     if "limit" not in param.keys():
         # if page_size is not specified, it defaults to 50
@@ -975,6 +980,98 @@ def test_error_get_cmr_urls():
         get_cmr_urls(short_name="MODIS_Aqua_L3_SST")
     with pytest.raises(ValueError):
         get_cmr_urls(version="61")
+
+
+class _RecordingSession(requests.Session):
+    """Offline session: records the fully encoded request url, returns no items."""
+
+    def get(self, url, params=None, headers=None, **kwargs):
+        self.url = requests.Request("GET", url, params=params).prepare().url
+
+        class _Resp:
+            def raise_for_status(self):
+                pass
+
+            def json(self):
+                return {"items": []}
+
+        return _Resp()
+
+
+_cmr_filters = {
+    "version": {"short_name": "SN", "version": "4.1"},
+    "bounding_box": {"bounding_box": [0, 0, 1, 1]},
+    "polygon": {"polygon": [10, 10, 30, 10, 30, 20, 10, 10]},
+    "line": {"line": [0, 0, 1, 1]},
+    "circle": {"circle": [-87.6, 41.8, 1000]},
+    "point": {"point": [100, 20]},
+}
+_cmr_expected = {
+    "version": ["short_name=SN", "version=4.1"],
+    "bounding_box": ["bounding_box%5B%5D=0%2C0%2C1%2C1"],
+    "polygon": ["polygon%5B%5D=10%2C10%2C30%2C10%2C30%2C20%2C10%2C10"],
+    "line": ["line%5B%5D=0%2C0%2C1%2C1"],
+    "circle": ["circle%5B%5D=-87.6%2C41.8%2C1000"],
+    "point": ["point%5B%5D=100%2C20"],
+}
+
+
+@pytest.mark.parametrize(
+    "first, second",
+    [(a, b) for i, a in enumerate(_cmr_filters) for b in list(_cmr_filters)[i + 1 :]],
+)
+def test_get_cmr_urls_combined_filters(first, second):
+    """BUG-001: combining filters yields one well-formed query joined with '&'."""
+    session = _RecordingSession()
+    kwargs = {**_cmr_filters[first], **_cmr_filters[second]}
+    if "short_name" not in kwargs:
+        kwargs["ccid"] = "C1-TEST"
+    get_cmr_urls(session=session, **kwargs)
+    assert session.url.count("?") == 1
+    query = set(session.url.split("?")[1].split("&"))
+    for item in _cmr_expected[first] + _cmr_expected[second]:
+        assert item in query
+
+
+@pytest.mark.parametrize(
+    "version, expected",
+    [
+        (1, ["version=1"]),
+        ("4.1", ["version=4.1"]),
+        ([1, 2], ["version=1", "version=2"]),
+        (["1", "2"], ["version=1", "version=2"]),
+    ],
+)
+def test_get_cmr_urls_version_types(version, expected):
+    """BUG-001: numeric versions (docstring example) are accepted."""
+    session = _RecordingSession()
+    get_cmr_urls(short_name="SN", version=version, session=session)
+    query = session.url.split("?")[1].split("&")
+    assert [q for q in query if q.startswith("version=")] == expected
+
+
+def test_get_cmr_urls_does_not_mutate_input():
+    """BUG-001: the 'Union' key is read, not removed from the caller's dict."""
+    session = _RecordingSession()
+    bbox = {"b1": [0, 0, 1, 1], "b2": [2, 2, 3, 3], "Union": True}
+    get_cmr_urls(ccid="C1-TEST", bounding_box=bbox, session=session)
+    assert bbox == {"b1": [0, 0, 1, 1], "b2": [2, 2, 3, 3], "Union": True}
+    assert "options%5Bbounding_box%5D%5Bor%5D=true" in session.url
+
+
+@pytest.mark.skipif(
+    os.getenv("LOCAL_DEV") != "1", reason="This test only runs on local development"
+)
+def test_get_cmr_urls_short_name_version_bbox():
+    """BUG-001 (live CMR): short_name + version + bounding_box returns granules."""
+    urls = get_cmr_urls(
+        short_name="MUR-JPL-L4-GLOB-v4.1",
+        version="4.1",
+        bounding_box=[0, 0, 1, 1],
+        time_range=["2020-01-01T00:00:00Z", "2020-01-10T00:00:00Z"],
+    )
+    assert isinstance(urls, list)
+    assert len(urls) > 0
 
 
 @pytest.mark.parametrize("var", ["SST"])
