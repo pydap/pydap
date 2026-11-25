@@ -23,6 +23,14 @@ class ClientError(DapError):
     pass
 
 
+class ConsolidatedCacheError(ClientError):
+    """Exception raised when the URLs cached by `consolidate_metadata` cannot be
+    paired with the granule being read, so the cached dimension data cannot be
+    reused."""
+
+    pass
+
+
 class ServerError(DapError):
     """Generic error with the server."""
 
