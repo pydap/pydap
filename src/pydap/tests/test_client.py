@@ -3,6 +3,7 @@
 import datetime as dt
 import os
 import tempfile
+import warnings
 
 import numpy as np
 import pytest
@@ -26,6 +27,7 @@ from pydap.client import (
     register_all_for_batch,
     to_netcdf,
 )
+from pydap.exceptions import ConsolidatedCacheError
 from pydap.handlers.lib import BaseHandler
 from pydap.handlers.netcdf_handler import NetCDFHandler
 from pydap.lib import _quote
@@ -1192,6 +1194,43 @@ def test_recover_missing_url(queries, baseurl):
 
 
 @pytest.mark.parametrize(
+    "cached_urls",
+    [
+        # no repeated base url (BUG-002 reproduction)
+        [
+            "https://s/a/g1.nc.dap?dap4.ce=/x",
+            "https://s/a/g2.nc.dap?dap4.ce=/y",
+        ],
+        # two repeated base urls
+        [
+            "https://s/a/g1.nc.dap?dap4.ce=/x",
+            "https://s/a/g1.nc.dap?dap4.ce=/z",
+            "https://s/a/g2.nc.dap?dap4.ce=/y",
+            "https://s/a/g2.nc.dap?dap4.ce=/w",
+        ],
+        # a single cached dap url (no concat_dim, batch=True)
+        [
+            "https://s/a/g1.nc.dap?dap4.ce=/x",
+            "https://s/a/g1.nc.dmr",
+            "https://s/a/g2.nc.dmr",
+        ],
+        # no common base path
+        [
+            "https://s/a/g1.nc.dap?dap4.ce=/x",
+            "https://s/b/g2.nc.dap?dap4.ce=/y",
+        ],
+    ],
+)
+def test_recover_missing_url_unpairable(cached_urls):
+    """BUG-002: cached urls that cannot be paired raise ConsolidatedCacheError,
+    not a TypeError or ValueError, and do not warn."""
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        with pytest.raises(ConsolidatedCacheError, match="Cannot pair"):
+            recover_missing_url(cached_urls, "https://s/a/g3.nc")
+
+
+@pytest.mark.parametrize(
     "url",
     [
         "dap4://test.opendap.org/opendap/hyrax/data/nc/coads_climatology.nc",
@@ -1238,6 +1277,45 @@ def test_fetched_batched(cache_tmp_dir, group):
     for var in dims:
         assert isinstance(pyds[var].data, np.ndarray)
     assert len(session.cache.urls()) == 1  # single dap url
+    session.cache.clear()
+
+
+@pytest.mark.parametrize(
+    "cache_urls",
+    [
+        [
+            "https://s/a/g1.nc.dap?dap4.ce=/x",
+            "https://s/a/g2.nc.dap?dap4.ce=/y",
+        ],
+        ["https://s/a/g1.nc.dap?dap4.ce=/x"],
+    ],
+)
+def test_get_batch_data_consolidated_fallback(cache_tmp_dir, cache_urls):
+    """BUG-002: when the consolidated cache cannot be paired with the granule,
+    `get_batch_data` silently downloads the dimensions directly."""
+    url = "dap4://test.opendap.org/opendap/dap4/SimpleGroup.nc4.h5"
+    session = create_session(
+        use_cache=True,
+        cache_kwargs={"cache_name": cache_tmp_dir / "debug_get_batch_fallback"},
+    )
+    session.cache.clear()
+    pyds = open_url(url, session=session, batch=True)
+    session.headers["consolidated"] = "True"
+    dims = [
+        name
+        for name in pyds.dimensions
+        if name in pyds.keys() and isinstance(pyds[name], BaseType)
+    ]
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", UserWarning)
+        get_batch_data(pyds[dims[0]], cache_urls=cache_urls, checksums=True)
+
+    expected = open_url(url, session=requests.Session())
+    for name in dims:
+        assert pyds[name]._is_data_loaded()
+        np.testing.assert_array_equal(
+            np.asarray(pyds[name].data), np.asarray(expected[name][:].data)
+        )
     session.cache.clear()
 
 

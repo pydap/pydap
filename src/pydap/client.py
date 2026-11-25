@@ -70,6 +70,7 @@ from requests.exceptions import (
 from requests.utils import urlparse, urlunparse
 from requests_cache import CachedSession
 
+from pydap.exceptions import ConsolidatedCacheError
 from pydap.handlers.dap import (
     UNPACKDAP4DATA,
     DAPHandler,
@@ -1207,11 +1208,17 @@ def get_batch_data(array, cache_urls=None, checksums=True, key=None):
             and var_name not in ds.dimensions
         ]
     try:
-        if "consolidated" in ds.dataset.session.headers and set_dims:
+        use_consolidated = "consolidated" in ds.dataset.session.headers and set_dims
+        if use_consolidated:
             # need to add a check that consolidated has
             # been performed on that collection.
-            fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
-        else:
+            try:
+                fetch_consolidated(ds, cache_urls=cache_urls, checksums=checksums)
+            except ConsolidatedCacheError:
+                # The cached dimension responses cannot be paired with this
+                # granule (BUG-002). Download the dimensions directly instead.
+                use_consolidated = False
+        if not use_consolidated:
             dataset = ds.dataset
             dataset.register_dim_slices(array, key=key)  # here slices are recorded
             register_all_for_batch(dataset, Variables, checksums=checksums)
@@ -1413,12 +1420,36 @@ def recover_missing_url(cached_urls, baseurl):
     along with its constraints, that matches the corresponding cached url that
     fetches identical data.
 
+    The cached dap urls must contain exactly one base url that appears more
+    than once: that of the granule whose (non-concat) dimension response is
+    shared across the collection.
+
     Returns:
+        paired_urls: list[str]
+            Cached dap urls of the shared dimension response(s), not yet cached
+            under `baseurl`.
+        current_dap_urls: list[str]
+            Cached dap urls whose base url is `baseurl` (e.g. that of the
+            `concat_dim`).
 
-
+    Raises:
+        ConsolidatedCacheError
+            When the cached dap urls cannot be paired with `baseurl`: fewer than
+            two cached dap urls, no common base path, or not exactly one
+            repeated base url.
     """
     dap_urls = [url for url in cached_urls if url.split("?")[0].endswith(".dap")]
-    common_prefix = compute_base_url_prefix(dap_urls)
+    if len(dap_urls) < 2:
+        raise ConsolidatedCacheError(
+            f"Cannot pair cached dap urls with {baseurl}: found {len(dap_urls)} "
+            "cached dap url(s), at least two are needed."
+        )
+    try:
+        common_prefix = compute_base_url_prefix(dap_urls)
+    except ValueError as e:
+        raise ConsolidatedCacheError(
+            f"Cannot pair cached dap urls with {baseurl}: {e}"
+        ) from e
     # the following is a test on its own it len(dap_ulrs)=0 then there is something
     # wrong (for example - some of the cached urls contain urls from different
     # collection)
@@ -1437,14 +1468,14 @@ def recover_missing_url(cached_urls, baseurl):
 
     duplicate = [item for item, count in Counter(base_urls).items() if count > 1]
 
-    if len(duplicate) == 1:
+    if len(duplicate) != 1:
         # assume there is only one repeated base url - produce of
         # consolidate metadata with freshly created session object
-        duplicate = duplicate[0]
-    else:
-        warnings.warn(
-            "Could not figure out dap urls. Clear your session cache and start again"
+        raise ConsolidatedCacheError(
+            f"Cannot pair cached dap urls with {baseurl}: expected exactly one "
+            f"repeated base url, found {len(duplicate)}."
         )
+    duplicate = duplicate[0]
 
     queries = [
         url.split("?")[-1]
